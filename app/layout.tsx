@@ -22,7 +22,7 @@ const workSans = Work_Sans({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://vinacasaacosta.vercel.app"),
+  metadataBase: new URL("https://web-casa-acosta.vercel.app"),
   title: {
     default: "Viña Casa Acosta — Tributo a la familia",
     template: "%s · Viña Casa Acosta",
