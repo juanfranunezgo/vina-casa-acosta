@@ -1,0 +1,500 @@
+{
+  "metadata": {
+    "siteName": "Viña Casa Acosta",
+    "titleDefault": "Viña Casa Acosta — A tribute to family",
+    "titleTemplate": "%s · Viña Casa Acosta",
+    "description": "Family-owned boutique winery in San Vicente de Tagua Tagua, Cachapoal Valley, Chile. Handcrafted wines, vineyard tours and wine country experiences rooted in heritage.",
+    "ogTitle": "Viña Casa Acosta — A tribute to family",
+    "ogDescription": "Family-owned boutique winery in the Cachapoal Valley. Handcrafted wines and wine country experiences.",
+    "historia": {
+      "title": "Our story",
+      "description": "Three generations of the Acosta family in the Cachapoal Valley. From France '98 to today's winemaking legacy."
+    },
+    "vinos": {
+      "title": "Our wines",
+      "description": "The complete Viña Casa Acosta collection: Ombú, Lajau, Estación Francia, Berá, Guidaí and Yaráy Guá."
+    },
+    "actividades": {
+      "title": "Experiences",
+      "description": "Guided vineyard tours, seasonal experiences and private events at Viña Casa Acosta in the Cachapoal Valley."
+    },
+    "contacto": {
+      "title": "Contact",
+      "description": "Visit us in San Vicente de Tagua Tagua, Cachapoal Valley. Book tours, events or ask about our wines."
+    }
+  },
+  "notFound": {
+    "eyebrow": "Page not found",
+    "title": "This trail got lost among the vines.",
+    "subtitle": "The link you're looking for doesn't exist or has moved. Let's get back on the main path.",
+    "ctaHome": "Back to home",
+    "ctaCatalog": "Browse our wines"
+  },
+  "nav": {
+    "home": "Home",
+    "historia": "Our story",
+    "actividades": "Experiences",
+    "vinos": "Wines",
+    "contacto": "Contact",
+    "tienda": "Shop",
+    "openMenu": "Open menu",
+    "closeMenu": "Close menu",
+    "logoAlt": "Viña Casa Acosta — Home",
+    "language": "Language"
+  },
+  "footer": {
+    "tagline": "Where life has borne fruit with deep roots, growing dreams generation after generation. San Vicente de Tagua Tagua, Cachapoal Valley.",
+    "navigation": "Navigation",
+    "contact": "Contact",
+    "location": "San Vicente de Tagua Tagua, O'Higgins Region, Chile",
+    "hours": "Mon – Sat · 10:00 AM – 6:00 PM",
+    "copyright": "© {year} Viña Casa Acosta. Heritage and winemaking craft.",
+    "legal": {
+      "privacy": "Privacy",
+      "terms": "Terms",
+      "sitemap": "Sitemap"
+    },
+    "social": {
+      "instagram": "Instagram",
+      "tripadvisor": "TripAdvisor",
+      "google": "Google Reviews"
+    },
+    "disclaimer": "Please drink responsibly. Sale of alcohol to anyone under 18 is prohibited · Chilean Law N° 19.925."
+  },
+  "common": {
+    "viewDetails": "View details",
+    "learnMore": "Learn more",
+    "viewAll": "View all",
+    "back": "Back",
+    "loading": "Loading…"
+  },
+  "home": {
+    "hero": {
+      "eyebrow": "San Vicente de Tagua Tagua · Cachapoal Valley",
+      "title": "A tribute to family",
+      "subtitle": "Where life has borne fruit with deep roots, growing dreams across generations.",
+      "ctaShop": "Shop",
+      "ctaVisit": "Book a visit",
+      "scrollHint": "Scroll",
+      "heroAlt": "Cachapoal Valley vineyards at sunset"
+    },
+    "about": {
+      "eyebrow": "Casa Acosta",
+      "title": "Three generations, one origin.",
+      "paragraph1": "Casa Acosta is a tribute to family. A place where life has borne fruit through deep roots in a land that nurtures dreams while honoring and strengthening its origins.",
+      "paragraph2": "Your visit will connect you with a landscape born of grit, passion and Uruguayan bloodlines, carried forward by new generations devoted to working the Cachapoal earth.",
+      "cta": "Discover our story",
+      "imageAlt": "Detail of the Casa Acosta vineyard"
+    },
+    "featured": {
+      "eyebrow": "Our wines",
+      "title": "Featured selection",
+      "subtitle": "A curated set to introduce our style.",
+      "lineLabel": "{line} line",
+      "vintageLabel": "Vintage",
+      "cardCta": "View details",
+      "allCta": "Explore the full collection"
+    },
+    "activities": {
+      "eyebrow": "Our best",
+      "title": "Experiences",
+      "subtitle": "Some memories time can't erase.",
+      "allCta": "See all experiences",
+      "exploreCta": "Explore",
+      "items": {
+        "tour": {
+          "name": "Vineyard tour",
+          "description": "Walk our historic vineyards and visit the winery."
+        },
+        "eventos": {
+          "name": "Events",
+          "description": "Host weddings and private events in a one-of-a-kind setting."
+        },
+        "experiencias": {
+          "name": "Experiences",
+          "description": "Guided tastings, harvest days and food pairings."
+        }
+      }
+    },
+    "cta": {
+      "title": "Visit us in the Cachapoal",
+      "subtitle": "We welcome you with family warmth. Book your visit and walk with us through the origin of every bottle.",
+      "button": "Book a visit"
+    }
+  },
+  "historia": {
+    "hero": {
+      "eyebrow": "Our heritage",
+      "title": "A love of the land, forged generation by generation.",
+      "subtitle": "A passion for the land and for wine, passed down each harvest, is what defines us at Viña Casa Acosta."
+    },
+    "origin": {
+      "tag": "I · The dream",
+      "title": "An origin in Estación Francia",
+      "body": "The story begins with Nelson Acosta, a man with deep roots in the land and an unwavering vision. Raised near the mythical Estación Francia, he learned early to read the language of soil and climate. In 1998 he planted the first vines, laying the foundation of an unshakeable legacy.",
+      "imageAlt": "Vineyards at sunset"
+    },
+    "twoCards": {
+      "card1": {
+        "tag": "II · The roots of a dream",
+        "title": "France '98 and the new generation",
+        "body": "The founding land was acquired in the spirit of the 1998 World Cup in France. Today, Nelson's son Damián carries the dream forward — bringing a contemporary vision without abandoning tradition."
+      },
+      "card2": {
+        "tag": "III · Craft",
+        "title": "First vintage",
+        "body": "Our process remains zealously hands-on. That care culminated in 2003 with the first official release: the acclaimed Carmenere Reserva 'ACOSTA'."
+      }
+    },
+    "timeline": {
+      "title": "Milestones of the legacy",
+      "milestones": {
+        "m1998": {
+          "year": "1998",
+          "title": "The dream begins",
+          "description": "Nelson Acosta plants the first vines with a long-term vision."
+        },
+        "m2000": {
+          "year": "2000",
+          "title": "Roots take hold",
+          "description": "The first vines begin to reveal the unique potential of the soil."
+        },
+        "m2003": {
+          "year": "2003",
+          "title": "First vintage",
+          "description": "Release of the acclaimed Carmenere Reserva 'ACOSTA'."
+        },
+        "m2012": {
+          "year": "2012",
+          "title": "Sustainable expansion",
+          "description": "Adoption of organic practices and a deeper commitment to the environment."
+        },
+        "today": {
+          "year": "Today",
+          "title": "The legacy continues",
+          "description": "Damián Acosta leads the new chapter, true to the family's roots."
+        }
+      }
+    },
+    "family": {
+      "title": "Our family",
+      "subtitle": "The people behind every bottle.",
+      "portraitDisclaimer": "Sample portraits · to be replaced with real photographs of the family.",
+      "members": {
+        "damian": {
+          "name": "Damián Acosta",
+          "role": "Co-founder",
+          "bio": "Heir to the family's vision, pushing innovation without losing the roots."
+        },
+        "andrea": {
+          "name": "Andrea Leyton",
+          "role": "Event planner",
+          "bio": "Architect of memorable experiences and host of our home."
+        },
+        "enrique": {
+          "name": "Enrique Pizarro",
+          "role": "Agronomist",
+          "bio": "Guardian of the land, safeguarding quality from the very root."
+        },
+        "alfonso": {
+          "name": "Alfonso Duarte",
+          "role": "Consulting winemaker",
+          "bio": "The alchemist who translates our terroir into world-class wines."
+        }
+      }
+    }
+  },
+  "vinos": {
+    "hero": {
+      "eyebrow": "Full catalog",
+      "title": "Our wines",
+      "subtitle": "A collection of honest expressions born in our boutique vineyard in the Cachapoal Valley. Each bottle tells the story of our heritage and our terroir."
+    },
+    "lineLabel": "Line",
+    "lineDescriptions": {
+      "Ombú": "Reserve line: the most recognizable face of the winery. Wines to celebrate the everyday.",
+      "Lajau": "Limited editions and ageing wines: selected parcels and small production.",
+      "Estación Francia": "A tribute to our founding place and the spirit of the '98 World Cup.",
+      "Berá": "Grand reserve Cabernet Sauvignon: classic elegance and structure.",
+      "Guidaí": "Limited edition honoring the Charrúa word for moon.",
+      "Yaráy Guá": "Fresh, fruit-forward line, designed for everyday enjoyment."
+    },
+    "categories": {
+      "Reserva": "Reserve",
+      "Gran Reserva": "Grand Reserve",
+      "Edición Limitada": "Limited Edition",
+      "Ícono": "Icon"
+    },
+    "varieties": {
+      "Carmenere": "Carmenere",
+      "Tannat": "Tannat",
+      "Cabernet Sauvignon": "Cabernet Sauvignon",
+      "Sauvignon Blanc": "Sauvignon Blanc",
+      "Ensamblaje": "Blend",
+      "Blanco": "White",
+      "Tinto": "Red"
+    },
+    "badges": {
+      "Insignia": "Signature",
+      "Edición Limitada": "Limited Edition",
+      "Ícono": "Icon"
+    }
+  },
+  "wineDetail": {
+    "backToCatalog": "Back to the collection",
+    "vintageLabel": "Vintage {year}",
+    "tastingNotes": "Tasting notes",
+    "pairing": "Food pairing",
+    "currency": "CLP",
+    "alsoFromLine": "More from the {line} line"
+  },
+  "wines": {
+    "ombu-carmenere": {
+      "shortDescription": "Reserve Carmenere from the Cachapoal Valley.",
+      "description": "Our signature Carmenere Reserve. Ripe red fruit, sweet spice and a subtle touch of oak — a faithful reflection of the warm Cachapoal character.",
+      "tastingNotes": ["Raspberry", "Black pepper", "Cocoa", "Tobacco"],
+      "pairings": ["Red meats", "Open-fire barbecue", "Aged cheeses"]
+    },
+    "ombu-tannat": {
+      "shortDescription": "Robust, structured Reserve Tannat.",
+      "description": "A tribute to the family's Uruguayan roots. Firm structure, elegant tannins and aromas of dark berries with bitter chocolate.",
+      "tastingNotes": ["Blackberry", "Dark chocolate", "Leather", "Licorice"],
+      "pairings": ["Roast lamb", "Blue cheese", "Hearty stews"]
+    },
+    "ombu-sauvignon": {
+      "shortDescription": "Classic, elegant Cabernet Sauvignon.",
+      "description": "Notes of cassis and cedar with a long, persistent finish. The classic elegance of Cabernet Sauvignon expressed through Cachapoal terroir.",
+      "tastingNotes": ["Cassis", "Cedar", "Mint", "Graphite"],
+      "pairings": ["Striploin steak", "Pasta with ragù", "Parmesan"]
+    },
+    "lajau-sam": {
+      "shortDescription": "A singular limited-edition blend.",
+      "description": "A blend that evolves in the glass. Layered complexity and very small production each harvest.",
+      "tastingNotes": ["Black cherry", "Sweet spice", "Vanilla", "Soft leather"],
+      "pairings": ["Patagonian lamb", "Mushroom risotto", "Small game"]
+    },
+    "lajau-deti": {
+      "shortDescription": "Silky, elegant Grand Reserve Carmenere.",
+      "description": "Pure fruit expression with balanced acidity and an unmistakable silky texture. 12 months in French oak barrels.",
+      "tastingNotes": ["Plum", "Violet", "Coffee", "Fine oak"],
+      "pairings": ["Duck magret", "Semi-aged cheeses", "Braised beef cheek"]
+    },
+    "lajau-betum": {
+      "shortDescription": "Deep, mysterious Grand Reserve Tannat.",
+      "description": "Deep and mysterious, with layers of flavor revealing earthy notes and black fruit. An ideal companion for the long table.",
+      "tastingNotes": ["Wild blackberry", "Damp earth", "Tobacco", "Spices"],
+      "pairings": ["Lamb with merkén", "Smoked meats", "Blue cheese"]
+    },
+    "lajau-betum-yu": {
+      "shortDescription": "Icon Tannat — the apex of the Lajau line.",
+      "description": "A parcel-selected expression from our finest Tannat grapes. 18 months in new oak. Ultra-limited release.",
+      "tastingNotes": ["Candied black fruit", "Cedar", "70% dark chocolate", "Truffle"],
+      "pairings": ["Beef Wellington", "Big game", "Aged cheeses"]
+    },
+    "estacion-francia-carmenere": {
+      "shortDescription": "A tribute to our origin — France '98.",
+      "description": "The line that honors the founding moment of the winery, alongside the 1998 World Cup in France. A Carmenere of great complexity, built to age.",
+      "tastingNotes": ["Ripe strawberry", "Pepper", "Chocolate", "French oak"],
+      "pairings": ["Argentine asado", "Slow-roast beef", "Meat empanadas"]
+    },
+    "estacion-francia-tannat": {
+      "shortDescription": "A Tannat with Uruguayan soul.",
+      "description": "Powerful structure and a long, persistent finish. A Tannat that bridges Chilean terroir with the family's Uruguayan heritage.",
+      "tastingNotes": ["Cassis", "Black pepper", "Cedar", "Leather"],
+      "pairings": ["Short ribs", "Patagonian lamb", "Aged cheeses"]
+    },
+    "bera": {
+      "shortDescription": "Grand Reserve Cabernet Sauvignon.",
+      "description": "Imposing structure paired with elegance. Cassis, cedar and a long, persistent finish. Ready to keep growing in bottle.",
+      "tastingNotes": ["Cassis", "Cedar", "Tobacco", "Graphite"],
+      "pairings": ["Sirloin steak", "Slow-roast beef", "Hard cheeses"]
+    },
+    "guidai": {
+      "shortDescription": "A limited-edition blend.",
+      "description": "An exclusive blend honoring the Charrúa word for 'moon'. An ageing-worthy, elegant and contemplative wine.",
+      "tastingNotes": ["Ripe red fruit", "Fine spice", "Cocoa", "Sweet oak"],
+      "pairings": ["Small game", "Duck confit", "Mushrooms in wine"]
+    },
+    "yaray-gua-tinto": {
+      "shortDescription": "Young, fresh, fruit-forward red.",
+      "description": "A fresh, fruit-driven line built for everyday enjoyment. An ideal entry point to the Casa Acosta world.",
+      "tastingNotes": ["Raspberry", "Cherry", "Soft herbs"],
+      "pairings": ["Pizza", "Tomato pasta", "White meats"]
+    },
+    "yaray-gua-blanco": {
+      "shortDescription": "Fresh, aromatic white.",
+      "description": "A Sauvignon Blanc with citrus and tropical notes. Vibrant acidity, perfect for warm days by the sea or the lake.",
+      "tastingNotes": ["Grapefruit", "Passion fruit", "Fresh herbs", "Citrus"],
+      "pairings": ["Ceviche", "Shellfish", "Fresh cheeses"]
+    }
+  },
+  "actividades": {
+    "hero": {
+      "eyebrow": "Some memories time can't erase",
+      "title": "Experiences",
+      "subtitle": "Step into the world of wine. Explore our vineyards, taste our finest creations and celebrate in a setting of warmth and heritage.",
+      "tabs": {
+        "tours": "Tours",
+        "experiences": "Experiences",
+        "events": "Events"
+      }
+    },
+    "tours": {
+      "title": "Our tours",
+      "subtitle": "Discover the soul of Viña Casa Acosta through personalized walks. Each tour is designed for an intimate, educational experience.",
+      "reserveStandard": "Book this tour",
+      "reservePremium": "Book premium",
+      "scheduleTitle": "Hours",
+      "scheduleRegular": "Monday to Saturday · 10:00 AM – 6:00 PM",
+      "scheduleExtended": "Thursdays · 10:00 AM – 8:00 PM (extended hours)",
+      "weekendTitle": "Sundays and holidays",
+      "weekendBody": "Reservations only · minimum 6 guests."
+    },
+    "experiences": {
+      "title": "Special experiences",
+      "subtitle": "Walk through the cycle of the vine and celebrate key moments with us. Seasonal experiences throughout the year."
+    },
+    "events": {
+      "eyebrow": "Private events",
+      "title": "Celebrate among our vineyards",
+      "body": "Weddings, corporate gatherings and private celebrations in a one-of-a-kind Cachapoal Valley setting. We help you design the experience from start to finish.",
+      "bullets": {
+        "capacity": "Capacity for up to 200 guests",
+        "catering": "Bespoke catering and pairings",
+        "coordination": "Full coordination with Andrea, our event planner"
+      },
+      "cta": "Get an event quote",
+      "imageAlt": "Long table with vineyard view set for an event"
+    }
+  },
+  "tours": {
+    "tour-ombu": {
+      "name": "Ombú Tour",
+      "description": "An introductory walk through our century-old vineyards. Ends with a tasting of 3 reserve wines paired with local cheeses.",
+      "highlights": ["3 Reserve wines", "Local cheeses", "Vineyard walk"]
+    },
+    "tour-bera": {
+      "name": "Berá Tour",
+      "description": "Step inside our underground cellar. Tasting of 4 grand reserve wines with curated pairings.",
+      "highlights": ["4 Grand Reserve wines", "Underground cellar", "Pairings"]
+    },
+    "tour-carmenere": {
+      "name": "Carmenere Tour",
+      "description": "Our premium experience. A deep dive into the history of our signature varietal, with tastings of historic vintages drawn straight from the barrel.",
+      "highlights": ["Historic vintages", "Tasting from barrel", "Light lunch"]
+    }
+  },
+  "experiences": {
+    "vendimia-2026": {
+      "name": "Harvest 2026",
+      "badge": "Coming soon"
+    },
+    "dia-madres": {
+      "name": "Mother's Day Lunch",
+      "badge": "May"
+    },
+    "tren-efe": {
+      "name": "EFE Train Experience",
+      "badge": "Special partnership"
+    }
+  },
+  "tienda": {
+    "hero": {
+      "eyebrow": "Online shop",
+      "title": "Casa Acosta collection",
+      "subtitle": "Filter by line and variety. Pick your wines and we'll coordinate delivery with you."
+    },
+    "filters": {
+      "title": "Filters",
+      "clear": "Clear ({count})",
+      "line": "Line",
+      "variety": "Variety",
+      "apply": "View results",
+      "close": "Close filters"
+    },
+    "sort": {
+      "label": "Sort",
+      "featured": "Featured first",
+      "priceAsc": "Price: low to high",
+      "priceDesc": "Price: high to low"
+    },
+    "countSingular": "{count} wine",
+    "countPlural": "{count} wines",
+    "empty": {
+      "title": "No wines match the selected filters.",
+      "cta": "Clear filters"
+    },
+    "disclaimer": "Online checkout coming soon · For now we confirm each order via WhatsApp. Please drink responsibly · Chilean Law N° 19.925."
+  },
+  "contacto": {
+    "hero": {
+      "eyebrow": "Let's talk",
+      "title": "Contact us",
+      "subtitle": "Book a visit, request an event quote, or tell us what brought you here. We'll reply within 24 hours."
+    },
+    "mapTitle": "Viña Casa Acosta location in San Vicente de Tagua Tagua",
+    "cards": {
+      "location": {
+        "title": "Location",
+        "body": "San Vicente de Tagua Tagua, Cachapoal Valley, Chile"
+      },
+      "hours": {
+        "title": "Hours",
+        "body": "Mon – Sat · 10:00 AM – 6:00 PM\nThursdays until 8:00 PM"
+      },
+      "email": {
+        "title": "Email",
+        "body": "contacto@vinacasaacosta.cl"
+      }
+    }
+  },
+  "contactForm": {
+    "title": "Send us a message",
+    "subtitle": "We'll get back to you within one business day.",
+    "fields": {
+      "name": "Name",
+      "namePlaceholder": "Your name",
+      "email": "Email",
+      "emailPlaceholder": "you@email.com",
+      "subject": "Subject",
+      "subjectPlaceholder": "Choose a subject",
+      "message": "Message",
+      "messagePlaceholder": "How can we help?"
+    },
+    "subjects": {
+      "tour": "Book a tour",
+      "event": "Private event quote",
+      "purchase": "Wine inquiry",
+      "other": "Other"
+    },
+    "buttons": {
+      "idle": "Send message",
+      "submitting": "Sending…",
+      "success": "Message sent!",
+      "error": "Try again"
+    },
+    "successMessage": "Thank you for reaching out. We'll be in touch soon.",
+    "demoNotice": "Demo form · in the final version, messages will be delivered straight to the winery's inbox."
+  },
+  "cart": {
+    "openLabel": "Open cart",
+    "openLabelWithCount": "Open cart, {count} items",
+    "title": "Your selection",
+    "close": "Close cart",
+    "emptyMessage": "Your selection is empty.",
+    "exploreShop": "Explore the shop",
+    "remove": "Remove {name}",
+    "decrement": "Decrease",
+    "increment": "Increase",
+    "totalLabel": "Estimated total",
+    "checkout": "Check out via WhatsApp",
+    "checkoutDisclaimer": "Online checkout coming soon. For now we confirm each order with you.",
+    "addLabel": "Add to cart",
+    "addedLabel": "Added",
+    "quantityLabel": "Quantity",
+    "addAriaLabel": "Add {name} to cart",
+    "whatsappIntro": "Hi Casa Acosta — I'm interested in this order:",
+    "whatsappTotal": "Estimated total: {total}",
+    "whatsappOutro": "How can I complete the purchase?"
+  }
+}

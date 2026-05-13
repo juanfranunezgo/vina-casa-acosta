@@ -1,30 +1,47 @@
 import Image from "next/image";
 import Link from "next/link";
 import type { Metadata } from "next";
+import { getTranslations, setRequestLocale } from "next-intl/server";
 import Reveal from "@/components/Reveal";
 import { wines, wineLines } from "@/data/wines";
 
-export const metadata: Metadata = {
-  title: "Nuestros Vinos",
-  description:
-    "Colección completa de vinos de Viña Casa Acosta: Ombú, Lajau, Estación Francia, Berá, Guidaí y Yaráy Guá.",
-};
+export async function generateMetadata({
+  params,
+}: PageProps<"/[locale]/vinos">): Promise<Metadata> {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "metadata.vinos" });
+  return {
+    title: t("title"),
+    description: t("description"),
+  };
+}
 
-export default function VinosPage() {
+export default async function VinosPage({ params }: PageProps<"/[locale]/vinos">) {
+  const { locale } = await params;
+  setRequestLocale(locale);
+  const t = await getTranslations("vinos");
+  const tWine = await getTranslations("wines");
+  const tBadges = await getTranslations("vinos.badges");
+
   return (
     <>
       <section className="pt-32 pb-12 px-margin-mobile md:px-margin-desktop max-w-(--container-max) mx-auto text-center">
         <Reveal>
           <p className="font-body text-label-sm uppercase tracking-[0.3em] text-outline mb-4">
-            Catálogo completo
+            {t("hero.eyebrow")}
           </p>
-          <h1 className="font-display text-4xl md:text-display-lg text-primary mb-6">
-            Nuestros vinos
+          <h1
+            className="font-display text-primary mb-6"
+            style={{
+              fontSize: "clamp(2.5rem, 6vw, 4.5rem)",
+              lineHeight: 1.06,
+              letterSpacing: "-0.02em",
+            }}
+          >
+            {t("hero.title")}
           </h1>
           <p className="font-body text-body-lg text-on-surface-variant max-w-2xl mx-auto">
-            Una colección de expresiones auténticas, nacidas en nuestro viñedo
-            boutique del Valle del Cachapoal. Cada botella cuenta la historia
-            de nuestro patrimonio y nuestro terroir.
+            {t("hero.subtitle")}
           </p>
         </Reveal>
       </section>
@@ -44,12 +61,12 @@ export default function VinosPage() {
               <Reveal className="mb-10 flex items-end justify-between gap-6 flex-wrap">
                 <div>
                   <span className="font-body text-label-sm text-outline uppercase tracking-widest block mb-2">
-                    Línea
+                    {t("lineLabel")}
                   </span>
                   <h2 className="font-display text-headline-h1 text-primary">{line}</h2>
                 </div>
                 <p className="font-body text-body-md text-on-surface-variant max-w-lg">
-                  {lineDescriptions[line]}
+                  {t(`lineDescriptions.${line}`)}
                 </p>
               </Reveal>
 
@@ -57,32 +74,32 @@ export default function VinosPage() {
                 {lineWines.map((wine, idx) => (
                   <Reveal key={wine.slug} delay={idx * 80}>
                     <Link
-                      href={`/vinos/${wine.slug}`}
-                      className="group bg-surface-container-lowest rounded-xl overflow-hidden hover:bg-surface-container-low transition-colors duration-300 block h-full"
+                      href={`/${locale}/vinos/${wine.slug}`}
+                      className="group bg-surface-container-lowest rounded-xl overflow-hidden hover:-translate-y-1 hover:shadow-[0_24px_48px_-12px_rgba(74,14,14,0.12)] transition-all duration-300 block h-full"
                     >
-                      <div className="aspect-[3/4] relative overflow-hidden bg-surface-container p-8 flex items-center justify-center">
+                      <div className="aspect-[3/4] relative overflow-hidden bg-gradient-to-br from-surface-container-low to-surface-container p-8 flex items-center justify-center">
                         <Image
                           src={wine.image}
-                          alt={`Botella ${wine.name}`}
+                          alt={wine.name}
                           fill
-                          className="object-contain p-6 group-hover:scale-105 transition-transform duration-500"
+                          className="object-contain p-6 group-hover:scale-105 transition-transform duration-700 drop-shadow-[0_12px_18px_rgba(74,14,14,0.18)]"
                           sizes="(max-width: 768px) 100vw, 33vw"
                         />
                         {wine.badge && (
-                          <span className="absolute top-4 left-4 bg-primary text-on-primary px-3 py-1 text-label-sm uppercase tracking-wider rounded">
-                            {wine.badge}
+                          <span className="absolute top-4 left-4 bg-primary text-on-primary px-3 py-1 text-label-sm uppercase tracking-wider rounded font-semibold">
+                            {tBadges(wine.badge)}
                           </span>
                         )}
                       </div>
                       <div className="p-6">
                         <span className="font-body text-label-sm text-on-surface-variant uppercase tracking-widest block mb-2">
-                          {wine.variety} · {wine.category}
+                          {wine.variety} · {t(`categories.${wine.category}`)}
                         </span>
                         <h3 className="font-display text-2xl text-primary mb-3">
                           {wine.name}
                         </h3>
                         <p className="font-body text-body-md text-on-surface-variant line-clamp-2">
-                          {wine.shortDescription}
+                          {tWine(`${wine.slug}.shortDescription`)}
                         </p>
                       </div>
                     </Link>
@@ -96,12 +113,3 @@ export default function VinosPage() {
     </>
   );
 }
-
-const lineDescriptions: Record<string, string> = {
-  Ombú: "Línea reserva: la cara más reconocible de la viña. Vinos para celebrar lo cotidiano.",
-  Lajau: "Edición limitada y guarda: parcelas seleccionadas, producción acotada.",
-  "Estación Francia": "Homenaje al lugar fundacional y al espíritu del Mundial '98.",
-  Berá: "Cabernet Sauvignon de gran reserva: elegancia y estructura clásica.",
-  Guidaí: "Edición limitada en honor al nombre charrúa de la luna.",
-  "Yaráy Guá": "Línea fresca y frutal, accesible para el día a día.",
-};

@@ -145,6 +145,35 @@ body {
   }
 }
 
+@keyframes heroZoom {
+  from {
+    transform: scale(1.08);
+  }
+  to {
+    transform: scale(1);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--color-surface-container) 0%,
+    var(--color-surface-container-high) 50%,
+    var(--color-surface-container) 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.8s ease-in-out infinite;
+}
+
 .reveal {
   opacity: 0;
 }
@@ -156,6 +185,9 @@ body {
   .reveal,
   .reveal.is-visible {
     opacity: 1;
+    animation: none;
+  }
+  .skeleton {
     animation: none;
   }
   html {

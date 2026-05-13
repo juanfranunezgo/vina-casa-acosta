@@ -1,0 +1,500 @@
+{
+  "metadata": {
+    "siteName": "Viña Casa Acosta",
+    "titleDefault": "Viña Casa Acosta — Tributo à família",
+    "titleTemplate": "%s · Viña Casa Acosta",
+    "description": "Vinícola boutique familiar em San Vicente de Tagua Tagua, Vale do Cachapoal, Chile. Vinhos artesanais, tours e experiências que celebram nossas raízes.",
+    "ogTitle": "Viña Casa Acosta — Tributo à família",
+    "ogDescription": "Vinícola boutique familiar no Vale do Cachapoal. Vinhos artesanais e experiências de enoturismo.",
+    "historia": {
+      "title": "História",
+      "description": "Três gerações da família Acosta no Vale do Cachapoal. Da França '98 ao legado vinícola de hoje."
+    },
+    "vinos": {
+      "title": "Nossos vinhos",
+      "description": "Coleção completa de vinhos da Viña Casa Acosta: Ombú, Lajau, Estación Francia, Berá, Guidaí e Yaráy Guá."
+    },
+    "actividades": {
+      "title": "Experiências",
+      "description": "Tours guiados pelos vinhedos, experiências sazonais e eventos privados na Viña Casa Acosta, Cachapoal."
+    },
+    "contacto": {
+      "title": "Contato",
+      "description": "Visite-nos em San Vicente de Tagua Tagua, Vale do Cachapoal. Reserve tours, eventos ou tire dúvidas sobre nossos vinhos."
+    }
+  },
+  "notFound": {
+    "eyebrow": "Página não encontrada",
+    "title": "Esta trilha se perdeu entre os vinhedos.",
+    "subtitle": "O link que você procura não existe ou foi movido. Vamos voltar ao caminho principal.",
+    "ctaHome": "Voltar ao início",
+    "ctaCatalog": "Ver nossos vinhos"
+  },
+  "nav": {
+    "home": "Início",
+    "historia": "História",
+    "actividades": "Experiências",
+    "vinos": "Vinhos",
+    "contacto": "Contato",
+    "tienda": "Loja",
+    "openMenu": "Abrir menu",
+    "closeMenu": "Fechar menu",
+    "logoAlt": "Viña Casa Acosta — Início",
+    "language": "Idioma"
+  },
+  "footer": {
+    "tagline": "Onde a vida tem dado seus frutos com raízes firmes, fazendo crescer os sonhos. San Vicente de Tagua Tagua, Vale do Cachapoal.",
+    "navigation": "Navegação",
+    "contact": "Contato",
+    "location": "San Vicente de Tagua Tagua, Região de O'Higgins, Chile",
+    "hours": "Seg a Sáb · 10h – 18h",
+    "copyright": "© {year} Viña Casa Acosta. Patrimônio e excelência vinícola.",
+    "legal": {
+      "privacy": "Privacidade",
+      "terms": "Termos",
+      "sitemap": "Mapa do site"
+    },
+    "social": {
+      "instagram": "Instagram",
+      "tripadvisor": "TripAdvisor",
+      "google": "Google Reviews"
+    },
+    "disclaimer": "Beba com moderação. Proibida a venda de bebida alcoólica a menores de 18 anos · Lei chilena N° 19.925."
+  },
+  "common": {
+    "viewDetails": "Ver detalhes",
+    "learnMore": "Saiba mais",
+    "viewAll": "Ver todos",
+    "back": "Voltar",
+    "loading": "Carregando…"
+  },
+  "home": {
+    "hero": {
+      "eyebrow": "San Vicente de Tagua Tagua · Vale do Cachapoal",
+      "title": "Um tributo à família",
+      "subtitle": "Onde a vida tem dado seus frutos com raízes firmes, fazendo crescer os sonhos.",
+      "ctaShop": "Loja",
+      "ctaVisit": "Agendar visita",
+      "scrollHint": "Role",
+      "heroAlt": "Vinhedos do Vale do Cachapoal ao pôr do sol"
+    },
+    "about": {
+      "eyebrow": "Casa Acosta",
+      "title": "Três gerações, uma só origem.",
+      "paragraph1": "Casa Acosta é um tributo à família. Um lugar onde a vida tem dado seus frutos com raízes firmes em um território propício para fazer crescer os sonhos, respeitando e fortalecendo sua origem.",
+      "paragraph2": "Sua visita conecta você a uma paisagem que nasce do tesão, da paixão e da cepa de sangue uruguaio — transformada em novas gerações dispostas a seguir o trabalho da terra do Cachapoal.",
+      "cta": "Conheça nossa história",
+      "imageAlt": "Detalhe do vinhedo Casa Acosta"
+    },
+    "featured": {
+      "eyebrow": "Nossos vinhos",
+      "title": "Em destaque",
+      "subtitle": "Uma seleção recomendada para conhecer nosso estilo.",
+      "lineLabel": "Linha {line}",
+      "vintageLabel": "Safra",
+      "cardCta": "Ver detalhes",
+      "allCta": "Ver toda a coleção"
+    },
+    "activities": {
+      "eyebrow": "As melhores",
+      "title": "Experiências",
+      "subtitle": "Há lembranças que o tempo não apaga.",
+      "allCta": "Ver todas as experiências",
+      "exploreCta": "Explorar",
+      "items": {
+        "tour": {
+          "name": "Tour",
+          "description": "Conheça nossos vinhedos históricos e a nossa vinícola."
+        },
+        "eventos": {
+          "name": "Eventos",
+          "description": "Celebre casamentos e eventos em um cenário único."
+        },
+        "experiencias": {
+          "name": "Experiências",
+          "description": "Degustações guiadas, vindimas e harmonizações."
+        }
+      }
+    },
+    "cta": {
+      "title": "Visite-nos no Cachapoal",
+      "subtitle": "Recebemos você com o calor da família. Reserve sua visita e percorramos juntos a origem de cada garrafa.",
+      "button": "Agendar visita"
+    }
+  },
+  "historia": {
+    "hero": {
+      "eyebrow": "Nossa herança",
+      "title": "Paixão pela terra, forjada geração após geração.",
+      "subtitle": "A paixão pela terra e pelo vinho, transmitida em cada safra, define quem somos na Viña Casa Acosta."
+    },
+    "origin": {
+      "tag": "I · O sonho",
+      "title": "A origem em Estación Francia",
+      "body": "A história começa com Nelson Acosta, um homem de raízes profundas na terra e visão inabalável. Criado perto da mítica Estación Francia, aprendeu cedo a linguagem do solo e do clima. Em 1998 plantou os primeiros vinhedos, lançando as bases de um legado inegociável.",
+      "imageAlt": "Vinhedos ao pôr do sol"
+    },
+    "twoCards": {
+      "card1": {
+        "tag": "II · A raiz de um sonho",
+        "title": "França '98 e a próxima geração",
+        "body": "A aquisição da terra fundacional coincidiu com o espírito da Copa do Mundo de 1998 na França. Hoje, seu filho Damián segue o sonho, trazendo uma visão contemporânea sem abrir mão da tradição."
+      },
+      "card2": {
+        "tag": "III · Artesania",
+        "title": "Primeira produção",
+        "body": "Nosso processo continua zelosamente manual. Esse cuidado culminou em 2003 com a primeira produção oficial: o aclamado Carmenere Reserva 'ACOSTA'."
+      }
+    },
+    "timeline": {
+      "title": "Marcos do legado",
+      "milestones": {
+        "m1998": {
+          "year": "1998",
+          "title": "O sonho começa",
+          "description": "Nelson Acosta planta os primeiros vinhedos com uma visão de longo prazo."
+        },
+        "m2000": {
+          "year": "2000",
+          "title": "Raízes firmes",
+          "description": "As primeiras videiras começam a revelar o potencial único do solo."
+        },
+        "m2003": {
+          "year": "2003",
+          "title": "Primeira produção",
+          "description": "Lançamento do aclamado Carmenere Reserva 'ACOSTA'."
+        },
+        "m2012": {
+          "year": "2012",
+          "title": "Expansão sustentável",
+          "description": "Adoção de práticas orgânicas e cuidado com o meio ambiente."
+        },
+        "today": {
+          "year": "Hoje",
+          "title": "O legado continua",
+          "description": "Damián Acosta lidera a nova etapa, fiel às raízes familiares."
+        }
+      }
+    },
+    "family": {
+      "title": "Nossa família",
+      "subtitle": "A equipe humana por trás de cada garrafa.",
+      "portraitDisclaimer": "Retratos de amostra · serão substituídos por fotografias reais da família.",
+      "members": {
+        "damian": {
+          "name": "Damián Acosta",
+          "role": "Cofundador",
+          "bio": "Herdeiro da visão familiar, impulsionando a inovação sem perder as raízes."
+        },
+        "andrea": {
+          "name": "Andrea Leyton",
+          "role": "Event planner",
+          "bio": "Criadora de experiências memoráveis e anfitriã da nossa casa."
+        },
+        "enrique": {
+          "name": "Enrique Pizarro",
+          "role": "Agrônomo",
+          "bio": "Guardião da terra, garantindo a máxima qualidade desde a raiz."
+        },
+        "alfonso": {
+          "name": "Alfonso Duarte",
+          "role": "Enólogo consultor",
+          "bio": "O alquimista que traduz nosso terroir em vinhos de classe mundial."
+        }
+      }
+    }
+  },
+  "vinos": {
+    "hero": {
+      "eyebrow": "Catálogo completo",
+      "title": "Nossos vinhos",
+      "subtitle": "Uma coleção de expressões autênticas, nascidas em nosso vinhedo boutique no Vale do Cachapoal. Cada garrafa conta a história do nosso patrimônio e do nosso terroir."
+    },
+    "lineLabel": "Linha",
+    "lineDescriptions": {
+      "Ombú": "Linha reserva: a face mais reconhecível da vinícola. Vinhos para celebrar o cotidiano.",
+      "Lajau": "Edição limitada e guarda: parcelas selecionadas, produção restrita.",
+      "Estación Francia": "Homenagem ao lugar fundacional e ao espírito da Copa de '98.",
+      "Berá": "Cabernet Sauvignon de gran reserva: elegância e estrutura clássica.",
+      "Guidaí": "Edição limitada em homenagem ao nome charrua da lua.",
+      "Yaráy Guá": "Linha fresca e frutada, ideal para o dia a dia."
+    },
+    "categories": {
+      "Reserva": "Reserva",
+      "Gran Reserva": "Gran Reserva",
+      "Edición Limitada": "Edição Limitada",
+      "Ícono": "Ícone"
+    },
+    "varieties": {
+      "Carmenere": "Carmenere",
+      "Tannat": "Tannat",
+      "Cabernet Sauvignon": "Cabernet Sauvignon",
+      "Sauvignon Blanc": "Sauvignon Blanc",
+      "Ensamblaje": "Assemblage",
+      "Blanco": "Branco",
+      "Tinto": "Tinto"
+    },
+    "badges": {
+      "Insignia": "Insígnia",
+      "Edición Limitada": "Edição Limitada",
+      "Ícono": "Ícone"
+    }
+  },
+  "wineDetail": {
+    "backToCatalog": "Voltar para a coleção",
+    "vintageLabel": "Safra {year}",
+    "tastingNotes": "Notas de degustação",
+    "pairing": "Harmonização",
+    "currency": "CLP",
+    "alsoFromLine": "Também da linha {line}"
+  },
+  "wines": {
+    "ombu-carmenere": {
+      "shortDescription": "Carmenere Reserva do Vale do Cachapoal.",
+      "description": "Nosso Carmenere Reserva insígnia. Frutas vermelhas maduras, especiarias doces e um leve toque de carvalho que refletem o caráter cálido do Cachapoal.",
+      "tastingNotes": ["Framboesa", "Pimenta-do-reino", "Cacau", "Tabaco"],
+      "pairings": ["Carnes vermelhas", "Churrasco no fogo de chão", "Queijos curados"]
+    },
+    "ombu-tannat": {
+      "shortDescription": "Tannat Reserva, robusto e estruturado.",
+      "description": "Homenagem às raízes uruguaias da família. Estrutura firme, taninos elegantes e aromas de amoras escuras com chocolate amargo.",
+      "tastingNotes": ["Amora", "Chocolate amargo", "Couro", "Alcaçuz"],
+      "pairings": ["Cordeiro assado", "Queijos azuis", "Ensopados"]
+    },
+    "ombu-sauvignon": {
+      "shortDescription": "Cabernet Sauvignon clássico e elegante.",
+      "description": "Notas de cassis e cedro com final longo e persistente. A elegância clássica do Cabernet Sauvignon no terroir do Cachapoal.",
+      "tastingNotes": ["Cassis", "Cedro", "Hortelã", "Grafite"],
+      "pairings": ["Bife de chorizo", "Massas ao ragu", "Queijo parmesão"]
+    },
+    "lajau-sam": {
+      "shortDescription": "Assemblage único de edição limitada.",
+      "description": "Um corte que evolui na taça. Complexidade estruturada, cheio de nuances e produção muito restrita a cada safra.",
+      "tastingNotes": ["Cereja preta", "Especiarias doces", "Baunilha", "Couro macio"],
+      "pairings": ["Cordeiro patagônico", "Risoto de cogumelos", "Caça pequena"]
+    },
+    "lajau-deti": {
+      "shortDescription": "Carmenere Gran Reserva, sedoso e elegante.",
+      "description": "Expressão pura da fruta com acidez equilibrada e textura sedosa inconfundível. 12 meses em barricas de carvalho francês.",
+      "tastingNotes": ["Ameixa", "Violeta", "Café", "Carvalho fino"],
+      "pairings": ["Magret de pato", "Queijos semicurados", "Bochecha braseada"]
+    },
+    "lajau-betum": {
+      "shortDescription": "Tannat Gran Reserva, profundo e misterioso.",
+      "description": "Profundo e misterioso, com camadas de sabor que revelam notas terrosas e frutas pretas. Combinação ideal para a mesa longa.",
+      "tastingNotes": ["Amora silvestre", "Terra úmida", "Tabaco", "Especiarias"],
+      "pairings": ["Cordeiro ao merkén", "Carnes defumadas", "Queijos azuis"]
+    },
+    "lajau-betum-yu": {
+      "shortDescription": "Tannat Ícone, expressão máxima da linha Lajau.",
+      "description": "Seleção parcelar das melhores uvas Tannat. 18 meses em barricas novas. Produção ultralimitada.",
+      "tastingNotes": ["Frutas pretas em calda", "Cedro", "Chocolate amargo 70%", "Trufa"],
+      "pairings": ["Filé Wellington", "Caça maior", "Queijos envelhecidos"]
+    },
+    "estacion-francia-carmenere": {
+      "shortDescription": "Homenagem à origem — França '98.",
+      "description": "A linha que celebra o momento fundacional da vinícola, junto à Copa do Mundo da França de 1998. Carmenere de grande complexidade e guarda.",
+      "tastingNotes": ["Morango maduro", "Pimenta", "Chocolate", "Carvalho francês"],
+      "pairings": ["Churrasco argentino", "Plateada no suco", "Empanadas de carne"]
+    },
+    "estacion-francia-tannat": {
+      "shortDescription": "Tannat com alma uruguaia.",
+      "description": "Estrutura potente e final persistente. Um Tannat que conecta o terroir chileno à herança familiar uruguaia.",
+      "tastingNotes": ["Cassis", "Pimenta-do-reino", "Cedro", "Couro"],
+      "pairings": ["Costela", "Cordeiro patagônico", "Queijos curados"]
+    },
+    "bera": {
+      "shortDescription": "Cabernet Sauvignon Gran Reserva.",
+      "description": "Estrutura imponente com elegância. Cassis, cedro e final longo e persistente. Pronto para evoluir em garrafa.",
+      "tastingNotes": ["Cassis", "Cedro", "Tabaco", "Grafite"],
+      "pairings": ["Bife angosto", "Plateada", "Queijos duros"]
+    },
+    "guidai": {
+      "shortDescription": "Assemblage de edição limitada.",
+      "description": "Assemblage exclusivo em homenagem à palavra charrua para 'lua'. Vinho de guarda, elegante e meditado.",
+      "tastingNotes": ["Frutas vermelhas maduras", "Especiarias finas", "Cacau", "Carvalho doce"],
+      "pairings": ["Caça pequena", "Confit de pato", "Cogumelos ao vinho"]
+    },
+    "yaray-gua-tinto": {
+      "shortDescription": "Tinto jovem, fresco e frutado.",
+      "description": "Linha fresca e frutada pensada para o consumo diário. Porta de entrada ideal ao universo Casa Acosta.",
+      "tastingNotes": ["Framboesa", "Cereja", "Ervas suaves"],
+      "pairings": ["Pizzas", "Massas com tomate", "Carnes brancas"]
+    },
+    "yaray-gua-blanco": {
+      "shortDescription": "Branco fresco e aromático.",
+      "description": "Sauvignon Blanc com notas cítricas e tropicais. Acidez vibrante, ideal para dias quentes à beira-mar ou do lago.",
+      "tastingNotes": ["Pomelo", "Maracujá", "Ervas frescas", "Cítricos"],
+      "pairings": ["Ceviche", "Frutos do mar", "Queijos frescos"]
+    }
+  },
+  "actividades": {
+    "hero": {
+      "eyebrow": "Há lembranças que o tempo não apaga",
+      "title": "Experiências",
+      "subtitle": "Mergulhe no mundo do vinho. Explore nossos vinhedos, prove nossas melhores criações e celebre em um ambiente de calor e patrimônio.",
+      "tabs": {
+        "tours": "Tours",
+        "experiences": "Experiências",
+        "events": "Eventos"
+      }
+    },
+    "tours": {
+      "title": "Nossos tours",
+      "subtitle": "Descubra a alma da Viña Casa Acosta através de roteiros personalizados. Cada tour é pensado para uma experiência íntima e educativa.",
+      "reserveStandard": "Reservar tour",
+      "reservePremium": "Reservar premium",
+      "scheduleTitle": "Horários",
+      "scheduleRegular": "Segunda a sábado · 10h – 18h",
+      "scheduleExtended": "Quinta · 10h – 20h (horário estendido)",
+      "weekendTitle": "Domingos e feriados",
+      "weekendBody": "Somente com reserva prévia · mínimo de 6 pessoas."
+    },
+    "experiences": {
+      "title": "Experiências especiais",
+      "subtitle": "Acompanhe o ciclo da videira e celebre datas importantes conosco. Experiências sazonais ao longo do ano."
+    },
+    "events": {
+      "eyebrow": "Eventos privados",
+      "title": "Celebre entre os nossos vinhedos",
+      "body": "Casamentos, eventos corporativos e comemorações privadas em um cenário único do Vale do Cachapoal. Ajudamos você a desenhar a experiência do início ao fim.",
+      "bullets": {
+        "capacity": "Capacidade para até 200 convidados",
+        "catering": "Catering e harmonizações personalizadas",
+        "coordination": "Coordenação completa com Andrea, nossa event planner"
+      },
+      "cta": "Solicitar orçamento",
+      "imageAlt": "Mesa longa com vista para o vinhedo, montada para evento"
+    }
+  },
+  "tours": {
+    "tour-ombu": {
+      "name": "Tour Ombú",
+      "description": "Percurso introdutório pelos vinhedos centenários. Termina com a degustação de 3 vinhos reserva acompanhados de queijos locais.",
+      "highlights": ["3 vinhos Reserva", "Queijos locais", "Percurso pelo vinhedo"]
+    },
+    "tour-bera": {
+      "name": "Tour Berá",
+      "description": "Adentre nossa adega subterrânea. Degustação de 4 vinhos Gran Reserva com harmonizações exclusivas.",
+      "highlights": ["4 vinhos Gran Reserva", "Adega subterrânea", "Harmonização"]
+    },
+    "tour-carmenere": {
+      "name": "Tour Carmenere",
+      "description": "Nossa experiência premium. Imersão detalhada na história da cepa insígnia, com degustação de safras históricas direto da barrica.",
+      "highlights": ["Safras históricas", "Degustação direto da barrica", "Almoço leve"]
+    }
+  },
+  "experiences": {
+    "vendimia-2026": {
+      "name": "Vindima 2026",
+      "badge": "Em breve"
+    },
+    "dia-madres": {
+      "name": "Almoço de Dia das Mães",
+      "badge": "Maio"
+    },
+    "tren-efe": {
+      "name": "Experiência Trem EFE",
+      "badge": "Parceria especial"
+    }
+  },
+  "tienda": {
+    "hero": {
+      "eyebrow": "Loja online",
+      "title": "Coleção Casa Acosta",
+      "subtitle": "Filtre por linha e variedade. Selecione seus vinhos e combinamos a entrega com você."
+    },
+    "filters": {
+      "title": "Filtros",
+      "clear": "Limpar ({count})",
+      "line": "Linha",
+      "variety": "Variedade",
+      "apply": "Ver resultados",
+      "close": "Fechar filtros"
+    },
+    "sort": {
+      "label": "Ordenar",
+      "featured": "Destaques primeiro",
+      "priceAsc": "Preço: menor para maior",
+      "priceDesc": "Preço: maior para menor"
+    },
+    "countSingular": "{count} vinho",
+    "countPlural": "{count} vinhos",
+    "empty": {
+      "title": "Nenhum vinho corresponde aos filtros.",
+      "cta": "Limpar filtros"
+    },
+    "disclaimer": "Pagamento online em breve · Por ora confirmamos cada pedido via WhatsApp. Beba com moderação · Lei chilena N° 19.925."
+  },
+  "contacto": {
+    "hero": {
+      "eyebrow": "Vamos conversar",
+      "title": "Fale conosco",
+      "subtitle": "Reserve uma visita, peça orçamento de evento ou conte o que trouxe você até aqui. Respondemos em até 24 horas."
+    },
+    "mapTitle": "Localização da Viña Casa Acosta em San Vicente de Tagua Tagua",
+    "cards": {
+      "location": {
+        "title": "Localização",
+        "body": "San Vicente de Tagua Tagua, Vale do Cachapoal, Chile"
+      },
+      "hours": {
+        "title": "Horários",
+        "body": "Seg a Sáb · 10h – 18h\nQuinta até as 20h"
+      },
+      "email": {
+        "title": "E-mail",
+        "body": "contacto@vinacasaacosta.cl"
+      }
+    }
+  },
+  "contactForm": {
+    "title": "Envie uma mensagem",
+    "subtitle": "Respondemos em até 24 horas úteis.",
+    "fields": {
+      "name": "Nome",
+      "namePlaceholder": "Seu nome",
+      "email": "E-mail",
+      "emailPlaceholder": "voce@email.com",
+      "subject": "Assunto",
+      "subjectPlaceholder": "Selecione um assunto",
+      "message": "Mensagem",
+      "messagePlaceholder": "Como podemos ajudar?"
+    },
+    "subjects": {
+      "tour": "Reservar tour",
+      "event": "Orçamento de evento privado",
+      "purchase": "Dúvida sobre vinhos",
+      "other": "Outro"
+    },
+    "buttons": {
+      "idle": "Enviar mensagem",
+      "submitting": "Enviando…",
+      "success": "Mensagem enviada!",
+      "error": "Tentar de novo"
+    },
+    "successMessage": "Obrigado pelo contato. Em breve respondemos.",
+    "demoNotice": "Formulário de demonstração · Na versão final, as mensagens chegam direto ao e-mail da vinícola."
+  },
+  "cart": {
+    "openLabel": "Abrir carrinho",
+    "openLabelWithCount": "Abrir carrinho, {count} itens",
+    "title": "Sua seleção",
+    "close": "Fechar carrinho",
+    "emptyMessage": "Sua seleção está vazia.",
+    "exploreShop": "Explorar a loja",
+    "remove": "Remover {name}",
+    "decrement": "Diminuir",
+    "increment": "Aumentar",
+    "totalLabel": "Total estimado",
+    "checkout": "Concluir pelo WhatsApp",
+    "checkoutDisclaimer": "Pagamento online em breve. Por ora confirmamos cada pedido com você.",
+    "addLabel": "Adicionar ao carrinho",
+    "addedLabel": "Adicionado",
+    "quantityLabel": "Quantidade",
+    "addAriaLabel": "Adicionar {name} ao carrinho",
+    "whatsappIntro": "Olá Casa Acosta, tenho interesse neste pedido:",
+    "whatsappTotal": "Total estimado: {total}",
+    "whatsappOutro": "Como posso concretizar a compra?"
+  }
+}

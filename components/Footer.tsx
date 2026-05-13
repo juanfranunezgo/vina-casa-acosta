@@ -1,27 +1,33 @@
 import Link from "next/link";
 import Image from "next/image";
-
-const year = new Date().getFullYear();
-
-const legalLinks = [
-  { href: "#", label: "Privacidad" },
-  { href: "#", label: "Términos" },
-  { href: "#", label: "Mapa de Sitio" },
-];
+import { getLocale, getTranslations } from "next-intl/server";
+import { MapPin, Clock, Mail, Camera, Globe2, Star } from "lucide-react";
 
 const socialLinks = [
-  { href: "#", label: "Instagram", icon: "photo_camera" },
-  { href: "#", label: "TripAdvisor", icon: "travel_explore" },
-  { href: "#", label: "Google Reviews", icon: "star" },
+  { href: "#", key: "instagram" as const, Icon: Camera },
+  { href: "#", key: "tripadvisor" as const, Icon: Globe2 },
+  { href: "#", key: "google" as const, Icon: Star },
 ];
 
-export default function Footer() {
+export default async function Footer() {
+  const t = await getTranslations("footer");
+  const tNav = await getTranslations("nav");
+  const locale = await getLocale();
+  const year = new Date().getFullYear();
+  const lp = (path: string) => `/${locale}${path}`;
+
+  const legalLinks = [
+    { href: "#", label: t("legal.privacy") },
+    { href: "#", label: t("legal.terms") },
+    { href: "#", label: t("legal.sitemap") },
+  ];
+
   return (
     <footer className="w-full border-t border-outline-variant/40 bg-surface-container-low">
       <div className="max-w-(--container-max) mx-auto px-margin-mobile md:px-margin-desktop pt-16 pb-10">
         <div className="grid grid-cols-1 md:grid-cols-12 gap-10 md:gap-gutter">
           <div className="md:col-span-5">
-            <Link href="/" className="inline-flex items-center gap-2">
+            <Link href={lp("")} className="inline-flex items-center gap-2">
               <Image
                 src="/brand/logo-negro.png"
                 alt="Viña Casa Acosta"
@@ -31,39 +37,38 @@ export default function Footer() {
               />
             </Link>
             <p className="mt-6 font-body text-body-md text-on-surface-variant max-w-md leading-relaxed">
-              Donde la vida ha ido dando sus frutos con raíces firmes, para hacer
-              crecer los sueños. San Vicente de Tagua Tagua, Valle del Cachapoal.
+              {t("tagline")}
             </p>
           </div>
 
           <div className="md:col-span-3">
             <h4 className="font-body font-semibold text-label-sm uppercase tracking-widest text-primary mb-4">
-              Navegación
+              {t("navigation")}
             </h4>
             <ul className="space-y-2 font-body text-body-md text-on-surface-variant">
-              <li><Link href="/historia" className="hover:text-primary transition-colors">Historia</Link></li>
-              <li><Link href="/vinos" className="hover:text-primary transition-colors">Nuestros Vinos</Link></li>
-              <li><Link href="/actividades" className="hover:text-primary transition-colors">Actividades</Link></li>
-              <li><Link href="/tienda" className="hover:text-primary transition-colors">Tienda</Link></li>
-              <li><Link href="/contacto" className="hover:text-primary transition-colors">Contacto</Link></li>
+              <li><Link href={lp("/historia")} className="hover:text-primary transition-colors">{tNav("historia")}</Link></li>
+              <li><Link href={lp("/vinos")} className="hover:text-primary transition-colors">{tNav("vinos")}</Link></li>
+              <li><Link href={lp("/actividades")} className="hover:text-primary transition-colors">{tNav("actividades")}</Link></li>
+              <li><Link href={lp("/tienda")} className="hover:text-primary transition-colors">{tNav("tienda")}</Link></li>
+              <li><Link href={lp("/contacto")} className="hover:text-primary transition-colors">{tNav("contacto")}</Link></li>
             </ul>
           </div>
 
           <div className="md:col-span-4">
             <h4 className="font-body font-semibold text-label-sm uppercase tracking-widest text-primary mb-4">
-              Contacto
+              {t("contact")}
             </h4>
             <ul className="space-y-2 font-body text-body-md text-on-surface-variant">
               <li className="flex items-start gap-2">
-                <span className="material-symbols-outlined text-primary text-xl mt-0.5">place</span>
-                San Vicente de Tagua Tagua, VI Región, Chile
+                <MapPin className="h-4 w-4 text-primary mt-1 shrink-0" aria-hidden="true" />
+                {t("location")}
               </li>
               <li className="flex items-start gap-2">
-                <span className="material-symbols-outlined text-primary text-xl mt-0.5">schedule</span>
-                Lun a Sáb · 10:00 – 18:00 hrs
+                <Clock className="h-4 w-4 text-primary mt-1 shrink-0" aria-hidden="true" />
+                {t("hours")}
               </li>
               <li className="flex items-start gap-2">
-                <span className="material-symbols-outlined text-primary text-xl mt-0.5">mail</span>
+                <Mail className="h-4 w-4 text-primary mt-1 shrink-0" aria-hidden="true" />
                 <a href="mailto:contacto@vinacasaacosta.cl" className="hover:text-primary transition-colors">
                   contacto@vinacasaacosta.cl
                 </a>
@@ -71,14 +76,14 @@ export default function Footer() {
             </ul>
 
             <div className="flex gap-3 mt-6">
-              {socialLinks.map((s) => (
+              {socialLinks.map(({ key, href, Icon }) => (
                 <a
-                  key={s.label}
-                  href={s.href}
-                  aria-label={s.label}
+                  key={key}
+                  href={href}
+                  aria-label={t(`social.${key}`)}
                   className="w-10 h-10 rounded-full border border-outline-variant flex items-center justify-center text-primary hover:bg-primary hover:text-on-primary hover:border-primary transition-colors"
                 >
-                  <span className="material-symbols-outlined text-xl">{s.icon}</span>
+                  <Icon className="h-4 w-4" aria-hidden="true" />
                 </a>
               ))}
             </div>
@@ -86,7 +91,7 @@ export default function Footer() {
         </div>
 
         <div className="mt-12 pt-6 border-t border-outline-variant/30 flex flex-col md:flex-row justify-between items-center gap-4 text-on-surface-variant font-body text-sm">
-          <p>© {year} Viña Casa Acosta. Patrimonio y excelencia vitivinícola.</p>
+          <p>{t("copyright", { year })}</p>
           <div className="flex gap-5">
             {legalLinks.map((l) => (
               <a key={l.label} href={l.href} className="hover:text-primary transition-colors">
@@ -97,7 +102,7 @@ export default function Footer() {
         </div>
 
         <p className="mt-6 text-center text-xs text-on-surface-variant/70 font-body">
-          Beber con moderación. Prohibida la venta de alcohol a menores de 18 años · Ley N° 19.925.
+          {t("disclaimer")}
         </p>
       </div>
     </footer>
