@@ -40,7 +40,9 @@
     "openMenu": "Open menu",
     "closeMenu": "Close menu",
     "logoAlt": "Viña Casa Acosta — Home",
-    "language": "Language"
+    "language": "Language",
+    "sectionNav": "Navigation",
+    "sectionShop": "Shop"
   },
   "footer": {
     "tagline": "Where life has borne fruit with deep roots, growing dreams generation after generation. San Vicente de Tagua Tagua, Cachapoal Valley.",
@@ -84,7 +86,15 @@
       "paragraph1": "Casa Acosta is a tribute to family. A place where life has borne fruit through deep roots in a land that nurtures dreams while honoring and strengthening its origins.",
       "paragraph2": "Your visit will connect you with a landscape born of grit, passion and Uruguayan bloodlines, carried forward by new generations devoted to working the Cachapoal earth.",
       "cta": "Discover our story",
-      "imageAlt": "Detail of the Casa Acosta vineyard"
+      "imageAlt": "Detail of the Casa Acosta vineyard",
+      "photoAlts": {
+        "vineyard": "Casa Acosta vineyard in the Cachapoal Valley",
+        "founder": "Portrait of founder Nelson Acosta",
+        "guests": "Guests enjoying a tasting at the winery",
+        "family": "Current generation of the Acosta family"
+      },
+      "prevPhoto": "Previous photo",
+      "nextPhoto": "Next photo"
     },
     "featured": {
       "eyebrow": "Our wines",
@@ -101,6 +111,9 @@
       "subtitle": "Some memories time can't erase.",
       "allCta": "See all experiences",
       "exploreCta": "Explore",
+      "tabs": { "all": "All", "tours": "Tours", "experiences": "Experiences", "events": "Events" },
+      "cat": { "tour": "Tour", "experience": "Experience", "event": "Event" },
+      "eventsCta": "Get an event quote",
       "items": {
         "tour": {
           "name": "Vineyard tour",
@@ -370,18 +383,114 @@
   "tours": {
     "tour-ombu": {
       "name": "Ombú Tour",
-      "description": "An introductory walk through our century-old vineyards. Ends with a tasting of 3 reserve wines paired with local cheeses.",
-      "highlights": ["3 Reserve wines", "Local cheeses", "Vineyard walk"]
+      "description": "An introduction to the world of wine: walk our Carménère vineyards, the cellar and the barrel room, with a guided tasting.",
+      "highlights": ["3 wines from the Ombú and Lajau lines", "Cellar and barrel-room walk", "Pairing board"]
     },
     "tour-bera": {
       "name": "Berá Tour",
-      "description": "Step inside our underground cellar. Tasting of 4 grand reserve wines with curated pairings.",
-      "highlights": ["4 Grand Reserve wines", "Underground cellar", "Pairings"]
+      "description": "A deeper, more technical experience: different expressions of Carménère, from the barrel to our most complex lines.",
+      "highlights": ["Technical tasting of 3 wines", "Tasting straight from the barrel", "Pairing board"]
     },
     "tour-carmenere": {
-      "name": "Carmenere Tour",
-      "description": "Our premium experience. A deep dive into the history of our signature varietal, with tastings of historic vintages drawn straight from the barrel.",
-      "highlights": ["Historic vintages", "Tasting from barrel", "Light lunch"]
+      "name": "Carménère Tour",
+      "description": "Our premium experience focused on our signature varietal: its origin, ampelography and expression across different wine lines.",
+      "highlights": ["Tasting of 4 wines", "Focus on ampelography", "Tasting straight from the barrel"]
+    }
+  },
+  "tourDetail": {
+    "backToActivities": "Back to activities",
+    "premium": "Premium",
+    "placeLabel": "Location",
+    "placeValue": "Viña Casa Acosta",
+    "durationLabel": "Duration",
+    "participantsLabel": "Participants",
+    "reservationsLabel": "Reservations",
+    "nav": { "detail": "Details", "gallery": "Gallery", "reserve": "Booking" },
+    "whatIncludes": "What's included?",
+    "duringExperience": "During the experience you'll enjoy:",
+    "tastingLabel": "Tasting",
+    "pairingLabel": "Pairing",
+    "atCloseLabel": "At the close",
+    "priceLabel": "Price",
+    "perPerson": "per person",
+    "conditionsTitle": "Conditions",
+    "conditionMinors": "Tasting not available to under-18s · Law No. 19.925",
+    "galleryTitle": "Gallery",
+    "galleryComing": "We're putting together the photo gallery for this experience.",
+    "otherTours": "Other experiences you might like",
+    "form": {
+      "title": "Booking",
+      "subtitle": "Fill in your details and we'll arrange the date with you, or message us directly on WhatsApp.",
+      "name": "Name",
+      "namePlaceholder": "Your name",
+      "email": "Email",
+      "emailPlaceholder": "you@example.com",
+      "phone": "Phone",
+      "phonePlaceholder": "+56 9 ...",
+      "people": "Guests",
+      "date": "Date",
+      "submitIdle": "Request booking",
+      "submitting": "Sending…",
+      "success": "Request sent!",
+      "successMessage": "Thank you. We'll contact you to confirm your booking.",
+      "whatsapp": "Book via WhatsApp",
+      "waIntro": "Hi 👋 I'd like to book the {tour}.",
+      "demoNotice": "Demo form — bookings are not confirmed automatically yet."
+    },
+    "tour-ombu": {
+      "tagline": "An introduction to the world of wine at Casa Acosta",
+      "intro": "Ideal for those who want to get to know our winery from its roots, walking our Carménère vineyards, cellar and barrel room, alongside a guided tasting.",
+      "duration": "2 hours",
+      "groupFrom": "Groups from 2 people",
+      "reservationNote": "Ideally 1 day ahead or subject to availability",
+      "includes": [
+        "Welcome at the Varieties Garden with a welcome glass of Berá Rosé Carménère.",
+        "Walk among the vineyards (optional).",
+        "Tour of the cellar, winemaking room and barrel room, with a full explanation of the wine's production process, from vine to glass."
+      ],
+      "wines": ["Tasting of 3 wines from the Ombú and/or Lajau lines."],
+      "pairing": "Pairing board included.",
+      "closing": "You'll be able to purchase our wines directly at the cellar."
+    },
+    "tour-bera": {
+      "tagline": "Premium tasting and wine straight from the barrel",
+      "intro": "A deeper, more technical experience, ideal for those who want to explore different expressions of Carménère, from the barrel to our most complex lines.",
+      "duration": "2 hours 30 minutes",
+      "groupFrom": "Groups from 2 people",
+      "reservationNote": "Ideally 1 day ahead or subject to availability",
+      "includes": [
+        "Welcome at the Varieties Garden with a welcome glass of Berá Rosé Carménère.",
+        "Walk among the vineyards (optional).",
+        "Tour of the cellar, winemaking room and barrel room, with a full explanation of the wine's production process, from vine to glass.",
+        "Tasting straight from the barrel, to experience the wine during its aging stage."
+      ],
+      "wines": [
+        "2 wines from the Lajau and/or Ombú lines.",
+        "1 Gran Reserva «Estación Francia» wine."
+      ],
+      "pairing": "Pairing board included.",
+      "closing": "Our wines will be available for sale at the cellar itself."
+    },
+    "tour-carmenere": {
+      "tagline": "Go deep into our signature varietal",
+      "intro": "A tour focused on the history and characteristics of Carménère, exploring in depth its origin, morphology (ampelography) and expression across different wine lines.",
+      "duration": "3 hours",
+      "groupFrom": "Groups from 4 people",
+      "reservationNote": "Ideally 1 day ahead or subject to availability",
+      "includes": [
+        "Welcome at the Varieties Garden with a welcome glass of Berá Rosa Carménère.",
+        "Vineyard walk focused on ampelography: a technical explanation of the Carménère variety and its history at Casa Acosta.",
+        "Tour of the cellar, winemaking room and barrel room, with a full explanation of the wine's production process, from vine to glass.",
+        "Tasting straight from the barrel, to get to know the wine during its aging stage."
+      ],
+      "wines": [
+        "Carménère Reserva, Ombú line.",
+        "Carménère blend, Lajau line.",
+        "Gran Reserva «Estación Francia».",
+        "Guidaí sparkling wine."
+      ],
+      "pairing": "Pairing board included.",
+      "closing": "You'll have the option to purchase our wines directly at the cellar."
     }
   },
   "experiences": {
@@ -441,6 +550,9 @@
       "hours": {
         "title": "Hours",
         "body": "Mon – Sat · 10:00 AM – 6:00 PM\nThursdays until 8:00 PM"
+      },
+      "phone": {
+        "title": "Phone / WhatsApp"
       },
       "email": {
         "title": "Email",

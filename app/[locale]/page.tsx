@@ -4,42 +4,71 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { ArrowRight, Wine, MapPin } from "lucide-react";
 import Reveal from "@/components/Reveal";
 import Button from "@/components/ui/Button";
+import AboutSection from "@/components/AboutSection";
+import HomeActivitiesShowcase from "@/components/HomeActivitiesShowcase";
 import { getFeaturedWines } from "@/data/wines";
+import { tours as tourData, experiences as experienceData } from "@/data/activities";
 
 const heroImage =
   "https://images.unsplash.com/photo-1543418219-44e30b057fea?auto=format&fit=crop&w=2400&q=75";
 
-const casaImage =
-  "https://images.unsplash.com/photo-1514982506064-7a5f78fb5cf6?auto=format&fit=crop&w=1400&q=75";
+const casaPhotoSources = {
+  vineyard:
+    "https://images.unsplash.com/photo-1474722883778-792e7990302f?auto=format&fit=crop&w=1400&q=75",
+  founder:
+    "https://images.unsplash.com/photo-1556157382-97eda2d62296?auto=format&fit=crop&w=1400&q=75",
+  guests:
+    "https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=1400&q=75",
+  family:
+    "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&w=1400&q=75",
+} as const;
 
-const activities = [
-  {
-    key: "tour",
-    image:
-      "https://images.unsplash.com/photo-1474722883778-792e7990302f?auto=format&fit=crop&w=1200&q=70",
-    href: "/actividades#tours",
-  },
-  {
-    key: "eventos",
-    image:
-      "https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=1200&q=70",
-    href: "/actividades#eventos",
-  },
-  {
-    key: "experiencias",
-    image:
-      "https://images.unsplash.com/photo-1506377247377-2a5b3b417ebb?auto=format&fit=crop&w=1200&q=70",
-    href: "/actividades#experiencias",
-  },
-] as const;
+const eventsImage =
+  "https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=1600&q=70";
 
 export default async function HomePage({ params }: PageProps<"/[locale]">) {
   const { locale } = await params;
   setRequestLocale(locale);
   const t = await getTranslations("home");
   const tWine = await getTranslations("wines");
+  const tTours = await getTranslations("tours");
+  const tTourDetail = await getTranslations("tourDetail");
+  const tExp = await getTranslations("experiences");
+  const tActividades = await getTranslations("actividades");
   const featured = getFeaturedWines();
   const lp = (path: string) => `/${locale}${path}`;
+
+  const priceLocale = locale === "pt" ? "pt-BR" : locale === "en" ? "en-US" : "es-CL";
+  const formatPrice = (amount: number) =>
+    new Intl.NumberFormat(priceLocale, {
+      style: "currency",
+      currency: "CLP",
+      maximumFractionDigits: 0,
+    }).format(amount);
+
+  const showcaseTours = tourData.map((tr) => ({
+    slug: tr.slug,
+    name: tTours(`${tr.slug}.name`),
+    price: formatPrice(tr.priceCLP),
+    duration: tTourDetail(`${tr.slug}.duration`),
+    image: tr.image,
+    premium: tr.premium,
+  }));
+
+  const showcaseExperiences = experienceData.map((ex) => ({
+    slug: ex.slug,
+    name: tExp(`${ex.slug}.name`),
+    badge: tExp(`${ex.slug}.badge`),
+    image: ex.image,
+  }));
+
+  const eventsBlock = {
+    title: tActividades("events.title"),
+    description: tActividades("events.body"),
+    cta: t("activities.eventsCta"),
+    image: eventsImage,
+    href: lp("/actividades#eventos"),
+  };
 
   return (
     <>
@@ -57,7 +86,7 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
         <div className="absolute inset-0 bg-gradient-to-r from-black/40 via-transparent to-transparent" />
 
         <div className="relative z-10 w-full px-margin-mobile md:px-margin-desktop max-w-(--container-max) mx-auto pt-20 pb-24">
-          <div className="max-w-3xl">
+          <div className="max-w-3xl mx-auto md:mx-0 text-center md:text-left">
             <Reveal>
               <p className="font-body text-xs uppercase tracking-[0.3em] text-on-primary/55 mb-6">
                 {t("hero.eyebrow")}
@@ -79,7 +108,7 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
 
             <Reveal delay={220}>
               <p
-                className="font-body text-on-primary/90 mb-10 max-w-2xl drop-shadow-md"
+                className="font-body text-on-primary/90 mb-10 max-w-2xl mx-auto md:mx-0 drop-shadow-md"
                 style={{
                   fontSize: "clamp(1rem, 1.5vw, 1.25rem)",
                   lineHeight: 1.6,
@@ -90,7 +119,7 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
             </Reveal>
 
             <Reveal delay={320}>
-              <div className="flex flex-row flex-wrap gap-3 sm:gap-4">
+              <div className="flex flex-row flex-wrap gap-3 sm:gap-4 justify-center md:justify-start">
                 <Button
                   href={lp("/tienda")}
                   variant="primary"
@@ -124,42 +153,29 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
       </section>
 
       {/* CASA ACOSTA */}
-      <section className="relative bg-surface py-section-gap px-margin-mobile md:px-margin-desktop">
-        <div className="max-w-(--container-max) mx-auto grid grid-cols-1 md:grid-cols-12 gap-gutter items-center">
-          <Reveal className="md:col-span-5 md:col-start-2 relative z-10 mb-12 md:mb-0">
-            <div className="relative aspect-[4/5] rounded-lg overflow-hidden ambient-shadow">
-              <Image
-                src={casaImage}
-                alt={t("about.imageAlt")}
-                fill
-                className="object-cover"
-                sizes="(max-width: 768px) 100vw, 40vw"
-              />
-            </div>
-          </Reveal>
-          <Reveal className="md:col-span-5 md:col-start-8" delay={120}>
-            <span className="font-body text-label-sm text-outline uppercase tracking-widest block mb-3">
-              {t("about.eyebrow")}
-            </span>
-            <h2 className="font-display text-headline-h1 text-primary mb-6 leading-tight">
-              {t("about.title")}
-            </h2>
-            <p className="font-body text-body-md text-on-surface-variant mb-6 leading-relaxed">
-              {t("about.paragraph1")}
-            </p>
-            <p className="font-body text-body-md text-on-surface-variant mb-8 leading-relaxed">
-              {t("about.paragraph2")}
-            </p>
-            <Button
-              href={lp("/historia")}
-              variant="link"
-              iconRight={<ArrowRight className="h-4 w-4" />}
-            >
-              {t("about.cta")}
-            </Button>
-          </Reveal>
-        </div>
-      </section>
+      <AboutSection
+        photos={[
+          { src: casaPhotoSources.vineyard, alt: t("about.photoAlts.vineyard") },
+          { src: casaPhotoSources.founder, alt: t("about.photoAlts.founder") },
+          { src: casaPhotoSources.guests, alt: t("about.photoAlts.guests") },
+          { src: casaPhotoSources.family, alt: t("about.photoAlts.family") },
+        ]}
+        eyebrow={t("about.eyebrow")}
+        title={t("about.title")}
+        paragraph1={t("about.paragraph1")}
+        paragraph2={t("about.paragraph2")}
+        prevLabel={t("about.prevPhoto")}
+        nextLabel={t("about.nextPhoto")}
+        cta={
+          <Button
+            href={lp("/historia")}
+            variant="link"
+            iconRight={<ArrowRight className="h-4 w-4" />}
+          >
+            {t("about.cta")}
+          </Button>
+        }
+      />
 
       {/* VINOS DESTACADOS */}
       <section className="bg-surface-container-low py-section-gap px-margin-mobile md:px-margin-desktop relative overflow-hidden">
@@ -310,40 +326,21 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
             </Button>
           </Reveal>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-gutter">
-            {activities.map((a, idx) => (
-              <Reveal key={a.key} delay={idx * 100}>
-                <Link
-                  href={lp(a.href)}
-                  className="group relative block rounded-lg overflow-hidden aspect-[4/5] ambient-shadow"
-                >
-                  <Image
-                    src={a.image}
-                    alt={t(`activities.items.${a.key}.name`)}
-                    fill
-                    className="object-cover transition-transform duration-700 group-hover:scale-105"
-                    sizes="(max-width: 768px) 100vw, 33vw"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-transparent" />
-                  <div className="absolute bottom-0 left-0 p-6 md:p-8 w-full">
-                    <h3 className="font-display text-2xl md:text-3xl text-on-primary mb-2">
-                      {t(`activities.items.${a.key}.name`)}
-                    </h3>
-                    <p className="font-body text-body-md text-on-primary/90 md:opacity-0 md:translate-y-2 md:group-hover:opacity-100 md:group-hover:translate-y-0 transition-all duration-300">
-                      {t(`activities.items.${a.key}.description`)}
-                    </p>
-                    <span className="mt-3 inline-flex items-center gap-1 text-on-primary font-body font-semibold text-label-sm uppercase tracking-wider">
-                      {t("activities.exploreCta")}
-                      <ArrowRight
-                        className="h-3.5 w-3.5 transition-transform duration-200 group-hover:translate-x-0.5"
-                        aria-hidden="true"
-                      />
-                    </span>
-                  </div>
-                </Link>
-              </Reveal>
-            ))}
-          </div>
+          <HomeActivitiesShowcase
+            locale={locale}
+            labels={{
+              all: t("activities.tabs.all"),
+              tours: t("activities.tabs.tours"),
+              experiences: t("activities.tabs.experiences"),
+              events: t("activities.tabs.events"),
+              catTour: t("activities.cat.tour"),
+              catExperience: t("activities.cat.experience"),
+            }}
+            tours={showcaseTours}
+            experiences={showcaseExperiences}
+            events={eventsBlock}
+            experiencesHref={lp("/actividades#experiencias")}
+          />
         </div>
       </section>
 

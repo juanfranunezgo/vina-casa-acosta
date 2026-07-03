@@ -123,7 +123,7 @@ export default async function ActividadesPage({
                         ))}
                       </ul>
                       <Button
-                        href={`/${locale}/contacto?asunto=tour`}
+                        href={`/${locale}/actividades/${tour.slug}`}
                         variant={tour.premium ? "primary" : "outline"}
                         fullWidth
                       >

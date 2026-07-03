@@ -1,7 +1,11 @@
 import Link from "next/link";
 import Image from "next/image";
 import { getLocale, getTranslations } from "next-intl/server";
-import { MapPin, Clock, Mail, Camera, Globe2, Star } from "lucide-react";
+import { MapPin, Clock, Mail, Phone, Camera, Globe2, Star } from "lucide-react";
+import {
+  CONTACT_PHONE_DISPLAY,
+  CONTACT_WHATSAPP_URL,
+} from "@/lib/contact";
 
 const socialLinks = [
   { href: "#", key: "instagram" as const, Icon: Camera },
@@ -27,14 +31,24 @@ export default async function Footer() {
       <div className="max-w-(--container-max) mx-auto px-margin-mobile md:px-margin-desktop pt-16 pb-10">
         <div className="grid grid-cols-1 md:grid-cols-12 gap-10 md:gap-gutter">
           <div className="md:col-span-5">
-            <Link href={lp("")} className="inline-flex items-center gap-2">
+            <Link
+              href={lp("")}
+              className="inline-flex items-center gap-4 leading-none"
+              aria-label="Viña Casa Acosta — Inicio"
+            >
               <Image
                 src="/brand/logo-negro.png"
-                alt="Viña Casa Acosta"
-                width={180}
-                height={48}
-                className="h-12 w-auto"
+                alt=""
+                width={200}
+                height={200}
+                className="h-20 w-auto"
               />
+              <span
+                aria-hidden="true"
+                className="font-display text-primary text-2xl leading-tight tracking-tight"
+              >
+                Viña Casa Acosta
+              </span>
             </Link>
             <p className="mt-6 font-body text-body-md text-on-surface-variant max-w-md leading-relaxed">
               {t("tagline")}
@@ -66,6 +80,17 @@ export default async function Footer() {
               <li className="flex items-start gap-2">
                 <Clock className="h-4 w-4 text-primary mt-1 shrink-0" aria-hidden="true" />
                 {t("hours")}
+              </li>
+              <li className="flex items-start gap-2">
+                <Phone className="h-4 w-4 text-primary mt-1 shrink-0" aria-hidden="true" />
+                <a
+                  href={CONTACT_WHATSAPP_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hover:text-primary transition-colors tabular-nums"
+                >
+                  {CONTACT_PHONE_DISPLAY}
+                </a>
               </li>
               <li className="flex items-start gap-2">
                 <Mail className="h-4 w-4 text-primary mt-1 shrink-0" aria-hidden="true" />

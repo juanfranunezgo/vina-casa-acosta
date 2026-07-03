@@ -6,6 +6,7 @@ import { useEffect } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { X, Wine, Trash2, MessageCircle } from "lucide-react";
 import { useCart } from "@/lib/cart";
+import { CONTACT_WHATSAPP_URL } from "@/lib/contact";
 
 export default function CartDrawer() {
   const t = useTranslations("cart");
@@ -157,7 +158,7 @@ export default function CartDrawer() {
               <span className="font-semibold text-primary">{formatPrice(totalCLP)}</span>
             </div>
             <a
-              href={`https://wa.me/56900000000?text=${whatsappMessage}`}
+              href={`${CONTACT_WHATSAPP_URL}?text=${whatsappMessage}`}
               target="_blank"
               rel="noopener noreferrer"
               className="w-full bg-primary text-on-primary py-3 rounded-md font-body font-semibold flex items-center justify-center gap-2 hover:bg-primary-container transition-colors shadow-[0_8px_24px_-8px_rgba(42,0,2,0.45)]"
