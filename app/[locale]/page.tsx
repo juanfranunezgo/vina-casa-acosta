@@ -1,16 +1,16 @@
 import Image from "next/image";
 import Link from "next/link";
 import { getTranslations, setRequestLocale } from "next-intl/server";
-import { ArrowRight, Wine, MapPin } from "lucide-react";
+import { ArrowRight, Wine, MapPin, Grape, Sparkles, Sprout } from "lucide-react";
 import Reveal from "@/components/Reveal";
 import Button from "@/components/ui/Button";
 import AboutSection from "@/components/AboutSection";
 import HomeActivitiesShowcase from "@/components/HomeActivitiesShowcase";
+import FeaturedWinesCarousel from "@/components/FeaturedWinesCarousel";
 import { getFeaturedWines } from "@/data/wines";
 import { tours as tourData, experiences as experienceData } from "@/data/activities";
 
-const heroImage =
-  "https://images.unsplash.com/photo-1543418219-44e30b057fea?auto=format&fit=crop&w=2400&q=75";
+const heroImage = "/images/home/hero-v2.jpg";
 
 const casaPhotoSources = {
   vineyard:
@@ -58,9 +58,25 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
   const showcaseExperiences = experienceData.map((ex) => ({
     slug: ex.slug,
     name: tExp(`${ex.slug}.name`),
-    badge: tExp(`${ex.slug}.badge`),
     image: ex.image,
   }));
+
+  const featuredCards = featured.map((wine) => ({
+    slug: wine.slug,
+    name: wine.name,
+    lineLabel: t("featured.lineLabel", { line: wine.line }),
+    shortDescription: tWine(`${wine.slug}.shortDescription`),
+    vintage: wine.vintage,
+    image: wine.image,
+    href: lp(`/vinos/${wine.slug}`),
+  }));
+
+  const featuredStrip = [
+    { Icon: Grape, title: t("featured.strip.vineyards.title"), desc: t("featured.strip.vineyards.desc") },
+    { Icon: Wine, title: t("featured.strip.oak.title"), desc: t("featured.strip.oak.desc") },
+    { Icon: Sparkles, title: t("featured.strip.limited.title"), desc: t("featured.strip.limited.desc") },
+    { Icon: Sprout, title: t("featured.strip.heritage.title"), desc: t("featured.strip.heritage.desc") },
+  ];
 
   const eventsBlock = {
     title: tActividades("events.title"),
@@ -79,11 +95,12 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
           alt={t("hero.heroAlt")}
           fill
           priority
-          className="object-cover scale-105 motion-safe:animate-[heroZoom_20s_ease-out_forwards]"
+          quality={85}
+          className="object-cover object-[center_72%] motion-safe:animate-[heroZoom_20s_ease-out_forwards]"
           sizes="100vw"
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-black/40 to-black/70" />
-        <div className="absolute inset-0 bg-gradient-to-r from-black/40 via-transparent to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-b from-black/35 via-black/15 to-black/50" />
+        <div className="absolute inset-0 bg-gradient-to-r from-black/55 via-black/10 to-transparent" />
 
         <div className="relative z-10 w-full px-margin-mobile md:px-margin-desktop max-w-(--container-max) mx-auto pt-20 pb-24">
           <div className="max-w-3xl mx-auto md:mx-0 text-center md:text-left">
@@ -178,16 +195,7 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
       />
 
       {/* VINOS DESTACADOS */}
-      <section className="bg-surface-container-low py-section-gap px-margin-mobile md:px-margin-desktop relative overflow-hidden">
-        {/* Subtle decorative texture */}
-        <div
-          className="absolute inset-0 opacity-[0.025] pointer-events-none"
-          style={{
-            backgroundImage:
-              "radial-gradient(circle at 15% 20%, #4a0e0e 0%, transparent 40%), radial-gradient(circle at 85% 80%, #4a0e0e 0%, transparent 40%)",
-          }}
-          aria-hidden="true"
-        />
+      <section className="bg-gradient-to-b from-surface-container-low via-surface-container to-surface-dim py-section-gap px-margin-mobile md:px-margin-desktop relative overflow-hidden">
         <div className="max-w-(--container-max) mx-auto relative">
           <Reveal className="text-center mb-16">
             <span className="font-body text-label-sm text-outline uppercase tracking-widest block mb-3">
@@ -199,96 +207,40 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
             <p className="font-body text-body-md text-on-surface-variant max-w-xl mx-auto">
               {t("featured.subtitle")}
             </p>
+
+            {/* Ornamento: filete — racimo (uvas.svg) — filete */}
+            <span
+              className="mt-7 flex items-center justify-center gap-4 text-primary-container"
+              aria-hidden="true"
+            >
+              <span className="h-px w-16 bg-gradient-to-r from-transparent to-current opacity-50" />
+              <span
+                className="h-11 w-9 bg-primary-container"
+                style={{
+                  WebkitMaskImage: "url(/ilustraciones/uvas.svg)",
+                  maskImage: "url(/ilustraciones/uvas.svg)",
+                  WebkitMaskRepeat: "no-repeat",
+                  maskRepeat: "no-repeat",
+                  WebkitMaskSize: "contain",
+                  maskSize: "contain",
+                  WebkitMaskPosition: "center",
+                  maskPosition: "center",
+                }}
+              />
+              <span className="h-px w-16 bg-gradient-to-l from-transparent to-current opacity-50" />
+            </span>
           </Reveal>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-gutter md:gap-8">
-            {featured.map((wine, idx) => (
-              <Reveal key={wine.slug} delay={idx * 100}>
-                <Link
-                  href={lp(`/vinos/${wine.slug}`)}
-                  className="group relative block bg-surface rounded-xl overflow-hidden border border-outline-variant/30 hover:border-primary/20 hover:-translate-y-2 hover:shadow-[0_32px_60px_-16px_rgba(74,14,14,0.22)] transition-all duration-500"
-                >
-                  {/* Decorative corner serifs */}
-                  <span
-                    className="absolute top-3 left-3 h-3 w-3 border-t border-l border-primary/15 pointer-events-none z-20"
-                    aria-hidden="true"
-                  />
-                  <span
-                    className="absolute top-3 right-3 h-3 w-3 border-t border-r border-primary/15 pointer-events-none z-20"
-                    aria-hidden="true"
-                  />
-                  <span
-                    className="absolute bottom-3 left-3 h-3 w-3 border-b border-l border-primary/15 pointer-events-none z-20"
-                    aria-hidden="true"
-                  />
-                  <span
-                    className="absolute bottom-3 right-3 h-3 w-3 border-b border-r border-primary/15 pointer-events-none z-20"
-                    aria-hidden="true"
-                  />
-
-                  {/* Bottle stage */}
-                  <div className="relative aspect-[4/5] bg-gradient-to-b from-surface-container-low via-surface-container to-surface-container-high overflow-hidden">
-                    {/* Vintage stamp */}
-                    <span className="absolute top-5 right-6 z-10 flex flex-col items-end leading-tight">
-                      <span className="font-body text-[10px] uppercase tracking-[0.2em] text-on-surface-variant/70">
-                        {t("featured.vintageLabel")}
-                      </span>
-                      <span className="font-display text-lg text-primary tabular-nums">
-                        {wine.vintage}
-                      </span>
-                    </span>
-
-                    {/* Spotlight */}
-                    <div
-                      className="absolute inset-0 pointer-events-none"
-                      style={{
-                        background:
-                          "radial-gradient(ellipse at 50% 30%, rgba(255,255,255,0.55) 0%, transparent 55%)",
-                      }}
-                      aria-hidden="true"
-                    />
-
-                    {/* Bottle */}
-                    <Image
-                      src={wine.image}
-                      alt={wine.name}
-                      fill
-                      quality={95}
-                      className="object-contain p-8 group-hover:scale-105 group-hover:-rotate-1 transition-transform duration-700 drop-shadow-[0_24px_28px_rgba(74,14,14,0.22)]"
-                      sizes="(max-width: 768px) 90vw, (max-width: 1280px) 45vw, 420px"
-                    />
-
-                    {/* Podium reflection */}
-                    <div
-                      className="absolute bottom-0 left-1/2 -translate-x-1/2 w-3/4 h-6 rounded-[50%] bg-primary/15 blur-xl opacity-60 group-hover:opacity-80 transition-opacity duration-500"
-                      aria-hidden="true"
-                    />
-                  </div>
-
-                  {/* Content */}
-                  <div className="p-6 pt-7 bg-surface relative">
-                    <p className="font-body text-label-sm text-on-surface-variant uppercase tracking-[0.2em] mb-1">
-                      {t("featured.lineLabel", { line: wine.line })}
-                    </p>
-                    <h3 className="font-display text-2xl text-primary mb-2 leading-tight">
-                      {wine.name}
-                    </h3>
-                    <p className="font-body text-body-md text-on-surface-variant mb-6 line-clamp-2">
-                      {tWine(`${wine.slug}.shortDescription`)}
-                    </p>
-
-                    <span className="inline-flex items-center justify-between w-full text-primary font-body font-semibold uppercase tracking-[0.15em] text-label-sm pt-4 border-t border-outline-variant/40">
-                      {t("featured.cardCta")}
-                      <span className="inline-flex items-center gap-1 transition-transform duration-300 group-hover:translate-x-1">
-                        <span className="h-px w-4 bg-primary" aria-hidden="true" />
-                        <ArrowRight className="h-3.5 w-3.5" aria-hidden="true" />
-                      </span>
-                    </span>
-                  </div>
-                </Link>
-              </Reveal>
-            ))}
-          </div>
+          <FeaturedWinesCarousel
+            wines={featuredCards}
+            initialSlug="estacion-francia-carmenere"
+            labels={{
+              vintageLabel: t("featured.vintageLabel"),
+              cardCta: t("featured.cardCta"),
+              prevLabel: t("featured.prevLabel"),
+              nextLabel: t("featured.nextLabel"),
+            }}
+          />
 
           <div className="text-center mt-16">
             <Button
@@ -299,6 +251,40 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
               {t("featured.allCta")}
             </Button>
           </div>
+
+          {/* Franja de features */}
+          <Reveal className="mt-16 md:mt-20">
+            <div className="relative overflow-hidden rounded-2xl bg-primary text-on-primary ambient-shadow-lg">
+              <div
+                className="absolute inset-0 opacity-[0.04] pointer-events-none"
+                style={{
+                  backgroundImage:
+                    "radial-gradient(circle at 20% 20%, rgba(255,255,255,0.6) 0%, transparent 45%), radial-gradient(circle at 80% 80%, rgba(255,255,255,0.5) 0%, transparent 45%)",
+                }}
+                aria-hidden="true"
+              />
+              <div className="relative grid grid-cols-2 gap-px bg-on-primary/10 md:grid-cols-4">
+                {featuredStrip.map((item) => (
+                  <div
+                    key={item.title}
+                    className="flex flex-col gap-3 bg-primary px-6 py-8 md:px-8 md:py-10"
+                  >
+                    <item.Icon
+                      className="h-7 w-7 text-on-primary/80"
+                      strokeWidth={1.5}
+                      aria-hidden="true"
+                    />
+                    <p className="font-body text-label-sm uppercase tracking-[0.15em] text-on-primary">
+                      {item.title}
+                    </p>
+                    <p className="font-body text-sm leading-relaxed text-on-primary/60">
+                      {item.desc}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </Reveal>
         </div>
       </section>
 
@@ -335,6 +321,8 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
               events: t("activities.tabs.events"),
               catTour: t("activities.cat.tour"),
               catExperience: t("activities.cat.experience"),
+              book: t("activities.book"),
+              more: t("activities.more"),
             }}
             tours={showcaseTours}
             experiences={showcaseExperiences}

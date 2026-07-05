@@ -27,7 +27,7 @@ const QUALITY = 85;
 // El script mira el prefijo antes del primer "-" para encontrar el slot.
 const MANIFEST = {
   // A — Inicio
-  "A1": { out: "home/hero.jpg", w: 2560 }, // hero pantalla completa (horizontal)
+  "A1": { out: "home/hero-v2.jpg", w: 3840 }, // hero full-bleed: 3840 para pantallas 4K/retina. Sufijo -vN = cache-bust al cambiar la foto.
   "A2-1": { out: "home/stack-1-vinedo.jpg", w: 1600 }, // pila vertical
   "A2-2": { out: "home/stack-2-fundador.jpg", w: 1600 },
   "A2-3": { out: "home/stack-3-cata.jpg", w: 1600 },

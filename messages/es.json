@@ -103,7 +103,15 @@
       "lineLabel": "Línea {line}",
       "vintageLabel": "Cosecha",
       "cardCta": "Ver detalles",
-      "allCta": "Ver toda la colección"
+      "allCta": "Ver toda la colección",
+      "prevLabel": "Vino anterior",
+      "nextLabel": "Vino siguiente",
+      "strip": {
+        "vineyards": { "title": "Viñedos del Cachapoal", "desc": "Uvas del Valle del Cachapoal, nuestro origen." },
+        "oak": { "title": "Crianza en roble", "desc": "Guarda en barricas de roble francés y americano." },
+        "limited": { "title": "Ediciones limitadas", "desc": "Producciones acotadas en cada cosecha." },
+        "heritage": { "title": "Herencia familiar", "desc": "Tres generaciones, un mismo origen." }
+      }
     },
     "activities": {
       "eyebrow": "Las mejores",
@@ -114,6 +122,8 @@
       "tabs": { "all": "Todas", "tours": "Tours", "experiences": "Experiencias", "events": "Eventos" },
       "cat": { "tour": "Tour", "experience": "Experiencia", "event": "Evento" },
       "eventsCta": "Cotizar evento",
+      "book": "Reservar",
+      "more": "Ver más",
       "items": {
         "tour": {
           "name": "Tour",

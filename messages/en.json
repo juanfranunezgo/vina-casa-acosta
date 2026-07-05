@@ -103,7 +103,15 @@
       "lineLabel": "{line} line",
       "vintageLabel": "Vintage",
       "cardCta": "View details",
-      "allCta": "Explore the full collection"
+      "allCta": "Explore the full collection",
+      "prevLabel": "Previous wine",
+      "nextLabel": "Next wine",
+      "strip": {
+        "vineyards": { "title": "Cachapoal vineyards", "desc": "Grapes from the Cachapoal Valley, our origin." },
+        "oak": { "title": "Oak ageing", "desc": "Aged in French and American oak barrels." },
+        "limited": { "title": "Limited editions", "desc": "Small productions each harvest." },
+        "heritage": { "title": "Family heritage", "desc": "Three generations, one origin." }
+      }
     },
     "activities": {
       "eyebrow": "Our best",
@@ -114,6 +122,8 @@
       "tabs": { "all": "All", "tours": "Tours", "experiences": "Experiences", "events": "Events" },
       "cat": { "tour": "Tour", "experience": "Experience", "event": "Event" },
       "eventsCta": "Get an event quote",
+      "book": "Book",
+      "more": "See more",
       "items": {
         "tour": {
           "name": "Vineyard tour",

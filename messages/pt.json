@@ -103,7 +103,15 @@
       "lineLabel": "Linha {line}",
       "vintageLabel": "Safra",
       "cardCta": "Ver detalhes",
-      "allCta": "Ver toda a coleção"
+      "allCta": "Ver toda a coleção",
+      "prevLabel": "Vinho anterior",
+      "nextLabel": "Próximo vinho",
+      "strip": {
+        "vineyards": { "title": "Vinhedos do Cachapoal", "desc": "Uvas do Vale do Cachapoal, nossa origem." },
+        "oak": { "title": "Estágio em carvalho", "desc": "Estágio em barricas de carvalho francês e americano." },
+        "limited": { "title": "Edições limitadas", "desc": "Produções reduzidas a cada safra." },
+        "heritage": { "title": "Herança familiar", "desc": "Três gerações, uma mesma origem." }
+      }
     },
     "activities": {
       "eyebrow": "As melhores",
@@ -114,6 +122,8 @@
       "tabs": { "all": "Todas", "tours": "Tours", "experiences": "Experiências", "events": "Eventos" },
       "cat": { "tour": "Tour", "experience": "Experiência", "event": "Evento" },
       "eventsCta": "Solicitar orçamento",
+      "book": "Reservar",
+      "more": "Ver mais",
       "items": {
         "tour": {
           "name": "Tour",
