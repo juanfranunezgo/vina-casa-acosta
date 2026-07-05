@@ -64,6 +64,12 @@ export default function Navbar() {
     return pathname.startsWith(`${homePath}${suffix}`);
   };
 
+  // El navbar es transparente sobre el hero oscuro SOLO en el home cuando está
+  // arriba. En el resto de páginas (fondo claro) o al scrollear, usa el
+  // tratamiento oscuro para no perder legibilidad.
+  const isHome = pathname === homePath;
+  const overHero = isHome && !scrolled;
+
   return (
     <>
       <nav
@@ -80,7 +86,7 @@ export default function Navbar() {
             aria-label={t("logoAlt")}
           >
             <Image
-              src="/brand/logo-negro.png"
+              src={overHero ? "/brand/logo-blanco.png" : "/brand/logo-negro.png"}
               alt={t("logoAlt")}
               width={200}
               height={200}
@@ -99,8 +105,12 @@ export default function Navbar() {
                     href={localePath(link.href)}
                     className={`relative pb-1 inline-flex items-center gap-1 transition-colors ${
                       active
-                        ? "text-primary font-semibold"
-                        : "text-on-surface-variant hover:text-primary"
+                        ? overHero
+                          ? "text-on-primary font-semibold"
+                          : "text-primary font-semibold"
+                        : overHero
+                          ? "text-on-primary/80 hover:text-on-primary"
+                          : "text-on-surface-variant hover:text-primary"
                     }`}
                   >
                     {link.label}
@@ -111,7 +121,11 @@ export default function Navbar() {
                       />
                     )}
                     {active && (
-                      <span className="absolute left-0 right-0 -bottom-0.5 h-[2px] bg-primary rounded-full" />
+                      <span
+                        className={`absolute left-0 right-0 -bottom-0.5 h-[2px] rounded-full ${
+                          overHero ? "bg-on-primary" : "bg-primary"
+                        }`}
+                      />
                     )}
                   </Link>
 
@@ -146,8 +160,11 @@ export default function Navbar() {
             })}
           </ul>
 
-          <div className="hidden md:flex items-center gap-4">
-            <LanguageSwitcher locales={routing.locales} currentLocale={locale} />
+          <div
+            className={`hidden md:flex items-center gap-5 ${
+              overHero ? "text-on-primary" : "text-on-surface-variant"
+            }`}
+          >
             <Link
               href={localePath("/tienda")}
               className={`inline-flex items-center justify-center h-10 px-6 rounded-md font-body text-body-md font-semibold shadow-[0_4px_14px_-4px_rgba(42,0,2,0.3)] hover:shadow-[0_8px_18px_-4px_rgba(42,0,2,0.5)] hover:-translate-y-0.5 transition-all duration-200 ${
@@ -158,12 +175,13 @@ export default function Navbar() {
             >
               {t("tienda")}
             </Link>
+            <LanguageSwitcher locales={routing.locales} currentLocale={locale} />
           </div>
 
           <button
-            className={`md:hidden text-primary h-11 w-11 -mr-2 flex items-center justify-center relative z-[70] transition-opacity duration-200 ${
-              open ? "opacity-0 pointer-events-none" : "opacity-100"
-            }`}
+            className={`md:hidden h-11 w-11 -mr-2 flex items-center justify-center relative z-[70] transition-opacity duration-200 ${
+              overHero ? "text-on-primary" : "text-primary"
+            } ${open ? "opacity-0 pointer-events-none" : "opacity-100"}`}
             aria-label={t("openMenu")}
             aria-expanded={open}
             onClick={() => setOpen(true)}

@@ -61,27 +61,35 @@ export default function LanguageSwitcher({
     );
   }
 
+  // Desktop: minimal y discreto — hereda el color del navbar (currentColor).
+  // Activo = opacidad plena + semibold; el resto atenuado.
   return (
     <div
-      className="flex items-center rounded-full bg-surface-container-low/70 border border-outline-variant/40 p-0.5 font-body text-label-sm uppercase tracking-wider"
+      className="flex items-center gap-2 font-body text-label-sm uppercase tracking-wider"
       role="group"
       aria-label="Language"
     >
-      {locales.map((loc) => (
-        <button
-          key={loc}
-          type="button"
-          onClick={() => switchTo(loc)}
-          disabled={isPending}
-          aria-current={loc === currentLocale ? "true" : undefined}
-          className={`min-w-[40px] h-8 px-3 rounded-full transition-colors flex items-center justify-center ${
-            loc === currentLocale
-              ? "bg-primary text-on-primary"
-              : "text-on-surface-variant hover:text-primary"
-          }`}
-        >
-          {localeLabels[loc] ?? loc.toUpperCase()}
-        </button>
+      {locales.map((loc, i) => (
+        <div key={loc} className="flex items-center gap-2">
+          {i > 0 && (
+            <span aria-hidden="true" className="opacity-30 select-none">
+              ·
+            </span>
+          )}
+          <button
+            type="button"
+            onClick={() => switchTo(loc)}
+            disabled={isPending}
+            aria-current={loc === currentLocale ? "true" : undefined}
+            className={`transition-opacity duration-200 ${
+              loc === currentLocale
+                ? "font-semibold opacity-100"
+                : "opacity-55 hover:opacity-90"
+            }`}
+          >
+            {localeLabels[loc] ?? loc.toUpperCase()}
+          </button>
+        </div>
       ))}
     </div>
   );
