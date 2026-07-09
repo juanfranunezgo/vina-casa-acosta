@@ -75,16 +75,22 @@ export async function generateMetadata({
       description: t("ogDescription"),
       images: [
         {
-          url: "/brand/logo-negro.png",
+          url: "/brand/og-image.png",
           width: 1200,
           height: 630,
           alt: t("siteName"),
         },
       ],
     },
-    icons: {
-      icon: "/favicon.ico",
+    twitter: {
+      card: "summary_large_image",
+      title: t("ogTitle"),
+      description: t("ogDescription"),
+      images: ["/brand/og-image.png"],
     },
+    // Los iconos se auto-detectan por convención de archivos en app/:
+    // favicon.ico (16/32/48), icon.png (512) y apple-icon.png (180) — generados
+    // desde el logo del sello. No hace falta declararlos acá.
   };
 }
 

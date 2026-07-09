@@ -1,22 +1,34 @@
 import Image from "next/image";
 import { getTranslations } from "next-intl/server";
+import { Sprout, Grape, Wine, Leaf, Users, type LucideIcon } from "lucide-react";
 import Reveal from "@/components/Reveal";
-import VineConnector from "@/components/VineConnector";
 
 type MilestoneKey = "m1998" | "m2000" | "m2003" | "m2012" | "today";
 
 /**
- * Hitos del legado (B4). La imagen es un asset (no va en i18n); el resto del
- * contenido —año, título, descripción, alt— vive en messages. Fotos provisionales
- * reutilizadas del proyecto hasta tener las definitivas de la familia.
+ * Hitos del legado (B4) — "sendero" vertical: foto grande + texto alternando
+ * lados, unidos por una curva serpenteante con un badge de ícono por hito.
+ * La imagen es un asset (no va en i18n); año, título, descripción y alt viven
+ * en messages. Fotos provisionales del proyecto hasta tener las definitivas.
  */
-const milestones: readonly { key: MilestoneKey; image: string }[] = [
-  { key: "m1998", image: "/images/home/casa/origins.jpg" },
-  { key: "m2000", image: "/images/home/casa/teaching.jpg" },
-  { key: "m2003", image: "/images/home/casa/tractor.jpg" },
-  { key: "m2012", image: "/images/home/cta-parras.jpg" },
-  { key: "today", image: "/images/home/casa/family.jpg" },
+const milestones: readonly {
+  key: MilestoneKey;
+  image: string;
+  Icon: LucideIcon;
+}[] = [
+  { key: "m1998", image: "/images/home/casa/origins.jpg", Icon: Sprout },
+  { key: "m2000", image: "/images/home/casa/teaching.jpg", Icon: Grape },
+  { key: "m2003", image: "/images/home/casa/tractor.jpg", Icon: Wine },
+  { key: "m2012", image: "/images/home/cta-parras.jpg", Icon: Leaf },
+  { key: "today", image: "/images/home/casa/family.jpg", Icon: Users },
 ] as const;
+
+// Curva serpenteante (desktop). El path está calculado para estos 5 hitos:
+// vértices al 10/30/50/70/90 % del alto, alternando lado (x=0 izq. / x=100 der.).
+// Si cambia la cantidad de hitos, hay que regenerar este path.
+const CURVE_PATH =
+  "M50,0 C50,50 0,50 0,100 C0,200 100,200 100,300 C100,400 0,400 0,500 " +
+  "C0,600 100,600 100,700 C100,800 0,800 0,900 C0,950 50,950 50,1000";
 
 export default async function HistoriaTimeline() {
   const t = await getTranslations("historia.timeline");
@@ -26,30 +38,6 @@ export default async function HistoriaTimeline() {
       aria-labelledby="timeline-title"
       className="bg-surface-container-low py-section-gap px-margin-mobile md:px-margin-desktop"
     >
-      {/* Filtro reutilizable: borde rasgado orgánico de las fotos (decorativo). */}
-      <svg
-        aria-hidden="true"
-        focusable="false"
-        className="pointer-events-none absolute h-0 w-0"
-      >
-        <filter id="historia-torn" x="-8%" y="-8%" width="116%" height="116%">
-          <feTurbulence
-            type="fractalNoise"
-            baseFrequency="0.014"
-            numOctaves="3"
-            seed="7"
-            result="noise"
-          />
-          <feDisplacementMap
-            in="SourceGraphic"
-            in2="noise"
-            scale="16"
-            xChannelSelector="R"
-            yChannelSelector="G"
-          />
-        </filter>
-      </svg>
-
       <div className="max-w-(--container-max) mx-auto">
         <Reveal className="text-center mb-16 md:mb-24">
           <h2
@@ -60,53 +48,73 @@ export default async function HistoriaTimeline() {
           </h2>
         </Reveal>
 
-        <ol className="timeline">
-          {milestones.map(({ key, image }, idx) => {
-            const side = idx % 2 === 0 ? "left" : "right";
-            const isLast = idx === milestones.length - 1;
-            const year = t(`milestones.${key}.year`);
-            const isNumericYear = /^\d{4}$/.test(year);
+        <div className="tl-wrap">
+          <svg
+            className="tl-path"
+            viewBox="0 0 100 1000"
+            preserveAspectRatio="none"
+            aria-hidden="true"
+          >
+            <path
+              d={CURVE_PATH}
+              fill="none"
+              stroke="#7a2530"
+              strokeWidth={2}
+              strokeLinecap="round"
+              vectorEffect="non-scaling-stroke"
+            />
+          </svg>
 
-            return (
-              <li key={key} className="timeline-item" data-side={side}>
+          <ol className="tl">
+            {milestones.map(({ key, image, Icon }, idx) => {
+              const side = idx % 2 === 0 ? "left" : "right";
+              const year = t(`milestones.${key}.year`);
+              const isNumericYear = /^\d{4}$/.test(year);
+
+              return (
                 <Reveal
-                  as="article"
-                  delay={80}
-                  className={`timeline-card timeline-card--${side}`}
+                  as="li"
+                  key={key}
+                  delay={60}
+                  className={`tl-item tl-item--${side}`}
                 >
-                  <figure className="timeline-figure">
+                  <span className="tl-badge" aria-hidden="true">
+                    <Icon className="h-5 w-5 md:h-6 md:w-6" strokeWidth={1.75} />
+                  </span>
+
+                  <figure className="tl-figure">
                     <Image
                       src={image}
                       alt={t(`milestones.${key}.imageAlt`)}
                       fill
-                      sizes="(max-width: 768px) 78vw, 40vw"
-                      className="torn-edge object-cover"
+                      loading="lazy"
+                      sizes="(max-width: 768px) 84vw, 44vw"
+                      className="object-cover"
                     />
                   </figure>
-                  <div className="timeline-text">
+
+                  <div className="tl-text">
                     {isNumericYear ? (
-                      <time dateTime={year} className="timeline-year">
+                      <time dateTime={year} className="tl-year">
                         {year}
                       </time>
                     ) : (
-                      <span className="timeline-year">{year}</span>
+                      <span className="tl-year">{year}</span>
                     )}
-                    <h3 className="font-display text-headline-h2 text-primary timeline-title-h3">
+                    <h3 className="font-display text-headline-h2 text-primary mb-3">
                       {t(`milestones.${key}.title`)}
                     </h3>
-                    <p className="font-body text-body-md text-on-surface-variant">
+                    <p className="font-body text-body-md text-on-surface-variant leading-relaxed">
                       {t(`milestones.${key}.description`)}
                     </p>
                   </div>
                 </Reveal>
+              );
+            })}
+          </ol>
+        </div>
 
-                {!isLast && <VineConnector flip={side === "right"} />}
-              </li>
-            );
-          })}
-        </ol>
-
-        <p className="mt-10 text-xs text-on-surface-variant/70 text-center">
+        <p className="mt-12 text-xs text-on-surface-variant/70 text-center">
           {t("photoNote")}
         </p>
       </div>

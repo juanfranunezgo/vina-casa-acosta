@@ -127,7 +127,6 @@
       "detailLabels": { "estilo": "Estilo", "crianza": "Estágio", "premio": "Prêmio" },
       "lines": {
         "ombu": {
-          "tag": "Reserva do Cachapoal",
           "category": "Reserva",
           "description": "A porta de entrada da Casa Acosta: três Reservas do Cachapoal para todos os dias.",
           "estilo": "Frutado e acessível",
@@ -135,7 +134,6 @@
           "premio": ""
         },
         "lajau": {
-          "tag": "Guarda e edição limitada",
           "category": "Gran Reserva · Ícone",
           "description": "Produção reduzida: assemblages de edição limitada e Gran Reserva de guarda.",
           "estilo": "Complexo, de guarda",
@@ -143,7 +141,6 @@
           "premio": ""
         },
         "estacion-francia": {
-          "tag": "Gran Reserva · França '98",
           "category": "Gran Reserva",
           "description": "Homenagem ao momento fundacional da vinícola, junto à Copa do Mundo de 1998 na França.",
           "estilo": "Estrutura e guarda",
@@ -188,7 +185,8 @@
     "hero": {
       "eyebrow": "Nossa herança",
       "title": "Paixão pela terra, forjada geração após geração.",
-      "subtitle": "A paixão pela terra e pelo vinho, transmitida em cada safra, define quem somos na Viña Casa Acosta."
+      "subtitle": "A paixão pela terra e pelo vinho, transmitida em cada safra, define quem somos na Viña Casa Acosta.",
+      "imageAlt": "Garrafas do Ombú Reserva Carménère da Viña Casa Acosta sobre uma mesa de madeira, com iluminação quente"
     },
     "origin": {
       "tag": "I · O sonho",
@@ -200,13 +198,28 @@
       "card1": {
         "tag": "II · A raiz de um sonho",
         "title": "França '98 e a próxima geração",
-        "body": "A aquisição da terra fundacional coincidiu com o espírito da Copa do Mundo de 1998 na França. Hoje, seu filho Damián segue o sonho, trazendo uma visão contemporânea sem abrir mão da tradição."
+        "body": "A aquisição da terra fundacional coincidiu com o espírito da Copa do Mundo de 1998 na França. Hoje, seu filho Damián segue o sonho, trazendo uma visão contemporânea sem abrir mão da tradição.",
+        "imageAlt": "Uma antiga roda de carroça de madeira, uma referência às raízes e à tradição da vinícola"
       },
       "card2": {
         "tag": "III · Artesania",
         "title": "Primeira produção",
-        "body": "Nosso processo continua zelosamente manual. Esse cuidado culminou em 2003 com a primeira produção oficial: o aclamado Carmenere Reserva 'ACOSTA'."
+        "body": "Nosso processo continua zelosamente manual. Esse cuidado culminou em 2003 com a primeira produção oficial: o aclamado Carmenere Reserva 'ACOSTA'.",
+        "imageAlt": "Um barril de vinho de carvalho entalhado, marcado com 1906, símbolo do ofício artesanal"
       }
+    },
+    "gallery": {
+      "eyebrow": "A vinícola em imagens",
+      "title": "Por trás de cada safra",
+      "note": "Galeria de amostra · será substituída por fotos reais da vinícola.",
+      "items": [
+        "Nelson Acosta trabalhando a terra em seu trator",
+        "Aquarela emoldurada do projeto Galpón Tienda Museo da vinícola",
+        "Trabalhando o vinhedo com o trator",
+        "A família Acosta na vinícola",
+        "Mochila jeans desgastada pendurada em um poste entre as videiras",
+        "Garrafas da linha Ombú Reserva"
+      ]
     },
     "timeline": {
       "title": "Marcos do legado",
@@ -408,6 +421,7 @@
       "eyebrow": "Há lembranças que o tempo não apaga",
       "title": "Experiências",
       "subtitle": "Mergulhe no mundo do vinho. Explore nossos vinhedos, prove nossas melhores criações e celebre em um ambiente de calor e patrimônio.",
+      "imageAlt": "Um grupo de visitantes posando com a placa entalhada da Viña Casa Acosta entre as videiras do vinhedo no outono, em contraluz ao entardecer",
       "tabs": {
         "tours": "Tours",
         "experiences": "Experiências",

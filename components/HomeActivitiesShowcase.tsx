@@ -125,7 +125,7 @@ export default function HomeActivitiesShowcase({
                 type="button"
                 onClick={() => setFilter(f.key)}
                 aria-pressed={isActive}
-                className={`inline-flex items-center gap-2 px-4 md:px-5 py-2 rounded-full font-body text-label-sm uppercase tracking-wider font-semibold transition-all duration-300 ${
+                className={`inline-flex min-h-11 items-center gap-2 px-4 md:px-5 py-2 rounded-full font-body text-label-sm uppercase tracking-wider font-semibold transition-all duration-300 ${
                   isActive
                     ? "bg-primary text-on-primary shadow-[0_4px_14px_-4px_rgba(42,0,2,0.4)]"
                     : "text-on-surface-variant hover:text-primary"
@@ -269,13 +269,19 @@ export default function HomeActivitiesShowcase({
         </div>
       )}
 
+      {/* Separador: eventos es un bloque de otro estilo (banner horizontal), lo
+          despegamos del mosaico con aire + una fina línea centrada. */}
+      {filter === "all" && (
+        <div className="mt-10 mb-8 flex justify-center md:mt-16 md:mb-12" aria-hidden="true">
+          <span className="h-px w-16 rounded-full bg-outline-variant/60" />
+        </div>
+      )}
+
       {/* Banner de eventos — en "Todas" abajo, o solo (filtro Eventos) */}
       {(filter === "all" || filter === "events") && (
         <Link
           href={events.href}
-          className={`group relative grid grid-cols-1 md:grid-cols-2 rounded-2xl overflow-hidden ambient-shadow-lg hover:-translate-y-0.5 transition-transform duration-300 bg-surface-container-low border border-outline-variant/25 ${
-            filter === "all" ? "mt-4" : ""
-          }`}
+          className="group relative grid grid-cols-1 md:grid-cols-2 rounded-2xl overflow-hidden ambient-shadow-lg hover:-translate-y-0.5 transition-transform duration-300 bg-surface-container-low border border-outline-variant/25"
         >
           <div className="p-8 md:p-12 flex flex-col justify-center">
             <span className="font-body text-label-sm uppercase tracking-[0.3em] text-primary/70 mb-3">

@@ -65,16 +65,23 @@ export default function Navbar() {
     return pathname.startsWith(`${homePath}${suffix}`);
   };
 
-  // El navbar es transparente sobre el hero oscuro SOLO en el home cuando está
-  // arriba. En el resto de páginas (fondo claro) o al scrollear, usa el
-  // tratamiento oscuro para no perder legibilidad.
-  const isHome = pathname === homePath;
-  const overHero = isHome && !scrolled;
+  // El navbar va transparente con logo/texto claros sobre los heros oscuros
+  // full-bleed (Inicio, Historia y Actividades) mientras esté arriba. Al
+  // scrollear —o en páginas de fondo claro— pasa al tratamiento oscuro para no
+  // perder legibilidad. Se usa match exacto en /actividades para que las
+  // subpáginas /actividades/[slug] (hero claro propio) queden fuera.
+  const hasDarkHero =
+    pathname === homePath ||
+    pathname === `${homePath}/historia` ||
+    pathname === `${homePath}/actividades`;
+  const overHero = hasDarkHero && !scrolled;
 
   return (
     <>
-      <nav
-        className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 ${
+      {/* Landmark banner del sitio; contiene la navegación principal. */}
+      <header>
+        <nav
+          className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 ${
           scrolled
             ? "bg-surface/85 backdrop-blur-xl border-b border-outline-variant/25 shadow-sm"
             : "bg-transparent"
@@ -190,7 +197,8 @@ export default function Navbar() {
             <Menu className="h-6 w-6" aria-hidden="true" />
           </button>
         </div>
-      </nav>
+        </nav>
+      </header>
 
       {/* Mobile fullscreen drawer */}
       <div

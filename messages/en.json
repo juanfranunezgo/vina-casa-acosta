@@ -127,7 +127,6 @@
       "detailLabels": { "estilo": "Style", "crianza": "Ageing", "premio": "Award" },
       "lines": {
         "ombu": {
-          "tag": "Cachapoal Reserva",
           "category": "Reserva",
           "description": "The gateway to Casa Acosta: three Cachapoal Reservas for every day.",
           "estilo": "Fruity and approachable",
@@ -135,7 +134,6 @@
           "premio": ""
         },
         "lajau": {
-          "tag": "Ageing & limited editions",
           "category": "Gran Reserva · Icon",
           "description": "Small production: limited-edition blends and Gran Reserva built to age.",
           "estilo": "Complex, age-worthy",
@@ -143,7 +141,6 @@
           "premio": ""
         },
         "estacion-francia": {
-          "tag": "Gran Reserva · France '98",
           "category": "Gran Reserva",
           "description": "A tribute to the winery's founding moment, alongside the 1998 World Cup in France.",
           "estilo": "Structured, age-worthy",
@@ -188,7 +185,8 @@
     "hero": {
       "eyebrow": "Our heritage",
       "title": "A love of the land, forged generation by generation.",
-      "subtitle": "A passion for the land and for wine, passed down each harvest, is what defines us at Viña Casa Acosta."
+      "subtitle": "A passion for the land and for wine, passed down each harvest, is what defines us at Viña Casa Acosta.",
+      "imageAlt": "Bottles of Viña Casa Acosta's Ombú Reserva Carménère on a wooden table, lit with warm light"
     },
     "origin": {
       "tag": "I · The dream",
@@ -200,13 +198,28 @@
       "card1": {
         "tag": "II · The roots of a dream",
         "title": "France '98 and the new generation",
-        "body": "The founding land was acquired in the spirit of the 1998 World Cup in France. Today, Nelson's son Damián carries the dream forward — bringing a contemporary vision without abandoning tradition."
+        "body": "The founding land was acquired in the spirit of the 1998 World Cup in France. Today, Nelson's son Damián carries the dream forward — bringing a contemporary vision without abandoning tradition.",
+        "imageAlt": "An old wooden cart wheel, a nod to the estate's roots and tradition"
       },
       "card2": {
         "tag": "III · Craft",
         "title": "First vintage",
-        "body": "Our process remains zealously hands-on. That care culminated in 2003 with the first official release: the acclaimed Carmenere Reserva 'ACOSTA'."
+        "body": "Our process remains zealously hands-on. That care culminated in 2003 with the first official release: the acclaimed Carmenere Reserva 'ACOSTA'.",
+        "imageAlt": "A carved oak wine barrel marked 1906, a symbol of the artisanal craft"
       }
+    },
+    "gallery": {
+      "eyebrow": "The estate in pictures",
+      "title": "Behind every harvest",
+      "note": "Sample gallery · will be replaced with real photos of the estate.",
+      "items": [
+        "Nelson Acosta working the land on his tractor",
+        "Framed watercolor of the estate's Galpón Tienda Museo project",
+        "Working the vineyard with the tractor",
+        "The Acosta family at the estate",
+        "A worn denim backpack hanging from a post among the vines",
+        "Bottles of the Ombú Reserva line"
+      ]
     },
     "timeline": {
       "title": "Milestones of the legacy",
@@ -408,6 +421,7 @@
       "eyebrow": "Some memories time can't erase",
       "title": "Experiences",
       "subtitle": "Step into the world of wine. Explore our vineyards, taste our finest creations and celebrate in a setting of warmth and heritage.",
+      "imageAlt": "A group of visitors posing with the carved Viña Casa Acosta sign among the vineyard's autumn vines, backlit by the golden-hour sun",
       "tabs": {
         "tours": "Tours",
         "experiences": "Experiences",

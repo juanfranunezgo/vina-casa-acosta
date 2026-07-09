@@ -6,15 +6,43 @@ import Reveal from "@/components/Reveal";
 import Button from "@/components/ui/Button";
 import ActivitiesTabs from "@/components/ActivitiesTabs";
 import { tours, experiences } from "@/data/activities";
+import { routing } from "@/i18n/routing";
 
 export async function generateMetadata({
   params,
 }: PageProps<"/[locale]/actividades">): Promise<Metadata> {
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: "metadata.actividades" });
+  const tHero = await getTranslations({ locale, namespace: "actividades.hero" });
+  const path = `/${locale}/actividades`;
+  const heroImage = {
+    url: "/images/actividades/hero-grupal.webp",
+    width: 2880,
+    height: 1920,
+    alt: tHero("imageAlt"),
+  };
+
   return {
     title: t("title"),
     description: t("description"),
+    alternates: {
+      canonical: path,
+      languages: Object.fromEntries(
+        routing.locales.map((l) => [l, `/${l}/actividades`]),
+      ),
+    },
+    openGraph: {
+      title: t("title"),
+      description: t("description"),
+      url: path,
+      images: [heroImage],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: t("title"),
+      description: t("description"),
+      images: [heroImage.url],
+    },
   };
 }
 
@@ -37,31 +65,64 @@ export default async function ActividadesPage({
 
   return (
     <>
-      <section className="pt-32 pb-12 px-margin-mobile md:px-margin-desktop max-w-(--container-max) mx-auto text-center">
-        <Reveal>
-          <p className="font-body text-label-sm uppercase tracking-[0.3em] text-outline mb-4">
-            {t("hero.eyebrow")}
-          </p>
-          <h1
-            className="font-display text-primary mb-6"
-            style={{
-              fontSize: "clamp(2.25rem, 5.5vw, 4rem)",
-              lineHeight: 1.08,
-            }}
-          >
-            {t("hero.title")}
-          </h1>
-          <p className="font-body text-body-lg text-on-surface-variant max-w-2xl mx-auto mb-10">
-            {t("hero.subtitle")}
-          </p>
-          <ActivitiesTabs
-            labels={{
-              tours: t("hero.tabs.tours"),
-              experiences: t("hero.tabs.experiences"),
-              events: t("hero.tabs.events"),
-            }}
-          />
-        </Reveal>
+      {/* HERO (D1) — cinematográfico full-bleed sobre la foto grupal de un evento
+          en el viñedo (mismo patrón que Inicio e Historia). Texto claro anclado
+          abajo con degradados para legibilidad; el navbar pasa a modo claro sobre
+          este hero (ver Navbar → hasDarkHero incluye /actividades). */}
+      <section className="relative flex min-h-[92svh] w-full items-end overflow-hidden md:min-h-screen">
+        <Image
+          src="/images/actividades/hero-grupal.webp"
+          alt={t("hero.imageAlt")}
+          fill
+          priority
+          quality={85}
+          sizes="100vw"
+          className="object-cover object-center motion-safe:animate-[heroZoom_20s_ease-out_forwards]"
+        />
+        {/* Degradados: base fuerte para el texto, lateral izquierdo sutil y una
+            franja superior que oscurece el cielo detrás del navbar claro. */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/35 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-r from-black/45 via-black/10 to-transparent" />
+        <div className="absolute inset-x-0 top-0 h-40 bg-gradient-to-b from-black/50 to-transparent" />
+
+        <div className="relative z-10 w-full px-margin-mobile pt-32 pb-14 md:px-margin-desktop md:pb-20">
+          <div className="mx-auto max-w-(--container-max)">
+            <div className="max-w-3xl">
+              <Reveal delay={120}>
+                <p className="mb-4 font-accent text-lg font-light italic tracking-wide text-primary-fixed drop-shadow-md md:text-xl">
+                  {t("hero.eyebrow")}
+                </p>
+              </Reveal>
+              <Reveal delay={220}>
+                <h1
+                  className="mb-5 font-display text-on-primary drop-shadow-[0_4px_24px_rgba(0,0,0,0.55)]"
+                  style={{
+                    fontSize: "clamp(2.5rem, 6.4vw, 4.5rem)",
+                    lineHeight: 1.08,
+                    letterSpacing: "-0.015em",
+                  }}
+                >
+                  {t("hero.title")}
+                </h1>
+              </Reveal>
+              <Reveal delay={320}>
+                <p className="mb-9 max-w-2xl font-body text-body-lg text-on-primary/90 drop-shadow-[0_2px_12px_rgba(0,0,0,0.5)]">
+                  {t("hero.subtitle")}
+                </p>
+              </Reveal>
+              <Reveal delay={420}>
+                <ActivitiesTabs
+                  variant="onDark"
+                  labels={{
+                    tours: t("hero.tabs.tours"),
+                    experiences: t("hero.tabs.experiences"),
+                    events: t("hero.tabs.events"),
+                  }}
+                />
+              </Reveal>
+            </div>
+          </div>
+        </div>
       </section>
 
       {/* TOURS */}

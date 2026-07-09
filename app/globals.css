@@ -144,117 +144,163 @@ body {
   display: none;
 }
 
-/* === Timeline B4 — "Rama columna viva" (página Historia) === */
+/* === Timeline B4 — "Sendero del legado" (página Historia) ===
+   Hitos alternados con foto grande. Desktop: curva serpenteante central (SVG)
+   con un badge de ícono en cada vértice, del lado de la foto. Mobile: rail recto
+   a la izquierda. Fotos con esquinas orgánicas espejadas según el lado. */
 
-/* Rama de vid: un solo asset (112 KB) recoloreado al vino de marca vía máscara. */
-.vine {
-  display: block;
-  width: 100%;
-  aspect-ratio: 1897 / 1207;
-  background-color: var(--color-primary);
-  -webkit-mask: url("/ilustraciones/rama-vid.webp") no-repeat center / contain;
-  mask: url("/ilustraciones/rama-vid.webp") no-repeat center / contain;
-}
-
-/* Barrido: la rama "crece" al entrar al viewport (clip-path, GPU-friendly).
-   Unidades consistentes (todo %) para que la interpolación no se descarte. */
-.vine-anim {
-  clip-path: inset(0% 100% 0% 0%);
-}
-/* El observer va en el contenedor (.vine-connector, sin clip): un elemento
-   clipeado a área cero nunca dispara el IntersectionObserver. */
-.vine-connector.is-grown .vine-anim {
-  animation: vine-grow 1.15s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
-@keyframes vine-grow {
-  from {
-    clip-path: inset(0% 100% 0% 0%);
-  }
-  to {
-    clip-path: inset(0% 0% 0% 0%);
-  }
+.tl-wrap {
+  position: relative;
+  /* Amplitud de la curva = cuánto se separan del centro los vértices/badges. */
+  --tl-amp: clamp(60px, 7vw, 92px);
 }
 
-/* Borde rasgado orgánico para las fotos de hito (usa el filtro SVG #historia-torn).
-   El drop-shadow sigue la silueta rasgada, no un rectángulo. */
-.torn-edge {
-  filter: url(#historia-torn) drop-shadow(0 12px 22px rgba(74, 14, 14, 0.16));
+/* Curva (solo desktop). El trazo (fill:none, stroke, non-scaling-stroke) va como
+   atributos del <path> en el componente, así nunca se rellena de negro aunque el
+   CSS tarde en cargar. `non-scaling-stroke` mantiene el grosor fino pese al
+   preserveAspectRatio="none" que estira la forma a lo alto de la lista. */
+.tl-path {
+  display: none;
 }
 
-/* Layout del timeline — mobile-first (columna única) */
-.timeline {
+.tl {
   list-style: none;
   margin: 0;
   padding: 0;
-}
-.timeline-item {
-  margin-bottom: clamp(1.5rem, 6vw, 3rem);
-}
-.timeline-card {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  align-items: flex-start;
-}
-.timeline-figure {
   position: relative;
-  margin: 0;
-  width: min(78%, 20rem);
-  aspect-ratio: 4 / 5;
-  align-self: center;
 }
-.timeline-year {
+
+/* Rail recto (solo mobile) */
+.tl::before {
+  content: "";
+  position: absolute;
+  top: 0.75rem;
+  bottom: 0.75rem;
+  left: 1.25rem;
+  width: 2px;
+  background: linear-gradient(
+    to bottom,
+    transparent,
+    var(--color-outline-variant) 6%,
+    var(--color-outline-variant) 94%,
+    transparent
+  );
+}
+
+.tl-item {
+  position: relative;
+  padding-left: 3.5rem;
+  margin-bottom: clamp(2.5rem, 9vw, 4rem);
+}
+.tl-item:last-child {
+  margin-bottom: 0;
+}
+
+/* Badge circular con ícono. El borde del color del fondo de la sección "corta"
+   la línea para que el badge se lea limpio encima. */
+.tl-badge {
+  position: absolute;
+  top: 0;
+  left: 1.25rem;
+  transform: translateX(-50%);
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 9999px;
+  background: var(--color-primary);
+  color: var(--color-on-primary);
+  border: 4px solid var(--color-surface-container-low);
+  box-shadow: 0 6px 16px -6px rgba(74, 14, 14, 0.5);
+}
+
+.tl-figure {
+  position: relative;
+  margin: 0 0 1.1rem;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  border-radius: 1.1rem 2.75rem 1.1rem 2.75rem;
+  overflow: hidden;
+  box-shadow: 0 22px 44px -18px rgba(74, 14, 14, 0.28);
+}
+
+.tl-year {
   display: block;
   font-family: var(--font-body);
   font-size: 0.8125rem;
   font-weight: 600;
-  letter-spacing: 0.32em;
+  letter-spacing: 0.28em;
   text-transform: uppercase;
-  color: var(--color-primary);
+  color: var(--color-wine-accent);
   margin-bottom: 0.4rem;
 }
-.timeline-title-h3 {
-  margin-bottom: 0.6rem;
-}
-.vine-connector {
-  display: block;
-  width: clamp(180px, 62%, 300px);
-  margin: 0.75rem auto 0;
-}
 
-/* Desktop: hitos alternados izq/der, guirnaldas en la banda central */
+/* Desktop: curva central, lados alternados, fotos grandes de igual alto */
 @media (min-width: 768px) {
-  .timeline-item {
+  .tl::before {
+    display: none;
+  }
+  .tl-path {
+    display: block;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: calc(2 * var(--tl-amp));
+    height: 100%;
+    z-index: 0;
+    overflow: visible;
+    pointer-events: none;
+  }
+  /* padding-block (sin margin) hace que todos los ítems tengan el mismo alto,
+     así los vértices de la curva coinciden con los badges. */
+  .tl-item {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    column-gap: var(--spacing-gutter);
+    column-gap: clamp(4rem, 8vw, 7rem);
+    align-items: center;
+    padding-left: 0;
+    padding-block: clamp(1.25rem, 2.5vw, 2rem);
     margin-bottom: 0;
   }
-  .timeline-card {
-    flex-direction: row;
-    align-items: center;
-    gap: 1.75rem;
-    max-width: 40rem;
+  .tl-badge {
+    top: 50%;
+    left: 50%;
+    width: 3.25rem;
+    height: 3.25rem;
   }
-  .timeline-figure {
-    flex: 0 0 clamp(9rem, 15vw, 13rem);
-    width: auto;
-    align-self: center;
+  .tl-item--left .tl-badge {
+    transform: translate(calc(-50% - var(--tl-amp)), -50%);
   }
-  .timeline-card--left {
+  .tl-item--right .tl-badge {
+    transform: translate(calc(-50% + var(--tl-amp)), -50%);
+  }
+  .tl-figure {
+    margin: 0;
+  }
+  .tl-item--left .tl-figure {
     grid-column: 1;
-    justify-self: end;
+    grid-row: 1;
+    border-radius: 1.25rem 3rem 1.25rem 3rem;
   }
-  .timeline-card--right {
+  .tl-item--left .tl-text {
     grid-column: 2;
-    justify-self: start;
-    flex-direction: row-reverse;
-    text-align: right;
+    grid-row: 1;
+    text-align: left;
+    padding-left: 2.5rem;
   }
-  .vine-connector {
-    grid-column: 1 / -1;
-    width: clamp(300px, 44%, 540px);
-    margin: -1.5rem auto -1.5rem;
+  .tl-item--right .tl-figure {
+    grid-column: 2;
+    grid-row: 1;
+    border-radius: 3rem 1.25rem 3rem 1.25rem;
+  }
+  .tl-item--right .tl-text {
+    grid-column: 1;
+    grid-row: 1;
+    text-align: right;
+    padding-right: 2.5rem;
   }
 }
 
@@ -313,11 +359,6 @@ body {
     animation: none;
   }
   .skeleton {
-    animation: none;
-  }
-  .vine-anim,
-  .vine-anim.is-grown {
-    clip-path: none;
     animation: none;
   }
   html {

@@ -69,7 +69,6 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
     return {
       slug,
       name: line,
-      tag: t(`${base}.tag`),
       description: t(`${base}.description`),
       chips: [
         t("featuredLines.wineCount", { count: lineWines.length }),
@@ -227,25 +226,19 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
       {/* ACTIVIDADES */}
       <section className="bg-surface py-section-gap px-margin-mobile md:px-margin-desktop">
         <div className="max-w-(--container-max) mx-auto">
-          <Reveal className="flex flex-col md:flex-row justify-between items-start md:items-end mb-16 gap-6">
-            <div>
-              <span className="font-body text-label-sm text-outline uppercase tracking-widest block mb-2">
-                {t("activities.eyebrow")}
-              </span>
-              <h2 className="font-display text-headline-h1 text-primary mb-4">
-                {t("activities.title")}
-              </h2>
-              <p className="font-body text-body-md text-on-surface-variant max-w-md">
-                {t("activities.subtitle")}
-              </p>
-            </div>
-            <Button
-              href={lp("/actividades")}
-              variant="link"
-              iconRight={<ArrowRight className="h-4 w-4" />}
+          <Reveal className="text-center mb-12 md:mb-16">
+            <span
+              className="font-accent italic font-light text-primary block mb-2"
+              style={{ fontSize: "clamp(1.15rem, 2.4vw, 1.6rem)" }}
             >
-              {t("activities.allCta")}
-            </Button>
+              {t("activities.eyebrow")}
+            </span>
+            <h2 className="font-display text-headline-h1 text-primary">
+              {t("activities.title")}
+            </h2>
+            <p className="font-body text-body-md text-on-surface-variant mt-3 max-w-xl mx-auto">
+              {t("activities.subtitle")}
+            </p>
           </Reveal>
 
           <HomeActivitiesShowcase
@@ -265,6 +258,16 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
             events={eventsBlock}
             experiencesHref={lp("/actividades#experiencias")}
           />
+
+          <div className="text-center mt-12 md:mt-16">
+            <Button
+              href={lp("/actividades")}
+              variant="link"
+              iconRight={<ArrowRight className="h-4 w-4" />}
+            >
+              {t("activities.allCta")}
+            </Button>
+          </div>
         </div>
       </section>
 

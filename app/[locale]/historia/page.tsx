@@ -5,6 +5,7 @@ import { ArrowRight } from "lucide-react";
 import Reveal from "@/components/Reveal";
 import Button from "@/components/ui/Button";
 import HistoriaTimeline from "@/components/HistoriaTimeline";
+import StoryChapter from "@/components/StoryChapter";
 
 export async function generateMetadata({
   params,
@@ -24,81 +25,141 @@ export default async function HistoriaPage({
   setRequestLocale(locale);
   const t = await getTranslations("historia");
 
+  // Galería (B3): placeholders del repo hasta tener fotos reales. Los alts vienen
+  // del array `gallery.items` en messages, en el mismo orden que las imágenes.
+  const galleryAlts = t.raw("gallery.items") as string[];
+  const gallerySrcs = [
+    "/images/historia/origen-tractor.webp",
+    "/images/historia/cuadro-museo.webp",
+    "/images/home/casa/tractor.jpg",
+    "/images/home/casa/family.jpg",
+    "/images/historia/mochila-vinedo.webp",
+    "/images/historia/vinos-retro.webp",
+  ];
+  const galleryImages = gallerySrcs.map((src, i) => ({
+    src,
+    alt: galleryAlts[i] ?? "",
+  }));
+
   return (
     <>
-      <section className="pt-32 pb-section-gap px-margin-mobile md:px-margin-desktop max-w-(--container-max) mx-auto">
-        <Reveal className="text-center mb-14 md:mb-20">
-          <p className="font-accent italic font-light text-wine-accent text-lg md:text-xl tracking-wide mb-3">
-            {t("hero.eyebrow")}
-          </p>
-          <h1
-            className="font-display text-primary mb-5 md:mb-6"
-            style={{
-              fontSize: "clamp(2.25rem, 7vw, 5rem)",
-              lineHeight: 1.05,
-              letterSpacing: "-0.02em",
-            }}
-          >
-            {t("hero.title")}
-          </h1>
-          <p
-            className="font-body text-on-surface-variant max-w-2xl mx-auto"
-            style={{ fontSize: "clamp(1rem, 1.5vw, 1.25rem)", lineHeight: 1.6 }}
-          >
-            {t("hero.subtitle")}
-          </p>
-        </Reveal>
+      {/* HERO (B1) — full-screen cinematográfico sobre la foto retro de los vinos
+          Ombú. La imagen es oscura y cálida, así que el texto va claro con un
+          degradado sutil (sin velo crema). El navbar se vuelve transparente y
+          claro sobre este hero (ver Navbar → hasDarkHero incluye /historia). */}
+      <section className="relative min-h-[100svh] w-full flex items-center overflow-hidden">
+        <Image
+          src="/images/historia/vinos-retro.webp"
+          alt={t("hero.imageAlt")}
+          fill
+          priority
+          quality={85}
+          className="object-cover object-[58%_center] motion-safe:animate-[heroZoom_20s_ease-out_forwards]"
+          sizes="100vw"
+        />
+        {/* Degradados para legibilidad del texto claro (lateral izq + base). */}
+        <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/35 to-black/5" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-transparent to-black/20" />
 
-        {/* En mobile se apila (foto arriba, texto en card abajo); en desktop la
-            foto es fondo full-bleed y el texto flota en un panel glass. */}
-        <Reveal className="mb-gutter overflow-hidden rounded-xl ambient-shadow md:relative md:flex md:items-end md:min-h-[540px]">
-          <div className="relative aspect-[16/10] md:absolute md:inset-0 md:aspect-auto">
-            <Image
-              src="/images/historia/estacion-francia-sueno.webp"
-              alt={t("origin.imageAlt")}
-              fill
-              className="object-cover object-center"
-              sizes="100vw"
-            />
-            <div className="absolute inset-0 hidden md:block bg-gradient-to-t from-black/75 via-black/25 to-transparent" />
+        <div className="relative z-10 w-full px-margin-mobile md:px-margin-desktop lg:pl-20 pt-24 pb-24">
+          <div className="max-w-2xl mx-auto md:mx-0 text-center md:text-left">
+            <Reveal delay={120}>
+              <p className="font-accent italic font-light text-primary-fixed text-lg md:text-xl tracking-wide mb-4 drop-shadow-md">
+                {t("hero.eyebrow")}
+              </p>
+            </Reveal>
+            <Reveal delay={220}>
+              <h1
+                className="font-display text-on-primary mb-6 drop-shadow-[0_4px_24px_rgba(0,0,0,0.55)]"
+                style={{
+                  fontSize: "clamp(2.25rem, 6.4vw, 4.5rem)",
+                  lineHeight: 1.14,
+                  letterSpacing: "-0.015em",
+                }}
+              >
+                {t("hero.title")}
+              </h1>
+            </Reveal>
+            <Reveal delay={320}>
+              <p
+                className="font-body text-on-primary/90 max-w-xl mx-auto md:mx-0 drop-shadow-md"
+                style={{ fontSize: "clamp(1rem, 1.5vw, 1.25rem)", lineHeight: 1.6 }}
+              >
+                {t("hero.subtitle")}
+              </p>
+            </Reveal>
           </div>
-          <div className="relative z-10 p-6 sm:p-8 md:p-12 md:m-5 md:max-w-2xl md:rounded-xl bg-surface-container-low md:bg-white/75 md:backdrop-blur-xl md:border md:border-white/20 md:ambient-shadow">
-            <span className="font-body text-label-sm text-wine-accent uppercase tracking-widest block mb-2">
-              {t("origin.tag")}
-            </span>
-            <h2 className="font-display text-headline-h1-mobile md:text-headline-h1 text-primary mb-3 md:mb-4 leading-tight">
-              {t("origin.title")}
-            </h2>
-            <p className="font-body text-body-md text-on-surface leading-relaxed">
-              {t("origin.body")}
-            </p>
-          </div>
-        </Reveal>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-gutter mt-12">
-          <Reveal className="bg-surface-container-low rounded-xl p-8 md:p-12 border border-outline-variant/30">
-            <span className="font-body text-label-sm text-wine-accent uppercase tracking-widest block mb-2">
-              {t("twoCards.card1.tag")}
-            </span>
-            <h3 className="font-display text-headline-h2 text-primary mb-4">
-              {t("twoCards.card1.title")}
-            </h3>
-            <p className="font-body text-body-md text-on-surface-variant leading-relaxed">
-              {t("twoCards.card1.body")}
-            </p>
-          </Reveal>
-          <Reveal className="bg-surface-container-low rounded-xl p-8 md:p-12 border border-outline-variant/30" delay={120}>
-            <span className="font-body text-label-sm text-wine-accent uppercase tracking-widest block mb-2">
-              {t("twoCards.card2.tag")}
-            </span>
-            <h3 className="font-display text-headline-h2 text-primary mb-4">
-              {t("twoCards.card2.title")}
-            </h3>
-            <p className="font-body text-body-md text-on-surface-variant leading-relaxed">
-              {t("twoCards.card2.body")}
-            </p>
-          </Reveal>
         </div>
+      </section>
+
+      {/* RELATO DE ORIGEN (B2) — 3 capítulos editoriales alternando foto/texto.
+          El texto reusa las claves origin + twoCards; cada foto es placeholder
+          hasta tener las definitivas (ver StoryChapter). */}
+      <section className="pt-20 md:pt-28 pb-16 md:pb-24 px-margin-mobile md:px-margin-desktop max-w-(--container-max) mx-auto">
+        <div className="space-y-16 md:space-y-28">
+          <StoryChapter
+            tag={t("origin.tag")}
+            title={t("origin.title")}
+            body={t("origin.body")}
+            image={{
+              src: "/images/historia/estacion-francia-sueno.webp",
+              alt: t("origin.imageAlt"),
+            }}
+          />
+          <StoryChapter
+            tag={t("twoCards.card1.tag")}
+            title={t("twoCards.card1.title")}
+            body={t("twoCards.card1.body")}
+            image={{
+              src: "/images/historia/relevo-rueda.webp",
+              alt: t("twoCards.card1.imageAlt"),
+            }}
+            reverse
+          />
+          <StoryChapter
+            tag={t("twoCards.card2.tag")}
+            title={t("twoCards.card2.title")}
+            body={t("twoCards.card2.body")}
+            image={{
+              src: "/images/historia/artesania-barril.webp",
+              alt: t("twoCards.card2.imageAlt"),
+            }}
+          />
+        </div>
+      </section>
+
+      {/* GALERÍA (B3) — grilla "detrás de escena". Fotos placeholder por ahora. */}
+      <section className="pb-section-gap px-margin-mobile md:px-margin-desktop max-w-(--container-max) mx-auto">
+        <Reveal className="text-center mb-10 md:mb-14">
+          <p className="font-accent italic font-light text-wine-accent text-lg md:text-xl tracking-wide mb-2">
+            {t("gallery.eyebrow")}
+          </p>
+          <h2 className="font-display text-headline-h1-mobile md:text-headline-h1 text-primary">
+            {t("gallery.title")}
+          </h2>
+        </Reveal>
+        <ul className="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-4 list-none p-0">
+          {galleryImages.map((g, i) => (
+            <Reveal
+              as="li"
+              key={g.src}
+              delay={i * 60}
+              className="group relative aspect-square overflow-hidden rounded-lg ambient-shadow"
+            >
+              <Image
+                src={g.src}
+                alt={g.alt}
+                fill
+                loading="lazy"
+                className="object-cover transition-transform duration-500 ease-out motion-safe:group-hover:scale-105"
+                sizes="(max-width: 768px) 50vw, 33vw"
+              />
+            </Reveal>
+          ))}
+        </ul>
+        <p className="mt-6 text-center font-body text-label-sm text-outline">
+          {t("gallery.note")}
+        </p>
       </section>
 
       {/* TIMELINE (B4) */}
@@ -112,7 +173,7 @@ export default async function HistoriaPage({
           </p>
           <Button
             href={`/${locale}/staff`}
-            variant="outline"
+            variant="primary"
             size="lg"
             iconRight={<ArrowRight className="h-4 w-4" />}
           >

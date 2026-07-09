@@ -26,7 +26,6 @@ export type FeaturedLineDetail = { label: string; value: string };
 export type FeaturedLineCard = {
   slug: string;
   name: string;
-  tag: string;
   description: string;
   chips: string[];
   details: FeaturedLineDetail[];
@@ -178,12 +177,9 @@ function LineCard({
   viewCollectionLabel: string;
 }) {
   return (
-    <article className="grid grid-cols-1 items-center gap-6 rounded-3xl border border-outline-variant/40 bg-surface p-6 ambient-shadow md:grid-cols-[0.8fr_1.5fr_0.7fr] md:gap-8 md:p-9">
+    <article className="grid h-full grid-cols-1 items-center gap-6 rounded-3xl border border-outline-variant/40 bg-surface p-6 ambient-shadow md:grid-cols-[0.75fr_1.7fr_0.7fr] md:gap-8 md:px-9 md:py-7">
       {/* Identidad de la colección */}
       <div>
-        <span className="mb-1 block font-accent text-lg font-light italic text-wine-accent md:text-xl">
-          {line.tag}
-        </span>
         <h3 className="mb-3 font-display text-headline-h1-mobile leading-none text-primary md:text-headline-h1">
           {line.name}
         </h3>
@@ -212,32 +208,43 @@ function LineCard({
         </Button>
       </div>
 
-      {/* Line-up de botellas — fila única centrada. Las botellas se reparten el
-          ancho por igual (flex-1 basis-0) y encogen hasta caber: sin scroll
-          horizontal (que chocaba con el swipe del carrusel y dejaba la primera
-          botella fuera de alcance) y con altura/ancho estables. */}
-      <div className="flex items-end justify-center gap-3 py-2 sm:gap-5 md:border-x md:border-outline-variant/40 md:px-5">
+      {/* Line-up de botellas — lista semántica (ul/li). Fila única centrada: cada
+          botella se reparte el ancho (grow-0 basis) y encoge hasta caber, sin scroll
+          horizontal (que chocaba con el swipe) y con alto estable entre colecciones. */}
+      <ul className="flex list-none items-end justify-center gap-3 py-2 sm:gap-5 md:border-x md:border-outline-variant/40 md:px-5">
         {line.wines.map((wine) => (
-          <Link
-            key={wine.href}
-            href={wine.href}
-            className="group flex min-w-0 max-w-[136px] flex-1 basis-0 flex-col items-center gap-2"
-          >
-            <span className="relative block aspect-[3/4] w-full">
+          <li key={wine.href} className="flex min-w-0 grow-0 basis-[76px] md:basis-[100px]">
+            <Link
+              href={wine.href}
+              className="group flex w-full flex-col items-center gap-2"
+            >
+              {/* Caja de ALTURA FIJA (no derivada del ancho) + object-cover: recorta el
+                  margen transparente (la botella real ocupa ~25% del ancho del PNG y
+                  está centrada), así se ve grande sin fotos nuevas. Altura fija = todas
+                  las filas miden igual sin importar cuántas botellas → sin blancos por
+                  diferencia de alto entre colecciones, y botellas del mismo tamaño. */}
+              <span className="relative block h-[216px] w-full md:h-[264px]">
+              {/* Sombra de apoyo: la botella "se posa" sobre el piso. No se mueve en
+                  hover, así al levantarse la botella se despega del pedestal. */}
+              <span
+                aria-hidden
+                className="pointer-events-none absolute inset-x-2 bottom-0 h-2.5 rounded-[50%] bg-primary/25 blur-md sm:inset-x-3 sm:h-3"
+              />
               <Image
                 src={wine.image}
                 alt={wine.name}
                 fill
-                className="object-contain object-bottom drop-shadow-[0_14px_18px_rgba(74,14,14,0.2)] transition-transform duration-500 group-hover:-translate-y-1.5 motion-reduce:transition-none"
-                sizes="150px"
+                className="object-cover object-bottom drop-shadow-[0_10px_14px_rgba(74,14,14,0.22)] transition-transform duration-500 group-hover:-translate-y-2 motion-reduce:transition-none"
+                sizes="300px"
               />
-            </span>
-            <span className="flex min-h-[2.5em] items-start justify-center text-center font-body text-xs leading-tight text-on-surface-variant">
-              {wine.label}
-            </span>
-          </Link>
+              </span>
+              <span className="flex min-h-[2.5em] items-start justify-center text-center font-body text-xs leading-tight text-on-surface-variant">
+                {wine.label}
+              </span>
+            </Link>
+          </li>
         ))}
-      </div>
+      </ul>
 
       {/* Detalles de la colección */}
       {line.details.length > 0 && (
