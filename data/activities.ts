@@ -63,22 +63,19 @@ export const experiences: Experience[] = [
     slug: "vendimia-2026",
     name: "Vendimia 2026",
     badge: "Próximamente",
-    image:
-      "https://images.unsplash.com/photo-1559563458-527698bf5295?auto=format&fit=crop&w=1400&q=70",
+    image: "/images/actividades/vendimia-2026.jpg",
   },
   {
     slug: "dia-madres",
     name: "Almuerzo Día de las Madres",
     badge: "Mayo",
-    image:
-      "https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=1400&q=70",
+    image: "/images/actividades/dia-madres.jpg",
   },
   {
     slug: "tren-efe",
     name: "Experiencia Tren EFE",
     badge: "Alianza especial",
-    image:
-      "https://images.unsplash.com/photo-1581262177000-8139a463e531?auto=format&fit=crop&w=1400&q=70",
+    image: "/images/actividades/tren-efe.jpg",
   },
 ];
 

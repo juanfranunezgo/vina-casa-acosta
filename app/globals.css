@@ -8,6 +8,8 @@
   --color-on-primary-container: #cc726d;
   --color-primary-fixed: #ffdad7;
   --color-primary-fixed-dim: #ffb3ad;
+  /* Rojo vino más legible que --primary para acentos/antetítulos pequeños */
+  --color-wine-accent: #7a2530;
 
   --color-secondary: #5c614d;
   --color-secondary-container: #e0e5cc;
@@ -47,6 +49,8 @@
   --font-display: "Libre Caslon Text", Georgia, serif;
   --font-headline: "Libre Caslon Text", Georgia, serif;
   --font-body: "Work Sans", system-ui, -apple-system, sans-serif;
+  /* Acento editorial para antetítulos (Crimson Pro Light Italic) */
+  --font-accent: "Crimson Pro", Georgia, serif;
 
   /* === Sizes (Material 3) === */
   --text-display-lg: 64px;
@@ -140,6 +144,120 @@ body {
   display: none;
 }
 
+/* === Timeline B4 — "Rama columna viva" (página Historia) === */
+
+/* Rama de vid: un solo asset (112 KB) recoloreado al vino de marca vía máscara. */
+.vine {
+  display: block;
+  width: 100%;
+  aspect-ratio: 1897 / 1207;
+  background-color: var(--color-primary);
+  -webkit-mask: url("/ilustraciones/rama-vid.webp") no-repeat center / contain;
+  mask: url("/ilustraciones/rama-vid.webp") no-repeat center / contain;
+}
+
+/* Barrido: la rama "crece" al entrar al viewport (clip-path, GPU-friendly).
+   Unidades consistentes (todo %) para que la interpolación no se descarte. */
+.vine-anim {
+  clip-path: inset(0% 100% 0% 0%);
+}
+/* El observer va en el contenedor (.vine-connector, sin clip): un elemento
+   clipeado a área cero nunca dispara el IntersectionObserver. */
+.vine-connector.is-grown .vine-anim {
+  animation: vine-grow 1.15s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+@keyframes vine-grow {
+  from {
+    clip-path: inset(0% 100% 0% 0%);
+  }
+  to {
+    clip-path: inset(0% 0% 0% 0%);
+  }
+}
+
+/* Borde rasgado orgánico para las fotos de hito (usa el filtro SVG #historia-torn).
+   El drop-shadow sigue la silueta rasgada, no un rectángulo. */
+.torn-edge {
+  filter: url(#historia-torn) drop-shadow(0 12px 22px rgba(74, 14, 14, 0.16));
+}
+
+/* Layout del timeline — mobile-first (columna única) */
+.timeline {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.timeline-item {
+  margin-bottom: clamp(1.5rem, 6vw, 3rem);
+}
+.timeline-card {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  align-items: flex-start;
+}
+.timeline-figure {
+  position: relative;
+  margin: 0;
+  width: min(78%, 20rem);
+  aspect-ratio: 4 / 5;
+  align-self: center;
+}
+.timeline-year {
+  display: block;
+  font-family: var(--font-body);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+  color: var(--color-primary);
+  margin-bottom: 0.4rem;
+}
+.timeline-title-h3 {
+  margin-bottom: 0.6rem;
+}
+.vine-connector {
+  display: block;
+  width: clamp(180px, 62%, 300px);
+  margin: 0.75rem auto 0;
+}
+
+/* Desktop: hitos alternados izq/der, guirnaldas en la banda central */
+@media (min-width: 768px) {
+  .timeline-item {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    column-gap: var(--spacing-gutter);
+    margin-bottom: 0;
+  }
+  .timeline-card {
+    flex-direction: row;
+    align-items: center;
+    gap: 1.75rem;
+    max-width: 40rem;
+  }
+  .timeline-figure {
+    flex: 0 0 clamp(9rem, 15vw, 13rem);
+    width: auto;
+    align-self: center;
+  }
+  .timeline-card--left {
+    grid-column: 1;
+    justify-self: end;
+  }
+  .timeline-card--right {
+    grid-column: 2;
+    justify-self: start;
+    flex-direction: row-reverse;
+    text-align: right;
+  }
+  .vine-connector {
+    grid-column: 1 / -1;
+    width: clamp(300px, 44%, 540px);
+    margin: -1.5rem auto -1.5rem;
+  }
+}
+
 /* === Animación de scroll: fade-in === */
 @keyframes reveal-up {
   from {
@@ -195,6 +313,11 @@ body {
     animation: none;
   }
   .skeleton {
+    animation: none;
+  }
+  .vine-anim,
+  .vine-anim.is-grown {
+    clip-path: none;
     animation: none;
   }
   html {

@@ -237,6 +237,23 @@ export const wines: Wine[] = [
 
 export const wineLines: WineLine[] = ["Ombú", "Lajau", "Estación Francia", "Berá", "Guidaí", "Yaráy Guá"];
 
+/** Slug URL/i18n de cada línea (para anclas en /vinos y claves de mensajes). */
+export const lineSlugs: Record<WineLine, string> = {
+  "Ombú": "ombu",
+  "Lajau": "lajau",
+  "Estación Francia": "estacion-francia",
+  "Berá": "bera",
+  "Guidaí": "guidai",
+  "Yaráy Guá": "yaray-gua",
+};
+
+/** Líneas destacadas en el home (A3), en orden de aparición. */
+export const featuredLineOrder: WineLine[] = ["Ombú", "Lajau", "Estación Francia"];
+
+export function getWinesByLine(line: WineLine): Wine[] {
+  return wines.filter((w) => w.line === line);
+}
+
 export const varieties: Variety[] = [
   "Carmenere",
   "Tannat",

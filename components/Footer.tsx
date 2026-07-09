@@ -64,6 +64,7 @@ export default async function Footer() {
               <li><Link href={lp("/vinos")} className="hover:text-primary transition-colors">{tNav("vinos")}</Link></li>
               <li><Link href={lp("/actividades")} className="hover:text-primary transition-colors">{tNav("actividades")}</Link></li>
               <li><Link href={lp("/tienda")} className="hover:text-primary transition-colors">{tNav("tienda")}</Link></li>
+              <li><Link href={lp("/staff")} className="hover:text-primary transition-colors">{tNav("staff")}</Link></li>
               <li><Link href={lp("/contacto")} className="hover:text-primary transition-colors">{tNav("contacto")}</Link></li>
             </ul>
           </div>

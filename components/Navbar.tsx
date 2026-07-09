@@ -23,6 +23,7 @@ export default function Navbar() {
     { href: "/historia", label: t("historia") },
     { href: "/actividades", label: t("actividades") },
     { href: "/vinos", label: t("vinos") },
+    { href: "/staff", label: t("staff") },
     { href: "/contacto", label: t("contacto") },
   ];
 

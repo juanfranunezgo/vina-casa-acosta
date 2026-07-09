@@ -10,6 +10,10 @@
       "title": "Our story",
       "description": "Three generations of the Acosta family in the Cachapoal Valley. From France '98 to today's winemaking legacy."
     },
+    "staff": {
+      "title": "Staff",
+      "description": "Meet the Viña Casa Acosta team: the people behind every stage, from the soil to the bottle."
+    },
     "vinos": {
       "title": "Our wines",
       "description": "The complete Viña Casa Acosta collection: Ombú, Lajau, Estación Francia, Berá, Guidaí and Yaráy Guá."
@@ -33,6 +37,7 @@
   "nav": {
     "home": "Home",
     "historia": "Our story",
+    "staff": "Staff",
     "actividades": "Experiences",
     "vinos": "Wines",
     "contacto": "Contact",
@@ -72,12 +77,10 @@
   },
   "home": {
     "hero": {
-      "eyebrow": "San Vicente de Tagua Tagua · Cachapoal Valley",
       "title": "A tribute to family",
       "subtitle": "Where life has borne fruit with deep roots, growing dreams across generations.",
       "ctaShop": "Shop",
-      "ctaVisit": "Book a visit",
-      "scrollHint": "Scroll",
+      "ctaVisit": "Visit us",
       "heroAlt": "Cachapoal Valley vineyards at sunset"
     },
     "about": {
@@ -88,10 +91,10 @@
       "cta": "Discover our story",
       "imageAlt": "Detail of the Casa Acosta vineyard",
       "photoAlts": {
-        "vineyard": "Casa Acosta vineyard in the Cachapoal Valley",
-        "founder": "Portrait of founder Nelson Acosta",
-        "guests": "Guests enjoying a tasting at the winery",
-        "family": "Current generation of the Acosta family"
+        "teaching": "Passing down the craft of pruning among the vines",
+        "origins": "The early years of Casa Acosta, preparing the land",
+        "tractor": "Fieldwork in the vineyard's early days",
+        "family": "A mother and daughter walking through the family vineyard"
       },
       "prevPhoto": "Previous photo",
       "nextPhoto": "Next photo"
@@ -111,6 +114,42 @@
         "oak": { "title": "Oak ageing", "desc": "Aged in French and American oak barrels." },
         "limited": { "title": "Limited editions", "desc": "Small productions each harvest." },
         "heritage": { "title": "Family heritage", "desc": "Three generations, one origin." }
+      }
+    },
+    "featuredLines": {
+      "eyebrow": "Our wines",
+      "title": "Featured Lines",
+      "viewCollection": "View the collection",
+      "allCta": "See all wines",
+      "prevLabel": "Previous collection",
+      "nextLabel": "Next collection",
+      "wineCount": "{count, plural, one {# wine} other {# wines}}",
+      "detailLabels": { "estilo": "Style", "crianza": "Ageing", "premio": "Award" },
+      "lines": {
+        "ombu": {
+          "tag": "Cachapoal Reserva",
+          "category": "Reserva",
+          "description": "The gateway to Casa Acosta: three Cachapoal Reservas for every day.",
+          "estilo": "Fruity and approachable",
+          "crianza": "Subtle oak",
+          "premio": ""
+        },
+        "lajau": {
+          "tag": "Ageing & limited editions",
+          "category": "Gran Reserva · Icon",
+          "description": "Small production: limited-edition blends and Gran Reserva built to age.",
+          "estilo": "Complex, age-worthy",
+          "crianza": "12–18 months in French oak",
+          "premio": ""
+        },
+        "estacion-francia": {
+          "tag": "Gran Reserva · France '98",
+          "category": "Gran Reserva",
+          "description": "A tribute to the winery's founding moment, alongside the 1998 World Cup in France.",
+          "estilo": "Structured, age-worthy",
+          "crianza": "French oak",
+          "premio": ""
+        }
       }
     },
     "activities": {
@@ -155,7 +194,7 @@
       "tag": "I · The dream",
       "title": "An origin in Estación Francia",
       "body": "The story begins with Nelson Acosta, a man with deep roots in the land and an unwavering vision. Raised near the mythical Estación Francia, he learned early to read the language of soil and climate. In 1998 he planted the first vines, laying the foundation of an unshakeable legacy.",
-      "imageAlt": "Vineyards at sunset"
+      "imageAlt": "The old Estación Francia at golden hour: the railway tracks and the station's wooden sign"
     },
     "twoCards": {
       "card1": {
@@ -175,55 +214,68 @@
         "m1998": {
           "year": "1998",
           "title": "The dream begins",
-          "description": "Nelson Acosta plants the first vines with a long-term vision."
+          "description": "Nelson Acosta plants the first vines with a long-term vision.",
+          "imageAlt": "Nelson Acosta working the land in the vineyard's early years"
         },
         "m2000": {
           "year": "2000",
           "title": "Roots take hold",
-          "description": "The first vines begin to reveal the unique potential of the soil."
+          "description": "The first vines begin to reveal the unique potential of the soil.",
+          "imageAlt": "Tending the first vines in the vineyard"
         },
         "m2003": {
           "year": "2003",
           "title": "First vintage",
-          "description": "Release of the acclaimed Carmenere Reserva 'ACOSTA'."
+          "description": "Release of the acclaimed Carmenere Reserva 'ACOSTA'.",
+          "imageAlt": "Harvest work with machinery in the vineyard"
         },
         "m2012": {
           "year": "2012",
           "title": "Sustainable expansion",
-          "description": "Adoption of organic practices and a deeper commitment to the environment."
+          "description": "Adoption of organic practices and a deeper commitment to the environment.",
+          "imageAlt": "Rows of vines under sustainable practices"
         },
         "today": {
           "year": "Today",
           "title": "The legacy continues",
-          "description": "Damián Acosta leads the new chapter, true to the family's roots."
+          "description": "Damián Acosta leads the new chapter, true to the family's roots.",
+          "imageAlt": "The Acosta family at the vineyard, carrying on the legacy"
         }
-      }
+      },
+      "photoNote": "Sample photos · to be replaced with real images of each stage."
     },
-    "family": {
-      "title": "Our family",
-      "subtitle": "The people behind every bottle.",
-      "portraitDisclaimer": "Sample portraits · to be replaced with real photographs of the family.",
-      "members": {
-        "damian": {
-          "name": "Damián Acosta",
-          "role": "Co-founder",
-          "bio": "Heir to the family's vision, pushing innovation without losing the roots."
-        },
-        "andrea": {
-          "name": "Andrea Leyton",
-          "role": "Event planner",
-          "bio": "Architect of memorable experiences and host of our home."
-        },
-        "enrique": {
-          "name": "Enrique Pizarro",
-          "role": "Agronomist",
-          "bio": "Guardian of the land, safeguarding quality from the very root."
-        },
-        "alfonso": {
-          "name": "Alfonso Duarte",
-          "role": "Consulting winemaker",
-          "bio": "The alchemist who translates our terroir into world-class wines."
-        }
+    "staffCta": {
+      "text": "Behind this story is a team that makes it possible.",
+      "button": "Meet the team"
+    }
+  },
+  "staff": {
+    "hero": {
+      "eyebrow": "The hands behind the winery",
+      "title": "Staff",
+      "subtitle": "The people behind every bottle."
+    },
+    "portraitDisclaimer": "Andrea's and Alfonso's portraits are samples · to be replaced with real photographs.",
+    "members": {
+      "damian": {
+        "name": "Damián Acosta",
+        "role": "Co-founder",
+        "bio": "As co-founder of Viña Casa Acosta, Damián drives a place where tradition and innovation come together to offer authentic experiences. His commitment shows in every step, always guided by respect for the land and the pursuit of unique moments for each visitor. With a close, family-minded vision, he works to make the winery a place where nature and human warmth can flourish. He also seeks for every wine to carry a personal signature that reflects the identity and passion of the winery — a legacy shared with his father and family that gives life and soul to every glass."
+      },
+      "andrea": {
+        "name": "Andrea Leyton",
+        "role": "Event planner",
+        "bio": "Andrea brings the experiences at Viña Casa Acosta to life with dedication and passion. As Event Planner, she designs every detail so that celebrations and activities reflect the close, family essence that defines the winery. Her warm, professional touch creates unique settings where every visitor feels special, and each moment becomes an unforgettable memory shared as a family."
+      },
+      "enrique": {
+        "name": "Enrique Pizarro",
+        "role": "Agronomist",
+        "bio": "Enrique is the green heart of Viña Casa Acosta. With deep respect for the land, he tends every vine and every leaf as a living legacy. His passion and knowledge guide the growth of our vineyards, ensuring that each cluster reflects the nobility of our terroir. Thanks to his commitment, the winery flourishes with harmony and quality, giving life to wines that tell unique, authentic stories."
+      },
+      "alfonso": {
+        "name": "Alfonso Duarte",
+        "role": "Consulting winemaker",
+        "bio": "Alfonso is the soul behind every bottle of Viña Casa Acosta. With sensitivity and craft, he transforms the nobility of the grapes into wines of character and elegance. His passion and experience are reflected in every glass, where tradition and innovation meet to tell our story. Alfonso works with respect for the land and an absolute commitment to quality, making every harvest unique and memorable."
       }
     }
   },

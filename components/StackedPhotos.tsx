@@ -23,7 +23,7 @@ export default function StackedPhotos({
 
   return (
     <div
-      className={`relative aspect-[4/5] w-full select-none [--peek-x:13%] [--peek-y:-5%] [--peek-scale:0.88] [--peek-rotate:12deg] md:[--peek-x:22%] md:[--peek-y:-8%] md:[--peek-scale:0.82] md:[--peek-rotate:18deg] ${className}`}
+      className={`relative h-full w-full select-none [--peek-x:10%] [--peek-y:-5%] [--peek-scale:0.88] [--peek-rotate:12deg] md:[--peek-x:22%] md:[--peek-y:-8%] md:[--peek-scale:0.82] md:[--peek-rotate:18deg] ${className}`}
       style={{ perspective: "1200px" }}
     >
       {photos.map((photo, i) => {

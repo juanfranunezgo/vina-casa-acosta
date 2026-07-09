@@ -6,6 +6,7 @@ import {
   useRef,
   useState,
   type ReactNode,
+  type TouchEvent as ReactTouchEvent,
 } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import Reveal from "./Reveal";
@@ -77,50 +78,90 @@ export default function AboutSection({
     startTimer();
   }, [length, startTimer]);
 
+  // Swipe táctil: cambia de foto con el dedo sin bloquear el scroll vertical.
+  const touchStartRef = useRef<{ x: number; y: number } | null>(null);
+
+  const handleTouchStart = (e: ReactTouchEvent) => {
+    const t = e.touches[0];
+    touchStartRef.current = { x: t.clientX, y: t.clientY };
+  };
+
+  const handleTouchEnd = (e: ReactTouchEvent) => {
+    const start = touchStartRef.current;
+    if (!start) return;
+    touchStartRef.current = null;
+    const t = e.changedTouches[0];
+    const dx = t.clientX - start.x;
+    const dy = t.clientY - start.y;
+    // Solo swipes claramente horizontales (para no interferir con el scroll).
+    if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy)) {
+      if (dx < 0) handleNext();
+      else handlePrev();
+    }
+  };
+
   return (
     <section className="relative bg-surface py-section-gap px-margin-mobile md:px-margin-desktop overflow-hidden md:overflow-visible">
       <div className="max-w-(--container-max) mx-auto">
         <div className="grid grid-cols-1 md:grid-cols-12 gap-gutter items-center">
-          <Reveal className="md:col-span-5 md:col-start-8 mb-12 md:mb-0">
-            <span className="font-body text-label-sm text-outline uppercase tracking-widest block mb-3">
-              {eyebrow}
-            </span>
-            <h2 className="font-display text-headline-h1 text-primary mb-6 leading-tight">
-              {title}
-            </h2>
-            <p className="font-body text-body-md text-on-surface-variant mb-6 leading-relaxed">
-              {paragraph1}
-            </p>
-            <p className="font-body text-body-md text-on-surface-variant mb-8 leading-relaxed">
-              {paragraph2}
-            </p>
-            {cta}
-          </Reveal>
-          <Reveal className="md:col-span-4 md:col-start-2 md:row-start-1 relative z-10" delay={120}>
-            <StackedPhotos photos={photos} activeIndex={activeIndex} />
+          {/* Texto + CTA. En móvil el wrapper es `display:contents`, así sus hijos
+              entran a la grilla y se reordenan alrededor de la foto (texto arriba,
+              CTA debajo de la foto). En desktop vuelve a un bloque en la columna derecha. */}
+          <div className="contents md:block md:col-span-5 md:col-start-8 md:row-start-1">
+            <Reveal className="order-1">
+              <span
+                className="font-accent italic font-light text-primary block mb-3 tracking-wide"
+                style={{ fontSize: "clamp(1.25rem, 2vw, 1.6rem)" }}
+              >
+                {eyebrow}
+              </span>
+              <h2 className="font-display text-headline-h1-mobile md:text-headline-h1 text-primary mb-6 leading-tight">
+                {title}
+              </h2>
+              <p className="font-body text-body-md text-on-surface-variant mb-6 leading-relaxed">
+                {paragraph1}
+              </p>
+              <p className="font-body text-body-md text-on-surface-variant leading-relaxed">
+                {paragraph2}
+              </p>
+            </Reveal>
+            <Reveal className="order-3 md:mt-8 flex justify-center md:block" delay={160}>
+              {cta}
+            </Reveal>
+          </div>
+
+          {/* Foto — carrusel: swipe táctil + flechas pegadas debajo de la imagen */}
+          <Reveal className="order-2 md:col-span-4 md:col-start-2 md:row-start-1 relative z-10" delay={120}>
+            <div
+              className="relative aspect-[4/5] w-[88%] max-w-[24rem] mx-auto md:w-full md:max-w-none"
+              onTouchStart={handleTouchStart}
+              onTouchEnd={handleTouchEnd}
+            >
+              <StackedPhotos photos={photos} activeIndex={activeIndex} />
+            </div>
+
+            {length > 1 && (
+              <div className="flex gap-3 justify-center mt-3">
+                <button
+                  type="button"
+                  onClick={handlePrev}
+                  aria-label={prevLabel}
+                  className="h-11 w-11 rounded-full bg-primary text-on-primary flex items-center justify-center transition-colors hover:bg-primary/85 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-surface"
+                >
+                  <ChevronLeft className="h-5 w-5" />
+                </button>
+                <button
+                  type="button"
+                  onClick={handleNext}
+                  aria-label={nextLabel}
+                  className="h-11 w-11 rounded-full bg-primary text-on-primary flex items-center justify-center transition-colors hover:bg-primary/85 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-surface"
+                >
+                  <ChevronRight className="h-5 w-5" />
+                </button>
+              </div>
+            )}
           </Reveal>
         </div>
-
-        {length > 1 && (
-          <div className="flex gap-4 justify-center mt-10 md:mt-14">
-            <button
-              type="button"
-              onClick={handlePrev}
-              aria-label={prevLabel}
-              className="h-11 w-11 rounded-full bg-primary text-on-primary flex items-center justify-center transition-colors hover:bg-primary/85 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-surface"
-            >
-              <ChevronLeft className="h-5 w-5" />
-            </button>
-            <button
-              type="button"
-              onClick={handleNext}
-              aria-label={nextLabel}
-              className="h-11 w-11 rounded-full bg-primary text-on-primary flex items-center justify-center transition-colors hover:bg-primary/85 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-surface"
-            >
-              <ChevronRight className="h-5 w-5" />
-            </button>
-          </div>
-        )}
       </div>
     </section>
   );

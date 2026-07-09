@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { NextIntlClientProvider, hasLocale } from "next-intl";
 import { getTranslations, setRequestLocale } from "next-intl/server";
-import { Libre_Caslon_Text, Work_Sans } from "next/font/google";
+import { Libre_Caslon_Text, Work_Sans, Crimson_Pro } from "next/font/google";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import CartDrawer from "@/components/CartDrawer";
@@ -21,6 +21,15 @@ const libreCaslon = Libre_Caslon_Text({
 const workSans = Work_Sans({
   variable: "--font-body",
   weight: ["400", "500", "600"],
+  subsets: ["latin"],
+  display: "swap",
+});
+
+// Acento editorial para los antetítulos de la sección A (Crimson Pro Light Italic)
+const crimsonPro = Crimson_Pro({
+  variable: "--font-accent",
+  weight: ["300"],
+  style: ["italic"],
   subsets: ["latin"],
   display: "swap",
 });
@@ -92,7 +101,7 @@ export default async function LocaleLayout({
   return (
     <html
       lang={htmlLang}
-      className={`${libreCaslon.variable} ${workSans.variable} h-full antialiased`}
+      className={`${libreCaslon.variable} ${workSans.variable} ${crimsonPro.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col bg-background text-on-background">
         <NextIntlClientProvider>

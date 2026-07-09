@@ -77,4 +77,4 @@ Cada página tiene una letra y cada sección un número. Cuando el usuario diga 
 
 ## Bitácora / handoff
 
-Cuando se cierra una sesión grande, queda un `SESION-AAAA-MM-DD.md` en `vina-casa-acosta/web/` (un nivel arriba). Sirve para retomar: qué se hizo, decisiones, blockers, cómo continuar. El último está en [`../SESION-2026-05-17.md`](../SESION-2026-05-17.md). Los briefs para el cliente (fotos, contenido) también viven ahí: `BRIEF-FOTOS.md`, `CONTENT_BRIEF.md`.
+Cuando se cierra una sesión grande, queda un `SESION-AAAA-MM-DD.md` en `vina-casa-acosta/web/` (un nivel arriba). Sirve para retomar: qué se hizo, decisiones, blockers, cómo continuar. El último está en [`../SESION-2026-07-08.md`](../SESION-2026-07-08.md). Los briefs para el cliente (fotos, contenido) también viven ahí: `BRIEF-FOTOS.md`, `CONTENT_BRIEF.md`.

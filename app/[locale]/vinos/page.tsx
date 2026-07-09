@@ -3,7 +3,7 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import Reveal from "@/components/Reveal";
-import { wines, wineLines } from "@/data/wines";
+import { wines, wineLines, lineSlugs } from "@/data/wines";
 
 export async function generateMetadata({
   params,
@@ -53,7 +53,8 @@ export default async function VinosPage({ params }: PageProps<"/[locale]/vinos">
         return (
           <section
             key={line}
-            className={`px-margin-mobile md:px-margin-desktop py-16 ${
+            id={lineSlugs[line]}
+            className={`scroll-mt-24 px-margin-mobile md:px-margin-desktop py-16 ${
               lineIdx % 2 === 0 ? "bg-surface" : "bg-surface-container-low"
             }`}
           >
