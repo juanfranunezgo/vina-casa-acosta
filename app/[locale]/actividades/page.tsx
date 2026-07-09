@@ -66,10 +66,10 @@ export default async function ActividadesPage({
   return (
     <>
       {/* HERO (D1) — cinematográfico full-bleed sobre la foto grupal de un evento
-          en el viñedo (mismo patrón que Inicio e Historia). Texto claro anclado
-          abajo con degradados para legibilidad; el navbar pasa a modo claro sobre
-          este hero (ver Navbar → hasDarkHero incluye /actividades). */}
-      <section className="relative flex min-h-[92svh] w-full items-end overflow-hidden md:min-h-screen">
+          en el viñedo (mismo patrón que Inicio e Historia). Texto claro en la
+          mitad-baja con degradados para legibilidad; el navbar pasa a modo claro
+          sobre este hero (ver Navbar → hasDarkHero incluye /actividades). */}
+      <section className="relative flex min-h-[92svh] w-full flex-col overflow-hidden md:min-h-screen">
         <Image
           src="/images/actividades/hero-grupal.webp"
           alt={t("hero.imageAlt")}
@@ -81,11 +81,15 @@ export default async function ActividadesPage({
         />
         {/* Degradados: base fuerte para el texto, lateral izquierdo sutil y una
             franja superior que oscurece el cielo detrás del navbar claro. */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/35 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/45 to-transparent" />
         <div className="absolute inset-0 bg-gradient-to-r from-black/45 via-black/10 to-transparent" />
         <div className="absolute inset-x-0 top-0 h-40 bg-gradient-to-b from-black/50 to-transparent" />
 
-        <div className="relative z-10 w-full px-margin-mobile pt-32 pb-14 md:px-margin-desktop md:pb-20">
+        {/* Espaciador (en flujo): empuja el bloque a la mitad-baja — el ante-título
+            arranca ~53% del alto. Al ir en el flujo, en pantallas chicas la sección
+            crece en vez de recortar el texto (overflow-hidden solo clipa la foto). */}
+        <div aria-hidden="true" className="min-h-[48svh] shrink-0 md:min-h-[53vh]" />
+        <div className="relative z-10 w-full px-margin-mobile pb-14 md:px-margin-desktop md:pb-20">
           <div className="mx-auto max-w-(--container-max)">
             <div className="max-w-3xl">
               <Reveal delay={120}>
@@ -106,27 +110,26 @@ export default async function ActividadesPage({
                 </h1>
               </Reveal>
               <Reveal delay={320}>
-                <p className="mb-9 max-w-2xl font-body text-body-lg text-on-primary/90 drop-shadow-[0_2px_12px_rgba(0,0,0,0.5)]">
+                <p className="max-w-2xl font-body text-body-lg text-on-primary/90 drop-shadow-[0_2px_12px_rgba(0,0,0,0.5)]">
                   {t("hero.subtitle")}
                 </p>
-              </Reveal>
-              <Reveal delay={420}>
-                <ActivitiesTabs
-                  variant="onDark"
-                  labels={{
-                    tours: t("hero.tabs.tours"),
-                    experiences: t("hero.tabs.experiences"),
-                    events: t("hero.tabs.events"),
-                  }}
-                />
               </Reveal>
             </div>
           </div>
         </div>
       </section>
 
+      {/* SUB-NAV DE SECCIÓN (D1b) — barra sticky debajo del hero (scroll-spy). */}
+      <ActivitiesTabs
+        labels={{
+          tours: t("hero.tabs.tours"),
+          experiences: t("hero.tabs.experiences"),
+          events: t("hero.tabs.events"),
+        }}
+      />
+
       {/* TOURS */}
-      <section id="tours" className="py-section-gap px-margin-mobile md:px-margin-desktop scroll-mt-24">
+      <section id="tours" className="py-section-gap px-margin-mobile md:px-margin-desktop scroll-mt-40">
         <div className="max-w-(--container-max) mx-auto">
           <Reveal className="mb-12 md:w-2/3">
             <h2 className="font-display text-headline-h1 text-primary mb-4">
@@ -226,7 +229,7 @@ export default async function ActividadesPage({
       </section>
 
       {/* EXPERIENCIAS */}
-      <section id="experiencias" className="bg-surface-container-low py-section-gap px-margin-mobile md:px-margin-desktop scroll-mt-24">
+      <section id="experiencias" className="bg-surface-container-low py-section-gap px-margin-mobile md:px-margin-desktop scroll-mt-40">
         <div className="max-w-(--container-max) mx-auto">
           <Reveal className="text-center mb-12">
             <h2 className="font-display text-headline-h1 text-primary mb-4">
@@ -262,7 +265,7 @@ export default async function ActividadesPage({
       </section>
 
       {/* EVENTOS */}
-      <section id="eventos" className="py-section-gap px-margin-mobile md:px-margin-desktop scroll-mt-24">
+      <section id="eventos" className="py-section-gap px-margin-mobile md:px-margin-desktop scroll-mt-40">
         <div className="max-w-(--container-max) mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
           <Reveal>
             <p className="font-body text-label-sm uppercase tracking-[0.3em] text-outline mb-4">

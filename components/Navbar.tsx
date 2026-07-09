@@ -146,12 +146,7 @@ export default function Navbar() {
                             href={localePath(`/actividades/${tour.slug}`)}
                             className="group/item flex items-center justify-between gap-3 px-3.5 py-2.5 rounded-lg text-on-surface-variant hover:bg-primary/5 hover:text-primary transition-colors"
                           >
-                            <span className="flex items-center gap-2 font-body text-body-md">
-                              {tour.premium && (
-                                <span className="text-primary" aria-hidden="true">
-                                  ★
-                                </span>
-                              )}
+                            <span className="font-body text-body-md">
                               {tTours(`${tour.slug}.name`)}
                             </span>
                             <ArrowRight
