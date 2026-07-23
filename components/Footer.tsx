@@ -1,14 +1,16 @@
 import Link from "next/link";
 import Image from "next/image";
 import { getLocale, getTranslations } from "next-intl/server";
-import { MapPin, Clock, Mail, Phone, Camera, Globe2, Star } from "lucide-react";
+import { MapPin, Clock, Mail, Phone, Globe2, Star } from "lucide-react";
+import InstagramIcon from "@/components/icons/InstagramIcon";
 import {
   CONTACT_PHONE_DISPLAY,
   CONTACT_WHATSAPP_URL,
+  INSTAGRAM_URL,
 } from "@/lib/contact";
 
 const socialLinks = [
-  { href: "#", key: "instagram" as const, Icon: Camera },
+  { href: INSTAGRAM_URL, key: "instagram" as const, Icon: InstagramIcon },
   { href: "#", key: "tripadvisor" as const, Icon: Globe2 },
   { href: "#", key: "google" as const, Icon: Star },
 ];
@@ -102,16 +104,21 @@ export default async function Footer() {
             </ul>
 
             <div className="flex gap-3 mt-6">
-              {socialLinks.map(({ key, href, Icon }) => (
-                <a
-                  key={key}
-                  href={href}
-                  aria-label={t(`social.${key}`)}
-                  className="w-10 h-10 rounded-full border border-outline-variant flex items-center justify-center text-primary hover:bg-primary hover:text-on-primary hover:border-primary transition-colors"
-                >
-                  <Icon className="h-4 w-4" aria-hidden="true" />
-                </a>
-              ))}
+              {socialLinks.map(({ key, href, Icon }) => {
+                const external = href.startsWith("http");
+                return (
+                  <a
+                    key={key}
+                    href={href}
+                    target={external ? "_blank" : undefined}
+                    rel={external ? "noopener noreferrer" : undefined}
+                    aria-label={t(`social.${key}`)}
+                    className="w-10 h-10 rounded-full border border-outline-variant flex items-center justify-center text-primary hover:bg-primary hover:text-on-primary hover:border-primary transition-colors"
+                  >
+                    <Icon className="h-4 w-4" aria-hidden="true" />
+                  </a>
+                );
+              })}
             </div>
           </div>
         </div>

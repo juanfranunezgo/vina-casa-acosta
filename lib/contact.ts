@@ -10,3 +10,6 @@ export const CONTACT_PHONE_E164 = "56966740633";
 
 export const CONTACT_WHATSAPP_URL = `https://wa.me/${CONTACT_PHONE_E164}`;
 export const CONTACT_TEL_URL = `tel:+${CONTACT_PHONE_E164}`;
+
+/** Perfil oficial de Instagram — canal donde se anuncian fechas y eventos. */
+export const INSTAGRAM_URL = "https://www.instagram.com/vinacasaacosta/";
