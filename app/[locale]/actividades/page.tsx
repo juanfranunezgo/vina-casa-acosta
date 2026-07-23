@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Check, CheckCircle2, Clock, CalendarDays, MessageCircle, ArrowUpRight, ArrowRight } from "lucide-react";
@@ -134,7 +135,7 @@ export default async function ActividadesPage({
       {/* TOURS */}
       <section id="tours" className="py-section-gap px-margin-mobile md:px-margin-desktop scroll-mt-48">
         <div className="max-w-(--container-max) mx-auto">
-          <Reveal className="mb-12 max-w-2xl mx-auto text-center">
+          <Reveal className="mb-16 md:mb-20 max-w-2xl mx-auto text-center">
             <span
               className="font-accent italic font-light text-primary block mb-2"
               style={{ fontSize: "clamp(1.15rem, 2.4vw, 1.6rem)" }}
@@ -155,10 +156,17 @@ export default async function ActividadesPage({
               return (
                 <Reveal key={tour.slug} delay={idx * 100}>
                   <article
-                    className={`bg-surface-container-low rounded-xl overflow-hidden group h-full flex flex-col hover:-translate-y-1 hover:shadow-[0_24px_48px_-12px_rgba(74,14,14,0.12)] transition-all duration-300 ${
+                    className={`relative bg-surface-container-low rounded-xl overflow-hidden group h-full flex flex-col hover:-translate-y-1 hover:shadow-[0_24px_48px_-12px_rgba(74,14,14,0.12)] transition-all duration-300 ${
                       idx === 1 ? "md:-mt-8 ring-1 ring-primary/25 ambient-shadow-lg" : ""
                     }`}
                   >
+                    {/* La tarjeta completa enlaza al detalle; el botón "Reservar"
+                        (z superior) salta directo a la reserva sin anidar <a>. */}
+                    <Link
+                      href={`/${locale}/actividades/${tour.slug}`}
+                      className="absolute inset-0 z-[1]"
+                      aria-label={tTour(`${tour.slug}.name`)}
+                    />
                     <div className="relative h-64 overflow-hidden">
                       <Image
                         src={tour.image}
@@ -196,9 +204,10 @@ export default async function ActividadesPage({
                         ))}
                       </ul>
                       <Button
-                        href={`/${locale}/actividades/${tour.slug}`}
+                        href={`/${locale}/actividades/${tour.slug}#reserva`}
                         variant={tour.premium ? "primary" : "outline"}
                         fullWidth
+                        className="z-[2]"
                       >
                         {tour.premium ? t("tours.reservePremium") : t("tours.reserveStandard")}
                       </Button>
@@ -210,7 +219,7 @@ export default async function ActividadesPage({
           </div>
 
           <Reveal className="text-center mb-8">
-            <p className="font-body text-label-sm uppercase tracking-[0.3em] text-primary">
+            <p className="font-body text-label-sm font-bold uppercase tracking-[0.3em] text-primary">
               {t("tours.planTitle")}
             </p>
           </Reveal>
