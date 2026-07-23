@@ -517,6 +517,8 @@
       "phonePlaceholder": "+56 9 ...",
       "people": "Personas",
       "date": "Fecha",
+      "note": "Nota adicional",
+      "notePlaceholder": "¿Algo que debamos saber? (opcional)",
       "submitIdle": "Solicitar reserva",
       "submitting": "Enviando…",
       "success": "¡Solicitud enviada!",

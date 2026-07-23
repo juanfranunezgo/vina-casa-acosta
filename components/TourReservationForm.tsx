@@ -25,6 +25,7 @@ export default function TourReservationForm({ tourName }: Props) {
   const [phone, setPhone] = useState("");
   const [people, setPeople] = useState("");
   const [date, setDate] = useState("");
+  const [note, setNote] = useState("");
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -37,6 +38,7 @@ export default function TourReservationForm({ tourName }: Props) {
         setPhone("");
         setPeople("");
         setDate("");
+        setNote("");
         setStatus("idle");
       }, 3500);
     }, 700);
@@ -48,6 +50,7 @@ export default function TourReservationForm({ tourName }: Props) {
       name && `${t("name")}: ${name}`,
       people && `${t("people")}: ${people}`,
       date && `${t("date")}: ${date}`,
+      note && `${t("note")}: ${note}`,
     ].filter(Boolean);
     return `${CONTACT_WHATSAPP_URL}?text=${encodeURIComponent(lines.join("\n"))}`;
   };
@@ -109,6 +112,16 @@ export default function TourReservationForm({ tourName }: Props) {
             value={date}
             onChange={(e) => setDate(e.target.value)}
             className={`${inputClass} tabular-nums`}
+          />
+        </div>
+        <div className="sm:col-span-2">
+          <label className={labelClass}>{t("note")}</label>
+          <textarea
+            value={note}
+            onChange={(e) => setNote(e.target.value)}
+            placeholder={t("notePlaceholder")}
+            rows={3}
+            className={`${inputClass} resize-none`}
           />
         </div>
       </div>

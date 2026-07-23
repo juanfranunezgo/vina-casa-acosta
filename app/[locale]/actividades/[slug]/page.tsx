@@ -386,8 +386,6 @@ export default async function TourDetailPage({
                 className="object-cover"
                 sizes="(max-width: 1024px) 100vw, 45vw"
               />
-              {/* Velo que funde la costura izquierda de la foto con el panel del form (desktop) */}
-              <div className="absolute inset-0 hidden lg:block bg-[linear-gradient(to_right,var(--color-surface)_0%,transparent_12%)]" />
             </div>
           </div>
         </div>
