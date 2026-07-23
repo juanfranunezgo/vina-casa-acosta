@@ -486,6 +486,8 @@
   "tourDetail": {
     "backToActivities": "Back to activities",
     "premium": "Premium",
+    "introImageAlt": "Carved Viña Casa Acosta sign among the vineyard's vines",
+    "reserveImageAlt": "Couple on a swing among the vineyard vines",
     "placeLabel": "Location",
     "placeValue": "Viña Casa Acosta",
     "durationLabel": "Duration",

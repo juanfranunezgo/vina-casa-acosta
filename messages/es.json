@@ -486,6 +486,8 @@
   "tourDetail": {
     "backToActivities": "Volver a actividades",
     "premium": "Premium",
+    "introImageAlt": "Cartel tallado de Viña Casa Acosta entre las parras del viñedo",
+    "reserveImageAlt": "Pareja en un columpio entre las parras del viñedo",
     "placeLabel": "Lugar",
     "placeValue": "Viña Casa Acosta",
     "durationLabel": "Duración",

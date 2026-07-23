@@ -163,14 +163,27 @@ export default async function TourDetailPage({
           </div>
 
           <div className="py-12 md:py-16">
-            <div className="relative max-w-3xl pl-6 border-l-2 border-primary/25">
-              <Grape
-                className="absolute -left-[13px] top-1 h-6 w-6 text-wine-accent bg-surface rounded-full p-0.5"
-                aria-hidden="true"
-              />
-              <p className="font-display text-2xl md:text-3xl text-on-surface/90 leading-relaxed">
-                {intro}
-              </p>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-center">
+              <div className="relative pl-6 border-l-2 border-primary/25">
+                <Grape
+                  className="absolute -left-[13px] top-1 h-6 w-6 text-wine-accent bg-surface rounded-full p-0.5"
+                  aria-hidden="true"
+                />
+                <p className="font-display text-2xl md:text-3xl text-on-surface/90 leading-relaxed">
+                  {intro}
+                </p>
+              </div>
+              <Reveal delay={120}>
+                <div className="relative aspect-[4/3] rounded-2xl overflow-hidden ambient-shadow-lg ring-1 ring-outline-variant/30">
+                  <Image
+                    src="/images/actividades/letrero-vina.webp"
+                    alt={t("introImageAlt")}
+                    fill
+                    className="object-cover"
+                    sizes="(max-width: 1024px) 100vw, 50vw"
+                  />
+                </div>
+              </Reveal>
             </div>
 
             {/* Dd2 — Sub-nav ancla (misma pastilla flotante del resto del sitio) */}
@@ -360,9 +373,22 @@ export default async function TourDetailPage({
         id="reserva"
         className="bg-surface-container-low border-t border-outline-variant/30 py-section-gap px-margin-mobile md:px-margin-desktop scroll-mt-24"
       >
-        <div className="max-w-3xl mx-auto">
-          <div className="bg-surface rounded-2xl ambient-shadow-lg ring-1 ring-outline-variant/40 p-8 md:p-12">
-            <TourReservationForm tourName={name} />
+        <div className="max-w-(--container-max) mx-auto">
+          <div className="grid grid-cols-1 lg:grid-cols-[1.1fr_0.9fr] overflow-hidden rounded-2xl bg-surface ambient-shadow-lg ring-1 ring-outline-variant/40">
+            <div className="p-8 md:p-12">
+              <TourReservationForm tourName={name} />
+            </div>
+            <div className="relative order-first min-h-[260px] lg:order-none">
+              <Image
+                src="/images/actividades/pareja-columpio.webp"
+                alt={t("reserveImageAlt")}
+                fill
+                className="object-cover"
+                sizes="(max-width: 1024px) 100vw, 45vw"
+              />
+              {/* Velo que funde la costura izquierda de la foto con el panel del form (desktop) */}
+              <div className="absolute inset-0 hidden lg:block bg-[linear-gradient(to_right,var(--color-surface)_0%,transparent_12%)]" />
+            </div>
           </div>
         </div>
       </section>
