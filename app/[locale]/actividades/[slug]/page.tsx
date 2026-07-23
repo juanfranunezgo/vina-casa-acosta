@@ -220,7 +220,7 @@ export default async function TourDetailPage({
         <div className="max-w-(--container-max) mx-auto grid grid-cols-1 lg:grid-cols-3 gap-10 lg:gap-14">
           <div className="lg:col-span-2">
             <Reveal>
-              <span className="block h-px w-12 bg-primary/40 mb-5" />
+              <span className="block h-px w-12 bg-wine-accent/60 mb-5" />
               <h2 className="font-display text-headline-h2 text-primary mb-6">
                 {t("whatIncludes")}
               </h2>
@@ -243,7 +243,7 @@ export default async function TourDetailPage({
 
               <div className="flex items-center gap-2.5 mb-4">
                 <Wine className="h-5 w-5 text-wine-accent" aria-hidden="true" />
-                <h3 className="font-body text-label-sm uppercase tracking-widest text-primary">
+                <h3 className="font-body text-label-sm uppercase tracking-widest text-wine-accent">
                   {t("tastingLabel")}
                 </h3>
               </div>
@@ -291,7 +291,7 @@ export default async function TourDetailPage({
                 <div className="absolute inset-0 bg-gradient-to-t from-[#1a0203]/25 to-transparent" />
               </div>
               <div className="p-8">
-                <p className="font-body text-label-sm uppercase tracking-[0.2em] text-outline mb-2">
+                <p className="font-body text-label-sm uppercase tracking-[0.2em] text-wine-accent mb-2">
                   {t("priceLabel")}
                 </p>
                 <div className="flex items-baseline gap-2">
@@ -349,7 +349,7 @@ export default async function TourDetailPage({
       >
         <div className="max-w-(--container-max) mx-auto">
           <Reveal>
-            <span className="block h-px w-12 bg-primary/40 mb-5" />
+            <span className="block h-px w-12 bg-wine-accent/60 mb-5" />
             <h2 className="font-display text-headline-h2 text-primary mb-8">{t("galleryTitle")}</h2>
             <div className="grid grid-cols-2 md:grid-cols-3 gap-gutter">
               {Array.from({ length: 6 }).map((_, i) => (
@@ -396,7 +396,7 @@ export default async function TourDetailPage({
         <section className="bg-surface py-section-gap px-margin-mobile md:px-margin-desktop">
           <div className="max-w-(--container-max) mx-auto">
             <Reveal className="mb-10">
-              <span className="block h-px w-12 bg-primary/40 mb-5" />
+              <span className="block h-px w-12 bg-wine-accent/60 mb-5" />
               <h2 className="font-display text-headline-h2 text-primary">{t("otherTours")}</h2>
             </Reveal>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-gutter">
