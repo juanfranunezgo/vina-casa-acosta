@@ -491,7 +491,7 @@
     "durationLabel": "Duración",
     "participantsLabel": "Participantes",
     "reservationsLabel": "Reservas",
-    "nav": { "detail": "Detalle", "gallery": "Galería", "reserve": "Reserva" },
+    "nav": { "detail": "Detalle", "gallery": "Galería", "reserve": "Reserva", "aria": "Secciones del tour" },
     "whatIncludes": "¿Qué incluye?",
     "duringExperience": "Durante la experiencia disfrutarás de:",
     "tastingLabel": "Degustación",

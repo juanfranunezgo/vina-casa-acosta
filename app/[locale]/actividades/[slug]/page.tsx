@@ -15,6 +15,7 @@ import {
   UtensilsCrossed,
   Images,
   Grape,
+  ListChecks,
 } from "lucide-react";
 import Reveal from "@/components/Reveal";
 import Button from "@/components/ui/Button";
@@ -147,8 +148,8 @@ export default async function TourDetailPage({
             <div className="grid grid-cols-2 lg:grid-cols-4 divide-y divide-x divide-outline-variant/25 lg:divide-y-0">
               {ficha.map(({ icon: Icon, label, value }) => (
                 <div key={label} className="flex items-start gap-3.5 p-6 md:p-7">
-                  <div className="h-11 w-11 rounded-full bg-primary-container flex items-center justify-center shrink-0 shadow-[0_6px_14px_-6px_rgba(42,0,2,0.5)]">
-                    <Icon className="h-5 w-5 text-on-primary" aria-hidden="true" />
+                  <div className="h-11 w-11 rounded-full bg-wine-accent/10 flex items-center justify-center shrink-0">
+                    <Icon className="h-5 w-5 text-wine-accent" aria-hidden="true" />
                   </div>
                   <div>
                     <p className="font-body text-label-sm uppercase tracking-wider text-outline mb-1">
@@ -164,7 +165,7 @@ export default async function TourDetailPage({
           <div className="py-12 md:py-16">
             <div className="relative max-w-3xl pl-6 border-l-2 border-primary/25">
               <Grape
-                className="absolute -left-[13px] top-1 h-6 w-6 text-primary-container bg-surface rounded-full p-0.5"
+                className="absolute -left-[13px] top-1 h-6 w-6 text-wine-accent bg-surface rounded-full p-0.5"
                 aria-hidden="true"
               />
               <p className="font-display text-2xl md:text-3xl text-on-surface/90 leading-relaxed">
@@ -172,20 +173,24 @@ export default async function TourDetailPage({
               </p>
             </div>
 
-            {/* Dd2 — Sub-nav ancla (centrado) */}
+            {/* Dd2 — Sub-nav ancla (misma pastilla flotante del resto del sitio) */}
             <div className="mt-12 flex justify-center">
-              <nav className="inline-flex flex-wrap items-center justify-center gap-1 p-1 rounded-full bg-surface border border-outline-variant/40 ambient-shadow">
+              <nav
+                aria-label={t("nav.aria")}
+                className="inline-flex flex-wrap items-center justify-center gap-1 p-1 rounded-full bg-surface border border-outline-variant/40 ambient-shadow"
+              >
                 {[
-                  { href: "#detalle", label: t("nav.detail") },
-                  { href: "#galeria", label: t("nav.gallery") },
-                  { href: "#reserva", label: t("nav.reserve") },
-                ].map((link) => (
+                  { href: "#detalle", label: t("nav.detail"), Icon: ListChecks },
+                  { href: "#galeria", label: t("nav.gallery"), Icon: Images },
+                  { href: "#reserva", label: t("nav.reserve"), Icon: CalendarDays },
+                ].map(({ href, label, Icon }) => (
                   <a
-                    key={link.href}
-                    href={link.href}
-                    className="px-6 py-2 rounded-full font-body text-label-sm uppercase tracking-wider font-semibold text-on-surface-variant hover:bg-primary hover:text-on-primary transition-all duration-200"
+                    key={href}
+                    href={href}
+                    className="inline-flex min-h-11 items-center gap-2 px-4 md:px-5 py-2 rounded-full font-body text-label-sm uppercase tracking-wider font-semibold text-on-surface-variant hover:bg-primary hover:text-on-primary transition-all duration-200"
                   >
-                    {link.label}
+                    <Icon className="h-4 w-4 shrink-0" aria-hidden="true" />
+                    {label}
                   </a>
                 ))}
               </nav>
@@ -215,8 +220,8 @@ export default async function TourDetailPage({
                     key={item}
                     className="flex items-start gap-3.5 px-5 py-4 font-body text-body-md text-on-surface"
                   >
-                    <span className="h-7 w-7 rounded-full bg-primary-container flex items-center justify-center shrink-0 mt-0.5">
-                      <Check className="h-4 w-4 text-on-primary" aria-hidden="true" />
+                    <span className="h-7 w-7 rounded-full bg-wine-accent/10 flex items-center justify-center shrink-0 mt-0.5">
+                      <Check className="h-4 w-4 text-wine-accent" aria-hidden="true" />
                     </span>
                     {item}
                   </li>
@@ -224,7 +229,7 @@ export default async function TourDetailPage({
               </ul>
 
               <div className="flex items-center gap-2.5 mb-4">
-                <Wine className="h-5 w-5 text-primary" aria-hidden="true" />
+                <Wine className="h-5 w-5 text-wine-accent" aria-hidden="true" />
                 <h3 className="font-body text-label-sm uppercase tracking-widest text-primary">
                   {t("tastingLabel")}
                 </h3>
@@ -235,7 +240,7 @@ export default async function TourDetailPage({
                     key={w}
                     className="flex items-start gap-3 bg-surface rounded-md pl-4 pr-5 py-3.5 border-l-[3px] border-primary/70 shadow-[0_2px_10px_-6px_rgba(74,14,14,0.15)] font-body text-body-md text-on-surface"
                   >
-                    <Grape className="h-4 w-4 text-primary-container mt-1 shrink-0" aria-hidden="true" />
+                    <Grape className="h-4 w-4 text-wine-accent mt-1 shrink-0" aria-hidden="true" />
                     {w}
                   </li>
                 ))}
@@ -244,13 +249,13 @@ export default async function TourDetailPage({
               {/* Callout maridaje + cierre */}
               <div className="rounded-xl bg-primary/5 border border-primary/12 p-6 space-y-4">
                 <p className="flex items-start gap-3 font-body text-body-md text-on-surface">
-                  <UtensilsCrossed className="h-5 w-5 text-primary mt-0.5 shrink-0" aria-hidden="true" />
+                  <UtensilsCrossed className="h-5 w-5 text-wine-accent mt-0.5 shrink-0" aria-hidden="true" />
                   <span>
                     <span className="font-semibold">{t("pairingLabel")}:</span> {pairing}
                   </span>
                 </p>
                 <p className="flex items-start gap-3 font-body text-body-md text-on-surface">
-                  <Wine className="h-5 w-5 text-primary mt-0.5 shrink-0" aria-hidden="true" />
+                  <Wine className="h-5 w-5 text-wine-accent mt-0.5 shrink-0" aria-hidden="true" />
                   <span>
                     <span className="font-semibold">{t("atCloseLabel")}:</span> {closing}
                   </span>
@@ -288,11 +293,11 @@ export default async function TourDetailPage({
 
                 <ul className="space-y-3.5 my-7">
                   <li className="flex items-center gap-3 font-body text-body-md text-on-surface">
-                    <Clock className="h-4 w-4 text-primary shrink-0" aria-hidden="true" />
+                    <Clock className="h-4 w-4 text-wine-accent shrink-0" aria-hidden="true" />
                     {duration}
                   </li>
                   <li className="flex items-center gap-3 font-body text-body-md text-on-surface">
-                    <Users className="h-4 w-4 text-primary shrink-0" aria-hidden="true" />
+                    <Users className="h-4 w-4 text-wine-accent shrink-0" aria-hidden="true" />
                     {groupFrom}
                   </li>
                 </ul>
@@ -313,7 +318,7 @@ export default async function TourDetailPage({
                       key={c}
                       className="font-body text-body-md text-on-surface-variant flex items-start gap-2.5 leading-snug"
                     >
-                      <span className="h-1.5 w-1.5 rounded-full bg-primary-container mt-2 shrink-0" aria-hidden="true" />
+                      <span className="h-1.5 w-1.5 rounded-full bg-wine-accent mt-2 shrink-0" aria-hidden="true" />
                       {c}
                     </li>
                   ))}
