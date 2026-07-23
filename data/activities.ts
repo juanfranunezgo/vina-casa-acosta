@@ -29,7 +29,7 @@ export const tours: Tour[] = [
     minPeople: 2,
     highlights: ["3 vinos Reserva", "Quesos locales", "Recorrido por viñedo"],
     image:
-      "https://images.unsplash.com/photo-1559827260-dc66d52bef19?auto=format&fit=crop&w=1400&q=70",
+      "https://images.unsplash.com/photo-1474722883778-792e7990302f?auto=format&fit=crop&w=1400&q=70",
   },
   {
     slug: "tour-carmenere",
@@ -40,8 +40,7 @@ export const tours: Tour[] = [
     duration: "3 horas",
     minPeople: 4,
     highlights: ["Añadas históricas", "Cata desde barrica", "Almuerzo ligero"],
-    image:
-      "https://images.unsplash.com/photo-1474722883778-792e7990302f?auto=format&fit=crop&w=1400&q=70",
+    image: "/images/actividades/tour-carmenere.webp",
     premium: true,
   },
   {
