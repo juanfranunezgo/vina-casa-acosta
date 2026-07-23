@@ -66,10 +66,10 @@ export const experiences: Experience[] = [
     image: "/images/actividades/vendimia-2026.jpg",
   },
   {
-    slug: "dia-madres",
-    name: "Almuerzo Día de las Madres",
-    badge: "Mayo",
-    image: "/images/actividades/dia-madres.jpg",
+    slug: "talleres",
+    name: "Talleres y clases prácticas",
+    badge: "Todo el año",
+    image: "/images/actividades/talleres.jpg",
   },
   {
     slug: "tren-efe",

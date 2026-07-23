@@ -1,11 +1,13 @@
 import Image from "next/image";
 import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
-import { Check, CheckCircle2, Clock, Users, ArrowRight } from "lucide-react";
+import { Check, CheckCircle2, Clock, CalendarDays, MessageCircle, ArrowUpRight, ArrowRight } from "lucide-react";
+import InstagramIcon from "@/components/icons/InstagramIcon";
 import Reveal from "@/components/Reveal";
 import Button from "@/components/ui/Button";
 import ActivitiesTabs from "@/components/ActivitiesTabs";
 import { tours, experiences } from "@/data/activities";
+import { CONTACT_WHATSAPP_URL, CONTACT_PHONE_DISPLAY, INSTAGRAM_URL } from "@/lib/contact";
 import { routing } from "@/i18n/routing";
 
 export async function generateMetadata({
@@ -125,17 +127,24 @@ export default async function ActividadesPage({
           tours: t("hero.tabs.tours"),
           experiences: t("hero.tabs.experiences"),
           events: t("hero.tabs.events"),
+          aria: t("hero.tabs.aria"),
         }}
       />
 
       {/* TOURS */}
-      <section id="tours" className="py-section-gap px-margin-mobile md:px-margin-desktop scroll-mt-40">
+      <section id="tours" className="py-section-gap px-margin-mobile md:px-margin-desktop scroll-mt-48">
         <div className="max-w-(--container-max) mx-auto">
-          <Reveal className="mb-12 md:w-2/3">
+          <Reveal className="mb-12 max-w-2xl mx-auto text-center">
+            <span
+              className="font-accent italic font-light text-primary block mb-2"
+              style={{ fontSize: "clamp(1.15rem, 2.4vw, 1.6rem)" }}
+            >
+              {t("tours.eyebrow")}
+            </span>
             <h2 className="font-display text-headline-h1 text-primary mb-4">
               {t("tours.title")}
             </h2>
-            <p className="font-body text-body-md text-on-surface-variant">
+            <p className="font-body text-body-md text-on-surface-variant leading-relaxed">
               {t("tours.subtitle")}
             </p>
           </Reveal>
@@ -147,7 +156,7 @@ export default async function ActividadesPage({
                 <Reveal key={tour.slug} delay={idx * 100}>
                   <article
                     className={`bg-surface-container-low rounded-xl overflow-hidden group h-full flex flex-col hover:-translate-y-1 hover:shadow-[0_24px_48px_-12px_rgba(74,14,14,0.12)] transition-all duration-300 ${
-                      idx === 1 ? "md:-mt-8 ring-1 ring-primary/20" : ""
+                      idx === 1 ? "md:-mt-8 ring-1 ring-primary/25 ambient-shadow-lg" : ""
                     }`}
                   >
                     <div className="relative h-64 overflow-hidden">
@@ -168,7 +177,7 @@ export default async function ActividadesPage({
                     <div className="p-6 flex flex-col flex-grow">
                       <div className="flex justify-between items-start mb-4 gap-3">
                         <h3 className="font-display text-2xl text-primary">{tTour(`${tour.slug}.name`)}</h3>
-                        <span className="shrink-0 font-body text-label-sm text-on-surface-variant bg-surface-container-high px-2.5 py-1 rounded uppercase tracking-wider font-semibold">
+                        <span className="shrink-0 font-body text-body-md font-semibold tabular-nums text-on-surface bg-surface-container-high px-3 py-1 rounded-full">
                           {formatPrice(tour.priceCLP)}
                         </span>
                       </div>
@@ -181,7 +190,7 @@ export default async function ActividadesPage({
                             key={h}
                             className="font-body text-body-md text-on-surface flex items-start gap-2.5"
                           >
-                            <Check className="h-4 w-4 text-primary mt-1 shrink-0" aria-hidden="true" />
+                            <Check className="h-4 w-4 text-wine-accent mt-1 shrink-0" aria-hidden="true" />
                             {h}
                           </li>
                         ))}
@@ -200,38 +209,80 @@ export default async function ActividadesPage({
             })}
           </div>
 
-          <Reveal className="glass-panel rounded-xl p-8 flex flex-col md:flex-row items-start md:items-center gap-6 border border-outline-variant/30">
-            <div className="flex items-start gap-4 flex-1">
-              <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
-                <Clock className="h-6 w-6 text-primary" aria-hidden="true" />
+          <Reveal className="text-center mb-8">
+            <p className="font-body text-label-sm uppercase tracking-[0.3em] text-primary">
+              {t("tours.planTitle")}
+            </p>
+          </Reveal>
+
+          <Reveal className="rounded-xl border border-outline-variant/30 bg-surface-container-lowest/70 ambient-shadow overflow-hidden">
+            <div className="grid grid-cols-1 md:grid-cols-3 divide-y divide-outline-variant/40 md:divide-y-0 md:divide-x">
+              {/* Horarios */}
+              <div className="flex items-start gap-4 p-6 md:p-7">
+                <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-wine-accent/10 text-wine-accent">
+                  <Clock className="h-5 w-5" aria-hidden="true" />
+                </span>
+                <div>
+                  <h3 className="font-body font-semibold text-label-sm uppercase tracking-wider text-primary mb-1.5">
+                    {t("tours.scheduleTitle")}
+                  </h3>
+                  <p className="font-body text-body-md text-on-surface">{t("tours.scheduleRegular")}</p>
+                  <p className="font-body text-body-md text-on-surface">{t("tours.scheduleExtended")}</p>
+                </div>
               </div>
-              <div>
-                <h4 className="font-body font-semibold text-label-sm uppercase tracking-wider text-primary mb-1">
-                  {t("tours.scheduleTitle")}
-                </h4>
-                <p className="font-body text-body-md text-on-surface">{t("tours.scheduleRegular")}</p>
-                <p className="font-body text-body-md text-on-surface">{t("tours.scheduleExtended")}</p>
+
+              {/* Domingos y feriados */}
+              <div className="flex items-start gap-4 p-6 md:p-7">
+                <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-wine-accent/10 text-wine-accent">
+                  <CalendarDays className="h-5 w-5" aria-hidden="true" />
+                </span>
+                <div>
+                  <h3 className="font-body font-semibold text-label-sm uppercase tracking-wider text-primary mb-1.5">
+                    {t("tours.weekendTitle")}
+                  </h3>
+                  <p className="font-body text-body-md text-on-surface">{t("tours.weekendBody")}</p>
+                </div>
               </div>
-            </div>
-            <div className="flex items-start gap-4 flex-1 border-t md:border-t-0 md:border-l border-outline-variant/50 pt-6 md:pt-0 md:pl-6">
-              <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
-                <Users className="h-6 w-6 text-primary" aria-hidden="true" />
-              </div>
-              <div>
-                <h4 className="font-body font-semibold text-label-sm uppercase tracking-wider text-primary mb-1">
-                  {t("tours.weekendTitle")}
-                </h4>
-                <p className="font-body text-body-md text-on-surface">{t("tours.weekendBody")}</p>
-              </div>
+
+              {/* Reservas → WhatsApp (canal real de contacto) */}
+              <a
+                href={CONTACT_WHATSAPP_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group flex items-start gap-4 p-6 md:p-7 transition-colors hover:bg-primary/5 focus-visible:bg-primary/5 focus-visible:outline-none"
+              >
+                <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-wine-accent/10 text-wine-accent transition-colors group-hover:bg-wine-accent group-hover:text-on-primary">
+                  <MessageCircle className="h-5 w-5" aria-hidden="true" />
+                </span>
+                <div>
+                  <h3 className="font-body font-semibold text-label-sm uppercase tracking-wider text-primary mb-1.5">
+                    {t("tours.reservationsTitle")}
+                  </h3>
+                  <p className="font-body text-body-md text-on-surface mb-1.5">{t("tours.reservationsBody")}</p>
+                  <span className="inline-flex items-center gap-1 font-body text-body-md font-semibold tabular-nums text-primary">
+                    {CONTACT_PHONE_DISPLAY}
+                    <ArrowUpRight
+                      className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
+                      aria-hidden="true"
+                    />
+                  </span>
+                </div>
+              </a>
             </div>
           </Reveal>
         </div>
       </section>
 
       {/* EXPERIENCIAS */}
-      <section id="experiencias" className="bg-surface-container-low py-section-gap px-margin-mobile md:px-margin-desktop scroll-mt-40">
+      <section id="experiencias" className="bg-surface-container-low py-section-gap px-margin-mobile md:px-margin-desktop scroll-mt-48">
         <div className="max-w-(--container-max) mx-auto">
           <Reveal className="text-center mb-12">
+            <span
+              className="font-accent italic font-light text-primary block mb-2"
+              style={{ fontSize: "clamp(1.15rem, 2.4vw, 1.6rem)" }}
+            >
+              {t("experiences.eyebrow")}
+            </span>
             <h2 className="font-display text-headline-h1 text-primary mb-4">
               {t("experiences.title")}
             </h2>
@@ -243,7 +294,7 @@ export default async function ActividadesPage({
           <div className="grid grid-cols-1 md:grid-cols-3 gap-gutter">
             {experiences.map((exp, idx) => (
               <Reveal key={exp.slug} delay={idx * 100}>
-                <article className="relative h-80 rounded-xl overflow-hidden group cursor-pointer">
+                <article className="relative h-80 rounded-xl overflow-hidden group">
                   <Image
                     src={exp.image}
                     alt={tExp(`${exp.slug}.name`)}
@@ -261,16 +312,38 @@ export default async function ActividadesPage({
               </Reveal>
             ))}
           </div>
+
+          {/* Aviso: las experiencias son temporales; invitamos a dejar el contacto
+              por WhatsApp para avisar de las próximas fechas y eventos. */}
+          <Reveal className="mt-10 flex justify-center md:mt-12">
+            <a
+              href={INSTAGRAM_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group inline-flex items-center gap-3 rounded-full border border-outline-variant/40 bg-surface-container-lowest px-5 py-3 text-center transition-colors hover:border-wine-accent/40 hover:bg-wine-accent/5"
+            >
+              <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-wine-accent/10 text-wine-accent transition-colors group-hover:bg-wine-accent group-hover:text-on-primary">
+                <InstagramIcon className="h-4 w-4" aria-hidden="true" />
+              </span>
+              <span className="font-body text-body-md text-on-surface">
+                {t("experiences.stayTunedLead")}{" "}
+                <span className="font-semibold text-primary">{t("experiences.stayTunedCta")}</span>
+              </span>
+            </a>
+          </Reveal>
         </div>
       </section>
 
       {/* EVENTOS */}
-      <section id="eventos" className="py-section-gap px-margin-mobile md:px-margin-desktop scroll-mt-40">
+      <section id="eventos" className="py-section-gap px-margin-mobile md:px-margin-desktop scroll-mt-48">
         <div className="max-w-(--container-max) mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
           <Reveal>
-            <p className="font-body text-label-sm uppercase tracking-[0.3em] text-outline mb-4">
+            <span
+              className="font-accent italic font-light text-primary block mb-2"
+              style={{ fontSize: "clamp(1.15rem, 2.4vw, 1.6rem)" }}
+            >
               {t("events.eyebrow")}
-            </p>
+            </span>
             <h2 className="font-display text-headline-h1 text-primary mb-6">
               {t("events.title")}
             </h2>
@@ -279,15 +352,15 @@ export default async function ActividadesPage({
             </p>
             <ul className="space-y-3 font-body text-body-md text-on-surface mb-8">
               <li className="flex items-start gap-3">
-                <CheckCircle2 className="h-5 w-5 text-primary mt-0.5 shrink-0" aria-hidden="true" />
+                <CheckCircle2 className="h-5 w-5 text-wine-accent mt-0.5 shrink-0" aria-hidden="true" />
                 {t("events.bullets.capacity")}
               </li>
               <li className="flex items-start gap-3">
-                <CheckCircle2 className="h-5 w-5 text-primary mt-0.5 shrink-0" aria-hidden="true" />
+                <CheckCircle2 className="h-5 w-5 text-wine-accent mt-0.5 shrink-0" aria-hidden="true" />
                 {t("events.bullets.catering")}
               </li>
               <li className="flex items-start gap-3">
-                <CheckCircle2 className="h-5 w-5 text-primary mt-0.5 shrink-0" aria-hidden="true" />
+                <CheckCircle2 className="h-5 w-5 text-wine-accent mt-0.5 shrink-0" aria-hidden="true" />
                 {t("events.bullets.coordination")}
               </li>
             </ul>
@@ -303,7 +376,7 @@ export default async function ActividadesPage({
           <Reveal delay={120}>
             <div className="relative aspect-[4/5] rounded-xl overflow-hidden ambient-shadow">
               <Image
-                src="https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=1400&q=70"
+                src="/images/actividades/eventos.jpg"
                 alt={t("events.imageAlt")}
                 fill
                 className="object-cover"

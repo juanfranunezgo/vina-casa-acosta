@@ -124,27 +124,24 @@
       "prevLabel": "Previous collection",
       "nextLabel": "Next collection",
       "wineCount": "{count, plural, one {# wine} other {# wines}}",
-      "detailLabels": { "estilo": "Style", "crianza": "Ageing", "premio": "Award" },
+      "detailLabels": { "estilo": "Style", "premio": "Award" },
       "lines": {
         "ombu": {
           "category": "Reserva",
           "description": "The gateway to Casa Acosta: three Cachapoal Reservas for every day.",
           "estilo": "Fruity and approachable",
-          "crianza": "Subtle oak",
           "premio": ""
         },
         "lajau": {
-          "category": "Gran Reserva · Icon",
-          "description": "Small production: limited-edition blends and Gran Reserva built to age.",
+          "category": "Limited Edition",
+          "description": "Limited-edition blends, selected parcel by parcel and produced in small volumes.",
           "estilo": "Complex, age-worthy",
-          "crianza": "12–18 months in French oak",
           "premio": ""
         },
         "estacion-francia": {
           "category": "Gran Reserva",
           "description": "A tribute to the winery's founding moment, alongside the 1998 World Cup in France.",
           "estilo": "Structured, age-worthy",
-          "crianza": "French oak",
           "premio": ""
         }
       }
@@ -300,37 +297,42 @@
     },
     "lineLabel": "Line",
     "lineDescriptions": {
-      "Ombú": "Reserve line: the most recognizable face of the winery. Wines to celebrate the everyday.",
-      "Lajau": "Limited editions and ageing wines: selected parcels and small production.",
-      "Estación Francia": "A tribute to our founding place and the spirit of the '98 World Cup.",
-      "Berá": "Grand reserve Cabernet Sauvignon: classic elegance and structure.",
-      "Guidaí": "Limited edition honoring the Charrúa word for moon.",
-      "Yaráy Guá": "Fresh, fruit-forward line, designed for everyday enjoyment."
+      "Ombú": "Reserve line: the most recognizable face of the winery. Varietal wines to celebrate the everyday.",
+      "Lajau": "Ageworthy blends: selected parcels and small production.",
+      "Estación Francia": "Grand Reserve tribute to our founding place and the spirit of the '98 World Cup.",
+      "Berá": "Fresh, floral rosé of Carmenere and Cabernet Sauvignon.",
+      "Guidaí": "Rosé sparkling wine honoring the Charrúa word for moon.",
+      "Yaráy Guá": "Late-harvest wines: sweet, unctuous and with a complex finish."
     },
     "categories": {
       "Reserva": "Reserve",
       "Gran Reserva": "Grand Reserve",
-      "Edición Limitada": "Limited Edition",
-      "Ícono": "Icon"
+      "Edición Limitada": "Limited Edition"
+    },
+    "types": {
+      "Tinto": "Red",
+      "Rosado": "Rosé",
+      "Blanco": "White",
+      "Espumante": "Sparkling"
     },
     "varieties": {
       "Carmenere": "Carmenere",
       "Tannat": "Tannat",
       "Cabernet Sauvignon": "Cabernet Sauvignon",
-      "Sauvignon Blanc": "Sauvignon Blanc",
-      "Ensamblaje": "Blend",
-      "Blanco": "White",
-      "Tinto": "Red"
+      "Chardonnay": "Chardonnay",
+      "Ensamblaje": "Blend"
     },
     "badges": {
       "Insignia": "Signature",
       "Edición Limitada": "Limited Edition",
-      "Ícono": "Icon"
+      "Espumante": "Sparkling",
+      "Cosecha Tardía": "Late Harvest"
     }
   },
   "wineDetail": {
     "backToCatalog": "Back to the collection",
     "vintageLabel": "Vintage {year}",
+    "noVintage": "Non-vintage",
     "tastingNotes": "Tasting notes",
     "pairing": "Food pairing",
     "currency": "CLP",
@@ -338,82 +340,82 @@
   },
   "wines": {
     "ombu-carmenere": {
-      "shortDescription": "Reserve Carmenere from the Cachapoal Valley.",
-      "description": "Our signature Carmenere Reserve. Ripe red fruit, sweet spice and a subtle touch of oak — a faithful reflection of the warm Cachapoal character.",
-      "tastingNotes": ["Raspberry", "Black pepper", "Cocoa", "Tobacco"],
-      "pairings": ["Red meats", "Open-fire barbecue", "Aged cheeses"]
+      "shortDescription": "100% Carmenere Reserve, with intense spice and ripe black fruit.",
+      "description": "Deep cherry red. A complex nose of intense spice and ripe black fruit. On the palate, soft, round tannins, good structure and a long, pleasant finish.",
+      "tastingNotes": ["Ripe black fruit", "Spices", "Cherry red", "Round tannins"],
+      "pairings": ["Pasta", "Filet mignon", "Corn pudding"]
     },
     "ombu-tannat": {
-      "shortDescription": "Robust, structured Reserve Tannat.",
-      "description": "A tribute to the family's Uruguayan roots. Firm structure, elegant tannins and aromas of dark berries with bitter chocolate.",
-      "tastingNotes": ["Blackberry", "Dark chocolate", "Leather", "Licorice"],
-      "pairings": ["Roast lamb", "Blue cheese", "Hearty stews"]
+      "shortDescription": "100% Reserve Tannat, with firm tannins and good ageing potential.",
+      "description": "Cherry red. On the nose, aromas of black fruit such as blueberry and blackberry, with some spice like black pepper and clove. Complex-bodied, with firm tannins, balanced acidity and good ageing potential.",
+      "tastingNotes": ["Blueberry", "Blackberry", "Black pepper", "Clove"],
+      "pairings": ["Red meats", "Aged cheeses"]
     },
     "ombu-sauvignon": {
-      "shortDescription": "Classic, elegant Cabernet Sauvignon.",
-      "description": "Notes of cassis and cedar with a long, persistent finish. The classic elegance of Cabernet Sauvignon expressed through Cachapoal terroir.",
-      "tastingNotes": ["Cassis", "Cedar", "Mint", "Graphite"],
-      "pairings": ["Striploin steak", "Pasta with ragù", "Parmesan"]
+      "shortDescription": "100% Cabernet Sauvignon from the Cachapoal Valley, balanced and silky.",
+      "description": "A fresh nose of nuts, spice and ripe red fruit, with a slight touch of vanilla. Balanced and fleshy, with present yet silky tannins, good volume and a long, very persistent finish.",
+      "tastingNotes": ["Nuts", "Spices", "Ripe red fruit", "Vanilla"],
+      "pairings": ["Spit-roast lamb", "Middle Eastern food"]
     },
     "lajau-sam": {
-      "shortDescription": "A singular limited-edition blend.",
-      "description": "A blend that evolves in the glass. Layered complexity and very small production each harvest.",
-      "tastingNotes": ["Black cherry", "Sweet spice", "Vanilla", "Soft leather"],
-      "pairings": ["Patagonian lamb", "Mushroom risotto", "Small game"]
+      "shortDescription": "Carmenere–Tannat blend, structured with a long finish.",
+      "description": "Aromas of very ripe black fruit, spice and bitter chocolate. On the palate it is structured, balanced and with a long aftertaste.",
+      "tastingNotes": ["Ripe black fruit", "Spices", "Bitter chocolate", "Long aftertaste"],
+      "pairings": ["Meat-filled pasta", "Skirt steak"]
     },
     "lajau-deti": {
-      "shortDescription": "Silky, elegant Grand Reserve Carmenere.",
-      "description": "Pure fruit expression with balanced acidity and an unmistakable silky texture. 12 months in French oak barrels.",
-      "tastingNotes": ["Plum", "Violet", "Coffee", "Fine oak"],
-      "pairings": ["Duck magret", "Semi-aged cheeses", "Braised beef cheek"]
+      "shortDescription": "Blend of Carmenere, Cabernet Sauvignon and Petit Verdot — elegant and complex.",
+      "description": "An intriguing cherry red with fresh, complex aromas: intense black fruit, cocoa and smoke. A structured palate with soft, elegant tannins, long and with a pleasant finish.",
+      "tastingNotes": ["Black fruit", "Cocoa", "Smoke", "Elegant tannins"],
+      "pairings": ["Aged cheeses", "Wild boar with rosemary"]
     },
     "lajau-betum": {
-      "shortDescription": "Deep, mysterious Grand Reserve Tannat.",
-      "description": "Deep and mysterious, with layers of flavor revealing earthy notes and black fruit. An ideal companion for the long table.",
-      "tastingNotes": ["Wild blackberry", "Damp earth", "Tobacco", "Spices"],
-      "pairings": ["Lamb with merkén", "Smoked meats", "Blue cheese"]
+      "shortDescription": "A four-variety blend, complex and full-bodied.",
+      "description": "A deep ruby red with violet hints. Very complex: ripe red fruit and black fruit, with touches of smoke and pepper. A palate of good structure and volume, with juicy tannins, great aftertaste and a long finish.",
+      "tastingNotes": ["Ripe red fruit", "Black fruit", "Smoke", "Pepper"],
+      "pairings": ["Goat cheese", "Duck à l'orange", "Lamb"]
     },
     "lajau-betum-yu": {
-      "shortDescription": "Icon Tannat — the apex of the Lajau line.",
-      "description": "A parcel-selected expression from our finest Tannat grapes. 18 months in new oak. Ultra-limited release.",
-      "tastingNotes": ["Candied black fruit", "Cedar", "70% dark chocolate", "Truffle"],
-      "pairings": ["Beef Wellington", "Big game", "Aged cheeses"]
+      "shortDescription": "A five-variety blend — the apex of the Lajau line.",
+      "description": "A deep ruby red, with present yet round tannins and balanced acidity. A finish with a touch of bitter chocolate and some smoke, long on the palate.",
+      "tastingNotes": ["Ruby red", "Bitter chocolate", "Smoke", "Round tannins"],
+      "pairings": ["Grilled red meats"]
     },
     "estacion-francia-carmenere": {
-      "shortDescription": "A tribute to our origin — France '98.",
-      "description": "The line that honors the founding moment of the winery, alongside the 1998 World Cup in France. A Carmenere of great complexity, built to age.",
-      "tastingNotes": ["Ripe strawberry", "Pepper", "Chocolate", "French oak"],
-      "pairings": ["Argentine asado", "Slow-roast beef", "Meat empanadas"]
+      "shortDescription": "Grand Reserve of Carmenere and Petit Verdot, of great complexity and ageing.",
+      "description": "A vivid morello-cherry red with violet notes. Aromas of black fruit, chocolate and spice, with touches of redcurrant, nuts and tobacco. On the palate, silky tannins; juicy and well balanced, with a persistent finish.",
+      "tastingNotes": ["Black fruit", "Chocolate", "Redcurrant", "Tobacco"],
+      "pairings": ["Pork ribs", "Grilled blood sausage"]
     },
     "estacion-francia-tannat": {
-      "shortDescription": "A Tannat with Uruguayan soul.",
-      "description": "Powerful structure and a long, persistent finish. A Tannat that bridges Chilean terroir with the family's Uruguayan heritage.",
-      "tastingNotes": ["Cassis", "Black pepper", "Cedar", "Leather"],
-      "pairings": ["Short ribs", "Patagonian lamb", "Aged cheeses"]
+      "shortDescription": "Grand Reserve of Tannat and Carmenere, powerful and structured.",
+      "description": "Deeply colored. Aromas of ripe red fruit, plum and blackberry, with touches of black cherry and tobacco notes. A powerful, greatly structured palate, robust in body, long and persistent.",
+      "tastingNotes": ["Ripe red fruit", "Plum", "Black cherry", "Tobacco"],
+      "pairings": ["Lamb shank", "Blue cheeses"]
     },
     "bera": {
-      "shortDescription": "Grand Reserve Cabernet Sauvignon.",
-      "description": "Imposing structure paired with elegance. Cassis, cedar and a long, persistent finish. Ready to keep growing in bottle.",
-      "tastingNotes": ["Cassis", "Cedar", "Tobacco", "Graphite"],
-      "pairings": ["Sirloin steak", "Slow-roast beef", "Hard cheeses"]
+      "shortDescription": "Fresh, floral rosé of Carmenere and Cabernet Sauvignon.",
+      "description": "A pink-colored rosé with a complex profile. Aromas of fresh raspberry, very floral, with notes of red cherry. A fresh palate with intriguing acidity, juicy and with a pleasant finish.",
+      "tastingNotes": ["Fresh raspberry", "Floral", "Red cherry", "Juicy acidity"],
+      "pairings": ["Asian cuisine", "Vegetable panaché", "Pastrami", "Paella"]
     },
     "guidai": {
-      "shortDescription": "A limited-edition blend.",
-      "description": "An exclusive blend honoring the Charrúa word for 'moon'. An ageing-worthy, elegant and contemplative wine.",
-      "tastingNotes": ["Ripe red fruit", "Fine spice", "Cocoa", "Sweet oak"],
-      "pairings": ["Small game", "Duck confit", "Mushrooms in wine"]
+      "shortDescription": "Rosé sparkling wine, fresh and fine-bubbled.",
+      "description": "A pale-pink sparkling wine. Aromas of strawberry, with a spicy touch. A whitish mousse with persistent fine bubbles; fresh and with balanced acidity.",
+      "tastingNotes": ["Strawberry", "Pale pink", "Fine bubbles", "Fresh acidity"],
+      "pairings": ["Thai food", "Salmon sashimi"]
     },
     "yaray-gua-tinto": {
-      "shortDescription": "Young, fresh, fruit-forward red.",
-      "description": "A fresh, fruit-driven line built for everyday enjoyment. An ideal entry point to the Casa Acosta world.",
-      "tastingNotes": ["Raspberry", "Cherry", "Soft herbs"],
-      "pairings": ["Pizza", "Tomato pasta", "White meats"]
+      "shortDescription": "Late-harvest Carmenere, luscious with balanced sweetness.",
+      "description": "A brick-red color. Aromas of candied red fruit, figs and honey. On the palate it is luscious, with balanced sweetness and an acidity that keeps it from being cloying.",
+      "tastingNotes": ["Candied red fruit", "Figs", "Honey", "Brick red"],
+      "pairings": ["Dark chocolate", "Blue cheese"]
     },
     "yaray-gua-blanco": {
-      "shortDescription": "Fresh, aromatic white.",
-      "description": "A Sauvignon Blanc with citrus and tropical notes. Vibrant acidity, perfect for warm days by the sea or the lake.",
-      "tastingNotes": ["Grapefruit", "Passion fruit", "Fresh herbs", "Citrus"],
-      "pairings": ["Ceviche", "Shellfish", "Fresh cheeses"]
+      "shortDescription": "Late-harvest white, unctuous with a complex finish.",
+      "description": "A golden-yellow color with marked amber, bright reflections. Full-volumed and powerful, with pleasant, firm and vibrant acidity. A very long, unctuous finish with a complex aftertaste where notes of bitter-orange marmalade, toasted nuts and a subtle touch of honey return.",
+      "tastingNotes": ["Orange marmalade", "Toasted nuts", "Honey", "Golden yellow"],
+      "pairings": ["Foie gras", "Passion-fruit cheesecake"]
     }
   },
   "actividades": {
@@ -425,10 +427,12 @@
       "tabs": {
         "tours": "Tours",
         "experiences": "Experiences",
-        "events": "Events"
+        "events": "Events",
+        "aria": "Section navigation"
       }
     },
     "tours": {
+      "eyebrow": "Guided visits",
       "title": "Our tours",
       "subtitle": "Discover the soul of Viña Casa Acosta through personalized walks. Each tour is designed for an intimate, educational experience.",
       "reserveStandard": "Book this tour",
@@ -437,11 +441,17 @@
       "scheduleRegular": "Monday to Saturday · 10:00 AM – 6:00 PM",
       "scheduleExtended": "Thursdays · 10:00 AM – 8:00 PM (extended hours)",
       "weekendTitle": "Sundays and holidays",
-      "weekendBody": "Reservations only · minimum 6 guests."
+      "weekendBody": "Reservations only · minimum 6 guests.",
+      "planTitle": "Plan your visit",
+      "reservationsTitle": "Reservations",
+      "reservationsBody": "Arrange your visit on WhatsApp."
     },
     "experiences": {
+      "eyebrow": "Throughout the year",
       "title": "Special experiences",
-      "subtitle": "Walk through the cycle of the vine and celebrate key moments with us. Seasonal experiences throughout the year."
+      "subtitle": "Walk through the cycle of the vine and celebrate key moments with us. Seasonal experiences throughout the year.",
+      "stayTunedLead": "Don't want to miss the next dates?",
+      "stayTunedCta": "Follow us on Instagram"
     },
     "events": {
       "eyebrow": "Private events",
@@ -574,9 +584,9 @@
       "name": "Harvest 2026",
       "badge": "Coming soon"
     },
-    "dia-madres": {
-      "name": "Mother's Day Lunch",
-      "badge": "May"
+    "talleres": {
+      "name": "Workshops & hands-on classes",
+      "badge": "Year-round"
     },
     "tren-efe": {
       "name": "EFE Train Experience",
@@ -587,11 +597,12 @@
     "hero": {
       "eyebrow": "Online shop",
       "title": "Casa Acosta collection",
-      "subtitle": "Filter by line and variety. Pick your wines and we'll coordinate delivery with you."
+      "subtitle": "Filter by type, line and variety. Pick your wines and we'll coordinate delivery with you."
     },
     "filters": {
       "title": "Filters",
       "clear": "Clear ({count})",
+      "type": "Type",
       "line": "Line",
       "variety": "Variety",
       "apply": "View results",
