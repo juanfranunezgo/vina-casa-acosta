@@ -7,4 +7,5 @@ test("CollectionBand uses a compact adaptive wine grid instead of fixed tall ima
   assert.match(source, /grid-cols-2/);
   assert.match(source, /grid-cols-3/);
   assert.doesNotMatch(source, /lg:min-h-\[560px\]/);
+  assert.match(source, /id === "ombu" \? "sm:grid-cols-2 lg:grid-cols-3" : "sm:grid-cols-2"/);
 });

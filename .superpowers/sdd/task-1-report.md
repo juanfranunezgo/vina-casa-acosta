@@ -32,3 +32,18 @@ Updated only `components/CollectionBand.tsx` and added the required source-level
 - The change stays within Task 1 files and does not remove the existing `description` prop or flow.
 - `flip` ordering remains unchanged.
 - The `Image fill` parent remains positioned and has a defined mobile aspect ratio; desktop grid stretch supplies its content-driven height.
+
+## Follow-up fix — line-aware desktop grid
+
+Reviewer feedback identified that using the wine count for the three-column breakpoint made Lajau's four wines render as `3 + 1`. The column contract is now explicitly line-aware: only `id === "ombu"` receives `lg:grid-cols-3`; every other collection, including Lajau, remains in two columns from `sm` upward.
+
+### Follow-up TDD evidence
+
+1. Added a source assertion requiring the explicit Ombú-only ternary.
+2. Ran `node --test tests/collection-band-source.test.mjs`; it failed against the previous `wines.length > 2` condition.
+3. Replaced the count-based condition with the Ombú-only rule and reran verification.
+
+### Follow-up verification
+
+- `node --test tests/collection-band-source.test.mjs` — 1 pass, 0 failures.
+- `npx tsc --noEmit` — exit 0.
