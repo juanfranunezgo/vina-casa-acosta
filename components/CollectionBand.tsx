@@ -105,7 +105,6 @@ export default function CollectionBand({
                   image={wine.image}
                   name={wine.name}
                   eyebrow={wine.eyebrow}
-                  description={wine.description}
                   badge={wine.badge}
                 />
               </Reveal>

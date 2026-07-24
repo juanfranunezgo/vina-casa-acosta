@@ -9,3 +9,9 @@ test("CollectionBand uses a compact adaptive wine grid instead of fixed tall ima
   assert.doesNotMatch(source, /lg:min-h-\[560px\]/);
   assert.match(source, /id === "ombu" \? "sm:grid-cols-2 lg:grid-cols-3" : "sm:grid-cols-2"/);
 });
+
+test("WineCard has no catalogue description prop or rendered description block", async () => {
+  const source = await readFile(new URL("../components/WineCard.tsx", import.meta.url), "utf8");
+  assert.doesNotMatch(source, /description:\s*string/);
+  assert.doesNotMatch(source, /line-clamp-2/);
+});
