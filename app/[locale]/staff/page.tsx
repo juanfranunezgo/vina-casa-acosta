@@ -130,10 +130,6 @@ export default async function StaffPage({
           );
         })}
       </div>
-
-      <p className="mt-16 md:mt-24 text-xs text-on-surface-variant/70 text-center">
-        {t("portraitDisclaimer")}
-      </p>
     </section>
   );
 }

@@ -181,41 +181,40 @@
   "historia": {
     "hero": {
       "eyebrow": "Nuestra herencia",
-      "title": "Pasión por la tierra, forjada generación a generación.",
+      "title": "Nuestra historia",
       "subtitle": "La pasión por la tierra y el vino, transmitida en cada cosecha, define lo que somos en Viña Casa Acosta.",
       "imageAlt": "Botellas de Ombú Reserva Carménère de Viña Casa Acosta sobre una mesa de madera, iluminadas con luz cálida"
     },
     "origin": {
-      "tag": "I · Sueño",
-      "title": "El origen en Estación Francia",
-      "body": "La historia comienza con Nelson Acosta, un hombre con profundas raíces en la tierra y una visión inquebrantable. Criado cerca de la mítica Estación Francia, comprendió desde joven el lenguaje del suelo y el clima. En 1998 plantó los primeros viñedos, sentando las bases de un legado innegociable.",
+      "tag": "Acto I",
+      "title": "La raíz de un sueño",
+      "body": "Viña Casa Acosta nació del sueño de Nelson Acosta, reconocido hombre del fútbol sudamericano que, llegado desde su Uruguay natal, echó raíces en el pequeño poblado rural de Estación Francia, en el valle del Cachapoal. Allí fue cazador y telegrafista, entre otros oficios. El nombre de su pueblo evocaba aquel lejano país europeo al que llegaría en 1998 como director técnico de la selección chilena: el mismo año en que, tras adquirir estas tierras poco antes de viajar al Mundial de Francia, plantó los primeros viñedos.",
       "imageAlt": "La antigua Estación Francia al atardecer: las vías del tren y el cartel de madera de la estación"
     },
     "twoCards": {
       "card1": {
-        "tag": "II · La raíz de un sueño",
-        "title": "Francia '98 y el relevo",
-        "body": "La adquisición de la tierra fundacional coincidió con el espíritu del Mundial de Francia '98. Hoy, su hijo Damián continúa el sueño, aportando una visión contemporánea sin renunciar a la tradición.",
+        "tag": "Acto II",
+        "title": "Un cálido recorrido",
+        "body": "Ovejas, chivos, conejos, gansos y avestruces nos reciben al llegar: el ambiente es familiar en todo sentido y cada detalle tiene una historia que contar. Gigantescos árboles ombúes evocan los lejanos campos uruguayos que vieron nacer este sueño. Todo el proceso se realiza a mano —maceración, fermentación, descube, prensado, filtración y envasado— en las propias dependencias de la casa, donde cada vínculo es de persona a persona. De las 1.200 botellas de la primera producción en 2003, hoy elaboramos 7.300 al año.",
         "imageAlt": "Antigua rueda de carreta de madera, un guiño a las raíces y la tradición de la viña"
       },
       "card2": {
-        "tag": "III · Artesanía",
-        "title": "Primera producción",
-        "body": "Nuestro proceso sigue siendo celosamente manual. Este cuidado culminó en 2003 con la primera producción oficial: el aclamado Carmenere Reserva 'ACOSTA'.",
+        "tag": "Acto III",
+        "title": "Un legado en tres líneas",
+        "body": "Hoy, gracias a su hijo Damián Acosta, aquel sueño floreció en un oficio artesanal a escala humana. «Ombú» —el árbol de raíces fuertes y salientes, común en Uruguay y en las plazas del Chile central— es nuestra primera línea, y nuestra manera de decir que todo nace de raíces profundas. Pronto llegará la segunda, el Gran Reserva «Estación Francia», y la historia se completará con la serie Ícono «Nelson Acosta»: un homenaje definitivo a nuestro fundador.",
         "imageAlt": "Barril de vino de roble tallado en madera, con la inscripción de 1906, símbolo del oficio artesanal"
       }
     },
     "gallery": {
       "eyebrow": "La viña en imágenes",
       "title": "Detrás de cada cosecha",
-      "note": "Galería de muestra · se reemplazará con fotografías reales de la viña.",
       "items": [
         "Nelson Acosta trabajando la tierra en su tractor",
         "Acuarela enmarcada del proyecto Galpón Tienda Museo de la viña",
         "Faena con el tractor en el viñedo",
-        "La familia Acosta en la viña",
-        "Mochila de mezclilla desgastada colgada de un poste entre las parras",
-        "Botellas de la línea Ombú Reserva"
+        "Una niña sostiene a un bebé entre las parras de la viña, a contraluz del atardecer",
+        "Botellas de la línea Ombú Reserva",
+        "Bicicleta retro con canasto apoyada en un poste entre las parras de la viña"
       ]
     },
     "timeline": {
@@ -237,7 +236,7 @@
           "year": "2003",
           "title": "Primera Producción",
           "description": "Lanzamiento del aclamado Carmenere Reserva 'ACOSTA'.",
-          "imageAlt": "Faena de vendimia con maquinaria en el viñedo"
+          "imageAlt": "Dos jóvenes extraen vino de una barrica con una pipeta durante una cata en la bodega"
         },
         "m2012": {
           "year": "2012",
@@ -251,8 +250,7 @@
           "description": "Damián Acosta lidera la nueva etapa, fiel a las raíces familiares.",
           "imageAlt": "La familia Acosta en la viña, continuando el legado"
         }
-      },
-      "photoNote": "Fotos de muestra · serán reemplazadas por imágenes reales de cada etapa."
+      }
     },
     "staffCta": {
       "text": "Detrás de esta historia hay un equipo que la hace posible.",
@@ -265,7 +263,6 @@
       "title": "Staff",
       "subtitle": "El equipo humano detrás de cada botella."
     },
-    "portraitDisclaimer": "Retratos de Andrea y Alfonso de muestra · serán reemplazados por fotografías reales.",
     "members": {
       "damian": {
         "name": "Damián Acosta",

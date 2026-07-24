@@ -181,41 +181,40 @@
   "historia": {
     "hero": {
       "eyebrow": "Our heritage",
-      "title": "A love of the land, forged generation by generation.",
+      "title": "Our history",
       "subtitle": "A passion for the land and for wine, passed down each harvest, is what defines us at Viña Casa Acosta.",
       "imageAlt": "Bottles of Viña Casa Acosta's Ombú Reserva Carménère on a wooden table, lit with warm light"
     },
     "origin": {
-      "tag": "I · The dream",
-      "title": "An origin in Estación Francia",
-      "body": "The story begins with Nelson Acosta, a man with deep roots in the land and an unwavering vision. Raised near the mythical Estación Francia, he learned early to read the language of soil and climate. In 1998 he planted the first vines, laying the foundation of an unshakeable legacy.",
+      "tag": "Act I",
+      "title": "The roots of a dream",
+      "body": "Viña Casa Acosta was born from the dream of Nelson Acosta, a renowned figure in South American football who, arriving from his native Uruguay, put down roots in the small rural village of Estación Francia, in the Cachapoal Valley. There he worked as a hunter and telegraph operator, among other trades. The name of his village evoked that distant European country he would reach in 1998 as head coach of the Chilean national team — the same year that, having bought this land shortly before travelling to the World Cup in France, he planted the first vines.",
       "imageAlt": "The old Estación Francia at golden hour: the railway tracks and the station's wooden sign"
     },
     "twoCards": {
       "card1": {
-        "tag": "II · The roots of a dream",
-        "title": "France '98 and the new generation",
-        "body": "The founding land was acquired in the spirit of the 1998 World Cup in France. Today, Nelson's son Damián carries the dream forward — bringing a contemporary vision without abandoning tradition.",
+        "tag": "Act II",
+        "title": "A warm welcome",
+        "body": "Sheep, goats, rabbits, geese and ostriches greet you on arrival: the atmosphere is familial in every sense, and every detail has a story to tell. Giant ombú trees echo the distant Uruguayan plains where this dream was born. The entire process is done by hand — maceration, fermentation, draining, pressing, filtering and bottling — on the estate itself, where every bond is person to person. From the 1,200 bottles of the first vintage in 2003, today we craft 7,300 a year.",
         "imageAlt": "An old wooden cart wheel, a nod to the estate's roots and tradition"
       },
       "card2": {
-        "tag": "III · Craft",
-        "title": "First vintage",
-        "body": "Our process remains zealously hands-on. That care culminated in 2003 with the first official release: the acclaimed Carmenere Reserva 'ACOSTA'.",
+        "tag": "Act III",
+        "title": "A legacy in three labels",
+        "body": "Today, thanks to his son Damián Acosta, that dream has flowered into an artisanal craft made at human scale. «Ombú» — the strong, surface-rooted tree common in Uruguay and in the plazas of central Chile — is our first line, our way of saying that everything grows from deep roots. Soon comes the second, the Gran Reserva «Estación Francia», and the story will be completed by the Icon series «Nelson Acosta»: a definitive tribute to our founder.",
         "imageAlt": "A carved oak wine barrel marked 1906, a symbol of the artisanal craft"
       }
     },
     "gallery": {
       "eyebrow": "The estate in pictures",
       "title": "Behind every harvest",
-      "note": "Sample gallery · will be replaced with real photos of the estate.",
       "items": [
         "Nelson Acosta working the land on his tractor",
         "Framed watercolor of the estate's Galpón Tienda Museo project",
         "Working the vineyard with the tractor",
-        "The Acosta family at the estate",
-        "A worn denim backpack hanging from a post among the vines",
-        "Bottles of the Ombú Reserva line"
+        "A girl holding a baby among the estate's vines, backlit by the evening sun",
+        "Bottles of the Ombú Reserva line",
+        "A retro bicycle with a basket leaning against a post among the estate's vines"
       ]
     },
     "timeline": {
@@ -237,7 +236,7 @@
           "year": "2003",
           "title": "First vintage",
           "description": "Release of the acclaimed Carmenere Reserva 'ACOSTA'.",
-          "imageAlt": "Harvest work with machinery in the vineyard"
+          "imageAlt": "Two young people drawing wine from a barrel with a pipette during a cellar tasting"
         },
         "m2012": {
           "year": "2012",
@@ -251,8 +250,7 @@
           "description": "Damián Acosta leads the new chapter, true to the family's roots.",
           "imageAlt": "The Acosta family at the vineyard, carrying on the legacy"
         }
-      },
-      "photoNote": "Sample photos · to be replaced with real images of each stage."
+      }
     },
     "staffCta": {
       "text": "Behind this story is a team that makes it possible.",
@@ -265,7 +263,6 @@
       "title": "Staff",
       "subtitle": "The people behind every bottle."
     },
-    "portraitDisclaimer": "Andrea's and Alfonso's portraits are samples · to be replaced with real photographs.",
     "members": {
       "damian": {
         "name": "Damián Acosta",

@@ -15,10 +15,14 @@ const milestones: readonly {
   key: MilestoneKey;
   image: string;
   Icon: LucideIcon;
+  /** object-position del <Image> cuando el encuadre por defecto (centro) recorta mal. */
+  position?: string;
 }[] = [
-  { key: "m1998", image: "/images/home/casa/origins.jpg", Icon: Sprout },
+  // origins.jpg es casi cuadrada (1163×1157) y el slot es 4:3: centrado le cortaba
+  // la cabeza a Nelson. Subimos el foco para que se vea la cara.
+  { key: "m1998", image: "/images/home/casa/origins.jpg", Icon: Sprout, position: "50% 6%" },
   { key: "m2000", image: "/images/home/casa/teaching.jpg", Icon: Grape },
-  { key: "m2003", image: "/images/home/casa/tractor.jpg", Icon: Wine },
+  { key: "m2003", image: "/images/historia/primera-produccion.webp", Icon: Wine },
   { key: "m2012", image: "/images/home/cta-parras.jpg", Icon: Leaf },
   { key: "today", image: "/images/home/casa/family.jpg", Icon: Users },
 ] as const;
@@ -66,7 +70,7 @@ export default async function HistoriaTimeline() {
           </svg>
 
           <ol className="tl">
-            {milestones.map(({ key, image, Icon }, idx) => {
+            {milestones.map(({ key, image, Icon, position }, idx) => {
               const side = idx % 2 === 0 ? "left" : "right";
               const year = t(`milestones.${key}.year`);
               const isNumericYear = /^\d{4}$/.test(year);
@@ -90,6 +94,7 @@ export default async function HistoriaTimeline() {
                       loading="lazy"
                       sizes="(max-width: 768px) 84vw, 44vw"
                       className="object-cover"
+                      style={position ? { objectPosition: position } : undefined}
                     />
                   </figure>
 
@@ -113,10 +118,6 @@ export default async function HistoriaTimeline() {
             })}
           </ol>
         </div>
-
-        <p className="mt-12 text-xs text-on-surface-variant/70 text-center">
-          {t("photoNote")}
-        </p>
       </div>
     </section>
   );

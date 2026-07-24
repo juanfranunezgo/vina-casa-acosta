@@ -32,9 +32,9 @@ export default async function HistoriaPage({
     "/images/historia/origen-tractor.webp",
     "/images/historia/cuadro-museo.webp",
     "/images/home/casa/tractor.jpg",
-    "/images/home/casa/family.jpg",
-    "/images/historia/mochila-vinedo.webp",
+    "/images/historia/galeria-familia.webp",
     "/images/historia/vinos-retro.webp",
+    "/images/historia/bicicleta-retro-parras.webp",
   ];
   const galleryImages = gallerySrcs.map((src, i) => ({
     src,
@@ -157,9 +157,6 @@ export default async function HistoriaPage({
             </Reveal>
           ))}
         </ul>
-        <p className="mt-6 text-center font-body text-label-sm text-outline">
-          {t("gallery.note")}
-        </p>
       </section>
 
       {/* TIMELINE (B4) */}
