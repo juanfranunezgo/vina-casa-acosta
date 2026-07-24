@@ -26,10 +26,10 @@ export default function WineCard({
   badge,
 }: WineCardProps) {
   return (
-    <article>
+    <article className="h-full">
       <Link
         href={href}
-        className="group flex flex-col overflow-hidden rounded-xl bg-surface-container-lowest ambient-shadow transition-transform duration-300 hover:-translate-y-1 hover:shadow-[0_24px_48px_-12px_rgba(74,14,14,0.14)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary motion-reduce:transition-none motion-reduce:hover:translate-y-0"
+        className="group flex h-full flex-col overflow-hidden rounded-xl bg-surface-container-lowest ambient-shadow transition-transform duration-300 hover:-translate-y-1 hover:shadow-[0_24px_48px_-12px_rgba(74,14,14,0.14)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary motion-reduce:transition-none motion-reduce:hover:translate-y-0"
       >
         <div className="relative flex aspect-[4/5] items-center justify-center overflow-hidden bg-gradient-to-br from-surface-container-low to-surface-container p-6">
           <Image

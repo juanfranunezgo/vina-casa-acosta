@@ -27,3 +27,12 @@
 - `app/[locale]/vinos/page.tsx`
 - `tests/collection-band-source.test.mjs`
 - `.superpowers/sdd/task-2-report.md`
+
+## Review follow-up
+
+- Updated the collection-grid source regression to require Ombu to remain at two columns through `lg` and move to three columns only at `xl`; other lines continue to use `sm:grid-cols-2`.
+- Ran the updated test before production changes. It failed as expected because the source still specified `sm:grid-cols-2 lg:grid-cols-3` for Ombu.
+- Changed only the Ombu breakpoint to `xl:grid-cols-3`, preserving the 38/62 desktop split and all other CollectionBand layout behavior.
+- Added `h-full` to the WineCard article and link so card heights stay aligned when grid-row text wraps.
+- Re-ran `node --test tests/collection-band-source.test.mjs`: 2 passing tests, 0 failures.
+- Re-ran `npx tsc --noEmit`: exit code 0.

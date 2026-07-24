@@ -47,7 +47,7 @@ export default function CollectionBand({
   priorityImage = false,
 }: CollectionBandProps) {
   const titleId = `coleccion-${id}`;
-  const wineGridColumns = id === "ombu" ? "sm:grid-cols-2 lg:grid-cols-3" : "sm:grid-cols-2";
+  const wineGridColumns = id === "ombu" ? "sm:grid-cols-2 xl:grid-cols-3" : "sm:grid-cols-2";
 
   return (
     <section
