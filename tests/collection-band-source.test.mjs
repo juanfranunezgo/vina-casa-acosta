@@ -1,0 +1,10 @@
+import test from "node:test";
+import assert from "node:assert/strict";
+import { readFile } from "node:fs/promises";
+
+test("CollectionBand uses a compact adaptive wine grid instead of fixed tall imagery", async () => {
+  const source = await readFile(new URL("../components/CollectionBand.tsx", import.meta.url), "utf8");
+  assert.match(source, /grid-cols-2/);
+  assert.match(source, /grid-cols-3/);
+  assert.doesNotMatch(source, /lg:min-h-\[560px\]/);
+});
