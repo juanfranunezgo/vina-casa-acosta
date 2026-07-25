@@ -3,7 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
-import { ArrowLeft, ArrowRight, UtensilsCrossed } from "lucide-react";
+import { ArrowLeft, ArrowRight, FileText, UtensilsCrossed } from "lucide-react";
 import Reveal from "@/components/Reveal";
 import Button from "@/components/ui/Button";
 import ProductPurchase from "@/components/ProductPurchase";
@@ -46,9 +46,15 @@ export default async function WinePage({
   const tastingNotes = tWine.raw(`${slug}.tastingNotes`) as string[];
   const pairings = tWine.raw(`${slug}.pairings`) as string[];
 
-  const related = wines
+  const sameLine = wines
     .filter((w) => w.line === wine.line && w.slug !== wine.slug)
-    .slice(0, 3);
+    .sort((a, b) => Number(Boolean(b.featured)) - Number(Boolean(a.featured)));
+  const related = [
+    ...sameLine,
+    ...wines
+      .filter((w) => w.line !== wine.line && w.slug !== wine.slug)
+      .sort((a, b) => Number(Boolean(b.featured)) - Number(Boolean(a.featured))),
+  ].slice(0, 4);
 
   const priceLocale = locale === "pt" ? "pt-BR" : locale === "en" ? "en-US" : "es-CL";
   const priceFormatted = new Intl.NumberFormat(priceLocale, {
@@ -98,8 +104,9 @@ export default async function WinePage({
           </Reveal>
 
           <Reveal delay={120} className="md:pt-8">
-            <p className="font-body text-label-sm uppercase tracking-[0.3em] text-outline mb-3">
-              {tVinos("lineLabel")} {wine.line} · {tVinos(`categories.${wine.category}`)}
+            <p className="mb-3 font-accent text-xl font-light italic text-primary md:text-2xl">
+              {tVinos("lineLabel")} {wine.line}
+              {wine.category ? ` · ${tVinos(`categories.${wine.category}`)}` : ""}
             </p>
             <h1
               className="font-display text-primary mb-3 leading-tight"
@@ -110,12 +117,24 @@ export default async function WinePage({
               {wine.name}
             </h1>
             <p className="font-body text-body-lg text-on-surface-variant mb-6">
-              {wine.variety} · {t("vintageLabel", { year: wine.vintage })}
+              {tVinos(`types.${wine.type}`)} · {tVinos(`varieties.${wine.variety}`)} ·{" "}
+              {wine.vintage ? t("vintageLabel", { year: wine.vintage }) : t("noVintage")}
             </p>
 
             <p className="font-body text-body-md text-on-surface leading-relaxed mb-8">
               {tWine(`${slug}.description`)}
             </p>
+
+            <Button
+              href={wine.technicalSheet}
+              target="_blank"
+              rel="noopener noreferrer"
+              variant="link"
+              iconLeft={<FileText className="h-4 w-4" />}
+              className="mb-10 normal-case tracking-normal text-body-md"
+            >
+              {t("technicalSheet")}
+            </Button>
 
             <div className="space-y-8 mb-10">
               <div>
@@ -145,7 +164,7 @@ export default async function WinePage({
               </div>
             </div>
 
-            <div className="border-t border-outline-variant/40 pt-6 flex flex-col sm:flex-row sm:items-center justify-between gap-6">
+            <div className="flex flex-col gap-6 border-t border-outline-variant/40 pt-6 sm:flex-row sm:items-center sm:justify-between">
               <div className="flex flex-col">
                 <span className="font-body text-label-sm uppercase tracking-wider text-on-surface-variant mb-1">
                   {t("currency")}
@@ -174,7 +193,7 @@ export default async function WinePage({
           <div className="max-w-(--container-max) mx-auto">
             <Reveal className="mb-12 flex items-end justify-between gap-4 flex-wrap">
               <h2 className="font-display text-headline-h2 text-primary">
-                {t("alsoFromLine", { line: wine.line })}
+                {t("youMayAlsoLike")}
               </h2>
               <Button
                 href={`/${locale}/vinos`}
@@ -184,7 +203,7 @@ export default async function WinePage({
                 {tVinos("hero.title")}
               </Button>
             </Reveal>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-gutter">
+            <div className="grid grid-cols-1 gap-gutter sm:grid-cols-2 lg:grid-cols-4">
               {related.map((r, idx) => (
                 <Reveal key={r.slug} delay={idx * 80}>
                   <Link
@@ -197,13 +216,13 @@ export default async function WinePage({
                         alt={r.name}
                         fill
                         className="object-contain p-8 group-hover:scale-105 transition-transform duration-500 drop-shadow-[0_12px_18px_rgba(74,14,14,0.15)]"
-                        sizes="(max-width: 768px) 100vw, 33vw"
+                        sizes="(max-width: 639px) 100vw, (max-width: 1023px) 50vw, 25vw"
                       />
                     </div>
                     <div className="p-6">
                       <h3 className="font-display text-xl text-primary mb-1">{r.name}</h3>
                       <p className="font-body text-body-md text-on-surface-variant">
-                        {r.variety}
+                        {tVinos(`types.${r.type}`)} · {tVinos(`varieties.${r.variety}`)}
                       </p>
                     </div>
                   </Link>

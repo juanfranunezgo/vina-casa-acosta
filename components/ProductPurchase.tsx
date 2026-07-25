@@ -65,7 +65,7 @@ export default function ProductPurchase({ item }: Props) {
       <button
         type="button"
         onClick={handleAdd}
-        className={`group inline-flex items-center justify-center gap-2 h-11 px-6 rounded-md font-body font-semibold text-body-md bg-primary text-on-primary shadow-[0_8px_24px_-8px_rgba(42,0,2,0.45)] hover:bg-primary-container hover:shadow-[0_12px_28px_-8px_rgba(42,0,2,0.55)] hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200 ${
+        className={`group inline-flex h-11 min-w-40 items-center justify-center gap-2 whitespace-nowrap rounded-md bg-primary px-6 font-body text-body-md font-semibold text-on-primary shadow-[0_8px_24px_-8px_rgba(42,0,2,0.45)] transition-all duration-200 hover:-translate-y-0.5 hover:bg-primary-container hover:shadow-[0_12px_28px_-8px_rgba(42,0,2,0.55)] active:translate-y-0 ${
           pulse ? "scale-[1.02]" : ""
         }`}
       >

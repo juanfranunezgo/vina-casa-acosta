@@ -12,7 +12,7 @@ const nextConfig: NextConfig = {
     // Calidades permitidas para next/image. Silencia el warning de Next 16
     // cuando un <Image> pide algo distinto del default (75).
     // 85 = balance calidad/peso del hero full-bleed · 95 = botellas de vino.
-    qualities: [75, 85, 95],
+    qualities: [65, 70, 75, 85, 95],
     remotePatterns: [
       {
         protocol: "https",

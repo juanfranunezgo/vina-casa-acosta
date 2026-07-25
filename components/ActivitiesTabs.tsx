@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import { Map, Wine, CalendarDays } from "lucide-react";
+import { useEffect, useState } from "react";
+import { CalendarDays, Map, Wine } from "lucide-react";
 
 type Props = {
   labels: {
@@ -18,58 +18,30 @@ const tabs = [
   { id: "eventos", key: "events" as const, Icon: CalendarDays },
 ];
 
-// Alto del navbar fijo (logo h-14/h-16 + py-4): 88px mobile / 96px desktop.
-// La pastilla se ancla justo debajo (top-[88px]/[96px]) — mantener en sync con Navbar.
 const navHeight = () =>
-  typeof window !== "undefined" &&
-  window.matchMedia("(min-width: 768px)").matches
+  typeof window !== "undefined" && window.matchMedia("(min-width: 768px)").matches
     ? 96
     : 88;
 
-/**
- * Sub-nav de sección para Actividades (D1b). Misma pastilla segmentada flotante
- * que la sección de actividades del Inicio (HomeActivitiesShowcase), pero sticky:
- * se ancla bajo el navbar al scrollear y un scroll-spy determinista resalta la
- * sección visible (Tours / Experiencias / Eventos).
- *
- * - Wrapper transparente + `pointer-events-none`: la pastilla flota sobre el
- *   contenido y las zonas laterales vacías NO capturan clics (van al contenido).
- * - Scroll-spy por posición (no una banda de IntersectionObserver): no parpadea
- *   entre secciones ni se queda pegado en "Eventos" —corto— al llegar al fondo.
- * - `stuck` sube la sombra al fijarse, dándole profundidad de barra flotante.
- */
+/** Barra estÃ¡tica: conserva contexto sin cubrir contenido al desplazarse. */
 export default function ActivitiesTabs({ labels }: Props) {
-  const [active, setActive] = useState<string>(tabs[0].id);
-  const [stuck, setStuck] = useState(false);
-  const navRef = useRef<HTMLElement | null>(null);
+  const [active, setActive] = useState(tabs[0].id);
 
   useEffect(() => {
     const sections = tabs
-      .map((t) => document.getElementById(t.id))
-      .filter((el): el is HTMLElement => el !== null);
-    if (sections.length === 0) return;
+      .map((tab) => document.getElementById(tab.id))
+      .filter((element): element is HTMLElement => element !== null);
+    if (!sections.length) return;
 
     let frame = 0;
     const measure = () => {
       frame = 0;
-      const bar = navRef.current;
-      const barBottom = bar
-        ? bar.getBoundingClientRect().bottom
-        : navHeight();
-
-      // Elevada solo cuando quedó fijada (su borde superior alcanzó el navbar).
-      setStuck(!!bar && bar.getBoundingClientRect().top <= navHeight() + 1);
-
-      // Al tocar fondo de página la última sección manda (arregla el caso de una
-      // sección final corta que nunca cruzaría la línea de referencia).
-      const scrollBottom = window.scrollY + window.innerHeight;
-      if (scrollBottom >= document.documentElement.scrollHeight - 2) {
+      if (window.scrollY + window.innerHeight >= document.documentElement.scrollHeight - 2) {
         setActive(sections[sections.length - 1].id);
         return;
       }
 
-      // La activa es la última sección cuyo tope ya pasó bajo la pastilla.
-      const line = barBottom + 8;
+      const line = navHeight() + 24;
       let current = sections[0].id;
       for (const section of sections) {
         if (section.getBoundingClientRect().top <= line) current = section.id;
@@ -94,18 +66,10 @@ export default function ActivitiesTabs({ labels }: Props) {
 
   return (
     <nav
-      ref={navRef}
       aria-label={labels.aria}
-      className="pointer-events-none sticky top-[88px] z-30 flex justify-center px-margin-mobile py-3 md:top-[96px] md:py-4"
+      className="relative z-20 border-y border-outline-variant/30 bg-surface px-margin-mobile py-3 md:px-margin-desktop md:py-4"
     >
-      {/* Misma pastilla que el Inicio: inline-flex ⇒ ocupa solo el ancho de su
-          contenido y el `justify-center` del <nav> la centra. En pantallas muy
-          angostas envuelve a dos filas (flex-wrap) en vez de estirarse. */}
-      <div
-        className={`pointer-events-auto inline-flex flex-wrap items-center justify-center gap-1 rounded-full border border-outline-variant/40 bg-surface/90 p-1 backdrop-blur-xl transition-shadow duration-300 ${
-          stuck ? "ambient-shadow-lg" : "ambient-shadow"
-        }`}
-      >
+      <div className="mx-auto grid w-full max-w-md grid-cols-3 gap-1 rounded-full border border-outline-variant/40 bg-surface-container-low p-1 ambient-shadow">
         {tabs.map(({ id, key, Icon }) => {
           const isActive = active === id;
           return (
@@ -114,13 +78,13 @@ export default function ActivitiesTabs({ labels }: Props) {
               href={`#${id}`}
               aria-current={isActive ? "true" : undefined}
               onClick={() => setActive(id)}
-              className={`inline-flex min-h-11 items-center gap-2 whitespace-nowrap rounded-full px-4 py-2 font-body text-label-sm font-semibold uppercase tracking-wider transition-all duration-300 md:px-5 ${
+              className={`inline-flex min-h-11 items-center justify-center gap-2 rounded-full px-2 py-2 text-center font-body text-[10px] font-semibold uppercase tracking-[0.12em] transition-colors duration-200 sm:text-label-sm sm:tracking-wider md:px-5 ${
                 isActive
                   ? "bg-primary text-on-primary shadow-[0_4px_14px_-4px_rgba(42,0,2,0.4)]"
                   : "text-on-surface-variant hover:text-primary"
               }`}
             >
-              <Icon className="h-4 w-4 shrink-0" aria-hidden="true" />
+              <Icon className="hidden h-4 w-4 shrink-0 md:block" aria-hidden="true" />
               {labels[key]}
             </a>
           );

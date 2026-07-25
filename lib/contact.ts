@@ -13,3 +13,6 @@ export const CONTACT_TEL_URL = `tel:+${CONTACT_PHONE_E164}`;
 
 /** Perfil oficial de Instagram — canal donde se anuncian fechas y eventos. */
 export const INSTAGRAM_URL = "https://www.instagram.com/vinacasaacosta/";
+
+/** Página oficial de Facebook de Viña Casa Acosta. */
+export const FACEBOOK_URL = "https://www.facebook.com/vinacasaacosta/";

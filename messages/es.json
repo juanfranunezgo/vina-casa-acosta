@@ -44,6 +44,8 @@
     "tienda": "Tienda",
     "openMenu": "Abrir menú",
     "closeMenu": "Cerrar menú",
+    "openTours": "Ver tours",
+    "closeTours": "Ocultar tours",
     "logoAlt": "Viña Casa Acosta — Inicio",
     "language": "Idioma",
     "sectionNav": "Navegación",
@@ -56,6 +58,7 @@
     "location": "San Vicente de Tagua Tagua, VI Región, Chile",
     "hours": "Lun a Sáb · 10:00 – 18:00 hrs",
     "copyright": "© {year} Viña Casa Acosta. Patrimonio y excelencia vitivinícola.",
+    "developedBy": "Sitio desarrollado por",
     "legal": {
       "privacy": "Privacidad",
       "terms": "Términos",
@@ -63,7 +66,7 @@
     },
     "social": {
       "instagram": "Instagram",
-      "tripadvisor": "TripAdvisor",
+      "facebook": "Facebook",
       "google": "Google Reviews"
     },
     "disclaimer": "Beber con moderación. Prohibida la venta de alcohol a menores de 18 años · Ley N° 19.925."
@@ -124,24 +127,27 @@
       "prevLabel": "Colección anterior",
       "nextLabel": "Colección siguiente",
       "wineCount": "{count, plural, one {# vino} other {# vinos}}",
-      "detailLabels": { "estilo": "Estilo", "premio": "Premio" },
+      "detailLabels": { "estilo": "Estilo", "crianza": "Crianza", "premio": "Premio" },
       "lines": {
         "ombu": {
           "category": "Reserva",
           "description": "La puerta de entrada a Casa Acosta: tres Reservas del Cachapoal para todos los días.",
-          "estilo": "Frutal y accesible",
+          "estilo": "Reservas con carácter",
+          "crianza": "Barricas de roble francés",
           "premio": ""
         },
         "lajau": {
           "category": "Edición Limitada",
           "description": "Ensamblajes de edición limitada, seleccionados parcela a parcela y de producción acotada.",
           "estilo": "Complejo, de guarda",
+          "crianza": "Barricas de roble francés",
           "premio": ""
         },
         "estacion-francia": {
           "category": "Gran Reserva",
           "description": "Homenaje al momento fundacional de la viña, junto al Mundial de Francia '98.",
           "estilo": "Estructura y guarda",
+          "crianza": "Barricas de roble francés",
           "premio": ""
         }
       }
@@ -156,7 +162,7 @@
       "cat": { "tour": "Tour", "experience": "Experiencia", "event": "Evento" },
       "eventsCta": "Cotizar evento",
       "book": "Reservar",
-      "more": "Ver más",
+      "more": "Explorar",
       "items": {
         "tour": {
           "name": "Tour",
@@ -290,9 +296,13 @@
     "hero": {
       "eyebrow": "Catálogo completo",
       "title": "Nuestros vinos",
+      "imageAlt": "Corchos de Viña Casa Acosta",
       "subtitle": "Una colección de expresiones auténticas, nacidas en nuestro viñedo boutique del Valle del Cachapoal. Cada botella cuenta la historia de nuestro patrimonio y nuestro terroir."
     },
     "lineLabel": "Línea",
+    "collectionPhotoAlt": "Colección {line} — ambiente de Viña Casa Acosta",
+    "showMore": "Ver más vinos",
+    "showLess": "Ver menos",
     "lineDescriptions": {
       "Ombú": "Línea reserva: la cara más reconocible de la viña. Vinos varietales para celebrar lo cotidiano.",
       "Lajau": "Ensamblajes de guarda: parcelas seleccionadas y producción acotada.",
@@ -308,7 +318,7 @@
     },
     "types": {
       "Tinto": "Tinto",
-      "Rosado": "Rosado",
+      "Rosado": "Rosé",
       "Blanco": "Blanco",
       "Espumante": "Espumante"
     },
@@ -332,8 +342,9 @@
     "noVintage": "Sin cosecha (no-vintage)",
     "tastingNotes": "Notas de cata",
     "pairing": "Maridaje",
+    "technicalSheet": "Ficha técnica (PDF)",
     "currency": "CLP",
-    "alsoFromLine": "También de la línea {line}"
+    "youMayAlsoLike": "También te puede interesar"
   },
   "wines": {
     "ombu-carmenere": {
@@ -447,6 +458,7 @@
       "eyebrow": "A lo largo del año",
       "title": "Experiencias especiales",
       "subtitle": "Acompaña el ciclo de la vid y celebra fechas importantes con nosotros. Experiencias temporales a lo largo del año.",
+      "efeCta": "Comprar pasajes",
       "stayTunedLead": "¿No quieres perderte las próximas fechas?",
       "stayTunedCta": "Síguenos en Instagram"
     },
@@ -633,24 +645,39 @@
     "cards": {
       "location": {
         "title": "Ubicación",
-        "body": "San Vicente de Tagua Tagua, Valle del Cachapoal, Chile"
+        "body": "Fundo El Llano, lote 6, San Vicente de Tagua Tagua, O'Higgins, Chile",
+        "cta": "Cómo llegar"
       },
       "hours": {
         "title": "Horarios",
         "body": "Lun a Sáb · 10:00 – 18:00\nJueves hasta las 20:00"
       },
       "phone": {
-        "title": "Teléfono / WhatsApp"
+        "title": "Teléfono / WhatsApp",
+        "cta": "Escríbenos"
       },
       "email": {
         "title": "Email",
-        "body": "contacto@vinacasaacosta.cl"
+        "body": "contacto@vinacasaacosta.cl",
+        "cta": "Enviar correo"
+      }
+    },
+    "gallery": {
+      "eyebrow": "Visítanos",
+      "title": "Un lugar para brindar, compartir y volver.",
+      "photoAlts": {
+        "plato": "Plato preparado para una experiencia gastronómica en Viña Casa Acosta",
+        "cena": "Mesa dispuesta para una cena entre vinos",
+        "asado": "Asado al aire libre entre los viñedos",
+        "letrero": "Letrero de Viña Casa Acosta entre las parras"
       }
     }
   },
   "contactForm": {
     "title": "Envíanos un mensaje",
     "subtitle": "Te respondemos en menos de 24 horas hábiles.",
+    "whatsappIntro": "Hola Casa Acosta, me gustaría hacer una consulta.",
+    "whatsappNotice": "Al enviar, abriremos WhatsApp con tu mensaje listo para enviar.",
     "fields": {
       "name": "Nombre",
       "namePlaceholder": "Tu nombre",
@@ -668,13 +695,8 @@
       "other": "Otro"
     },
     "buttons": {
-      "idle": "Enviar mensaje",
-      "submitting": "Enviando…",
-      "success": "¡Mensaje enviado!",
-      "error": "Reintentar"
-    },
-    "successMessage": "Gracias por contactarnos. Te responderemos pronto.",
-    "demoNotice": "Formulario de demostración · En la versión final los mensajes llegarán directamente al correo de la viña."
+      "idle": "Enviar por WhatsApp"
+    }
   },
   "cart": {
     "openLabel": "Abrir carrito",

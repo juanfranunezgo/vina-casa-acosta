@@ -1,51 +1,92 @@
 export type WineLine = "Ombú" | "Lajau" | "Estación Francia" | "Berá" | "Guidaí" | "Yaráy Guá";
 
+/** Tipo de vino (nuevo filtro de la tienda). */
+export type WineType = "Tinto" | "Rosado" | "Blanco" | "Espumante";
+
+/** Cepa o estilo principal (filtro de variedad). Los multi-cepa se marcan como Ensamblaje. */
 export type Variety =
   | "Carmenere"
   | "Tannat"
   | "Cabernet Sauvignon"
-  | "Sauvignon Blanc"
-  | "Ensamblaje"
-  | "Blanco"
-  | "Tinto";
+  | "Chardonnay"
+  | "Ensamblaje";
+
+/** Ficha técnica real extraída del documento del cliente. */
+export type WineTechnical = {
+  /** Composición de cepas, ej. "100% Carmenere". */
+  blend: string;
+  /** Graduación alcohólica, ej. "13,5%". */
+  alcohol: string;
+  /** Valle de origen. */
+  valley: string;
+  /** Sistema de conducción. */
+  training: string;
+  /** Volumen de la botella en ml. */
+  volumeMl: number;
+  /** Tipo de cierre / tapa. */
+  closure: string;
+  /** Temperatura de servicio recomendada, ej. "16° – 18°". */
+  serve: string;
+};
 
 export type Wine = {
   slug: string;
   name: string;
   line: WineLine;
+  type: WineType;
   variety: Variety;
-  category: "Reserva" | "Gran Reserva" | "Edición Limitada" | "Ícono";
+  /** Nivel de la línea. Solo se asigna cuando es real (documento o etiqueta). */
+  category?: "Reserva" | "Gran Reserva" | "Edición Limitada";
   image: string;
+  /** PDF oficial para consultar la ficha técnica del vino. */
+  technicalSheet: string;
   shortDescription: string;
   description: string;
   tastingNotes: string[];
   pairings: string[];
+  technical: WineTechnical;
   priceCLP: number;
-  vintage: number;
+  /** Cosecha. Ausente en no-vintage (ej. Guidaí Espumante). */
+  vintage?: number;
   featured?: boolean;
   badge?: string;
 };
 
 /**
  * Catálogo de vinos — Fase 1: datos estáticos.
- * Precios y notas de cata son ESTIMACIONES de demo. El cliente debe validar
- * cada ficha antes de Fase 2 (Supabase).
+ *
+ * CLASIFICACIÓN y FICHA TÉCNICA: datos REALES tomados de
+ * "Información de Vinos - Viña Casa Acosta.md" (13 vinos del cliente).
+ *
+ * PRECIOS: aún son ESTIMACIONES de demo (el documento del cliente no incluye
+ * precios). El cliente debe validarlos antes de Fase 2 (Supabase).
  */
 export const wines: Wine[] = [
   {
     slug: "ombu-carmenere",
     name: "Ombú Carmenere",
     line: "Ombú",
+    type: "Tinto",
     variety: "Carmenere",
     category: "Reserva",
     image: "/vinos/ombu-carmenere.png",
-    shortDescription: "Carmenere Reserva del Valle del Cachapoal.",
+    technicalSheet: "/documentos/fichas-tecnicas/ombu-carmenere.pdf",
+    shortDescription: "Carmenere Reserva 100%, de intensas notas especiadas y frutos negros maduros.",
     description:
-      "Nuestro Carmenere Reserva insignia. Frutos rojos maduros, especias dulces y un toque sutil de roble que reflejan el carácter cálido del Cachapoal.",
-    tastingNotes: ["Frambuesa", "Pimienta negra", "Cacao", "Tabaco"],
-    pairings: ["Carnes rojas", "Asado al palo", "Quesos curados"],
+      "Intenso color rojo cereza. Nariz compleja, de intensas notas especiadas y frutos negros maduros. En boca, taninos suaves y redondos, de buena estructura, largo y agradable final.",
+    tastingNotes: ["Frutos negros maduros", "Especias", "Rojo cereza", "Taninos redondos"],
+    pairings: ["Pastas", "Filete mignon", "Pastelera de maíz"],
+    technical: {
+      blend: "100% Carmenere",
+      alcohol: "13,5%",
+      valley: "Valle Cachapoal, Chile",
+      training: "Espaldera Vertical",
+      volumeMl: 750,
+      closure: "DIAM",
+      serve: "16° – 18°",
+    },
     priceCLP: 18900,
-    vintage: 2022,
+    vintage: 2024,
     featured: true,
     badge: "Insignia",
   },
@@ -53,46 +94,79 @@ export const wines: Wine[] = [
     slug: "ombu-tannat",
     name: "Ombú Tannat",
     line: "Ombú",
+    type: "Tinto",
     variety: "Tannat",
     category: "Reserva",
     image: "/vinos/ombu-tannat.png",
-    shortDescription: "Tannat Reserva, robusto y estructurado.",
+    technicalSheet: "/documentos/fichas-tecnicas/ombu-tannat.pdf",
+    shortDescription: "Tannat Reserva 100%, de taninos firmes y buen potencial de guarda.",
     description:
-      "Homenaje a las raíces uruguayas de la familia. Estructura firme, taninos elegantes y aromas a moras oscuras con chocolate amargo.",
-    tastingNotes: ["Mora", "Chocolate amargo", "Cuero", "Regaliz"],
-    pairings: ["Cordero al horno", "Quesos azules", "Estofados"],
+      "Rojo cereza. En nariz, aromas a frutos negros como arándanos y moras, con algo de especias como pimienta negra y clavo de olor. De cuerpo complejo, con taninos firmes, acidez equilibrada y buen potencial de guarda.",
+    tastingNotes: ["Arándanos", "Moras", "Pimienta negra", "Clavo de olor"],
+    pairings: ["Carnes rojas", "Quesos maduros"],
+    technical: {
+      blend: "100% Tannat",
+      alcohol: "13,5%",
+      valley: "Valle Cachapoal, Chile",
+      training: "Espaldera Vertical",
+      volumeMl: 750,
+      closure: "DIAM",
+      serve: "16° – 18°",
+    },
     priceCLP: 18900,
-    vintage: 2022,
+    vintage: 2024,
   },
   {
     slug: "ombu-sauvignon",
     name: "Ombú Cabernet Sauvignon",
     line: "Ombú",
+    type: "Tinto",
     variety: "Cabernet Sauvignon",
     category: "Reserva",
     image: "/vinos/ombu-sauvignon.png",
-    shortDescription: "Cabernet Sauvignon clásico y elegante.",
+    technicalSheet: "/documentos/fichas-tecnicas/ombu-cabernet-sauvignon.pdf",
+    shortDescription: "Cabernet Sauvignon 100% del Valle del Cachapoal, equilibrado y sedoso.",
     description:
-      "Notas de cassis y cedro con un final largo y persistente. La elegancia clásica del Cabernet Sauvignon en el terroir del Cachapoal.",
-    tastingNotes: ["Cassis", "Cedro", "Menta", "Grafito"],
-    pairings: ["Bife de chorizo", "Pastas con ragú", "Queso parmesano"],
+      "Nariz fresca, con notas a frutos secos, especias y frutos rojos maduros, y un leve toque de vainilla. Es equilibrado y carnoso, con taninos presentes pero sedosos, buen volumen y un final largo de muy buena persistencia.",
+    tastingNotes: ["Frutos secos", "Especias", "Frutos rojos maduros", "Vainilla"],
+    pairings: ["Cordero al palo", "Comida árabe"],
+    technical: {
+      blend: "100% Cabernet Sauvignon",
+      alcohol: "13,5%",
+      valley: "Valle Cachapoal, Chile",
+      training: "Espaldera Vertical",
+      volumeMl: 750,
+      closure: "DIAM",
+      serve: "16° – 18°",
+    },
     priceCLP: 18900,
-    vintage: 2022,
+    vintage: 2024,
   },
   {
     slug: "lajau-sam",
     name: "Lajau Sam",
     line: "Lajau",
+    type: "Tinto",
     variety: "Ensamblaje",
     category: "Edición Limitada",
     image: "/vinos/lajau-sam.png",
-    shortDescription: "Ensamblaje único de edición limitada.",
+    technicalSheet: "/documentos/fichas-tecnicas/lajau-sam.pdf",
+    shortDescription: "Ensamblaje Carmenere–Tannat, estructurado y de largo retrogusto.",
     description:
-      "Un ensamble que evoluciona en la copa. Complejidad estructurada, lleno de matices y producción muy acotada cada cosecha.",
-    tastingNotes: ["Cereza negra", "Especias dulces", "Vainilla", "Cuero suave"],
-    pairings: ["Cordero magallánico", "Risotto de hongos", "Caza menor"],
+      "Aromas a frutos negros muy maduros, especias y chocolate amargo. En boca es estructurado, equilibrado y de largo retrogusto.",
+    tastingNotes: ["Frutos negros maduros", "Especias", "Chocolate amargo", "Largo retrogusto"],
+    pairings: ["Masas con carne", "Entraña"],
+    technical: {
+      blend: "68% Carmenere, 32% Tannat",
+      alcohol: "13,5%",
+      valley: "Valle Cachapoal, Chile",
+      training: "Espaldera Vertical",
+      volumeMl: 750,
+      closure: "DIAM",
+      serve: "16° – 18°",
+    },
     priceCLP: 32500,
-    vintage: 2021,
+    vintage: 2024,
     featured: true,
     badge: "Edición Limitada",
   },
@@ -100,60 +174,104 @@ export const wines: Wine[] = [
     slug: "lajau-deti",
     name: "Lajau Detí",
     line: "Lajau",
-    variety: "Carmenere",
-    category: "Gran Reserva",
+    type: "Tinto",
+    variety: "Ensamblaje",
+    category: "Edición Limitada",
     image: "/vinos/lajau-deti.png",
-    shortDescription: "Carmenere Gran Reserva, sedoso y elegante.",
+    technicalSheet: "/documentos/fichas-tecnicas/lajau-deti.pdf",
+    shortDescription: "Ensamblaje de Carmenere, Cabernet Sauvignon y Petit Verdot, elegante y complejo.",
     description:
-      "Expresión pura de la fruta con una acidez equilibrada y textura sedosa inconfundible. 12 meses en barricas de roble francés.",
-    tastingNotes: ["Ciruela", "Violeta", "Café", "Roble fino"],
-    pairings: ["Magret de pato", "Quesos semicurados", "Carrillera"],
+      "Interesante rojo cereza con aromas frescos y complejos: intensa fruta negra, cacao y humo. Boca estructurada, de taninos suaves y elegantes, largo y de agradable final.",
+    tastingNotes: ["Fruta negra", "Cacao", "Humo", "Taninos elegantes"],
+    pairings: ["Quesos maduros", "Jabalí al romero"],
+    technical: {
+      blend: "50% Carmenere, 40% Cabernet Sauvignon, 10% Petit Verdot",
+      alcohol: "13,5%",
+      valley: "Valle Cachapoal, Chile",
+      training: "Espaldera Vertical",
+      volumeMl: 750,
+      closure: "DIAM",
+      serve: "16° – 18°",
+    },
     priceCLP: 28000,
-    vintage: 2021,
+    vintage: 2024,
   },
   {
     slug: "lajau-betum",
     name: "Lajau Betúm",
     line: "Lajau",
-    variety: "Tannat",
-    category: "Gran Reserva",
+    type: "Tinto",
+    variety: "Ensamblaje",
+    category: "Edición Limitada",
     image: "/vinos/lajau-betum.png",
-    shortDescription: "Tannat Gran Reserva, profundo y misterioso.",
+    technicalSheet: "/documentos/fichas-tecnicas/lajau-betum.pdf",
+    shortDescription: "Ensamblaje de cuatro cepas, complejo y de gran volumen.",
     description:
-      "Profundo y misterioso, con capas de sabor que revelan notas terrosas y frutos negros. Maridaje ideal para la mesa larga.",
-    tastingNotes: ["Mora silvestre", "Tierra húmeda", "Tabaco", "Especias"],
-    pairings: ["Cordero al merkén", "Carnes ahumadas", "Quesos azules"],
+      "Vino de intenso color rojo rubí con tintes violáceos. Muy complejo: fruta roja madura y fruta negra, con toques de humo y pimienta. Boca de buena estructura y volumen, de taninos jugosos, gran retrogusto y largo final.",
+    tastingNotes: ["Fruta roja madura", "Fruta negra", "Humo", "Pimienta"],
+    pairings: ["Queso de cabra", "Pato a la naranja", "Cordero"],
+    technical: {
+      blend: "30% Carmenere, 30% Cot, 20% Carignan, 20% Tannat",
+      alcohol: "13,5%",
+      valley: "Valle Cachapoal, Chile",
+      training: "Espaldera Vertical",
+      volumeMl: 750,
+      closure: "DIAM",
+      serve: "16° – 18°",
+    },
     priceCLP: 28000,
-    vintage: 2021,
+    vintage: 2024,
   },
   {
     slug: "lajau-betum-yu",
     name: "Lajau Betúm Yú",
     line: "Lajau",
-    variety: "Tannat",
-    category: "Ícono",
+    type: "Tinto",
+    variety: "Ensamblaje",
+    category: "Edición Limitada",
     image: "/vinos/lajau-betum-yu.png",
-    shortDescription: "Tannat Ícono, expresión cumbre de la línea Lajau.",
+    technicalSheet: "/documentos/fichas-tecnicas/lajau-betum-yu.pdf",
+    shortDescription: "Ensamblaje de cinco cepas, expresión cumbre de la línea Lajau.",
     description:
-      "Selección parcelaria de las mejores uvas Tannat. 18 meses en barricas nuevas. Producción ultra limitada.",
-    tastingNotes: ["Frutos negros confitados", "Cedro", "Chocolate negro 70%", "Trufa"],
-    pairings: ["Lomo Wellington", "Caza mayor", "Quesos añejos"],
+      "Vino de intenso color rojo rubí, de taninos presentes pero redondos y una acidez equilibrada. Final de boca con un toque a chocolate amargo y algo de humo, de largo final.",
+    tastingNotes: ["Rojo rubí", "Chocolate amargo", "Humo", "Taninos redondos"],
+    pairings: ["Carnes rojas a la parrilla"],
+    technical: {
+      blend: "40% Carmenere, 20% Syrah, 20% Cabernet Franc, 10% Marselan, 10% Arinarnoa",
+      alcohol: "13,5%",
+      valley: "Valle Cachapoal, Chile",
+      training: "Espaldera Vertical",
+      volumeMl: 750,
+      closure: "DIAM",
+      serve: "16° – 18°",
+    },
     priceCLP: 48000,
-    vintage: 2020,
-    badge: "Ícono",
+    vintage: 2024,
+    badge: "Edición Limitada",
   },
   {
     slug: "estacion-francia-carmenere",
     name: "Estación Francia Carmenere",
     line: "Estación Francia",
+    type: "Tinto",
     variety: "Carmenere",
     category: "Gran Reserva",
     image: "/vinos/estacion-francia-carmenere.png",
-    shortDescription: "Homenaje al origen — Francia '98.",
+    technicalSheet: "/documentos/fichas-tecnicas/estacion-francia-carmenere.pdf",
+    shortDescription: "Gran Reserva de Carmenere y Petit Verdot, de gran complejidad y guarda.",
     description:
-      "La línea que celebra el momento fundacional de la viña, junto al Mundial de Francia '98. Carmenere de gran complejidad y guarda.",
-    tastingNotes: ["Frutilla madura", "Pimienta", "Chocolate", "Roble francés"],
-    pairings: ["Asado argentino", "Plateada al jugo", "Empanadas de pino"],
+      "Vivo color rojo guinda, con notas violáceas. Aromas a frutos negros, chocolate y especias, con toques de grosella, frutos secos y tabaco. En boca hay taninos sedosos; es jugoso y de buen equilibrio, con un final persistente.",
+    tastingNotes: ["Frutos negros", "Chocolate", "Grosella", "Tabaco"],
+    pairings: ["Costillas de cerdo", "Morcillas a la parrilla"],
+    technical: {
+      blend: "95% Carmenere, 5% Petit Verdot",
+      alcohol: "14%",
+      valley: "Valle Cachapoal, Chile",
+      training: "Espaldera Vertical",
+      volumeMl: 750,
+      closure: "DIAM",
+      serve: "16° – 18°",
+    },
     priceCLP: 24000,
     vintage: 2021,
     featured: true,
@@ -162,14 +280,25 @@ export const wines: Wine[] = [
     slug: "estacion-francia-tannat",
     name: "Estación Francia Tannat",
     line: "Estación Francia",
+    type: "Tinto",
     variety: "Tannat",
     category: "Gran Reserva",
     image: "/vinos/estacion-francia-tannat.png",
-    shortDescription: "Tannat con alma uruguaya.",
+    technicalSheet: "/documentos/fichas-tecnicas/estacion-francia-tannat.pdf",
+    shortDescription: "Gran Reserva de Tannat y Carmenere, potente y de gran estructura.",
     description:
-      "Estructura potente y final persistente. Un Tannat que conecta el terroir chileno con la herencia familiar uruguaya.",
-    tastingNotes: ["Cassis", "Pimienta negra", "Cedro", "Cuero"],
-    pairings: ["Asado de tira", "Cordero patagónico", "Quesos curados"],
+      "Vino de intenso color. Aromas a frutos rojos maduros, ciruela y mora, con toques a cereza negra y notas a tabaco. Boca potente y de gran estructura, cuerpo robusto, largo y persistente.",
+    tastingNotes: ["Frutos rojos maduros", "Ciruela", "Cereza negra", "Tabaco"],
+    pairings: ["Garrón de cordero", "Quesos azules"],
+    technical: {
+      blend: "90% Tannat, 10% Carmenere",
+      alcohol: "14%",
+      valley: "Valle Cachapoal, Chile",
+      training: "Espaldera Vertical",
+      volumeMl: 750,
+      closure: "DIAM",
+      serve: "16° – 18°",
+    },
     priceCLP: 24000,
     vintage: 2021,
   },
@@ -177,61 +306,104 @@ export const wines: Wine[] = [
     slug: "bera",
     name: "Berá",
     line: "Berá",
-    variety: "Cabernet Sauvignon",
-    category: "Gran Reserva",
+    type: "Rosado",
+    variety: "Carmenere",
     image: "/vinos/bera.png",
-    shortDescription: "Cabernet Sauvignon Gran Reserva.",
+    technicalSheet: "/documentos/fichas-tecnicas/bera-rose.pdf",
+    shortDescription: "Rosé fresco y floral de Carmenere y Cabernet Sauvignon.",
     description:
-      "Estructura imponente con elegancia. Cassis, cedro y un final largo y persistente. Listo para crecer en botella.",
-    tastingNotes: ["Cassis", "Cedro", "Tabaco", "Grafito"],
-    pairings: ["Bife angosto", "Plateada", "Quesos duros"],
-    priceCLP: 26000,
-    vintage: 2021,
+      "Rosé de color rosa y perfil complejo. Aromas a frambuesa fresca, muy floral, con notas a cereza roja. Boca fresca, de interesante acidez, jugoso y de agradable final.",
+    tastingNotes: ["Frambuesa fresca", "Floral", "Cereza roja", "Acidez jugosa"],
+    pairings: ["Comida oriental", "Panaché de verduras", "Pastrami", "Paella"],
+    technical: {
+      blend: "90% Carmenere, 10% Cabernet Sauvignon",
+      alcohol: "13%",
+      valley: "Valle Cachapoal, Chile",
+      training: "Espaldera Vertical",
+      volumeMl: 750,
+      closure: "DIAM",
+      serve: "7° – 9°",
+    },
+    priceCLP: 16900,
+    vintage: 2025,
   },
   {
     slug: "guidai",
     name: "Guidaí",
     line: "Guidaí",
-    variety: "Ensamblaje",
+    type: "Espumante",
+    variety: "Carmenere",
     category: "Edición Limitada",
     image: "/vinos/guidai.png",
-    shortDescription: "Ensamblaje de edición limitada.",
+    technicalSheet: "/documentos/fichas-tecnicas/guidai-espumante.pdf",
+    shortDescription: "Espumante rosado, fresco y de burbuja fina.",
     description:
-      "Ensamblaje exclusivo en honor a la palabra charrúa para 'luna'. Vino de guarda, elegante y meditado.",
-    tastingNotes: ["Frutos rojos maduros", "Especias finas", "Cacao", "Roble dulce"],
-    pairings: ["Caza menor", "Confit de pato", "Hongos al vino"],
-    priceCLP: 36000,
-    vintage: 2020,
+      "Espumante de color rosado pálido. Aromas a fresas, con un toque picante. Corona blanquecina, con persistentes burbujas pequeñas; fresco y de equilibrada acidez.",
+    tastingNotes: ["Fresas", "Rosado pálido", "Burbuja fina", "Acidez fresca"],
+    pairings: ["Comida thai", "Sashimi de salmón"],
+    technical: {
+      blend: "90% Carmenere, 10% Cabernet Sauvignon",
+      alcohol: "12,5%",
+      valley: "Valle Cachapoal, Chile",
+      training: "Espaldera Vertical",
+      volumeMl: 750,
+      closure: "Natural, doble arandela",
+      serve: "6° – 8°",
+    },
+    priceCLP: 22000,
+    badge: "Espumante",
   },
   {
     slug: "yaray-gua-tinto",
-    name: "Yaráy Guá Tinto",
+    name: "Yaráy Guá Carmenere",
     line: "Yaráy Guá",
-    variety: "Tinto",
-    category: "Reserva",
+    type: "Tinto",
+    variety: "Carmenere",
     image: "/vinos/yaray-gua-tinto.png",
-    shortDescription: "Tinto joven, fresco y frutal.",
+    technicalSheet: "/documentos/fichas-tecnicas/yaray-gua-carmenere.pdf",
+    shortDescription: "Carmenere de cosecha tardía, goloso y de dulzor balanceado.",
     description:
-      "Línea fresca y frutal pensada para el disfrute diario. Acceso ideal al universo Casa Acosta.",
-    tastingNotes: ["Frambuesa", "Cereza", "Hierbas suaves"],
-    pairings: ["Pizzas", "Pastas con tomate", "Carnes blancas"],
-    priceCLP: 12000,
+      "Color rojo teja. Aromas de frutas rojas confitadas, higos y miel. En boca es goloso, con un dulzor balanceado y una acidez que evita que sea empalagoso.",
+    tastingNotes: ["Frutas rojas confitadas", "Higos", "Miel", "Rojo teja"],
+    pairings: ["Chocolate amargo", "Queso azul"],
+    technical: {
+      blend: "100% Carmenere",
+      alcohol: "14,5%",
+      valley: "Valle Cachapoal, Chile",
+      training: "Espaldera Vertical",
+      volumeMl: 500,
+      closure: "DIAM",
+      serve: "10° – 12°",
+    },
+    priceCLP: 19000,
     vintage: 2023,
+    badge: "Cosecha Tardía",
   },
   {
     slug: "yaray-gua-blanco",
-    name: "Yaráy Guá Blanco",
+    name: "Yaráy Guá Chardonnay Viognier",
     line: "Yaráy Guá",
-    variety: "Sauvignon Blanc",
-    category: "Reserva",
+    type: "Blanco",
+    variety: "Chardonnay",
     image: "/vinos/yaray-gua-blanco.png",
-    shortDescription: "Blanco fresco y aromático.",
+    technicalSheet: "/documentos/fichas-tecnicas/yaray-gua-chardonnay-viognier.pdf",
+    shortDescription: "Blanco de cosecha tardía, untuoso y de retrogusto complejo.",
     description:
-      "Sauvignon Blanc con notas cítricas y tropicales. Acidez vibrante, ideal para días cálidos junto al mar o al lago.",
-    tastingNotes: ["Pomelo", "Maracuyá", "Hierba fresca", "Cítricos"],
-    pairings: ["Ceviche", "Mariscos", "Quesos frescos"],
-    priceCLP: 12000,
-    vintage: 2024,
+      "Color amarillo oro con marcados reflejos ambarinos y brillantes. De gran volumen, potente, de grata acidez firme y vibrante. Final larguísimo y untuoso, con un retrogusto complejo donde regresan las notas de mermelada de naranja amarga, frutos secos tostados y un sutil toque de miel.",
+    tastingNotes: ["Mermelada de naranja", "Frutos secos tostados", "Miel", "Amarillo oro"],
+    pairings: ["Foie gras", "Cheesecake de maracuyá"],
+    technical: {
+      blend: "85% Chardonnay, 15% Viognier",
+      alcohol: "14,5%",
+      valley: "Valle Cachapoal, Chile",
+      training: "Espaldera Vertical",
+      volumeMl: 500,
+      closure: "DIAM",
+      serve: "8° – 10°",
+    },
+    priceCLP: 19000,
+    vintage: 2023,
+    badge: "Cosecha Tardía",
   },
 ];
 
@@ -247,6 +419,48 @@ export const lineSlugs: Record<WineLine, string> = {
   "Yaráy Guá": "yaray-gua",
 };
 
+/**
+ * Metadata editorial por línea para la página /vinos (banda de colección).
+ * La foto de ambiente le da identidad propia a cada colección.
+ */
+export type LineMeta = {
+  /** Foto de ambiente (en /public) usada como banner de la colección. */
+  heroImage: string;
+  /**
+   * Nivel/estilo de la línea para el antetítulo del banner. Referencia a una
+   * clave YA EXISTENTE de messages (`vinos.categories` | `types` | `badges`),
+   * así no se duplica copy y se mantiene el i18n es/en/pt.
+   */
+  tier: { group: "categories" | "types" | "badges"; key: string };
+};
+
+export const lineMeta: Record<WineLine, LineMeta> = {
+  "Ombú": {
+    heroImage: "/images/vinos/coleccion-ombu.webp",
+    tier: { group: "categories", key: "Reserva" },
+  },
+  "Lajau": {
+    heroImage: "/images/vinos/coleccion-lajau.webp",
+    tier: { group: "categories", key: "Edición Limitada" },
+  },
+  "Estación Francia": {
+    heroImage: "/images/vinos/coleccion-estacion-francia.webp",
+    tier: { group: "categories", key: "Gran Reserva" },
+  },
+  "Berá": {
+    heroImage: "/images/vinos/coleccion-bera.webp",
+    tier: { group: "types", key: "Rosado" },
+  },
+  "Guidaí": {
+    heroImage: "/images/vinos/coleccion-guidai.webp",
+    tier: { group: "types", key: "Espumante" },
+  },
+  "Yaráy Guá": {
+    heroImage: "/images/home/cta-parras.jpg",
+    tier: { group: "badges", key: "Cosecha Tardía" },
+  },
+};
+
 /** Líneas destacadas en el home (A3), en orden de aparición. */
 export const featuredLineOrder: WineLine[] = ["Ombú", "Lajau", "Estación Francia"];
 
@@ -254,11 +468,14 @@ export function getWinesByLine(line: WineLine): Wine[] {
   return wines.filter((w) => w.line === line);
 }
 
+/** Tipos de vino disponibles para el filtro de la tienda. */
+export const wineTypes: WineType[] = ["Tinto", "Rosado", "Blanco", "Espumante"];
+
 export const varieties: Variety[] = [
   "Carmenere",
   "Tannat",
   "Cabernet Sauvignon",
-  "Sauvignon Blanc",
+  "Chardonnay",
   "Ensamblaje",
 ];
 

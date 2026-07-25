@@ -3,7 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { Menu, X, ArrowRight, ChevronDown } from "lucide-react";
 import { routing } from "@/i18n/routing";
@@ -17,6 +17,12 @@ export default function Navbar() {
   const tTours = useTranslations("tours");
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
+  const [activitiesMenuOpen, setActivitiesMenuOpen] = useState(false);
+  const [mobileActivitiesOpen, setMobileActivitiesOpen] = useState(false);
+  const closeMobileMenu = useCallback(() => {
+    setOpen(false);
+    setMobileActivitiesOpen(false);
+  }, []);
 
   const links = [
     { href: "", label: t("home") },
@@ -35,10 +41,6 @@ export default function Navbar() {
   }, []);
 
   useEffect(() => {
-    setOpen(false);
-  }, [pathname]);
-
-  useEffect(() => {
     if (open) {
       document.body.style.overflow = "hidden";
     } else {
@@ -51,11 +53,11 @@ export default function Navbar() {
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") setOpen(false);
+      if (e.key === "Escape") closeMobileMenu();
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, []);
+  }, [closeMobileMenu]);
 
   const localePath = (suffix: string) => `/${locale}${suffix}`;
   const homePath = `/${locale}`;
@@ -73,7 +75,8 @@ export default function Navbar() {
   const hasDarkHero =
     pathname === homePath ||
     pathname === `${homePath}/historia` ||
-    pathname === `${homePath}/actividades`;
+    pathname === `${homePath}/actividades` ||
+    pathname === `${homePath}/vinos`;
   const overHero = hasDarkHero && !scrolled;
 
   return (
@@ -94,11 +97,12 @@ export default function Navbar() {
             aria-label={t("logoAlt")}
           >
             <Image
-              src={overHero ? "/brand/logo-blanco.png" : "/brand/logo-negro.png"}
+              src={overHero ? "/brand/logo-blanco.webp" : "/brand/logo-negro.webp"}
               alt={t("logoAlt")}
               width={200}
               height={200}
               className="h-14 w-auto md:h-16"
+              sizes="64px"
               priority
             />
           </Link>
@@ -108,9 +112,25 @@ export default function Navbar() {
               const active = isActive(link.href);
               const isActividades = link.href === "/actividades";
               return (
-                <li key={link.href || "home"} className="relative group">
+                <li
+                  key={link.href || "home"}
+                  className="relative"
+                  onMouseEnter={isActividades ? () => setActivitiesMenuOpen(true) : undefined}
+                  onMouseLeave={isActividades ? () => setActivitiesMenuOpen(false) : undefined}
+                  onFocusCapture={isActividades ? () => setActivitiesMenuOpen(true) : undefined}
+                  onBlurCapture={
+                    isActividades
+                      ? (event) => {
+                          if (!event.currentTarget.contains(event.relatedTarget as Node | null)) {
+                            setActivitiesMenuOpen(false);
+                          }
+                        }
+                      : undefined
+                  }
+                >
                   <Link
                     href={localePath(link.href)}
+                    onClick={isActividades ? () => setActivitiesMenuOpen(false) : undefined}
                     className={`relative pb-1 inline-flex items-center gap-1 transition-colors ${
                       active
                         ? overHero
@@ -124,7 +144,7 @@ export default function Navbar() {
                     {link.label}
                     {isActividades && (
                       <ChevronDown
-                        className="h-3.5 w-3.5 transition-transform duration-200 group-hover:rotate-180"
+                          className={`h-3.5 w-3.5 transition-transform duration-200 ${activitiesMenuOpen ? "rotate-180" : ""}`}
                         aria-hidden="true"
                       />
                     )}
@@ -137,8 +157,8 @@ export default function Navbar() {
                     )}
                   </Link>
 
-                  {isActividades && (
-                    <div className="absolute left-1/2 -translate-x-1/2 top-full pt-3 opacity-0 invisible translate-y-1 group-hover:opacity-100 group-hover:visible group-hover:translate-y-0 group-focus-within:opacity-100 group-focus-within:visible group-focus-within:translate-y-0 transition-all duration-200 z-50">
+                  {isActividades && activitiesMenuOpen && (
+                    <div className="absolute left-1/2 top-full z-50 -translate-x-1/2 pt-3 transition-all duration-200">
                       <div className="min-w-[248px] bg-surface rounded-xl border border-outline-variant/40 ambient-shadow p-2">
                         {tours.map((tour) => (
                           <Link
@@ -206,7 +226,7 @@ export default function Navbar() {
       >
         <div
           className="absolute inset-0 bg-primary/95 backdrop-blur-2xl"
-          onClick={() => setOpen(false)}
+          onClick={closeMobileMenu}
           aria-hidden="true"
         />
         <div
@@ -224,15 +244,17 @@ export default function Navbar() {
             >
               <Link
                 href={homePath}
+                onClick={closeMobileMenu}
                 className="inline-flex items-center gap-3 leading-none"
                 aria-label={t("logoAlt")}
               >
                 <Image
-                  src="/brand/logo-blanco.png"
+                  src="/brand/logo-blanco.webp"
                   alt=""
                   width={200}
                   height={200}
                   className="h-16 w-auto"
+                  sizes="64px"
                 />
                 <span
                   aria-hidden="true"
@@ -245,7 +267,7 @@ export default function Navbar() {
 
             <button
               type="button"
-              onClick={() => setOpen(false)}
+              onClick={closeMobileMenu}
               aria-label={t("closeMenu")}
               className="shrink-0 h-11 w-11 flex items-center justify-center text-on-primary rounded-full border border-on-primary/30 bg-on-primary/5 hover:bg-on-primary/15 active:bg-on-primary/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-on-primary/60 transition-colors"
             >
@@ -266,26 +288,76 @@ export default function Navbar() {
           </div>
 
           <ul className="flex flex-col">
-            {links.map((link, idx) => (
-              <li
-                key={link.href || "home"}
-                className={`transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] ${
-                  open ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
-                }`}
-                style={{ transitionDelay: open ? `${idx * 60 + 200}ms` : "0ms" }}
-              >
-                <Link
-                  href={localePath(link.href)}
-                  className={`block py-3 font-display text-2xl leading-tight transition-colors ${
-                    isActive(link.href)
-                      ? "text-on-primary font-semibold"
-                      : "text-on-primary/70 hover:text-on-primary active:text-on-primary"
+            {links.map((link, idx) => {
+              const isActivities = link.href === "/actividades";
+              const linkClass = `font-display text-2xl leading-tight transition-colors ${
+                isActive(link.href)
+                  ? "text-on-primary font-semibold"
+                  : "text-on-primary/70 hover:text-on-primary active:text-on-primary"
+              }`;
+
+              return (
+                <li
+                  key={link.href || "home"}
+                  className={`transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] ${
+                    open ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
                   }`}
+                  style={{ transitionDelay: open ? `${idx * 60 + 200}ms` : "0ms" }}
                 >
-                  {link.label}
-                </Link>
-              </li>
-            ))}
+                  {isActivities ? (
+                    <>
+                      <div className="flex items-center justify-between border-b border-on-primary/15">
+                        <Link
+                          href={localePath(link.href)}
+                          onClick={closeMobileMenu}
+                          className={`flex-1 py-3 ${linkClass}`}
+                        >
+                          {link.label}
+                        </Link>
+                        <button
+                          type="button"
+                          onClick={() => setMobileActivitiesOpen((current) => !current)}
+                          aria-expanded={mobileActivitiesOpen}
+                          aria-controls="mobile-activities-tours"
+                          aria-label={mobileActivitiesOpen ? t("closeTours") : t("openTours")}
+                          className="-mr-2 inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-on-primary transition-colors hover:bg-on-primary/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-on-primary/60"
+                        >
+                          <ChevronDown
+                            className={`h-5 w-5 transition-transform duration-200 ${mobileActivitiesOpen ? "rotate-180" : ""}`}
+                            aria-hidden="true"
+                          />
+                        </button>
+                      </div>
+
+                      {mobileActivitiesOpen && (
+                        <ul id="mobile-activities-tours" className="border-b border-on-primary/15 py-2">
+                          {tours.map((tour) => (
+                            <li key={tour.slug}>
+                              <Link
+                                href={localePath(`/actividades/${tour.slug}`)}
+                                onClick={closeMobileMenu}
+                                className="flex min-h-11 items-center justify-between gap-3 rounded-md px-3 py-2 font-body text-body-md text-on-primary/75 transition-colors hover:bg-on-primary/10 hover:text-on-primary"
+                              >
+                                {tTours(`${tour.slug}.name`)}
+                                <ArrowRight className="h-4 w-4 shrink-0" aria-hidden="true" />
+                              </Link>
+                            </li>
+                          ))}
+                        </ul>
+                      )}
+                    </>
+                  ) : (
+                    <Link
+                      href={localePath(link.href)}
+                      onClick={closeMobileMenu}
+                      className={`block py-3 ${linkClass}`}
+                    >
+                      {link.label}
+                    </Link>
+                  )}
+                </li>
+              );
+            })}
           </ul>
 
           {/* Divisor + Sección 2 — Comprar */}
@@ -300,6 +372,7 @@ export default function Navbar() {
             </p>
             <Link
               href={localePath("/tienda")}
+              onClick={closeMobileMenu}
               className="group flex items-center justify-between bg-on-primary text-primary px-5 py-4 rounded-md font-body font-semibold text-body-md shadow-[0_12px_30px_-8px_rgba(0,0,0,0.4)] active:scale-[0.98] transition-transform"
             >
               <span>{t("tienda")}</span>

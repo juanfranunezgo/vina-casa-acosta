@@ -197,7 +197,7 @@ export default function HomeActivitiesShowcase({
                         href={card.href}
                         className="inline-flex items-center gap-1 font-body text-body-md font-semibold text-on-primary/90 transition-colors hover:text-on-primary"
                       >
-                        {labels.more}
+                        {labels.more} {card.name}
                         <ChevronRight className="h-4 w-4" aria-hidden="true" />
                       </Link>
                     </div>
@@ -258,7 +258,7 @@ export default function HomeActivitiesShowcase({
                       href={card.href}
                       className="inline-flex items-center gap-1 font-body text-label-sm font-semibold uppercase tracking-wider text-on-surface-variant transition-colors hover:text-primary"
                     >
-                      {labels.more}
+                      {labels.more} {card.name}
                       <ChevronRight className="h-4 w-4" aria-hidden="true" />
                     </Link>
                   </div>

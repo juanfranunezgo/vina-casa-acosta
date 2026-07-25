@@ -154,13 +154,18 @@ export default function FeaturedLinesCarousel({ lines, labels }: Props) {
                 type="button"
                 onClick={() => go(i)}
                 aria-label={line.name}
-                aria-current={i === index}
-                className={`h-2.5 rounded-full transition-all duration-300 ${
-                  i === index
-                    ? "w-6 bg-primary"
-                    : "w-2.5 bg-outline-variant hover:bg-primary/50"
-                }`}
-              />
+                aria-current={i === index ? "true" : undefined}
+                className="grid h-11 w-11 place-items-center rounded-full focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+              >
+                <span
+                  aria-hidden="true"
+                  className={`block h-2.5 rounded-full transition-all duration-300 ${
+                    i === index
+                      ? "w-6 bg-primary"
+                      : "w-2.5 bg-outline-variant hover:bg-primary/50"
+                  }`}
+                />
+              </button>
             ))}
           </div>
         </>

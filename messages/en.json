@@ -44,6 +44,8 @@
     "tienda": "Shop",
     "openMenu": "Open menu",
     "closeMenu": "Close menu",
+    "openTours": "Show tours",
+    "closeTours": "Hide tours",
     "logoAlt": "Viña Casa Acosta — Home",
     "language": "Language",
     "sectionNav": "Navigation",
@@ -56,6 +58,7 @@
     "location": "San Vicente de Tagua Tagua, O'Higgins Region, Chile",
     "hours": "Mon – Sat · 10:00 AM – 6:00 PM",
     "copyright": "© {year} Viña Casa Acosta. Heritage and winemaking craft.",
+    "developedBy": "Site developed by",
     "legal": {
       "privacy": "Privacy",
       "terms": "Terms",
@@ -63,7 +66,7 @@
     },
     "social": {
       "instagram": "Instagram",
-      "tripadvisor": "TripAdvisor",
+      "facebook": "Facebook",
       "google": "Google Reviews"
     },
     "disclaimer": "Please drink responsibly. Sale of alcohol to anyone under 18 is prohibited · Chilean Law N° 19.925."
@@ -124,24 +127,27 @@
       "prevLabel": "Previous collection",
       "nextLabel": "Next collection",
       "wineCount": "{count, plural, one {# wine} other {# wines}}",
-      "detailLabels": { "estilo": "Style", "premio": "Award" },
+      "detailLabels": { "estilo": "Style", "crianza": "Ageing", "premio": "Award" },
       "lines": {
         "ombu": {
           "category": "Reserva",
           "description": "The gateway to Casa Acosta: three Cachapoal Reservas for every day.",
-          "estilo": "Fruity and approachable",
+          "estilo": "Characterful Reservas",
+          "crianza": "French oak barrels",
           "premio": ""
         },
         "lajau": {
           "category": "Limited Edition",
           "description": "Limited-edition blends, selected parcel by parcel and produced in small volumes.",
           "estilo": "Complex, age-worthy",
+          "crianza": "French oak barrels",
           "premio": ""
         },
         "estacion-francia": {
           "category": "Gran Reserva",
           "description": "A tribute to the winery's founding moment, alongside the 1998 World Cup in France.",
           "estilo": "Structured, age-worthy",
+          "crianza": "French oak barrels",
           "premio": ""
         }
       }
@@ -156,7 +162,7 @@
       "cat": { "tour": "Tour", "experience": "Experience", "event": "Event" },
       "eventsCta": "Get an event quote",
       "book": "Book",
-      "more": "See more",
+      "more": "Explore",
       "items": {
         "tour": {
           "name": "Vineyard tour",
@@ -290,9 +296,13 @@
     "hero": {
       "eyebrow": "Full catalog",
       "title": "Our wines",
+      "imageAlt": "Viña Casa Acosta wine corks",
       "subtitle": "A collection of honest expressions born in our boutique vineyard in the Cachapoal Valley. Each bottle tells the story of our heritage and our terroir."
     },
     "lineLabel": "Line",
+    "collectionPhotoAlt": "{line} collection — Viña Casa Acosta vineyard",
+    "showMore": "See more wines",
+    "showLess": "Show less",
     "lineDescriptions": {
       "Ombú": "Reserve line: the most recognizable face of the winery. Varietal wines to celebrate the everyday.",
       "Lajau": "Ageworthy blends: selected parcels and small production.",
@@ -332,8 +342,9 @@
     "noVintage": "Non-vintage",
     "tastingNotes": "Tasting notes",
     "pairing": "Food pairing",
+    "technicalSheet": "Technical sheet (PDF)",
     "currency": "CLP",
-    "alsoFromLine": "More from the {line} line"
+    "youMayAlsoLike": "You may also like"
   },
   "wines": {
     "ombu-carmenere": {
@@ -447,6 +458,7 @@
       "eyebrow": "Throughout the year",
       "title": "Special experiences",
       "subtitle": "Walk through the cycle of the vine and celebrate key moments with us. Seasonal experiences throughout the year.",
+      "efeCta": "Buy tickets",
       "stayTunedLead": "Don't want to miss the next dates?",
       "stayTunedCta": "Follow us on Instagram"
     },
@@ -633,24 +645,39 @@
     "cards": {
       "location": {
         "title": "Location",
-        "body": "San Vicente de Tagua Tagua, Cachapoal Valley, Chile"
+        "body": "Fundo El Llano, lot 6, San Vicente de Tagua Tagua, O'Higgins, Chile",
+        "cta": "Get directions"
       },
       "hours": {
         "title": "Hours",
         "body": "Mon – Sat · 10:00 AM – 6:00 PM\nThursdays until 8:00 PM"
       },
       "phone": {
-        "title": "Phone / WhatsApp"
+        "title": "Phone / WhatsApp",
+        "cta": "Message us"
       },
       "email": {
         "title": "Email",
-        "body": "contacto@vinacasaacosta.cl"
+        "body": "contacto@vinacasaacosta.cl",
+        "cta": "Send email"
+      }
+    },
+    "gallery": {
+      "eyebrow": "Visit us",
+      "title": "A place to toast, share and return to.",
+      "photoAlts": {
+        "plato": "A dish prepared for a culinary experience at Viña Casa Acosta",
+        "cena": "A table set for a dinner among wines",
+        "asado": "An outdoor barbecue among the vineyards",
+        "letrero": "Viña Casa Acosta sign among the vines"
       }
     }
   },
   "contactForm": {
     "title": "Send us a message",
     "subtitle": "We'll get back to you within one business day.",
+    "whatsappIntro": "Hi Casa Acosta, I'd like to make an inquiry.",
+    "whatsappNotice": "When you send this form, WhatsApp will open with your message ready to send.",
     "fields": {
       "name": "Name",
       "namePlaceholder": "Your name",
@@ -668,13 +695,8 @@
       "other": "Other"
     },
     "buttons": {
-      "idle": "Send message",
-      "submitting": "Sending…",
-      "success": "Message sent!",
-      "error": "Try again"
-    },
-    "successMessage": "Thank you for reaching out. We'll be in touch soon.",
-    "demoNotice": "Demo form · in the final version, messages will be delivered straight to the winery's inbox."
+      "idle": "Send via WhatsApp"
+    }
   },
   "cart": {
     "openLabel": "Open cart",

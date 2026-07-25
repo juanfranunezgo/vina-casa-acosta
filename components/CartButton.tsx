@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useSyncExternalStore } from "react";
 import { useTranslations } from "next-intl";
 import { ShoppingBag } from "lucide-react";
 import { useCart } from "@/lib/cart";
@@ -9,9 +9,11 @@ export default function CartButton() {
   const t = useTranslations("cart");
   const toggle = useCart((s) => s.toggle);
   const total = useCart((s) => s.totalItems());
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => setMounted(true), []);
+  const mounted = useSyncExternalStore(
+    () => () => {},
+    () => true,
+    () => false,
+  );
 
   const label =
     mounted && total > 0

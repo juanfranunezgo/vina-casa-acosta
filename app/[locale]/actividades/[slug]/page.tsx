@@ -92,7 +92,7 @@ export default async function TourDetailPage({
     <>
       {/* Dd1 — Hero */}
       <section className="relative">
-        <div className="relative h-[58vh] min-h-[460px] w-full overflow-hidden">
+        <div className="relative h-[52svh] min-h-[400px] w-full overflow-hidden md:h-[58vh] md:min-h-[460px]">
           <Image
             src={tour.image}
             alt={name}
@@ -147,29 +147,29 @@ export default async function TourDetailPage({
           <div className="relative z-10 -mt-10 md:-mt-14 bg-surface rounded-xl ambient-shadow-lg ring-1 ring-outline-variant/40 border-t-2 border-primary/70">
             <div className="grid grid-cols-2 lg:grid-cols-4 divide-y divide-x divide-outline-variant/25 lg:divide-y-0">
               {ficha.map(({ icon: Icon, label, value }) => (
-                <div key={label} className="flex items-start gap-3.5 p-6 md:p-7">
-                  <div className="h-11 w-11 rounded-full bg-wine-accent/10 flex items-center justify-center shrink-0">
+                <div key={label} className="flex items-start gap-3 p-4 md:gap-3.5 md:p-7">
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-wine-accent/10 md:h-11 md:w-11">
                     <Icon className="h-5 w-5 text-wine-accent" aria-hidden="true" />
                   </div>
                   <div>
                     <p className="font-body text-label-sm uppercase tracking-wider text-outline mb-1">
                       {label}
                     </p>
-                    <p className="font-body text-body-md text-on-surface leading-snug">{value}</p>
+                    <p className="font-body text-body-md leading-snug text-on-surface">{value}</p>
                   </div>
                 </div>
               ))}
             </div>
           </div>
 
-          <div className="py-12 md:py-16">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-center">
+          <div className="py-10 md:py-16">
+            <div className="grid grid-cols-1 items-center gap-8 lg:grid-cols-2 lg:gap-16">
               <div className="relative pl-6 border-l-2 border-primary/25">
                 <Grape
                   className="absolute -left-[13px] top-1 h-6 w-6 text-wine-accent bg-surface rounded-full p-0.5"
                   aria-hidden="true"
                 />
-                <p className="font-display text-2xl md:text-3xl text-on-surface/90 leading-relaxed">
+                <p className="font-display text-xl leading-relaxed text-on-surface/90 md:text-3xl">
                   {intro}
                 </p>
               </div>
@@ -187,10 +187,10 @@ export default async function TourDetailPage({
             </div>
 
             {/* Dd2 — Sub-nav ancla (misma pastilla flotante del resto del sitio) */}
-            <div className="mt-12 flex justify-center">
+            <div className="mt-10 flex justify-center md:mt-12">
               <nav
                 aria-label={t("nav.aria")}
-                className="inline-flex flex-wrap items-center justify-center gap-1 p-1 rounded-full bg-surface border border-outline-variant/40 ambient-shadow"
+                className="grid w-full max-w-md grid-cols-3 gap-1 rounded-full border border-outline-variant/40 bg-surface p-1 ambient-shadow"
               >
                 {[
                   { href: "#detalle", label: t("nav.detail"), Icon: ListChecks },
@@ -200,9 +200,9 @@ export default async function TourDetailPage({
                   <a
                     key={href}
                     href={href}
-                    className="inline-flex min-h-11 items-center gap-2 px-4 md:px-5 py-2 rounded-full font-body text-label-sm uppercase tracking-wider font-semibold text-on-surface-variant hover:bg-primary hover:text-on-primary transition-all duration-200"
+                    className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full px-2 py-2 text-center font-body text-[10px] font-semibold uppercase tracking-[0.12em] text-on-surface-variant transition-colors duration-200 hover:bg-primary hover:text-on-primary sm:text-label-sm sm:tracking-wider md:px-5"
                   >
-                    <Icon className="h-4 w-4 shrink-0" aria-hidden="true" />
+                    <Icon className="hidden h-4 w-4 shrink-0 md:block" aria-hidden="true" />
                     {label}
                   </a>
                 ))}
@@ -278,9 +278,9 @@ export default async function TourDetailPage({
           </div>
 
           {/* Dd3/Dd4 — Tarjeta de reserva (precio + condiciones) + imagen */}
-          <Reveal delay={120} className="lg:col-span-1">
-            <div className="bg-surface rounded-2xl ambient-shadow-lg ring-1 ring-outline-variant/40 overflow-hidden lg:sticky lg:top-28">
-              <div className="relative aspect-[16/10]">
+          <Reveal delay={120} className="order-first lg:order-none lg:col-span-1">
+            <div className="overflow-hidden rounded-2xl bg-surface ambient-shadow-lg ring-1 ring-outline-variant/40 lg:sticky lg:top-28">
+              <div className="relative aspect-[16/8] md:aspect-[16/10]">
                 <Image
                   src={tour.image}
                   alt={name}
@@ -290,12 +290,12 @@ export default async function TourDetailPage({
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-[#1a0203]/25 to-transparent" />
               </div>
-              <div className="p-8">
+              <div className="p-5 md:p-8">
                 <p className="font-body text-label-sm uppercase tracking-[0.2em] text-wine-accent mb-2">
                   {t("priceLabel")}
                 </p>
                 <div className="flex items-baseline gap-2">
-                  <span className="font-display text-primary text-5xl leading-none tabular-nums">
+                  <span className="font-display text-4xl leading-none tabular-nums text-primary md:text-5xl">
                     {priceFormatted}
                   </span>
                 </div>
@@ -321,7 +321,7 @@ export default async function TourDetailPage({
               </div>
 
               {/* Dd4 — Condiciones (zona inferior diferenciada) */}
-              <div className="bg-surface-container-low border-t border-outline-variant/30 px-8 py-6">
+              <div className="border-t border-outline-variant/30 bg-surface-container-low px-5 py-6 md:px-8">
                 <h4 className="font-body text-label-sm uppercase tracking-wider text-on-surface-variant mb-3">
                   {t("conditionsTitle")}
                 </h4>

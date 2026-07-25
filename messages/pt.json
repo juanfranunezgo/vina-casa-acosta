@@ -44,6 +44,8 @@
     "tienda": "Loja",
     "openMenu": "Abrir menu",
     "closeMenu": "Fechar menu",
+    "openTours": "Ver tours",
+    "closeTours": "Ocultar tours",
     "logoAlt": "Viña Casa Acosta — Início",
     "language": "Idioma",
     "sectionNav": "Navegação",
@@ -56,6 +58,7 @@
     "location": "San Vicente de Tagua Tagua, Região de O'Higgins, Chile",
     "hours": "Seg a Sáb · 10h – 18h",
     "copyright": "© {year} Viña Casa Acosta. Patrimônio e excelência vinícola.",
+    "developedBy": "Site desenvolvido por",
     "legal": {
       "privacy": "Privacidade",
       "terms": "Termos",
@@ -63,7 +66,7 @@
     },
     "social": {
       "instagram": "Instagram",
-      "tripadvisor": "TripAdvisor",
+      "facebook": "Facebook",
       "google": "Google Reviews"
     },
     "disclaimer": "Beba com moderação. Proibida a venda de bebida alcoólica a menores de 18 anos · Lei chilena N° 19.925."
@@ -124,24 +127,27 @@
       "prevLabel": "Coleção anterior",
       "nextLabel": "Próxima coleção",
       "wineCount": "{count, plural, one {# vinho} other {# vinhos}}",
-      "detailLabels": { "estilo": "Estilo", "premio": "Prêmio" },
+      "detailLabels": { "estilo": "Estilo", "crianza": "Estágio", "premio": "Prêmio" },
       "lines": {
         "ombu": {
           "category": "Reserva",
           "description": "A porta de entrada da Casa Acosta: três Reservas do Cachapoal para todos os dias.",
-          "estilo": "Frutado e acessível",
+          "estilo": "Reservas com caráter",
+          "crianza": "Barricas de carvalho francês",
           "premio": ""
         },
         "lajau": {
           "category": "Edição Limitada",
           "description": "Assemblages de edição limitada, selecionados parcela a parcela e de produção reduzida.",
           "estilo": "Complexo, de guarda",
+          "crianza": "Barricas de carvalho francês",
           "premio": ""
         },
         "estacion-francia": {
           "category": "Gran Reserva",
           "description": "Homenagem ao momento fundacional da vinícola, junto à Copa do Mundo de 1998 na França.",
           "estilo": "Estrutura e guarda",
+          "crianza": "Barricas de carvalho francês",
           "premio": ""
         }
       }
@@ -156,7 +162,7 @@
       "cat": { "tour": "Tour", "experience": "Experiência", "event": "Evento" },
       "eventsCta": "Solicitar orçamento",
       "book": "Reservar",
-      "more": "Ver mais",
+      "more": "Explorar",
       "items": {
         "tour": {
           "name": "Tour",
@@ -290,9 +296,13 @@
     "hero": {
       "eyebrow": "Catálogo completo",
       "title": "Nossos vinhos",
+      "imageAlt": "Rolhas de vinho da Viña Casa Acosta",
       "subtitle": "Uma coleção de expressões autênticas, nascidas em nosso vinhedo boutique no Vale do Cachapoal. Cada garrafa conta a história do nosso patrimônio e do nosso terroir."
     },
     "lineLabel": "Linha",
+    "collectionPhotoAlt": "Coleção {line} — ambiente da Viña Casa Acosta",
+    "showMore": "Ver mais vinhos",
+    "showLess": "Ver menos",
     "lineDescriptions": {
       "Ombú": "Linha reserva: a face mais reconhecível da vinícola. Vinhos varietais para celebrar o cotidiano.",
       "Lajau": "Assemblages de guarda: parcelas selecionadas e produção restrita.",
@@ -332,8 +342,9 @@
     "noVintage": "Sem safra (não-safra)",
     "tastingNotes": "Notas de degustação",
     "pairing": "Harmonização",
+    "technicalSheet": "Ficha técnica (PDF)",
     "currency": "CLP",
-    "alsoFromLine": "Também da linha {line}"
+    "youMayAlsoLike": "Você também pode gostar"
   },
   "wines": {
     "ombu-carmenere": {
@@ -447,6 +458,7 @@
       "eyebrow": "Ao longo do ano",
       "title": "Experiências especiais",
       "subtitle": "Acompanhe o ciclo da videira e celebre datas importantes conosco. Experiências sazonais ao longo do ano.",
+      "efeCta": "Comprar passagens",
       "stayTunedLead": "Não quer perder as próximas datas?",
       "stayTunedCta": "Siga-nos no Instagram"
     },
@@ -633,24 +645,39 @@
     "cards": {
       "location": {
         "title": "Localização",
-        "body": "San Vicente de Tagua Tagua, Vale do Cachapoal, Chile"
+        "body": "Fundo El Llano, lote 6, San Vicente de Tagua Tagua, O'Higgins, Chile",
+        "cta": "Como chegar"
       },
       "hours": {
         "title": "Horários",
         "body": "Seg a Sáb · 10h – 18h\nQuinta até as 20h"
       },
       "phone": {
-        "title": "Telefone / WhatsApp"
+        "title": "Telefone / WhatsApp",
+        "cta": "Fale conosco"
       },
       "email": {
         "title": "E-mail",
-        "body": "contacto@vinacasaacosta.cl"
+        "body": "contacto@vinacasaacosta.cl",
+        "cta": "Enviar e-mail"
+      }
+    },
+    "gallery": {
+      "eyebrow": "Visite-nos",
+      "title": "Um lugar para brindar, compartilhar e voltar.",
+      "photoAlts": {
+        "plato": "Prato preparado para uma experiência gastronômica na Viña Casa Acosta",
+        "cena": "Mesa posta para um jantar entre vinhos",
+        "asado": "Churrasco ao ar livre entre os vinhedos",
+        "letrero": "Placa da Viña Casa Acosta entre as videiras"
       }
     }
   },
   "contactForm": {
     "title": "Envie uma mensagem",
     "subtitle": "Respondemos em até 24 horas úteis.",
+    "whatsappIntro": "Olá Casa Acosta, gostaria de fazer uma consulta.",
+    "whatsappNotice": "Ao enviar, abriremos o WhatsApp com sua mensagem pronta para enviar.",
     "fields": {
       "name": "Nome",
       "namePlaceholder": "Seu nome",
@@ -668,13 +695,8 @@
       "other": "Outro"
     },
     "buttons": {
-      "idle": "Enviar mensagem",
-      "submitting": "Enviando…",
-      "success": "Mensagem enviada!",
-      "error": "Tentar de novo"
-    },
-    "successMessage": "Obrigado pelo contato. Em breve respondemos.",
-    "demoNotice": "Formulário de demonstração · Na versão final, as mensagens chegam direto ao e-mail da vinícola."
+      "idle": "Enviar pelo WhatsApp"
+    }
   },
   "cart": {
     "openLabel": "Abrir carrinho",

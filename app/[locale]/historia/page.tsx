@@ -31,7 +31,7 @@ export default async function HistoriaPage({
   const gallerySrcs = [
     "/images/historia/origen-tractor.webp",
     "/images/historia/cuadro-museo.webp",
-    "/images/home/casa/tractor.jpg",
+    "/images/home/casa/tractor.webp",
     "/images/historia/galeria-familia.webp",
     "/images/historia/vinos-retro.webp",
     "/images/historia/bicicleta-retro-parras.webp",

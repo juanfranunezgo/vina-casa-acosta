@@ -10,13 +10,13 @@ import FeaturedLinesCarousel from "@/components/FeaturedLinesCarousel";
 import { featuredLineOrder, lineSlugs, getWinesByLine } from "@/data/wines";
 import { tours as tourData, experiences as experienceData } from "@/data/activities";
 
-const heroImage = "/images/home/hero-v2.jpg";
+const heroImage = "/images/home/hero.webp";
 
 const casaPhotoSources = {
-  teaching: "/images/home/casa/teaching.jpg",
+  teaching: "/images/home/casa/teaching.webp",
   origins: "/images/home/casa/origins.jpg",
-  tractor: "/images/home/casa/tractor.jpg",
-  family: "/images/home/casa/family.jpg",
+  tractor: "/images/home/casa/tractor.webp",
+  family: "/images/home/casa/family.webp",
 } as const;
 
 const ctaImage = "/images/home/cta-parras.jpg";

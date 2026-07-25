@@ -104,8 +104,8 @@ export default async function ActividadesPage({
                 <h1
                   className="mb-5 font-display text-on-primary drop-shadow-[0_4px_24px_rgba(0,0,0,0.55)]"
                   style={{
-                    fontSize: "clamp(2.5rem, 6.4vw, 4.5rem)",
-                    lineHeight: 1.08,
+                    fontSize: "clamp(2.25rem, 6.4vw, 4.5rem)",
+                    lineHeight: 1.14,
                     letterSpacing: "-0.015em",
                   }}
                 >
@@ -301,9 +301,9 @@ export default async function ActividadesPage({
           </Reveal>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-gutter">
-            {experiences.map((exp, idx) => (
-              <Reveal key={exp.slug} delay={idx * 100}>
-                <article className="relative h-80 rounded-xl overflow-hidden group">
+            {experiences.map((exp, idx) => {
+              const content = (
+                <>
                   <Image
                     src={exp.image}
                     alt={tExp(`${exp.slug}.name`)}
@@ -311,15 +311,38 @@ export default async function ActividadesPage({
                     className="object-cover transition-transform duration-700 group-hover:scale-105"
                     sizes="(max-width: 768px) 100vw, 33vw"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-primary/85 via-primary/35 to-transparent flex flex-col justify-end p-6">
-                    <span className="font-body text-label-sm text-on-primary/85 uppercase tracking-wider mb-2">
+                  <div className="absolute inset-0 flex flex-col justify-end bg-gradient-to-t from-primary/85 via-primary/35 to-transparent p-6">
+                    <span className="mb-2 font-body text-label-sm uppercase tracking-wider text-on-primary/85">
                       {tExp(`${exp.slug}.badge`)}
                     </span>
                     <h3 className="font-display text-2xl text-on-primary">{tExp(`${exp.slug}.name`)}</h3>
+                    {exp.purchaseUrl && (
+                      <span className="mt-4 inline-flex min-h-11 w-fit items-center gap-2 rounded-full border border-on-primary/45 bg-on-primary/10 px-4 font-body text-label-sm font-semibold uppercase tracking-wider text-on-primary backdrop-blur-sm transition-colors group-hover:bg-on-primary group-hover:text-primary">
+                        {t("experiences.efeCta")}
+                        <ArrowUpRight className="h-4 w-4" aria-hidden="true" />
+                      </span>
+                    )}
                   </div>
-                </article>
-              </Reveal>
-            ))}
+                </>
+              );
+
+              return (
+                <Reveal key={exp.slug} delay={idx * 100}>
+                  {exp.purchaseUrl ? (
+                    <a
+                      href={exp.purchaseUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="group relative block h-80 overflow-hidden rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-4"
+                    >
+                      {content}
+                    </a>
+                  ) : (
+                    <article className="group relative h-80 overflow-hidden rounded-xl">{content}</article>
+                  )}
+                </Reveal>
+              );
+            })}
           </div>
 
           {/* Aviso: las experiencias son temporales; invitamos a dejar el contacto

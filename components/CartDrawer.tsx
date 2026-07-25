@@ -57,11 +57,12 @@ export default function CartDrawer() {
         onClick={() => toggle(false)}
         aria-hidden="true"
       />
-      <aside
+      <div
         className={`fixed top-0 right-0 z-[70] h-full w-full max-w-md bg-surface shadow-2xl transition-transform duration-300 flex flex-col ${
           isOpen ? "translate-x-0" : "translate-x-full"
         }`}
         role="dialog"
+        aria-modal={isOpen || undefined}
         aria-label={t("title")}
         aria-hidden={!isOpen}
       >
@@ -171,7 +172,7 @@ export default function CartDrawer() {
             </p>
           </footer>
         )}
-      </aside>
+      </div>
     </>
   );
 }

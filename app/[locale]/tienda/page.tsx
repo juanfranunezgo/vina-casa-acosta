@@ -2,12 +2,12 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslations, useLocale } from "next-intl";
 import { Filter, X } from "lucide-react";
 import Reveal from "@/components/Reveal";
 import AddToCartButton from "@/components/AddToCartButton";
-import { wines, wineLines, varieties, type WineLine, type Variety } from "@/data/wines";
+import { wines, wineLines, wineTypes, varieties, type WineLine, type WineType, type Variety } from "@/data/wines";
 
 export default function TiendaPage() {
   const t = useTranslations("tienda");
@@ -23,21 +23,32 @@ export default function TiendaPage() {
       maximumFractionDigits: 0,
     }).format(amount);
 
+  const [selectedTypes, setSelectedTypes] = useState<Set<WineType>>(new Set());
   const [selectedLines, setSelectedLines] = useState<Set<WineLine>>(new Set());
   const [selectedVarieties, setSelectedVarieties] = useState<Set<Variety>>(new Set());
   const [sort, setSort] = useState<"featured" | "price-asc" | "price-desc">("featured");
   const [isFiltering, setIsFiltering] = useState(false);
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
+  const filterTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  // Brief loading state on filter/sort change for perceived responsiveness
   useEffect(() => {
+    return () => {
+      if (filterTimeoutRef.current) clearTimeout(filterTimeoutRef.current);
+    };
+  }, []);
+
+  const startFiltering = () => {
     setIsFiltering(true);
-    const id = setTimeout(() => setIsFiltering(false), 280);
-    return () => clearTimeout(id);
-  }, [selectedLines, selectedVarieties, sort]);
+    if (filterTimeoutRef.current) clearTimeout(filterTimeoutRef.current);
+    filterTimeoutRef.current = setTimeout(() => {
+      setIsFiltering(false);
+      filterTimeoutRef.current = null;
+    }, 280);
+  };
 
   const filtered = useMemo(() => {
     let list = wines.filter((w) => {
+      if (selectedTypes.size > 0 && !selectedTypes.has(w.type)) return false;
       if (selectedLines.size > 0 && !selectedLines.has(w.line)) return false;
       if (selectedVarieties.size > 0 && !selectedVarieties.has(w.variety)) return false;
       return true;
@@ -49,9 +60,19 @@ export default function TiendaPage() {
       list = [...list].sort((a, b) => Number(!!b.featured) - Number(!!a.featured));
 
     return list;
-  }, [selectedLines, selectedVarieties, sort]);
+  }, [selectedTypes, selectedLines, selectedVarieties, sort]);
 
+  const toggleType = (type: WineType) => {
+    startFiltering();
+    setSelectedTypes((prev) => {
+      const next = new Set(prev);
+      if (next.has(type)) next.delete(type);
+      else next.add(type);
+      return next;
+    });
+  };
   const toggleLine = (line: WineLine) => {
+    startFiltering();
     setSelectedLines((prev) => {
       const next = new Set(prev);
       if (next.has(line)) next.delete(line);
@@ -60,6 +81,7 @@ export default function TiendaPage() {
     });
   };
   const toggleVariety = (v: Variety) => {
+    startFiltering();
     setSelectedVarieties((prev) => {
       const next = new Set(prev);
       if (next.has(v)) next.delete(v);
@@ -69,10 +91,12 @@ export default function TiendaPage() {
   };
 
   const clearFilters = () => {
+    startFiltering();
+    setSelectedTypes(new Set());
     setSelectedLines(new Set());
     setSelectedVarieties(new Set());
   };
-  const filterCount = selectedLines.size + selectedVarieties.size;
+  const filterCount = selectedTypes.size + selectedLines.size + selectedVarieties.size;
 
   const filtersPanel = (
     <>
@@ -86,6 +110,41 @@ export default function TiendaPage() {
             {t("filters.clear", { count: filterCount })}
           </button>
         )}
+      </div>
+
+      <div className="mb-8">
+        <h3 className="font-body text-label-sm uppercase tracking-wider text-on-surface-variant mb-4">
+          {t("filters.type")}
+        </h3>
+        <div className="space-y-2.5">
+          {wineTypes.map((type) => {
+            const checked = selectedTypes.has(type);
+            return (
+              <label
+                key={type}
+                className={`flex items-center gap-3 cursor-pointer group rounded-md px-2 -mx-2 py-1.5 transition-colors ${
+                  checked ? "bg-primary/5" : "hover:bg-surface-container-low"
+                }`}
+              >
+                <input
+                  type="checkbox"
+                  checked={checked}
+                  onChange={() => toggleType(type)}
+                  className="h-4 w-4 accent-primary rounded-sm"
+                />
+                <span
+                  className={`font-body text-body-md transition-colors ${
+                    checked
+                      ? "text-primary font-semibold"
+                      : "text-on-surface group-hover:text-primary"
+                  }`}
+                >
+                  {tVinos(`types.${type}`)}
+                </span>
+              </label>
+            );
+          })}
+        </div>
       </div>
 
       <div className="mb-8">
@@ -150,7 +209,7 @@ export default function TiendaPage() {
                       : "text-on-surface group-hover:text-primary"
                   }`}
                 >
-                  {v}
+                  {tVinos(`varieties.${v}`)}
                 </span>
               </label>
             );
@@ -164,7 +223,7 @@ export default function TiendaPage() {
     <>
       <section className="pt-32 pb-10 px-margin-mobile md:px-margin-desktop max-w-(--container-max) mx-auto">
         <Reveal>
-          <p className="font-body text-label-sm uppercase tracking-[0.3em] text-outline mb-4">
+          <p className="mb-2 font-accent text-xl font-light italic text-primary md:text-2xl">
             {t("hero.eyebrow")}
           </p>
           <h1
@@ -256,7 +315,10 @@ export default function TiendaPage() {
               </p>
               <select
                 value={sort}
-                onChange={(e) => setSort(e.target.value as typeof sort)}
+                onChange={(e) => {
+                  startFiltering();
+                  setSort(e.target.value as typeof sort);
+                }}
                 className="bg-surface-container-low border border-outline-variant/40 rounded px-3 py-2 font-body text-body-md text-on-surface focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
                 aria-label={t("sort.label")}
               >
@@ -333,7 +395,7 @@ export default function TiendaPage() {
                         {wine.name}
                       </Link>
                       <p className="font-body text-body-md text-on-surface-variant mb-4 flex-grow">
-                        {wine.variety} · {tVinos(`categories.${wine.category}`)}
+                        {tVinos(`types.${wine.type}`)} · {tVinos(`varieties.${wine.variety}`)}
                       </p>
                       <div className="flex items-center justify-between pt-4 border-t border-outline-variant/30">
                         <span className="font-display text-xl text-primary tabular-nums">

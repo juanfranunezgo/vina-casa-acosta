@@ -16,6 +16,7 @@ export type Experience = {
   name: string;
   badge: string;
   image: string;
+  purchaseUrl?: string;
 };
 
 export const tours: Tour[] = [
@@ -75,6 +76,7 @@ export const experiences: Experience[] = [
     name: "Experiencia Tren EFE",
     badge: "Alianza especial",
     image: "/images/actividades/tren-efe.jpg",
+    purchaseUrl: "https://pasajes.efe.cl/turistico/casa-acosta",
   },
 ];
 

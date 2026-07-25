@@ -21,10 +21,10 @@ const milestones: readonly {
   // origins.jpg es casi cuadrada (1163×1157) y el slot es 4:3: centrado le cortaba
   // la cabeza a Nelson. Subimos el foco para que se vea la cara.
   { key: "m1998", image: "/images/home/casa/origins.jpg", Icon: Sprout, position: "50% 6%" },
-  { key: "m2000", image: "/images/home/casa/teaching.jpg", Icon: Grape },
+  { key: "m2000", image: "/images/home/casa/teaching.webp", Icon: Grape },
   { key: "m2003", image: "/images/historia/primera-produccion.webp", Icon: Wine },
   { key: "m2012", image: "/images/home/cta-parras.jpg", Icon: Leaf },
-  { key: "today", image: "/images/home/casa/family.jpg", Icon: Users },
+  { key: "today", image: "/images/home/casa/family.webp", Icon: Users },
 ] as const;
 
 // Curva serpenteante (desktop). El path está calculado para estos 5 hitos:

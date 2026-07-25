@@ -1,23 +1,21 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import { getTranslations, setRequestLocale } from "next-intl/server";
-import { MapPin, Clock, Mail, Phone } from "lucide-react";
+import { ArrowUpRight, Clock, Mail, MapPin, Phone } from "lucide-react";
 import Reveal from "@/components/Reveal";
 import ContactForm from "@/components/ContactForm";
 import MapEmbed from "@/components/MapEmbed";
-import {
-  CONTACT_PHONE_DISPLAY,
-  CONTACT_WHATSAPP_URL,
-} from "@/lib/contact";
+import { CONTACT_PHONE_DISPLAY, CONTACT_WHATSAPP_URL } from "@/lib/contact";
+
+const mapsUrl =
+  "https://www.google.com/maps/search/?api=1&query=Fundo+El+Llano+lote+6,+San+Vicente+de+Tagua+Tagua,+O%27Higgins,+Chile";
 
 export async function generateMetadata({
   params,
 }: PageProps<"/[locale]/contacto">): Promise<Metadata> {
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: "metadata.contacto" });
-  return {
-    title: t("title"),
-    description: t("description"),
-  };
+  return { title: t("title"), description: t("description") };
 }
 
 export default async function ContactoPage({
@@ -26,95 +24,145 @@ export default async function ContactoPage({
   const { locale } = await params;
   setRequestLocale(locale);
   const t = await getTranslations("contacto");
+  const galleryImages = [
+    { src: "/images/contacto/plato-cena.webp", alt: t("gallery.photoAlts.plato") },
+    { src: "/images/contacto/cena.webp", alt: t("gallery.photoAlts.cena") },
+    { src: "/images/contacto/asado.webp", alt: t("gallery.photoAlts.asado") },
+    { src: "/images/contacto/letrero.webp", alt: t("gallery.photoAlts.letrero") },
+  ];
 
   return (
     <>
-      <section className="pt-32 pb-12 px-margin-mobile md:px-margin-desktop max-w-(--container-max) mx-auto text-center">
+      <section className="mx-auto max-w-(--container-max) px-margin-mobile pb-12 pt-32 text-center md:px-margin-desktop">
         <Reveal>
-          <p className="font-body text-label-sm uppercase tracking-[0.3em] text-outline mb-4">
+          <p className="mb-2 font-accent text-xl font-light italic text-primary md:text-2xl">
             {t("hero.eyebrow")}
           </p>
           <h1
-            className="font-display text-primary mb-6"
-            style={{
-              fontSize: "clamp(2.25rem, 5.5vw, 4rem)",
-              lineHeight: 1.08,
-            }}
+            className="mb-6 font-display text-primary"
+            style={{ fontSize: "clamp(2.25rem, 5.5vw, 4rem)", lineHeight: 1.08 }}
           >
             {t("hero.title")}
           </h1>
-          <p className="font-body text-body-lg text-on-surface-variant max-w-2xl mx-auto">
+          <p className="mx-auto max-w-2xl font-body text-body-lg text-on-surface-variant">
             {t("hero.subtitle")}
           </p>
         </Reveal>
       </section>
 
-      <section className="pb-section-gap px-margin-mobile md:px-margin-desktop max-w-(--container-max) mx-auto">
-        <div className="bg-surface rounded-xl ambient-shadow overflow-hidden grid grid-cols-1 md:grid-cols-2">
-          <div className="p-8 md:p-12 lg:p-16">
+      <section className="mx-auto max-w-(--container-max) px-margin-mobile pb-section-gap md:px-margin-desktop">
+        <div className="grid overflow-hidden rounded-2xl bg-surface ambient-shadow-lg ring-1 ring-outline-variant/40 md:grid-cols-2">
+          <div className="p-7 md:p-12 lg:p-16">
             <ContactForm />
           </div>
-
           <MapEmbed
             title={t("mapTitle")}
-            src="https://www.google.com/maps?q=San+Vicente+de+Tagua+Tagua,+Chile&output=embed"
+            src="https://www.google.com/maps?q=Fundo+El+Llano+lote+6,+San+Vicente+de+Tagua+Tagua,+O%27Higgins,+Chile&output=embed"
           />
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-gutter mt-12">
-          <Reveal className="bg-surface-container-low p-8 rounded-xl border border-outline-variant/30 hover:-translate-y-0.5 hover:shadow-[0_20px_40px_-12px_rgba(74,14,14,0.1)] transition-all duration-300">
-            <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center mb-4">
-              <MapPin className="h-6 w-6 text-primary" aria-hidden="true" />
+        <div className="mt-14 grid items-start gap-10 lg:grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)] lg:gap-16">
+          <Reveal className="border-y border-primary/20">
+            <div className="py-7 md:py-9">
+              <p className="mb-2 font-accent text-xl font-light italic text-primary md:text-2xl">
+                {t("gallery.eyebrow")}
+              </p>
+              <h2 className="max-w-md font-display text-4xl leading-[0.96] text-primary md:text-5xl">
+                {t("gallery.title")}
+              </h2>
             </div>
-            <h3 className="font-display text-xl text-primary mb-2">{t("cards.location.title")}</h3>
-            <p className="font-body text-body-md text-on-surface-variant">
-              {t("cards.location.body")}
-            </p>
+
+            <dl className="border-t border-primary/15">
+              <div className="grid grid-cols-[1.5rem_1fr] gap-x-3 border-b border-primary/15 py-5">
+                <MapPin className="mt-0.5 h-5 w-5 text-wine-accent" aria-hidden="true" />
+                <div>
+                  <dt className="font-body text-label-sm font-semibold uppercase tracking-wider text-wine-accent">
+                    {t("cards.location.title")}
+                  </dt>
+                  <dd className="mt-1 font-body text-body-md leading-relaxed text-on-surface-variant">
+                    <a
+                      href={mapsUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="group inline-flex items-baseline gap-1.5 transition-colors hover:text-primary"
+                    >
+                      <span>{t("cards.location.body")}</span>
+                      <ArrowUpRight className="h-3.5 w-3.5 shrink-0 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" aria-hidden="true" />
+                    </a>
+                  </dd>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-[1.5rem_1fr] gap-x-3 border-b border-primary/15 py-5">
+                <Clock className="mt-0.5 h-5 w-5 text-wine-accent" aria-hidden="true" />
+                <div>
+                  <dt className="font-body text-label-sm font-semibold uppercase tracking-wider text-wine-accent">
+                    {t("cards.hours.title")}
+                  </dt>
+                  <dd className="mt-1 whitespace-pre-line font-body text-body-md leading-relaxed text-on-surface-variant">
+                    {t("cards.hours.body")}
+                  </dd>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-[1.5rem_1fr] gap-x-3 border-b border-primary/15 py-5">
+                <Phone className="mt-0.5 h-5 w-5 text-wine-accent" aria-hidden="true" />
+                <div>
+                  <dt className="font-body text-label-sm font-semibold uppercase tracking-wider text-wine-accent">
+                    {t("cards.phone.title")}
+                  </dt>
+                  <dd className="mt-1 font-body text-body-md leading-relaxed text-on-surface-variant">
+                    <a
+                      href={CONTACT_WHATSAPP_URL}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="group inline-flex items-baseline gap-1.5 transition-colors hover:text-primary"
+                    >
+                      <span>{CONTACT_PHONE_DISPLAY}</span>
+                      <ArrowUpRight className="h-3.5 w-3.5 shrink-0 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" aria-hidden="true" />
+                    </a>
+                  </dd>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-[1.5rem_1fr] gap-x-3 py-5">
+                <Mail className="mt-0.5 h-5 w-5 text-wine-accent" aria-hidden="true" />
+                <div>
+                  <dt className="font-body text-label-sm font-semibold uppercase tracking-wider text-wine-accent">
+                    {t("cards.email.title")}
+                  </dt>
+                  <dd className="mt-1 font-body text-body-md leading-relaxed text-on-surface-variant">
+                    <a
+                      href="mailto:contacto@vinacasaacosta.cl"
+                      className="group inline-flex items-baseline gap-1.5 break-all transition-colors hover:text-primary"
+                    >
+                      <span>{t("cards.email.body")}</span>
+                      <ArrowUpRight className="h-3.5 w-3.5 shrink-0 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" aria-hidden="true" />
+                    </a>
+                  </dd>
+                </div>
+              </div>
+            </dl>
           </Reveal>
-          <Reveal
-            className="bg-surface-container-low p-8 rounded-xl border border-outline-variant/30 hover:-translate-y-0.5 hover:shadow-[0_20px_40px_-12px_rgba(74,14,14,0.1)] transition-all duration-300"
-            delay={80}
-          >
-            <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center mb-4">
-              <Clock className="h-6 w-6 text-primary" aria-hidden="true" />
-            </div>
-            <h3 className="font-display text-xl text-primary mb-2">{t("cards.hours.title")}</h3>
-            <p className="font-body text-body-md text-on-surface-variant whitespace-pre-line">
-              {t("cards.hours.body")}
-            </p>
-          </Reveal>
-          <Reveal
-            className="bg-surface-container-low p-8 rounded-xl border border-outline-variant/30 hover:-translate-y-0.5 hover:shadow-[0_20px_40px_-12px_rgba(74,14,14,0.1)] transition-all duration-300"
-            delay={160}
-          >
-            <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center mb-4">
-              <Phone className="h-6 w-6 text-primary" aria-hidden="true" />
-            </div>
-            <h3 className="font-display text-xl text-primary mb-2">{t("cards.phone.title")}</h3>
-            <a
-              href={CONTACT_WHATSAPP_URL}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="font-body text-body-md text-on-surface-variant hover:text-primary transition-colors tabular-nums"
-            >
-              {CONTACT_PHONE_DISPLAY}
-            </a>
-          </Reveal>
-          <Reveal
-            className="bg-surface-container-low p-8 rounded-xl border border-outline-variant/30 hover:-translate-y-0.5 hover:shadow-[0_20px_40px_-12px_rgba(74,14,14,0.1)] transition-all duration-300"
-            delay={240}
-          >
-            <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center mb-4">
-              <Mail className="h-6 w-6 text-primary" aria-hidden="true" />
-            </div>
-            <h3 className="font-display text-xl text-primary mb-2">{t("cards.email.title")}</h3>
-            <a
-              href="mailto:contacto@vinacasaacosta.cl"
-              className="font-body text-body-md text-on-surface-variant hover:text-primary transition-colors"
-            >
-              {t("cards.email.body")}
-            </a>
-          </Reveal>
+
+          <div className="grid grid-cols-2 gap-3 md:gap-5">
+            {galleryImages.map((image, index) => (
+              <Reveal
+                as="figure"
+                key={image.src}
+                delay={index * 75}
+                className="relative m-0 aspect-[4/5] overflow-hidden rounded-[1.25rem] bg-surface"
+              >
+                <Image
+                  src={image.src}
+                  alt={image.alt}
+                  fill
+                  sizes="(max-width: 1023px) 50vw, 35vw"
+                  className="object-cover"
+                />
+              </Reveal>
+            ))}
+          </div>
         </div>
       </section>
     </>
