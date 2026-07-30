@@ -90,7 +90,9 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
     description: tActividades("events.body"),
     cta: t("activities.eventsCta"),
     image: eventsImage,
-    href: lp("/actividades#eventos"),
+    // Cotizar un evento es una consulta directa: va al formulario de contacto,
+    // no a la sección de eventos de /actividades.
+    href: lp("/contacto"),
   };
 
   return (
@@ -110,7 +112,9 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
         <div className="absolute inset-0 bg-gradient-to-r from-black/55 via-black/10 to-transparent" />
 
         <div className="relative z-10 w-full px-margin-mobile md:px-margin-desktop max-w-(--container-max) mx-auto pt-20 pb-24">
-          <div className="max-w-3xl mx-auto md:mx-0 text-center md:text-left">
+          {/* data-hero-text: el Navbar lo usa para saber cuándo el texto del hero
+              pasa por detrás y encender su velo (ver components/Navbar.tsx). */}
+          <div data-hero-text className="max-w-3xl mx-auto md:mx-0 text-center md:text-left">
             <Reveal delay={120}>
               <h1
                 className="font-display text-on-primary mb-4 md:mb-6 drop-shadow-[0_4px_24px_rgba(0,0,0,0.5)]"

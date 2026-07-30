@@ -7,7 +7,16 @@ import { useTranslations, useLocale } from "next-intl";
 import { Filter, X } from "lucide-react";
 import Reveal from "@/components/Reveal";
 import AddToCartButton from "@/components/AddToCartButton";
-import { wines, wineLines, wineTypes, varieties, type WineLine, type WineType, type Variety } from "@/data/wines";
+import {
+  wines,
+  wineLines,
+  wineTypes,
+  cepaGroups,
+  matchesWineType,
+  type WineLine,
+  type WineType,
+  type CepaGroup,
+} from "@/data/wines";
 
 export default function TiendaPage() {
   const t = useTranslations("tienda");
@@ -25,7 +34,7 @@ export default function TiendaPage() {
 
   const [selectedTypes, setSelectedTypes] = useState<Set<WineType>>(new Set());
   const [selectedLines, setSelectedLines] = useState<Set<WineLine>>(new Set());
-  const [selectedVarieties, setSelectedVarieties] = useState<Set<Variety>>(new Set());
+  const [selectedCepas, setSelectedCepas] = useState<Set<CepaGroup>>(new Set());
   const [sort, setSort] = useState<"featured" | "price-asc" | "price-desc">("featured");
   const [isFiltering, setIsFiltering] = useState(false);
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
@@ -48,9 +57,10 @@ export default function TiendaPage() {
 
   const filtered = useMemo(() => {
     let list = wines.filter((w) => {
-      if (selectedTypes.size > 0 && !selectedTypes.has(w.type)) return false;
+      if (selectedTypes.size > 0 && ![...selectedTypes].some((type) => matchesWineType(w, type)))
+        return false;
       if (selectedLines.size > 0 && !selectedLines.has(w.line)) return false;
-      if (selectedVarieties.size > 0 && !selectedVarieties.has(w.variety)) return false;
+      if (selectedCepas.size > 0 && !selectedCepas.has(w.cepaGroup)) return false;
       return true;
     });
 
@@ -60,7 +70,7 @@ export default function TiendaPage() {
       list = [...list].sort((a, b) => Number(!!b.featured) - Number(!!a.featured));
 
     return list;
-  }, [selectedTypes, selectedLines, selectedVarieties, sort]);
+  }, [selectedTypes, selectedLines, selectedCepas, sort]);
 
   const toggleType = (type: WineType) => {
     startFiltering();
@@ -80,12 +90,12 @@ export default function TiendaPage() {
       return next;
     });
   };
-  const toggleVariety = (v: Variety) => {
+  const toggleCepa = (cepa: CepaGroup) => {
     startFiltering();
-    setSelectedVarieties((prev) => {
+    setSelectedCepas((prev) => {
       const next = new Set(prev);
-      if (next.has(v)) next.delete(v);
-      else next.add(v);
+      if (next.has(cepa)) next.delete(cepa);
+      else next.add(cepa);
       return next;
     });
   };
@@ -94,9 +104,9 @@ export default function TiendaPage() {
     startFiltering();
     setSelectedTypes(new Set());
     setSelectedLines(new Set());
-    setSelectedVarieties(new Set());
+    setSelectedCepas(new Set());
   };
-  const filterCount = selectedTypes.size + selectedLines.size + selectedVarieties.size;
+  const filterCount = selectedTypes.size + selectedLines.size + selectedCepas.size;
 
   const filtersPanel = (
     <>
@@ -184,14 +194,14 @@ export default function TiendaPage() {
 
       <div>
         <h3 className="font-body text-label-sm uppercase tracking-wider text-on-surface-variant mb-4">
-          {t("filters.variety")}
+          {t("filters.cepa")}
         </h3>
         <div className="space-y-2.5">
-          {varieties.map((v) => {
-            const checked = selectedVarieties.has(v);
+          {cepaGroups.map((cepa) => {
+            const checked = selectedCepas.has(cepa);
             return (
               <label
-                key={v}
+                key={cepa}
                 className={`flex items-center gap-3 cursor-pointer group rounded-md px-2 -mx-2 py-1.5 transition-colors ${
                   checked ? "bg-primary/5" : "hover:bg-surface-container-low"
                 }`}
@@ -199,7 +209,7 @@ export default function TiendaPage() {
                 <input
                   type="checkbox"
                   checked={checked}
-                  onChange={() => toggleVariety(v)}
+                  onChange={() => toggleCepa(cepa)}
                   className="h-4 w-4 accent-primary rounded-sm"
                 />
                 <span
@@ -209,7 +219,7 @@ export default function TiendaPage() {
                       : "text-on-surface group-hover:text-primary"
                   }`}
                 >
-                  {tVinos(`varieties.${v}`)}
+                  {tVinos(`cepaGroups.${cepa}`)}
                 </span>
               </label>
             );

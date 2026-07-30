@@ -5,7 +5,7 @@ import { ArrowUpRight, Clock, Mail, MapPin, Phone } from "lucide-react";
 import Reveal from "@/components/Reveal";
 import ContactForm from "@/components/ContactForm";
 import MapEmbed from "@/components/MapEmbed";
-import { CONTACT_PHONE_DISPLAY, CONTACT_WHATSAPP_URL } from "@/lib/contact";
+import { CONTACT_MAILTO_URL, CONTACT_PHONE_DISPLAY, CONTACT_WHATSAPP_URL } from "@/lib/contact";
 
 const mapsUrl =
   "https://www.google.com/maps/search/?api=1&query=Fundo+El+Llano+lote+6,+San+Vicente+de+Tagua+Tagua,+O%27Higgins,+Chile";
@@ -133,7 +133,7 @@ export default async function ContactoPage({
                   </dt>
                   <dd className="mt-1 font-body text-body-md leading-relaxed text-on-surface-variant">
                     <a
-                      href="mailto:contacto@vinacasaacosta.cl"
+                      href={CONTACT_MAILTO_URL}
                       className="group inline-flex items-baseline gap-1.5 break-all transition-colors hover:text-primary"
                     >
                       <span>{t("cards.email.body")}</span>

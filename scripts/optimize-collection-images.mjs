@@ -13,12 +13,32 @@ const OUTPUT = join(ROOT, "public", "images", "vinos");
 const WIDTH = 1200;
 const HEIGHT = 1500;
 
+// Una entrada por foto del carrusel de cada colección (C2). El orden acá es el
+// orden en que se ven; el índice del nombre lo refleja. Todas las fuentes tienen
+// la botella al centro, así que el recorte a 4:5 va centrado.
 const collections = [
   { source: "ombu.jpg", output: "coleccion-ombu.webp" },
+  { source: "ombu-carmenere.jpg", output: "coleccion-ombu-2.webp" },
+  { source: "ombu-tannat.jpg", output: "coleccion-ombu-3.webp" },
+
   { source: "lajau.jpg", output: "coleccion-lajau.webp" },
+  { source: "lajau-sam.jpg", output: "coleccion-lajau-2.webp" },
+  { source: "lajau-deti.jpg", output: "coleccion-lajau-3.webp" },
+
   { source: "coleccion-et.jpg", output: "coleccion-estacion-francia.webp" },
+  { source: "estacion-francia-carmenere.jpg", output: "coleccion-estacion-francia-2.webp" },
+  { source: "estacion-francia-carmenere2.jpg", output: "coleccion-estacion-francia-3.webp" },
+  { source: "estacion-francia-carmenere3.jpg", output: "coleccion-estacion-francia-4.webp" },
+
   { source: "bera.jpg", output: "coleccion-bera.webp" },
-  { source: "Guidaí.jpg", output: "coleccion-guidai.webp", narrowSource: true },
+  { source: "bera2.jpg", output: "coleccion-bera-2.webp" },
+
+  // La foto nueva de Guidaí es de alta resolución y queda de portada; la vieja
+  // (baja resolución, con relleno desenfocado a los lados) pasa a ser la segunda.
+  // -v2 en el nombre = cache-bust: la portada de Guidaí cambió de foto y, con
+  // el nombre viejo, navegador y optimizador de Next seguían sirviendo la anterior.
+  { source: "coleccion-guidai.jpg", output: "coleccion-guidai-v2.webp" },
+  { source: "Guidaí.jpg", output: "coleccion-guidai-2.webp", narrowSource: true },
 ];
 
 const kb = (bytes) => `${Math.round(bytes / 1024)} KB`;

@@ -1,7 +1,10 @@
 import Image from "next/image";
 import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
+import { ArrowRight } from "lucide-react";
 import CollectionBand, { type CollectionWine } from "@/components/CollectionBand";
+import Reveal from "@/components/Reveal";
+import Button from "@/components/ui/Button";
 import {
   wines,
   lineSlugs,
@@ -82,7 +85,7 @@ export default async function VinosPage({ params }: PageProps<"/[locale]/vinos">
         <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-transparent to-black/20" />
 
         <div className="relative z-10 w-full px-margin-mobile pb-24 pt-24 md:px-margin-desktop lg:pl-20">
-          <div className="mx-auto max-w-2xl text-center md:mx-0 md:text-left">
+          <div data-hero-text className="mx-auto max-w-2xl text-center md:mx-0 md:text-left">
             <p className="mb-4 font-accent text-lg font-light italic tracking-wide text-primary-fixed drop-shadow-md md:text-xl">
               {t("hero.eyebrow")}
             </p>
@@ -127,17 +130,46 @@ export default async function VinosPage({ params }: PageProps<"/[locale]/vinos">
             kicker={`${t("lineLabel")} · ${t(`${meta.tier.group}.${meta.tier.key}`)}`}
             name={line}
             description={t(`lineDescriptions.${line}`)}
-            heroImage={meta.heroImage}
-            heroAlt={t("collectionPhotoAlt", { line })}
+            photos={meta.photos}
+            photosAlt={t("collectionPhotoAlt", { line })}
+            photoPrevLabel={t("photoPrev", { line })}
+            photoNextLabel={t("photoNext", { line })}
+            photoGoToLabels={meta.photos.map((_, idx) =>
+              t("photoGoTo", { index: idx + 1, total: meta.photos.length, line }),
+            )}
             wines={cards}
-            moreLabel={t("showMore")}
-            lessLabel={t("showLess")}
             altBackground={lineIdx % 2 === 1}
             flip={lineIdx % 2 === 1}
             priorityImage={lineIdx === 0}
           />
         );
       })}
+
+      {/* C3 — Cierre: puente del catálogo a la tienda. */}
+      <section className="bg-surface">
+        <div className="mx-auto max-w-(--container-max) px-margin-mobile py-16 text-center md:px-margin-desktop lg:py-20">
+          <Reveal>
+            <p className="mb-2 font-accent text-xl font-light italic text-primary md:text-2xl">
+              {t("storeCta.eyebrow")}
+            </p>
+            <h2 className="font-display text-headline-h1-mobile text-primary md:text-headline-h1">
+              {t("storeCta.title")}
+            </h2>
+            <p className="mx-auto mt-3 max-w-2xl font-body text-body-md text-on-surface-variant">
+              {t("storeCta.subtitle")}
+            </p>
+            <div className="mt-8">
+              <Button
+                href={`/${locale}/tienda`}
+                size="lg"
+                iconRight={<ArrowRight className="h-4 w-4" />}
+              >
+                {t("storeCta.button")}
+              </Button>
+            </div>
+          </Reveal>
+        </div>
+      </section>
     </>
   );
 }

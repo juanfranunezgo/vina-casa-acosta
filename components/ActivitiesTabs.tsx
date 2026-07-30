@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { CalendarDays, Map, Wine } from "lucide-react";
 
 type Props = {
@@ -23,9 +23,14 @@ const navHeight = () =>
     ? 96
     : 88;
 
-/** Barra estÃ¡tica: conserva contexto sin cubrir contenido al desplazarse. */
+/**
+ * Sub-nav de sección (D1b). En desktop acompaña el scroll pegada bajo el navbar
+ * (96px de alto); en móvil queda estática, donde una barra fija se comería una
+ * franja de una pantalla que ya es chica.
+ */
 export default function ActivitiesTabs({ labels }: Props) {
   const [active, setActive] = useState(tabs[0].id);
+  const barRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
     const sections = tabs
@@ -41,7 +46,11 @@ export default function ActivitiesTabs({ labels }: Props) {
         return;
       }
 
-      const line = navHeight() + 24;
+      // En desktop la barra queda pegada bajo el navbar y tapa el inicio de cada
+      // sección: la línea de detección baja lo que mide la propia barra.
+      const isDesktop = window.matchMedia("(min-width: 768px)").matches;
+      const stickyBar = isDesktop ? (barRef.current?.offsetHeight ?? 0) : 0;
+      const line = navHeight() + stickyBar + 24;
       let current = sections[0].id;
       for (const section of sections) {
         if (section.getBoundingClientRect().top <= line) current = section.id;
@@ -66,8 +75,9 @@ export default function ActivitiesTabs({ labels }: Props) {
 
   return (
     <nav
+      ref={barRef}
       aria-label={labels.aria}
-      className="relative z-20 border-y border-outline-variant/30 bg-surface px-margin-mobile py-3 md:px-margin-desktop md:py-4"
+      className="relative z-20 border-y border-outline-variant/30 bg-surface/95 px-margin-mobile py-3 backdrop-blur-md md:sticky md:top-24 md:px-margin-desktop md:py-4"
     >
       <div className="mx-auto grid w-full max-w-md grid-cols-3 gap-1 rounded-full border border-outline-variant/40 bg-surface-container-low p-1 ambient-shadow">
         {tabs.map(({ id, key, Icon }) => {

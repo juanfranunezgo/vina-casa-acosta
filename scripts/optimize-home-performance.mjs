@@ -10,7 +10,7 @@ const assets = [
   { source: "images/home/casa/teaching.jpg", output: "images/home/casa/teaching.webp", width: 960, quality: 70 },
   { source: "images/home/casa/tractor.jpg", output: "images/home/casa/tractor.webp", width: 960, quality: 70 },
   { source: "images/home/casa/family.jpg", output: "images/home/casa/family.webp", width: 960, quality: 70 },
-  { source: "brand/logo-blanco.png", output: "brand/logo-blanco.webp", width: 256, quality: 95 },
+  { source: "brand/logo-blanco-v2.png", output: "brand/logo-blanco-v2.webp", width: 256, quality: 95 },
   { source: "brand/logo-negro.png", output: "brand/logo-negro.webp", width: 256, quality: 95 },
 ];
 

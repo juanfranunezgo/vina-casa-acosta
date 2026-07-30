@@ -16,6 +16,7 @@ import {
   Images,
   Grape,
   ListChecks,
+  Star,
 } from "lucide-react";
 import Reveal from "@/components/Reveal";
 import Button from "@/components/ui/Button";
@@ -117,15 +118,18 @@ export default async function TourDetailPage({
           </div>
 
           <div className="absolute inset-x-0 bottom-0 px-margin-mobile md:px-margin-desktop pb-16 md:pb-24">
-            <div className="max-w-(--container-max) mx-auto">
+            {/* data-hero-text: el Navbar lo usa para encender su velo cuando el
+                título pasa por detrás (ver components/Navbar.tsx). */}
+            <div data-hero-text className="max-w-(--container-max) mx-auto">
               <div className="flex items-center gap-3 mb-4">
                 <span className="h-px w-10 bg-white/50" />
                 <span className="font-body text-label-sm uppercase tracking-[0.3em] text-white/75">
                   {t("placeValue")}
                 </span>
                 {tour.premium && (
-                  <span className="inline-flex items-center gap-1 border border-white/40 text-white px-2.5 py-0.5 text-label-sm uppercase tracking-wider rounded-full font-semibold">
-                    ★ {t("premium")}
+                  <span className="inline-flex items-center gap-1.5 rounded-full border border-white/30 px-2.5 py-0.5 font-body text-[10px] font-medium uppercase tracking-[0.16em] text-white/90">
+                    <Star className="h-3 w-3 shrink-0" aria-hidden="true" />
+                    {t("premium")}
                   </span>
                 )}
               </div>

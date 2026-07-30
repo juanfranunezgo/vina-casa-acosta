@@ -62,7 +62,7 @@ export default async function HistoriaPage({
         <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-transparent to-black/20" />
 
         <div className="relative z-10 w-full px-margin-mobile md:px-margin-desktop lg:pl-20 pt-24 pb-24">
-          <div className="max-w-2xl mx-auto md:mx-0 text-center md:text-left">
+          <div data-hero-text className="max-w-2xl mx-auto md:mx-0 text-center md:text-left">
             <Reveal delay={120}>
               <p className="font-accent italic font-light text-primary-fixed text-lg md:text-xl tracking-wide mb-4 drop-shadow-md">
                 {t("hero.eyebrow")}

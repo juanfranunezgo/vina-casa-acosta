@@ -1,15 +1,28 @@
 export type WineLine = "Ombú" | "Lajau" | "Estación Francia" | "Berá" | "Guidaí" | "Yaráy Guá";
 
-/** Tipo de vino (nuevo filtro de la tienda). */
-export type WineType = "Tinto" | "Rosado" | "Blanco" | "Espumante";
+/**
+ * Tipo de vino (filtro de la tienda).
+ *
+ * "Dulce" es la categoría comercial de la línea Yaráy Guá (cosecha tardía). El
+ * cliente NO considera blanco al Yaráy Guá Chardonnay Viognier, así que el
+ * filtro "Blanco" queda hoy sin vinos asociados a propósito.
+ */
+export type WineType = "Tinto" | "Rosado" | "Blanco" | "Espumante" | "Dulce";
 
-/** Cepa o estilo principal (filtro de variedad). Los multi-cepa se marcan como Ensamblaje. */
+/** Cepa o estilo principal, tal como se muestra en las tarjetas y fichas. */
 export type Variety =
   | "Carmenere"
   | "Tannat"
   | "Cabernet Sauvignon"
-  | "Chardonnay"
+  | "Chardonnay + Viognier"
   | "Ensamblaje";
+
+/**
+ * Agrupación de cepa para el filtro de la tienda. Se declara por vino en vez de
+ * derivarse de `variety` porque varios vinos se etiquetan por su cepa dominante
+ * pero técnicamente son ensamblaje (Estación Francia 95/5, Berá 90/10, Guidaí 90/10).
+ */
+export type CepaGroup = "Monovarietario" | "Ensamblaje" | "Chardonnay + Viognier";
 
 /** Ficha técnica real extraída del documento del cliente. */
 export type WineTechnical = {
@@ -35,6 +48,13 @@ export type Wine = {
   line: WineLine;
   type: WineType;
   variety: Variety;
+  /** Grupo de cepa para el filtro de la tienda. */
+  cepaGroup: CepaGroup;
+  /**
+   * Vino dulce / de cosecha tardía. Lo hace aparecer bajo el filtro "Dulce"
+   * además de bajo su propio tipo (el Yaráy Guá Carmenere es tinto Y dulce).
+   */
+  sweet?: boolean;
   /** Nivel de la línea. Solo se asigna cuando es real (documento o etiqueta). */
   category?: "Reserva" | "Gran Reserva" | "Edición Limitada";
   image: string;
@@ -68,6 +88,7 @@ export const wines: Wine[] = [
     line: "Ombú",
     type: "Tinto",
     variety: "Carmenere",
+    cepaGroup: "Monovarietario",
     category: "Reserva",
     image: "/vinos/ombu-carmenere.png",
     technicalSheet: "/documentos/fichas-tecnicas/ombu-carmenere.pdf",
@@ -96,6 +117,7 @@ export const wines: Wine[] = [
     line: "Ombú",
     type: "Tinto",
     variety: "Tannat",
+    cepaGroup: "Monovarietario",
     category: "Reserva",
     image: "/vinos/ombu-tannat.png",
     technicalSheet: "/documentos/fichas-tecnicas/ombu-tannat.pdf",
@@ -122,6 +144,7 @@ export const wines: Wine[] = [
     line: "Ombú",
     type: "Tinto",
     variety: "Cabernet Sauvignon",
+    cepaGroup: "Monovarietario",
     category: "Reserva",
     image: "/vinos/ombu-sauvignon.png",
     technicalSheet: "/documentos/fichas-tecnicas/ombu-cabernet-sauvignon.pdf",
@@ -148,6 +171,7 @@ export const wines: Wine[] = [
     line: "Lajau",
     type: "Tinto",
     variety: "Ensamblaje",
+    cepaGroup: "Ensamblaje",
     category: "Edición Limitada",
     image: "/vinos/lajau-sam.png",
     technicalSheet: "/documentos/fichas-tecnicas/lajau-sam.pdf",
@@ -176,6 +200,7 @@ export const wines: Wine[] = [
     line: "Lajau",
     type: "Tinto",
     variety: "Ensamblaje",
+    cepaGroup: "Ensamblaje",
     category: "Edición Limitada",
     image: "/vinos/lajau-deti.png",
     technicalSheet: "/documentos/fichas-tecnicas/lajau-deti.pdf",
@@ -202,6 +227,7 @@ export const wines: Wine[] = [
     line: "Lajau",
     type: "Tinto",
     variety: "Ensamblaje",
+    cepaGroup: "Ensamblaje",
     category: "Edición Limitada",
     image: "/vinos/lajau-betum.png",
     technicalSheet: "/documentos/fichas-tecnicas/lajau-betum.pdf",
@@ -228,6 +254,7 @@ export const wines: Wine[] = [
     line: "Lajau",
     type: "Tinto",
     variety: "Ensamblaje",
+    cepaGroup: "Ensamblaje",
     category: "Edición Limitada",
     image: "/vinos/lajau-betum-yu.png",
     technicalSheet: "/documentos/fichas-tecnicas/lajau-betum-yu.pdf",
@@ -255,6 +282,7 @@ export const wines: Wine[] = [
     line: "Estación Francia",
     type: "Tinto",
     variety: "Carmenere",
+    cepaGroup: "Ensamblaje",
     category: "Gran Reserva",
     image: "/vinos/estacion-francia-carmenere.png",
     technicalSheet: "/documentos/fichas-tecnicas/estacion-francia-carmenere.pdf",
@@ -282,6 +310,7 @@ export const wines: Wine[] = [
     line: "Estación Francia",
     type: "Tinto",
     variety: "Tannat",
+    cepaGroup: "Ensamblaje",
     category: "Gran Reserva",
     image: "/vinos/estacion-francia-tannat.png",
     technicalSheet: "/documentos/fichas-tecnicas/estacion-francia-tannat.pdf",
@@ -308,6 +337,7 @@ export const wines: Wine[] = [
     line: "Berá",
     type: "Rosado",
     variety: "Carmenere",
+    cepaGroup: "Ensamblaje",
     image: "/vinos/bera.png",
     technicalSheet: "/documentos/fichas-tecnicas/bera-rose.pdf",
     shortDescription: "Rosé fresco y floral de Carmenere y Cabernet Sauvignon.",
@@ -333,6 +363,7 @@ export const wines: Wine[] = [
     line: "Guidaí",
     type: "Espumante",
     variety: "Carmenere",
+    cepaGroup: "Ensamblaje",
     category: "Edición Limitada",
     image: "/vinos/guidai.png",
     technicalSheet: "/documentos/fichas-tecnicas/guidai-espumante.pdf",
@@ -359,6 +390,8 @@ export const wines: Wine[] = [
     line: "Yaráy Guá",
     type: "Tinto",
     variety: "Carmenere",
+    cepaGroup: "Monovarietario",
+    sweet: true,
     image: "/vinos/yaray-gua-tinto.png",
     technicalSheet: "/documentos/fichas-tecnicas/yaray-gua-carmenere.pdf",
     shortDescription: "Carmenere de cosecha tardía, goloso y de dulzor balanceado.",
@@ -383,8 +416,10 @@ export const wines: Wine[] = [
     slug: "yaray-gua-blanco",
     name: "Yaráy Guá Chardonnay Viognier",
     line: "Yaráy Guá",
-    type: "Blanco",
-    variety: "Chardonnay",
+    type: "Dulce",
+    variety: "Chardonnay + Viognier",
+    cepaGroup: "Chardonnay + Viognier",
+    sweet: true,
     image: "/vinos/yaray-gua-blanco.png",
     technicalSheet: "/documentos/fichas-tecnicas/yaray-gua-chardonnay-viognier.pdf",
     shortDescription: "Blanco de cosecha tardía, untuoso y de retrogusto complejo.",
@@ -424,8 +459,12 @@ export const lineSlugs: Record<WineLine, string> = {
  * La foto de ambiente le da identidad propia a cada colección.
  */
 export type LineMeta = {
-  /** Foto de ambiente (en /public) usada como banner de la colección. */
-  heroImage: string;
+  /**
+   * Fotos de ambiente (en /public) del carrusel de la colección, en orden de
+   * aparición. La primera es la portada. Masters 4:5 generados por
+   * `npm run fotos:colecciones`.
+   */
+  photos: string[];
   /**
    * Nivel/estilo de la línea para el antetítulo del banner. Referencia a una
    * clave YA EXISTENTE de messages (`vinos.categories` | `types` | `badges`),
@@ -436,27 +475,47 @@ export type LineMeta = {
 
 export const lineMeta: Record<WineLine, LineMeta> = {
   "Ombú": {
-    heroImage: "/images/vinos/coleccion-ombu.webp",
+    photos: [
+      "/images/vinos/coleccion-ombu.webp",
+      "/images/vinos/coleccion-ombu-2.webp",
+      "/images/vinos/coleccion-ombu-3.webp",
+    ],
     tier: { group: "categories", key: "Reserva" },
   },
   "Lajau": {
-    heroImage: "/images/vinos/coleccion-lajau.webp",
+    photos: [
+      "/images/vinos/coleccion-lajau.webp",
+      "/images/vinos/coleccion-lajau-2.webp",
+      "/images/vinos/coleccion-lajau-3.webp",
+    ],
     tier: { group: "categories", key: "Edición Limitada" },
   },
   "Estación Francia": {
-    heroImage: "/images/vinos/coleccion-estacion-francia.webp",
+    photos: [
+      "/images/vinos/coleccion-estacion-francia.webp",
+      "/images/vinos/coleccion-estacion-francia-2.webp",
+      "/images/vinos/coleccion-estacion-francia-3.webp",
+      "/images/vinos/coleccion-estacion-francia-4.webp",
+    ],
     tier: { group: "categories", key: "Gran Reserva" },
   },
   "Berá": {
-    heroImage: "/images/vinos/coleccion-bera.webp",
+    photos: [
+      "/images/vinos/coleccion-bera.webp",
+      "/images/vinos/coleccion-bera-2.webp",
+    ],
     tier: { group: "types", key: "Rosado" },
   },
   "Guidaí": {
-    heroImage: "/images/vinos/coleccion-guidai.webp",
+    photos: [
+      "/images/vinos/coleccion-guidai-v2.webp",
+      "/images/vinos/coleccion-guidai-2.webp",
+    ],
     tier: { group: "types", key: "Espumante" },
   },
+  // Sin fotos propias todavía: el carrusel se muestra como una foto sola.
   "Yaráy Guá": {
-    heroImage: "/images/home/cta-parras.jpg",
+    photos: ["/images/home/cta-parras.jpg"],
     tier: { group: "badges", key: "Cosecha Tardía" },
   },
 };
@@ -469,15 +528,19 @@ export function getWinesByLine(line: WineLine): Wine[] {
 }
 
 /** Tipos de vino disponibles para el filtro de la tienda. */
-export const wineTypes: WineType[] = ["Tinto", "Rosado", "Blanco", "Espumante"];
+export const wineTypes: WineType[] = ["Tinto", "Rosado", "Blanco", "Espumante", "Dulce"];
 
-export const varieties: Variety[] = [
-  "Carmenere",
-  "Tannat",
-  "Cabernet Sauvignon",
-  "Chardonnay",
-  "Ensamblaje",
-];
+/** Opciones del filtro "Cepa" de la tienda. */
+export const cepaGroups: CepaGroup[] = ["Monovarietario", "Ensamblaje", "Chardonnay + Viognier"];
+
+/**
+ * ¿Cae el vino bajo este tipo del filtro? "Dulce" cruza los tipos: incluye a
+ * todo vino de cosecha tardía, aunque su tipo propio sea Tinto.
+ */
+export function matchesWineType(wine: Wine, type: WineType): boolean {
+  if (type === "Dulce") return wine.type === "Dulce" || wine.sweet === true;
+  return wine.type === type;
+}
 
 export function getWineBySlug(slug: string): Wine | undefined {
   return wines.find((w) => w.slug === slug);

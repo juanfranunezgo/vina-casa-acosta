@@ -11,6 +11,10 @@ export const CONTACT_PHONE_E164 = "56966740633";
 export const CONTACT_WHATSAPP_URL = `https://wa.me/${CONTACT_PHONE_E164}`;
 export const CONTACT_TEL_URL = `tel:+${CONTACT_PHONE_E164}`;
 
+/** Casilla oficial: recibe los mensajes del formulario de contacto. */
+export const CONTACT_EMAIL = "contacto@vinacasaacosta.cl";
+export const CONTACT_MAILTO_URL = `mailto:${CONTACT_EMAIL}`;
+
 /** Perfil oficial de Instagram — canal donde se anuncian fechas y eventos. */
 export const INSTAGRAM_URL = "https://www.instagram.com/vinacasaacosta/";
 

@@ -4,23 +4,18 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import Reveal from "@/components/Reveal";
 
 // Cada persona es una fila editorial: foto grande + texto, alternando lados.
-// `image`: retrato real (local) o placeholder Unsplash. `pos`: object-position
-// para encuadrar bien el rostro según cada foto.
+// `image`: retrato real. `pos`: object-position para encuadrar bien el rostro
+// según cada foto.
+//
+// PENDIENTE: los originales de Andrea (591×1280) y Alfonso (800×650, horizontal)
+// llegaron en baja resolución; el slot mide ~650×810 en desktop, así que quedan
+// algo blandos. Reemplazar por versiones ≥1600px de ancho cuando lleguen.
 const staffMembers = [
   { key: "damian", image: "/images/staff/damian.webp", pos: "50% 18%" },
-  {
-    key: "andrea",
-    image:
-      "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=900&q=75",
-    pos: "50% 28%",
-  },
+  { key: "andrea", image: "/images/staff/andrea.webp", pos: "50% 15%" },
   { key: "enrique", image: "/images/staff/enrique.webp", pos: "50% 16%" },
-  {
-    key: "alfonso",
-    image:
-      "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&w=900&q=75",
-    pos: "50% 25%",
-  },
+  // Foto horizontal: el 62% horizontal centra el rostro en el recorte 4:5.
+  { key: "alfonso", image: "/images/staff/alfonso.webp", pos: "62% 50%" },
 ] as const;
 
 // Borde "cosido" artesanal en el canto exterior de cada retrato (guiño al boceto).

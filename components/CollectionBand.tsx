@@ -1,10 +1,5 @@
-"use client";
-
-import { useState } from "react";
-import Image from "next/image";
-import { ChevronDown } from "lucide-react";
 import Reveal from "@/components/Reveal";
-import Button from "@/components/ui/Button";
+import CollectionPhotos from "@/components/CollectionPhotos";
 import WineCard, { type WineCardProps } from "@/components/WineCard";
 
 export type CollectionWine = WineCardProps & { slug: string };
@@ -14,35 +9,40 @@ type CollectionBandProps = {
   kicker: string;
   name: string;
   description: string;
-  heroImage: string;
-  heroAlt: string;
+  /** Fotos del carrusel de la colección, en orden. */
+  photos: string[];
+  photosAlt: string;
+  photoPrevLabel: string;
+  photoNextLabel: string;
+  photoGoToLabels: string[];
   wines: CollectionWine[];
-  moreLabel: string;
-  lessLabel: string;
   altBackground?: boolean;
   flip?: boolean;
   priorityImage?: boolean;
 };
 
-/** Presenta dos vinos en primer plano y expande el resto bajo demanda. */
+/**
+ * Banda editorial de una línea: carrusel de fotos de ambiente + toda la colección.
+ *
+ * Muestra siempre todos los vinos (sin "ver más"): el carrusel conserva su
+ * proporción fija 4:5, así que en líneas de 3+ vinos queda aire bajo la foto.
+ */
 export default function CollectionBand({
   id,
   kicker,
   name,
   description,
-  heroImage,
-  heroAlt,
+  photos,
+  photosAlt,
+  photoPrevLabel,
+  photoNextLabel,
+  photoGoToLabels,
   wines,
-  moreLabel,
-  lessLabel,
   altBackground = false,
   flip = false,
   priorityImage = false,
 }: CollectionBandProps) {
-  const [isExpanded, setIsExpanded] = useState(false);
   const titleId = `coleccion-${id}`;
-  const visibleWines = isExpanded ? wines : wines.slice(0, 2);
-  const hasMoreWines = wines.length > 2;
   const singleWineAtOuterEdge = wines.length === 1 && !flip;
   const stageColumns = flip
     ? "lg:grid-cols-[minmax(0,6fr)_minmax(0,4fr)]"
@@ -67,25 +67,20 @@ export default function CollectionBand({
         </header>
 
         <div className={`mt-8 grid grid-cols-1 items-start gap-6 lg:mt-10 lg:gap-10 ${stageColumns}`}>
-          <Reveal
-            as="figure"
-            className={`relative m-0 aspect-[4/5] overflow-hidden rounded-[1.25rem] ${
-              flip ? "lg:order-2" : ""
-            }`}
-          >
-            <Image
-              src={heroImage}
-              alt={heroAlt}
-              fill
+          <Reveal className={flip ? "lg:order-2" : ""}>
+            <CollectionPhotos
+              photos={photos}
+              alt={photosAlt}
+              prevLabel={photoPrevLabel}
+              nextLabel={photoNextLabel}
+              goToLabels={photoGoToLabels}
               priority={priorityImage}
-              sizes="(max-width: 1024px) 100vw, 40vw"
-              className="object-cover object-center"
             />
           </Reveal>
 
           <div className={`min-w-0 ${flip ? "lg:order-1" : ""}`}>
             <ul id={`${titleId}-wines`} className="m-0 grid list-none gap-5 p-0 sm:grid-cols-2">
-              {visibleWines.map((wine, idx) => (
+              {wines.map((wine, idx) => (
                 <Reveal
                   as="li"
                   key={wine.slug}
@@ -101,22 +96,6 @@ export default function CollectionBand({
                 </Reveal>
               ))}
             </ul>
-
-            {hasMoreWines && (
-              <div className="mt-5 flex justify-center">
-                <Button
-                  type="button"
-                  variant="link"
-                  size="sm"
-                  iconRight={<ChevronDown className={`h-4 w-4 transition-transform ${isExpanded ? "rotate-180" : ""}`} />}
-                  aria-expanded={isExpanded}
-                  aria-controls={`${titleId}-wines`}
-                  onClick={() => setIsExpanded((expanded) => !expanded)}
-                >
-                  {isExpanded ? lessLabel : moreLabel}
-                </Button>
-              </div>
-            )}
           </div>
         </div>
       </div>

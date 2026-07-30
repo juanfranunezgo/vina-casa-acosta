@@ -44,8 +44,11 @@
     "tienda": "Loja",
     "openMenu": "Abrir menu",
     "closeMenu": "Fechar menu",
-    "openTours": "Ver tours",
-    "closeTours": "Ocultar tours",
+    "openTours": "Ver atividades",
+    "closeTours": "Ocultar atividades",
+    "activitiesExperiences": "Experiências",
+    "activitiesEvents": "Eventos",
+    "activitiesAll": "Ver tudo",
     "logoAlt": "Viña Casa Acosta — Início",
     "language": "Idioma",
     "sectionNav": "Navegação",
@@ -87,8 +90,8 @@
       "heroAlt": "Vinhedos do Vale do Cachapoal ao pôr do sol"
     },
     "about": {
-      "eyebrow": "Casa Acosta",
-      "title": "Três gerações, uma só origem.",
+      "eyebrow": "San Vicente de Tagua Tagua",
+      "title": "Casa Acosta",
       "paragraph1": "Casa Acosta é um tributo à família. Um lugar onde a vida tem dado seus frutos com raízes firmes em um território propício para fazer crescer os sonhos, respeitando e fortalecendo sua origem.",
       "paragraph2": "Sua visita conecta você a uma paisagem que nasce do tesão, da paixão e da cepa de sangue uruguaio — transformada em novas gerações dispostas a seguir o trabalho da terra do Cachapoal.",
       "cta": "Conheça nossa história",
@@ -301,8 +304,15 @@
     },
     "lineLabel": "Linha",
     "collectionPhotoAlt": "Coleção {line} — ambiente da Viña Casa Acosta",
-    "showMore": "Ver mais vinhos",
-    "showLess": "Ver menos",
+    "photoPrev": "Foto anterior da coleção {line}",
+    "photoNext": "Próxima foto da coleção {line}",
+    "photoGoTo": "Ver foto {index} de {total} da coleção {line}",
+    "storeCta": {
+      "eyebrow": "Compre online",
+      "title": "Leve estes vinhos para a sua mesa",
+      "subtitle": "Veja preços, disponibilidade e monte a sua própria seleção na nossa loja.",
+      "button": "Ir para a loja"
+    },
     "lineDescriptions": {
       "Ombú": "Linha reserva: a face mais reconhecível da vinícola. Vinhos varietais para celebrar o cotidiano.",
       "Lajau": "Assemblages de guarda: parcelas selecionadas e produção restrita.",
@@ -320,14 +330,20 @@
       "Tinto": "Tinto",
       "Rosado": "Rosé",
       "Blanco": "Branco",
-      "Espumante": "Espumante"
+      "Espumante": "Espumante",
+      "Dulce": "Doce"
     },
     "varieties": {
       "Carmenere": "Carmenere",
       "Tannat": "Tannat",
       "Cabernet Sauvignon": "Cabernet Sauvignon",
-      "Chardonnay": "Chardonnay",
+      "Chardonnay + Viognier": "Chardonnay + Viognier",
       "Ensamblaje": "Assemblage"
+    },
+    "cepaGroups": {
+      "Monovarietario": "Monovarietal",
+      "Ensamblaje": "Assemblage",
+      "Chardonnay + Viognier": "Chardonnay + Viognier"
     },
     "badges": {
       "Insignia": "Insígnia",
@@ -525,7 +541,11 @@
       "phone": "Telefone",
       "phonePlaceholder": "+56 9 ...",
       "people": "Pessoas",
+      "peopleHint": "Mínimo de 2 pessoas por reserva.",
       "date": "Data",
+      "datePlaceholder": "--/--/26",
+      "dateHint": "Escolha o dia da sua visita — pode mudar quando quiser.",
+      "dateOpen": "Abrir o calendário e escolher a data",
       "note": "Nota adicional",
       "notePlaceholder": "Algo que devamos saber? (opcional)",
       "submitIdle": "Solicitar reserva",
@@ -533,8 +553,7 @@
       "success": "Solicitação enviada!",
       "successMessage": "Obrigado. Entraremos em contato para confirmar sua reserva.",
       "whatsapp": "Reservar pelo WhatsApp",
-      "waIntro": "Olá 👋 Gostaria de reservar o {tour}.",
-      "demoNotice": "Formulário de demonstração — a reserva ainda não é confirmada automaticamente."
+      "waIntro": "Olá 👋 Gostaria de reservar o {tour}."
     },
     "tour-ombu": {
       "tagline": "Introdução ao mundo do vinho na Casa Acosta",
@@ -617,7 +636,7 @@
       "clear": "Limpar ({count})",
       "type": "Tipo",
       "line": "Linha",
-      "variety": "Variedade",
+      "cepa": "Uva",
       "apply": "Ver resultados",
       "close": "Fechar filtros"
     },
@@ -676,8 +695,9 @@
   "contactForm": {
     "title": "Envie uma mensagem",
     "subtitle": "Respondemos em até 24 horas úteis.",
-    "whatsappIntro": "Olá Casa Acosta, gostaria de fazer uma consulta.",
-    "whatsappNotice": "Ao enviar, abriremos o WhatsApp com sua mensagem pronta para enviar.",
+    "emailIntro": "Olá Casa Acosta, estou escrevendo pelo site.",
+    "emailSubject": "{subject} — contato pelo site",
+    "emailNotice": "Ao enviar, seu e-mail abrirá com a mensagem pronta para contacto@vinacasaacosta.cl.",
     "fields": {
       "name": "Nome",
       "namePlaceholder": "Seu nome",
@@ -695,7 +715,7 @@
       "other": "Outro"
     },
     "buttons": {
-      "idle": "Enviar pelo WhatsApp"
+      "idle": "Enviar mensagem"
     }
   },
   "cart": {

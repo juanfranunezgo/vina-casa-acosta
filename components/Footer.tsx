@@ -5,6 +5,8 @@ import { MapPin, Clock, Mail, Phone, Star } from "lucide-react";
 import FacebookIcon from "@/components/icons/FacebookIcon";
 import InstagramIcon from "@/components/icons/InstagramIcon";
 import {
+  CONTACT_EMAIL,
+  CONTACT_MAILTO_URL,
   CONTACT_PHONE_DISPLAY,
   CONTACT_WHATSAPP_URL,
   FACEBOOK_URL,
@@ -24,11 +26,10 @@ export default async function Footer() {
   const year = new Date().getFullYear();
   const lp = (path: string) => `/${locale}${path}`;
 
-  const legalLinks = [
-    { href: "#", label: t("legal.privacy") },
-    { href: "#", label: t("legal.terms") },
-    { href: "#", label: t("legal.sitemap") },
-  ];
+  // Sin páginas legales todavía: van como texto. Enlazarlas a "#" saltaba al
+  // hero, que se leía como un link roto. Cuando existan las páginas, se les pone
+  // su href acá.
+  const legalLabels = [t("legal.privacy"), t("legal.terms"), t("legal.sitemap")];
 
   return (
     <footer className="w-full border-t border-outline-variant/40 bg-surface-container-low">
@@ -100,8 +101,8 @@ export default async function Footer() {
               </li>
               <li className="flex items-start gap-2">
                 <Mail className="h-4 w-4 text-primary mt-1 shrink-0" aria-hidden="true" />
-                <a href="mailto:contacto@vinacasaacosta.cl" className="hover:text-primary transition-colors">
-                  contacto@vinacasaacosta.cl
+                <a href={CONTACT_MAILTO_URL} className="hover:text-primary transition-colors">
+                  {CONTACT_EMAIL}
                 </a>
               </li>
             </ul>
@@ -142,10 +143,8 @@ export default async function Footer() {
             </p>
           </div>
           <div className="flex gap-5">
-            {legalLinks.map((l) => (
-              <a key={l.label} href={l.href} className="hover:text-primary transition-colors">
-                {l.label}
-              </a>
+            {legalLabels.map((label) => (
+              <span key={label}>{label}</span>
             ))}
           </div>
         </div>

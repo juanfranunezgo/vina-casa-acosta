@@ -2,7 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
-import { Check, CheckCircle2, Clock, CalendarDays, MessageCircle, ArrowUpRight, ArrowRight } from "lucide-react";
+import { Check, CheckCircle2, Clock, CalendarDays, MessageCircle, ArrowUpRight, ArrowRight, Star } from "lucide-react";
 import InstagramIcon from "@/components/icons/InstagramIcon";
 import Reveal from "@/components/Reveal";
 import Button from "@/components/ui/Button";
@@ -88,36 +88,38 @@ export default async function ActividadesPage({
         <div className="absolute inset-0 bg-gradient-to-r from-black/45 via-black/10 to-transparent" />
         <div className="absolute inset-x-0 top-0 h-40 bg-gradient-to-b from-black/50 to-transparent" />
 
-        {/* Espaciador (en flujo): empuja el bloque a la mitad-baja — el ante-título
-            arranca ~53% del alto. Al ir en el flujo, en pantallas chicas la sección
-            crece en vez de recortar el texto (overflow-hidden solo clipa la foto). */}
-        <div aria-hidden="true" className="min-h-[48svh] shrink-0 md:min-h-[53vh]" />
-        <div className="relative z-10 w-full px-margin-mobile pb-14 md:px-margin-desktop md:pb-20">
-          <div className="mx-auto max-w-(--container-max)">
-            <div className="max-w-3xl">
-              <Reveal delay={120}>
-                <p className="mb-4 font-accent text-lg font-light italic tracking-wide text-primary-fixed drop-shadow-md md:text-xl">
-                  {t("hero.eyebrow")}
-                </p>
-              </Reveal>
-              <Reveal delay={220}>
-                <h1
-                  className="mb-5 font-display text-on-primary drop-shadow-[0_4px_24px_rgba(0,0,0,0.55)]"
-                  style={{
-                    fontSize: "clamp(2.25rem, 6.4vw, 4.5rem)",
-                    lineHeight: 1.14,
-                    letterSpacing: "-0.015em",
-                  }}
-                >
-                  {t("hero.title")}
-                </h1>
-              </Reveal>
-              <Reveal delay={320}>
-                <p className="max-w-2xl font-body text-body-lg text-on-primary/90 drop-shadow-[0_2px_12px_rgba(0,0,0,0.5)]">
-                  {t("hero.subtitle")}
-                </p>
-              </Reveal>
-            </div>
+        {/* Espaciador (en flujo): deja el bloque a la misma altura que los heros de
+            Historia (B1) y Vinos (C1), donde el texto queda centrado vertical y el
+            ante-título arranca ~40% del alto. Al ir en el flujo, en pantallas chicas
+            la sección crece en vez de recortar el texto (overflow-hidden solo clipa
+            la foto). */}
+        <div aria-hidden="true" className="min-h-[42svh] shrink-0 md:min-h-[40vh]" />
+        {/* Texto apoyado en el margen izquierdo, igual que los heros de Historia
+            (B1) y Nuestros Vinos (C1): sin contenedor centrado, con `lg:pl-20`. */}
+        <div className="relative z-10 w-full px-margin-mobile pb-14 md:px-margin-desktop md:pb-20 lg:pl-20">
+          <div data-hero-text className="max-w-2xl">
+            <Reveal delay={120}>
+              <p className="mb-4 font-accent text-lg font-light italic tracking-wide text-primary-fixed drop-shadow-md md:text-xl">
+                {t("hero.eyebrow")}
+              </p>
+            </Reveal>
+            <Reveal delay={220}>
+              <h1
+                className="mb-5 font-display text-on-primary drop-shadow-[0_4px_24px_rgba(0,0,0,0.55)]"
+                style={{
+                  fontSize: "clamp(2.25rem, 6.4vw, 4.5rem)",
+                  lineHeight: 1.14,
+                  letterSpacing: "-0.015em",
+                }}
+              >
+                {t("hero.title")}
+              </h1>
+            </Reveal>
+            <Reveal delay={320}>
+              <p className="max-w-xl font-body text-body-lg text-on-primary/90 drop-shadow-[0_2px_12px_rgba(0,0,0,0.5)]">
+                {t("hero.subtitle")}
+              </p>
+            </Reveal>
           </div>
         </div>
       </section>
@@ -176,9 +178,12 @@ export default async function ActividadesPage({
                         sizes="(max-width: 768px) 100vw, 33vw"
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+                      {/* Distintivo discreto: vidrio sobre la foto, no una etiqueta
+                          blanca que compite con el título de la tarjeta. */}
                       {tour.premium && (
-                        <span className="absolute top-4 left-4 bg-on-primary/95 backdrop-blur-sm text-primary px-3 py-1 text-label-sm uppercase tracking-wider rounded-full font-semibold">
-                          ★ Premium
+                        <span className="absolute left-4 top-4 inline-flex items-center gap-1.5 rounded-full border border-white/25 bg-black/30 px-2.5 py-1 font-body text-[10px] font-medium uppercase tracking-[0.16em] text-white/90 backdrop-blur-md">
+                          <Star className="h-3 w-3 shrink-0" aria-hidden="true" />
+                          Premium
                         </span>
                       )}
                     </div>

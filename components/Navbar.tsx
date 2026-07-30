@@ -3,7 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { Menu, X, ArrowRight, ChevronDown } from "lucide-react";
 import { routing } from "@/i18n/routing";
@@ -15,14 +15,26 @@ export default function Navbar() {
   const locale = useLocale();
   const t = useTranslations("nav");
   const tTours = useTranslations("tours");
-  const [scrolled, setScrolled] = useState(false);
+  // El hero ya pasó por debajo del header (o, en páginas claras, hay scroll).
+  const [pastHero, setPastHero] = useState(false);
+  // El texto del hero está pasando por detrás del header transparente.
+  const [heroTextBehind, setHeroTextBehind] = useState(false);
   const [open, setOpen] = useState(false);
   const [activitiesMenuOpen, setActivitiesMenuOpen] = useState(false);
   const [mobileActivitiesOpen, setMobileActivitiesOpen] = useState(false);
+  const navRef = useRef<HTMLElement>(null);
   const closeMobileMenu = useCallback(() => {
     setOpen(false);
     setMobileActivitiesOpen(false);
   }, []);
+
+  // Submenú de Actividades: los tours con ficha propia y, debajo, las secciones
+  // de la página de actividades.
+  const activitiesSections = [
+    { href: "/actividades#experiencias", label: t("activitiesExperiences") },
+    { href: "/actividades#eventos", label: t("activitiesEvents") },
+    { href: "/actividades", label: t("activitiesAll") },
+  ];
 
   const links = [
     { href: "", label: t("home") },
@@ -33,12 +45,60 @@ export default function Navbar() {
     { href: "/contacto", label: t("contacto") },
   ];
 
+  const localePath = (suffix: string) => `/${locale}${suffix}`;
+  const homePath = `/${locale}`;
+
+  const isActive = (suffix: string) => {
+    if (suffix === "") return pathname === homePath;
+    return pathname.startsWith(`${homePath}${suffix}`);
+  };
+
+  // El navbar va transparente con logo/texto claros sobre los heros oscuros
+  // full-bleed (Inicio, Historia, Actividades —incluidas las fichas de tour— y
+  // Vinos). Al pasar el hero —o en páginas de fondo claro— toma el tratamiento
+  // oscuro para no perder legibilidad. /vinos va con match exacto porque la
+  // ficha de vino (/vinos/[slug]) sí abre con fondo claro.
+  const hasDarkHero =
+    pathname === homePath ||
+    pathname === `${homePath}/historia` ||
+    pathname.startsWith(`${homePath}/actividades`) ||
+    pathname === `${homePath}/vinos`;
+
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 12);
-    onScroll();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
+    // Fondo claro: el header se vuelve opaco apenas se scrollea.
+    const onPlainScroll = () => {
+      setPastHero(window.scrollY > 12);
+      setHeroTextBehind(false);
+    };
+
+    const hero = hasDarkHero ? document.querySelector<HTMLElement>("main > section") : null;
+    if (!hero) {
+      onPlainScroll();
+      window.addEventListener("scroll", onPlainScroll, { passive: true });
+      return () => window.removeEventListener("scroll", onPlainScroll);
+    }
+
+    // Hero oscuro: el header queda transparente TODO el hero y recién toma su
+    // tratamiento claro cuando el hero termina de pasar por debajo. Mientras
+    // dura el hero, si su texto se mete detrás del header se enciende un velo
+    // para que las letras no choquen con los links.
+    const heroText = hero.querySelector<HTMLElement>("[data-hero-text]");
+    const update = () => {
+      const navHeight = navRef.current?.offsetHeight ?? 88;
+      setPastHero(hero.getBoundingClientRect().bottom <= navHeight);
+      setHeroTextBehind(
+        heroText ? heroText.getBoundingClientRect().top <= navHeight + 8 : false,
+      );
+    };
+
+    update();
+    window.addEventListener("scroll", update, { passive: true });
+    window.addEventListener("resize", update);
+    return () => {
+      window.removeEventListener("scroll", update);
+      window.removeEventListener("resize", update);
+    };
+  }, [hasDarkHero, pathname]);
 
   useEffect(() => {
     if (open) {
@@ -59,45 +119,36 @@ export default function Navbar() {
     return () => window.removeEventListener("keydown", onKey);
   }, [closeMobileMenu]);
 
-  const localePath = (suffix: string) => `/${locale}${suffix}`;
-  const homePath = `/${locale}`;
-
-  const isActive = (suffix: string) => {
-    if (suffix === "") return pathname === homePath;
-    return pathname.startsWith(`${homePath}${suffix}`);
-  };
-
-  // El navbar va transparente con logo/texto claros sobre los heros oscuros
-  // full-bleed (Inicio, Historia y Actividades) mientras esté arriba. Al
-  // scrollear —o en páginas de fondo claro— pasa al tratamiento oscuro para no
-  // perder legibilidad. Se usa match exacto en /actividades para que las
-  // subpáginas /actividades/[slug] (hero claro propio) queden fuera.
-  const hasDarkHero =
-    pathname === homePath ||
-    pathname === `${homePath}/historia` ||
-    pathname === `${homePath}/actividades` ||
-    pathname === `${homePath}/vinos`;
-  const overHero = hasDarkHero && !scrolled;
+  const overHero = hasDarkHero && !pastHero;
 
   return (
     <>
       {/* Landmark banner del sitio; contiene la navegación principal. */}
       <header>
         <nav
+          ref={navRef}
           className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 ${
-          scrolled
+          pastHero
             ? "bg-surface/85 backdrop-blur-xl border-b border-outline-variant/25 shadow-sm"
             : "bg-transparent"
         }`}
       >
-        <div className="max-w-(--container-max) mx-auto flex justify-between items-center px-margin-mobile md:px-margin-desktop py-4">
+        {/* Velo cinematográfico: solo mientras el texto del hero pasa por detrás
+            del header transparente, para que no se lean encimadas las letras. */}
+        <div
+          aria-hidden="true"
+          className={`pointer-events-none absolute inset-0 bg-gradient-to-b from-black/75 via-black/40 to-transparent transition-opacity duration-300 ${
+            !pastHero && heroTextBehind ? "opacity-100" : "opacity-0"
+          }`}
+        />
+        <div className="relative max-w-(--container-max) mx-auto flex justify-between items-center px-margin-mobile md:px-margin-desktop py-4">
           <Link
             href={homePath}
             className="flex items-center leading-none"
             aria-label={t("logoAlt")}
           >
             <Image
-              src={overHero ? "/brand/logo-blanco.webp" : "/brand/logo-negro.webp"}
+              src={overHero ? "/brand/logo-blanco-v2.webp" : "/brand/logo-negro.webp"}
               alt={t("logoAlt")}
               width={200}
               height={200}
@@ -175,6 +226,23 @@ export default function Navbar() {
                             />
                           </Link>
                         ))}
+
+                        <div className="my-1.5 h-px bg-outline-variant/40" aria-hidden="true" />
+
+                        {activitiesSections.map((section) => (
+                          <Link
+                            key={section.href}
+                            href={localePath(section.href)}
+                            onClick={() => setActivitiesMenuOpen(false)}
+                            className="group/item flex items-center justify-between gap-3 px-3.5 py-2.5 rounded-lg text-on-surface-variant hover:bg-primary/5 hover:text-primary transition-colors"
+                          >
+                            <span className="font-body text-body-md">{section.label}</span>
+                            <ArrowRight
+                              className="h-4 w-4 opacity-0 -translate-x-1 group-hover/item:opacity-100 group-hover/item:translate-x-0 transition-all duration-200"
+                              aria-hidden="true"
+                            />
+                          </Link>
+                        ))}
                       </div>
                     </div>
                   )}
@@ -198,7 +266,11 @@ export default function Navbar() {
             >
               {t("tienda")}
             </Link>
-            <LanguageSwitcher locales={routing.locales} currentLocale={locale} />
+            <LanguageSwitcher
+              locales={routing.locales}
+              currentLocale={locale}
+              onDark={overHero}
+            />
           </div>
 
           <button
@@ -249,7 +321,7 @@ export default function Navbar() {
                 aria-label={t("logoAlt")}
               >
                 <Image
-                  src="/brand/logo-blanco.webp"
+                  src="/brand/logo-blanco-v2.webp"
                   alt=""
                   width={200}
                   height={200}
@@ -306,7 +378,7 @@ export default function Navbar() {
                 >
                   {isActivities ? (
                     <>
-                      <div className="flex items-center justify-between border-b border-on-primary/15">
+                      <div className="flex items-center justify-between">
                         <Link
                           href={localePath(link.href)}
                           onClick={closeMobileMenu}
@@ -330,7 +402,7 @@ export default function Navbar() {
                       </div>
 
                       {mobileActivitiesOpen && (
-                        <ul id="mobile-activities-tours" className="border-b border-on-primary/15 py-2">
+                        <ul id="mobile-activities-tours" className="py-2">
                           {tours.map((tour) => (
                             <li key={tour.slug}>
                               <Link
@@ -339,6 +411,21 @@ export default function Navbar() {
                                 className="flex min-h-11 items-center justify-between gap-3 rounded-md px-3 py-2 font-body text-body-md text-on-primary/75 transition-colors hover:bg-on-primary/10 hover:text-on-primary"
                               >
                                 {tTours(`${tour.slug}.name`)}
+                                <ArrowRight className="h-4 w-4 shrink-0" aria-hidden="true" />
+                              </Link>
+                            </li>
+                          ))}
+
+                          <li aria-hidden="true" className="mx-3 my-1.5 h-px bg-on-primary/15" />
+
+                          {activitiesSections.map((section) => (
+                            <li key={section.href}>
+                              <Link
+                                href={localePath(section.href)}
+                                onClick={closeMobileMenu}
+                                className="flex min-h-11 items-center justify-between gap-3 rounded-md px-3 py-2 font-body text-body-md text-on-primary/75 transition-colors hover:bg-on-primary/10 hover:text-on-primary"
+                              >
+                                {section.label}
                                 <ArrowRight className="h-4 w-4 shrink-0" aria-hidden="true" />
                               </Link>
                             </li>
