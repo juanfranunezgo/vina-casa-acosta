@@ -1,5 +1,6 @@
 // Genera masters 4:5 para las bandas C2 desde las fotos entregadas por el cliente.
-// Las fuentes viven un nivel sobre el proyecto y nunca se sobrescriben.
+// Las fuentes viven en `vina-casa-acosta/web/_fuentes-fotos/` (fuera del repo, ver
+// el LEEME.md de esa carpeta) y nunca se sobrescriben. Las que falten se saltan.
 // Uso: npm run fotos:colecciones
 
 import sharp from "sharp";
@@ -8,7 +9,7 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const ROOT = dirname(fileURLToPath(import.meta.url)) + "/..";
-const SOURCE_ROOT = join(ROOT, "..");
+const SOURCE_ROOT = join(ROOT, "..", "_fuentes-fotos");
 const OUTPUT = join(ROOT, "public", "images", "vinos");
 const WIDTH = 1200;
 const HEIGHT = 1500;
@@ -47,6 +48,15 @@ async function optimizeCollection({ source, output, narrowSource = false }) {
   const input = join(SOURCE_ROOT, source);
   const destination = join(OUTPUT, output);
 
+  // Las fuentes viven fuera del repo, así que lo normal es tener solo algunas.
+  // Falta una → se avisa y se sigue, en vez de cortar toda la corrida.
+  try {
+    await stat(input);
+  } catch {
+    console.warn(`⚠ ${source.padEnd(34)} no está en _fuentes-fotos/ — se salta`);
+    return false;
+  }
+
   const image = sharp(input).rotate().toColorspace("srgb");
   if (narrowSource) {
     // Guidaí llega en baja resolución y más angosto que 4:5. Una versión
@@ -73,12 +83,23 @@ async function optimizeCollection({ source, output, narrowSource = false }) {
   }
 
   const [inputInfo, outputInfo] = await Promise.all([stat(input), stat(destination)]);
-  console.log(`✓ ${source.padEnd(20)} → images/vinos/${output.padEnd(32)} ${kb(inputInfo.size)} → ${kb(outputInfo.size)}`);
+  console.log(`✓ ${source.padEnd(34)} → images/vinos/${output.padEnd(32)} ${kb(inputInfo.size)} → ${kb(outputInfo.size)}`);
+  return true;
 }
 
 async function run() {
   await mkdir(OUTPUT, { recursive: true });
-  for (const collection of collections) await optimizeCollection(collection);
+
+  let done = 0;
+  for (const collection of collections) {
+    if (await optimizeCollection(collection)) done += 1;
+  }
+
+  const missing = collections.length - done;
+  console.log(
+    `\n${done}/${collections.length} fotos generadas` +
+      (missing ? ` · faltan ${missing} fuentes en _fuentes-fotos/ (ver su LEEME.md)` : ""),
+  );
 }
 
 run().catch((error) => {

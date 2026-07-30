@@ -1,10 +1,13 @@
+// Galería de /contacto. Fuentes en `vina-casa-acosta/web/_fuentes-fotos/`
+// (fuera del repo, ver su LEEME.md). Uso: npm run fotos:contacto
+
 import sharp from "sharp";
 import { mkdir } from "node:fs/promises";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
-const SOURCE_ROOT = join(ROOT, "..");
+const SOURCE_ROOT = join(ROOT, "..", "_fuentes-fotos");
 const OUTPUT = join(ROOT, "public", "images", "contacto");
 
 const images = [

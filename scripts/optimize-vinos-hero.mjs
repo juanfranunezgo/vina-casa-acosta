@@ -7,7 +7,7 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const ROOT = dirname(fileURLToPath(import.meta.url)) + "/..";
-const SOURCE = join(ROOT, "..", "corchos.jpg");
+const SOURCE = join(ROOT, "..", "_fuentes-fotos", "corchos.jpg");
 const OUTPUT_DIR = join(ROOT, "public", "images", "vinos");
 const OUTPUT = join(OUTPUT_DIR, "hero-corchos.webp");
 
