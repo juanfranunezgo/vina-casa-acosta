@@ -6,7 +6,7 @@ Sitio público boutique de la viña (San Vicente de Tagua Tagua, Valle del Cacha
 
 ## Estructura
 
-Esta carpeta (`sitio-web/`) es la raíz del proyecto Next.js. Está anidada dentro de `vina-casa-acosta/web/` por motivos históricos — los `*_stitch.html` y los assets sueltos del nivel de arriba son referencia visual del prototipo original, no fuente activa. La carpeta hermana `vina-casa-acosta/app/` es **otro proyecto** (app interna de pedidos), no tocar desde acá.
+Esta carpeta (`sitio-web/`) es la raíz del proyecto Next.js. Está anidada dentro de `vina-casa-acosta/web/` por motivos históricos — los `*_stitch.html` y los assets sueltos del nivel de arriba son referencia visual del prototipo original, no fuente activa. La carpeta hermana `vina-casa-acosta/app/` es **otro proyecto y otro repositorio**: el panel interno de pedidos de la viña (Express + Supabase + Resend, con frontends de vendedores y empaquetadores). No se toca desde acá, pero es el destino natural de los pedidos cuando la tienda web cobre de verdad — ver [`docs/HANDOFF.md`](docs/HANDOFF.md).
 
 ## Stack
 
@@ -69,12 +69,14 @@ Solución definitiva (5 min): Vercel dashboard → Settings → Git → cambiar 
 | 1.5 parte 2 — polish visual | ✅ |
 | 2 — Supabase / Webpay / admin | ⏳ post-pitch |
 
-Blockers abiertos al cierre: fotos HD de botellas y retratos familiares pendientes, validación humana de copy EN/PT, crossed wire Vercel.
+Blockers abiertos al cierre: fotos HD de botellas y retratos familiares pendientes, validación humana de copy EN/PT, crossed wire Vercel. **Ninguno de los formularios envía nada todavía** — la lista completa está en [`docs/HANDOFF.md`](docs/HANDOFF.md).
 
 ## Nomenclatura de secciones
 
-Cada página tiene una letra y cada sección un número. Cuando el usuario diga **A5** o **B4** se refiere a una sección puntual, no a algo vago. El contrato vive en [`../NOMENCLATURA.md`](../NOMENCLATURA.md) — leerlo antes de proponer cambios a secciones específicas. Si se agrega/quita/reordena una sección, el archivo se actualiza primero, después el código.
+Cada página tiene una letra y cada sección un número. Cuando el usuario diga **A5** o **B4** se refiere a una sección puntual, no a algo vago. El contrato vive en [`docs/NOMENCLATURA.md`](docs/NOMENCLATURA.md) — leerlo antes de proponer cambios a secciones específicas. Si se agrega/quita/reordena una sección, el archivo se actualiza primero, después el código.
 
 ## Bitácora / handoff
 
-Cuando se cierra una sesión grande, queda un `SESION-AAAA-MM-DD.md` en `vina-casa-acosta/web/` (un nivel arriba). Sirve para retomar: qué se hizo, decisiones, blockers, cómo continuar. El último está en [`../SESION-2026-07-08.md`](../SESION-2026-07-08.md). Los briefs para el cliente (fotos, contenido) también viven ahí: `BRIEF-FOTOS.md`, `CONTENT_BRIEF.md`.
+**Empezar por [`docs/HANDOFF.md`](docs/HANDOFF.md)**: estado real del proyecto, qué formularios no envían nada, qué falta para producción y las trampas técnicas ya pagadas (caché de imágenes, Tailwind v4 con `currentColor`, build vs dev server). Es lo que necesita cualquiera que retome el trabajo.
+
+Cuando se cierra una sesión grande, queda además un `SESION-AAAA-MM-DD.md` en `vina-casa-acosta/web/` (un nivel arriba), junto con `BRIEF-FOTOS.md`. Esos **no entran en el repo**: este repositorio es público y las bitácoras traen decisiones y material internos del cliente. Lo técnico de cada sesión se destila en `docs/HANDOFF.md`, que sí se versiona.
