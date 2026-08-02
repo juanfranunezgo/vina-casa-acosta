@@ -2,7 +2,7 @@
 
 # Viña Casa Acosta — sitio web
 
-Sitio público boutique de la viña (San Vicente de Tagua Tagua, Valle del Cachapoal). Live: https://web-casa-acosta.vercel.app.
+Sitio público boutique de la viña (San Vicente de Tagua Tagua, Valle del Cachapoal). Live: https://vinacasaacosta.netlify.app (hasta que haya dominio propio).
 
 ## Estructura
 
@@ -43,13 +43,11 @@ npm run lint
 
 ## Deploy a producción
 
-**Crossed wire Git↔Vercel sin resolver:** Vercel apunta al repo `juanfranunezgo/web-casa-acosta`, git local pushea a `juanfranunezgo/vina-casa-acosta`. El push **no** triggea auto-deploy. Mientras no se arregle en el dashboard:
+**Netlify**, plan Free (permite uso comercial; el Hobby de Vercel no). Conectado a `juanfranunezgo/vina-casa-acosta`: push a `main` → deploy de producción, push a otra rama → deploy preview. No hay comando manual que correr.
 
-```bash
-cd sitio-web && vercel --prod
-```
+El adaptador de Next (OpenNext) lo instala Netlify solo en cada build — no agregarlo a `package.json` ni fijarle versión. La config vive en `netlify.toml`; la URL pública sale del entorno vía `lib/siteUrl.ts` (`NEXT_PUBLIC_SITE_URL` → `URL` de Netlify → localhost), así que **no hay dominio hardcodeado en el código**.
 
-Solución definitiva (5 min): Vercel dashboard → Settings → Git → cambiar repo conectado a `vina-casa-acosta`.
+Ojo con los créditos: cada deploy de producción cuesta 15 de los 300 mensuales; los previews son gratis. Iterar en ramas y mergear por tandas. Todo el detalle —creación del proyecto, dominio propio, apagar Vercel, troubleshooting— en [`docs/DEPLOY-NETLIFY.md`](docs/DEPLOY-NETLIFY.md).
 
 ## Convenciones
 
@@ -69,7 +67,7 @@ Solución definitiva (5 min): Vercel dashboard → Settings → Git → cambiar 
 | 1.5 parte 2 — polish visual | ✅ |
 | 2 — Supabase / Webpay / admin | ⏳ post-pitch |
 
-Blockers abiertos al cierre: fotos HD de botellas y retratos familiares pendientes, validación humana de copy EN/PT, crossed wire Vercel. **Ninguno de los formularios envía nada todavía** — la lista completa está en [`docs/HANDOFF.md`](docs/HANDOFF.md).
+Blockers abiertos al cierre: fotos HD de botellas y retratos familiares pendientes, validación humana de copy EN/PT. **Ninguno de los formularios envía nada todavía** — la lista completa está en [`docs/HANDOFF.md`](docs/HANDOFF.md).
 
 ## Nomenclatura de secciones
 

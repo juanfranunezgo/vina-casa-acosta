@@ -1,0 +1,28 @@
+# Deploy en Netlify — Viña Casa Acosta
+#
+# El adaptador de Next.js (OpenNext) lo instala Netlify solo en cada build: no
+# se declara como plugin ni se fija versión, así se actualiza con cada release
+# de Next. Con eso, sin configuración extra:
+#   · proxy.ts (el middleware de next-intl) corre en Edge Functions
+#   · next/image usa el Image CDN de Netlify
+#   · las 74 páginas SSG salen del CDN
+#
+# La raíz del repo ES la raíz del proyecto Next, así que no hace falta "base".
+
+[build]
+  command = "npm run build"
+  publish = ".next"
+
+[build.environment]
+  # Next 16 exige Node >= 20.9. 22 es el LTS con el que Netlify prueba el adaptador.
+  NODE_VERSION = "22"
+
+# Headers de seguridad básicos. No se toca cache-control: lo administra el
+# adaptador de Next (hashes en /_next/static, revalidación en las páginas).
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Content-Type-Options = "nosniff"
+    X-Frame-Options = "SAMEORIGIN"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    Permissions-Policy = "camera=(), microphone=(), geolocation=(), payment=()"

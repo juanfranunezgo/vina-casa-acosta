@@ -34,8 +34,9 @@ El formulario de tours es el más urgente: promete algo que no cumple.
 
 **Infraestructura de SEO (nada de esto existe):**
 - No hay `app/sitemap.ts` ni `app/robots.ts`.
-- `metadataBase` en `app/[locale]/layout.tsx` y `SITE_URL` en `lib/wineJsonLd.ts` apuntan al
-  dominio de preview de Vercel. Todos los canonical y OG salen mal.
+- ~~`metadataBase` y `SITE_URL` apuntan al dominio de preview de Vercel~~ → resuelto:
+  ambos leen `lib/siteUrl.ts`, que toma la URL del entorno. Queda pendiente definir
+  `NEXT_PUBLIC_SITE_URL` en Netlify cuando exista el dominio propio.
 - `/tienda` no tiene metadata: es `"use client"`, así que no admite `generateMetadata`.
   Necesita un `layout.tsx` propio y una clave `metadata.tienda` en los mensajes.
 - JSON-LD solo en `/vinos` (`ItemList`). Faltan `Winery`/`LocalBusiness` en el inicio,
@@ -73,24 +74,31 @@ no se puede regenerar nada. Los `.webp` sí están versionados, así que el siti
 - **SVG**: `fill="none"` y `stroke` van como **atributos del `<path>`**, no solo en CSS. Un
   error de compilación que dejó el CSS sin cargar rellenó de negro toda la curva del
   timeline de Historia.
+- **Headers en Netlify**: los `[[headers]]` de `netlify.toml` solo llegan a los archivos
+  estáticos. Las páginas las sirve el handler de Next y se los saltan — verificado con
+  `curl -I` en producción. Los headers que deban valer para el HTML van en la función
+  `headers()` de `next.config.ts`.
 - Al iterar CSS conviene hard refresh (Ctrl+Shift+R).
 
 ---
 
 ## Deploy
 
-Vercel está conectado a un repo distinto (`web-casa-acosta`) del que recibe los push
-(`vina-casa-acosta`), así que **el push no dispara deploy**. Mientras siga así:
+El hosting se movió **de Vercel a Netlify** (2026-08-01) por dos razones: el plan Hobby de
+Vercel prohíbe el uso comercial —y este sitio va a vender— y el proyecto de Vercel estaba
+conectado a un repo distinto (`web-casa-acosta`) del que recibía los push
+(`vina-casa-acosta`), así que el push nunca disparó deploy.
 
-```bash
-cd sitio-web && vercel --prod
-```
+En Netlify el proyecto queda conectado al repo correcto: push a `main` → producción, push a
+otra rama → deploy preview gratis. El adaptador de Next (OpenNext) lo instala Netlify solo;
+la config está en `netlify.toml` y la URL pública sale del entorno (`lib/siteUrl.ts`).
 
-El arreglo de raíz son cinco minutos en el dashboard: Settings → Git → conectar el repo
-correcto.
+**Lo que hay que saber del plan Free:** 300 créditos al mes, límite duro. Cada deploy de
+producción son 15; el ancho de banda, 20 por GB; los previews, cero. Si se agotan, el sitio
+queda en `Site not available` hasta el ciclo siguiente. Conviene mergear a `main` por tandas.
 
-Aparte: el plan Hobby de Vercel **prohíbe el uso comercial**. Cuando el sitio empiece a
-vender, la cuenta tiene que estar en Pro.
+Guía completa —crear el proyecto, dominio propio, apagar Vercel, troubleshooting— en
+[`DEPLOY-NETLIFY.md`](DEPLOY-NETLIFY.md).
 
 ---
 
@@ -112,6 +120,8 @@ distinguir la venta web de la de un vendedor.
 
 ## Documentos relacionados
 
+- [`DEPLOY-NETLIFY.md`](DEPLOY-NETLIFY.md) — la migración a Netlify paso a paso y el deploy
+  del día a día.
 - [`NOMENCLATURA.md`](NOMENCLATURA.md) — el contrato de IDs de sección (A5, C2f, Dd6…).
   Se actualiza **antes** de tocar el código.
 - [`reglas-frontend-nextjs.md`](reglas-frontend-nextjs.md) — reglas de semántica,

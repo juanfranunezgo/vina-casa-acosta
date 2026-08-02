@@ -8,6 +8,7 @@ import Footer from "@/components/Footer";
 import CartDrawer from "@/components/CartDrawer";
 import CartButton from "@/components/CartButton";
 import { routing } from "@/i18n/routing";
+import { SITE_URL } from "@/lib/siteUrl";
 import "../globals.css";
 
 const libreCaslon = Libre_Caslon_Text({
@@ -46,7 +47,7 @@ export async function generateMetadata({
   const t = await getTranslations({ locale, namespace: "metadata" });
 
   return {
-    metadataBase: new URL("https://web-casa-acosta.vercel.app"),
+    metadataBase: new URL(SITE_URL),
     title: {
       default: t("titleDefault"),
       template: t("titleTemplate"),

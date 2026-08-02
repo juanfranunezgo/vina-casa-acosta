@@ -1,7 +1,5 @@
 import type { Wine } from "@/data/wines";
-
-/** URL de producción del sitio (coincide con `metadataBase` del layout). */
-const SITE_URL = "https://web-casa-acosta.vercel.app";
+import { SITE_URL } from "@/lib/siteUrl";
 
 type WineLabels = {
   /** Descripción corta ya traducida, por slug. */

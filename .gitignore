@@ -32,15 +32,15 @@ yarn-error.log*
 
 # env files (can opt-in for committing if needed)
 .env*
+!.env.example
 
 # fotos originales sin optimizar (solo public/images/ se versiona)
 /_fotos-input
 
-# vercel
+# hosting (estado local de la CLI)
+.netlify
 .vercel
 
 # typescript
 *.tsbuildinfo
 next-env.d.ts
-
-.vercel

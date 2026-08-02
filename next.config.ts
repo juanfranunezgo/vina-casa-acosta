@@ -21,6 +21,25 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  // Headers de seguridad. Van acá y no solo en netlify.toml: los headers del
+  // toml los aplica el CDN a los archivos estáticos, pero las páginas las sirve
+  // el handler de Next y se las saltan. Definidos en Next, valen para todo.
+  async headers() {
+    return [
+      {
+        source: "/:path*",
+        headers: [
+          { key: "X-Content-Type-Options", value: "nosniff" },
+          { key: "X-Frame-Options", value: "SAMEORIGIN" },
+          { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
+          {
+            key: "Permissions-Policy",
+            value: "camera=(), microphone=(), geolocation=(), payment=()",
+          },
+        ],
+      },
+    ];
+  },
 };
 
 export default withNextIntl(nextConfig);
