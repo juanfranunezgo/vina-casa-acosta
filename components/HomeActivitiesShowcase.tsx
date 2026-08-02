@@ -233,7 +233,7 @@ export default function HomeActivitiesShowcase({
                       {card.premium ? `★ ${card.badge}` : card.badge}
                     </span>
                     {card.duration && (
-                      <span className="inline-flex items-center gap-1.5 font-body text-label-sm text-on-surface-variant">
+                      <span className="inline-flex items-center gap-1.5 font-body text-body-md text-on-surface-variant">
                         <Clock className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
                         {card.duration}
                       </span>
@@ -248,7 +248,7 @@ export default function HomeActivitiesShowcase({
                     {card.reserveHref && (
                       <Link
                         href={card.reserveHref}
-                        className="inline-flex h-10 items-center gap-2 rounded-md bg-primary-container px-4 font-body text-label-sm font-semibold uppercase tracking-wider text-on-primary transition-colors duration-200 hover:bg-primary"
+                        className="inline-flex h-10 items-center gap-2 rounded-md bg-primary-container px-4 font-body text-body-md font-semibold text-on-primary transition-colors duration-200 hover:bg-primary"
                       >
                         <CalendarDays className="h-4 w-4" aria-hidden="true" />
                         {labels.book}
@@ -256,7 +256,7 @@ export default function HomeActivitiesShowcase({
                     )}
                     <Link
                       href={card.href}
-                      className="inline-flex items-center gap-1 font-body text-label-sm font-semibold uppercase tracking-wider text-on-surface-variant transition-colors hover:text-primary"
+                      className="inline-flex items-center gap-1 font-body text-body-md font-semibold text-on-surface-variant transition-colors hover:text-primary"
                     >
                       {labels.more} {card.name}
                       <ChevronRight className="h-4 w-4" aria-hidden="true" />

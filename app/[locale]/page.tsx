@@ -10,7 +10,14 @@ import FeaturedLinesCarousel from "@/components/FeaturedLinesCarousel";
 import { featuredLineOrder, lineSlugs, getWinesByLine } from "@/data/wines";
 import { tours as tourData, experiences as experienceData } from "@/data/activities";
 
-const heroImage = "/images/home/hero.webp";
+// El hero va en <picture> con dos encuadres (ver scripts/optimize-home-hero.mjs):
+// el 3:2 de siempre para desktop y un 9:16 recortado para pantallas verticales.
+// No usa next/image porque no hace art direction — necesitamos que el navegador
+// elija *qué* foto bajar según el ancho, no solo a qué tamaño.
+const heroSources = {
+  desktop: [1280, 1920, 2560].map((w) => `/images/home/hero-${w}.webp ${w}w`).join(", "),
+  movil: [828, 1200, 1600].map((w) => `/images/home/hero-movil-${w}.webp ${w}w`).join(", "),
+};
 
 const casaPhotoSources = {
   teaching: "/images/home/casa/teaching.webp",
@@ -99,15 +106,25 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
     <>
       {/* HERO */}
       <section className="relative min-h-[100svh] w-full flex items-center justify-center overflow-hidden">
-        <Image
-          src={heroImage}
-          alt={t("hero.heroAlt")}
-          fill
-          priority
-          quality={85}
-          className="object-cover object-[center_72%] motion-safe:animate-[heroZoom_20s_ease-out_forwards]"
-          sizes="100vw"
-        />
+        {/* `sizes` lleva el alto del viewport y no solo el ancho: con object-cover
+            en pantalla vertical la foto se estira hasta cubrir el alto, y ese
+            ancho estirado —no el del contenedor— es el que hay que descargar.
+            El umbral de cada media es la proporción de su propio encuadre. */}
+        <picture className="absolute inset-0">
+          <source
+            media="(min-aspect-ratio: 3/4)"
+            srcSet={heroSources.desktop}
+            sizes="(max-aspect-ratio: 3/2) 150vh, 100vw"
+          />
+          <source srcSet={heroSources.movil} sizes="(max-aspect-ratio: 9/16) 56.25vh, 100vw" />
+          <img
+            src="/images/home/hero-1920.webp"
+            alt={t("hero.heroAlt")}
+            fetchPriority="high"
+            decoding="async"
+            className="h-full w-full object-cover object-[30%_center] apaisado:object-[center_72%] motion-safe:animate-[heroZoom_20s_ease-out_forwards]"
+          />
+        </picture>
         <div className="absolute inset-0 bg-gradient-to-b from-black/35 via-black/15 to-black/50" />
         <div className="absolute inset-0 bg-gradient-to-r from-black/55 via-black/10 to-transparent" />
 

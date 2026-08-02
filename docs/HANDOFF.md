@@ -51,9 +51,10 @@ vender alcohol en Chile hay que revisarlo contra la Ley 19.925.
 **Medición:** cero analítica instalada.
 
 **Assets:** las botellas de `public/vinos/` son 500×500 y se ven blandas en la ficha. Los
-originales de las fotos ya optimizadas **no están en el disco**: `web/_fuentes-fotos/` tiene
-un `LEEME.md` que documenta qué espera cada script, pero hasta que se repongan los archivos
-no se puede regenerar nada. Los `.webp` sí están versionados, así que el sitio funciona.
+originales de las fotos ya optimizadas **no están en el disco** (los tiene el cliente en su
+respaldo en la nube): hasta que se repongan no se puede regenerar nada salvo el hero de la
+home, cuyo master de desktop sí está versionado. Los `.webp` están todos versionados, así
+que el sitio funciona. Qué archivo espera cada script está en [`FOTOS.md`](FOTOS.md).
 
 **i18n:** el copy EN/PT lo tradujo un agente y **nunca lo validó una persona**.
 

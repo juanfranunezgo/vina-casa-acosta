@@ -5,8 +5,9 @@ import { fileURLToPath } from "node:url";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 
+// El hero A1 salió de acá: ahora lo genera scripts/optimize-home-hero.mjs, que
+// produce los dos encuadres (3:2 desktop y 9:16 móvil) con sus anchos de srcset.
 const assets = [
-  { source: "images/home/hero-v2.jpg", output: "images/home/hero.webp", width: 2560, quality: 72 },
   { source: "images/home/casa/teaching.jpg", output: "images/home/casa/teaching.webp", width: 960, quality: 70 },
   { source: "images/home/casa/tractor.jpg", output: "images/home/casa/tractor.webp", width: 960, quality: 70 },
   { source: "images/home/casa/family.jpg", output: "images/home/casa/family.webp", width: 960, quality: 70 },

@@ -1,5 +1,12 @@
 @import "tailwindcss";
 
+/* Pantalla "apaisada": más ancha que 3:4. Es el corte que decide qué encuadre
+   del hero se usa (ver el <picture> de app/[locale]/page.tsx). Va por proporción
+   y no por ancho a propósito: lo que rompe la foto en celular es que el viewport
+   sea vertical, no que sea angosto — un iPad en vertical tiene el mismo problema
+   con 820px de ancho. */
+@custom-variant apaisado (@media (min-aspect-ratio: 3/4));
+
 @theme {
   /* === Paleta Material 3 — Viña Casa Acosta === */
   --color-primary: #2a0002;
@@ -85,7 +92,9 @@
 
   /* === Spacing === */
   --spacing-gutter: 24px;
-  --spacing-section-gap: 120px;
+  /* Padding vertical de cada sección. Como dos secciones consecutivas suman su
+     padding, el hueco real entre bloques de contenido es el doble: 160px. */
+  --spacing-section-gap: 80px;
   --spacing-margin-mobile: 24px;
   --spacing-margin-desktop: 64px;
 
