@@ -13,8 +13,8 @@ borrar de nuevo. Los scripts solo leen, nunca sobrescriben.
 cd sitio-web
 npm run fotos:colecciones   # bandas de colección de /vinos (C2)
 npm run fotos:contacto      # galería de /contacto
-npm run foto:hero-vinos     # hero de /vinos
-npm run foto:hero-home      # hero de la home (A1), desktop + móvil
+npm run foto:hero-vinos     # master horizontal del hero de /vinos
+npm run foto:heros          # los 4 heros full-bleed, desktop + móvil
 ```
 
 Si falta un archivo fuente, el script lo salta con un aviso y procesa el resto.
@@ -47,21 +47,38 @@ Recorte 4:5 centrado, 1200×1500, webp q82.
 ### `npm run foto:hero-vinos` → `public/images/vinos/hero-corchos.webp`
 `corchos.jpg`
 
-### `npm run foto:hero-home` → `public/images/home/hero-*.webp`
-Genera los dos encuadres del hero A1 con sus anchos de srcset:
+### `npm run foto:heros` → los 4 heros full-bleed
 
-| Archivo fuente | Sale como | Para |
+Cada hero se sirve en **dos encuadres**: el horizontal 3:2 de siempre para
+desktop y un 9:16 para pantallas verticales. Sin el vertical, `object-cover`
+estira la foto para cubrir el alto y en un celular queda visible apenas un
+tercio, además de borrosa (medido: 0,31 píxeles de origen por píxel de pantalla,
+contra 1,11 con el recorte).
+
+| Página | Master horizontal (en el repo) | Master vertical (`_fuentes-fotos/`) |
 |---|---|---|
-| `public/images/home/hero-v2.jpg` (3840×2560, **sí está en el repo**) | `hero-1280` · `hero-1920` · `hero-2560` | desktop, 3:2 |
-| `_fuentes-fotos/hero-movil.jpg` (9:16, ≥1600 de ancho) | `hero-movil-828` · `hero-movil-1200` · `hero-movil-1600` | pantallas verticales |
+| `/` (A1) | `images/home/hero-v2.jpg` 3840×2560 | `hero-movil.jpg` |
+| `/vinos` (C1) | `images/vinos/hero-corchos.webp` 2560×1707 | `hero-vinos-movil.jpg` |
+| `/historia` (B1) | `images/historia/vinos-retro.webp` 2400×1600 | `hero-historia-movil.jpg` |
+| `/actividades` (D1) | `images/actividades/hero-grupal.webp` 2880×1920 | `hero-actividades-movil.jpg` |
 
-El desktop se regenera solo, sin bajar nada. Para el móvil hay que reponer
-`hero-movil.jpg` desde el respaldo.
+Los masters horizontales están versionados, así que **la mitad de desktop se
+regenera sin bajar nada**. Los verticales hay que reponerlos desde el respaldo;
+si falta alguno el script lo avisa y sigue con el resto.
 
-El master de móvil **tiene que ser 9:16**. Si se reemplaza por otro recorte con
-otra proporción hay que actualizar el `sizes` del `<picture>` en
-`app/[locale]/page.tsx`: lleva la proporción escrita en dos lugares (`56.25vh`
-= 9/16, y el umbral `max-aspect-ratio: 9/16`).
+El `.webp` sin sufijo de ancho es el master a su tamaño nativo y se sirve tal
+cual, como candidato más grande del srcset: reencodearlo al mismo tamaño solo
+agregaría una segunda pasada de compresión.
+
+**Los masters verticales tienen que ser 9:16.** La proporción está escrita en el
+`sizes` del `<picture>` de cada página (`56.25vh` = 9/16, y el umbral
+`max-aspect-ratio: 9/16`); si se cambia el recorte hay que actualizarla. Ideal
+≥1440px de ancho, o sea ≥2560 de alto: es lo que necesita un celular vertical a
+DPR 3. Dejar el 10% de cada borde lateral como zona de sacrificio — en pantallas
+más altas que 9:16 el navegador se lo come.
+
+El hero de `/actividades/[slug]` no lleva este tratamiento y no lo necesita: mide
+443px de alto y su foto es casi vertical, así que `object-cover` no estira nada.
 
 ## Otros pipelines (no usan `_fuentes-fotos/`)
 

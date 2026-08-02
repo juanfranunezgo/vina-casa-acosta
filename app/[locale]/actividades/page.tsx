@@ -11,6 +11,20 @@ import { tours, experiences } from "@/data/activities";
 import { CONTACT_WHATSAPP_URL, CONTACT_PHONE_DISPLAY, INSTAGRAM_URL } from "@/lib/contact";
 import { routing } from "@/i18n/routing";
 
+// El hero D1 va en <picture> y no en next/image, porque next/image no hace art
+// direction: elige a qué tamaño bajar una foto, no cuál de dos. El .webp sin
+// sufijo es el master a su ancho nativo, se sirve tal cual.
+const heroSources = {
+  desktop: [
+    "/images/actividades/hero-grupal-1280.webp 1280w",
+    "/images/actividades/hero-grupal-1920.webp 1920w",
+    "/images/actividades/hero-grupal.webp 2880w",
+  ].join(", "),
+  movil: [828, 1200, 1600]
+    .map((w) => `/images/actividades/hero-grupal-movil-${w}.webp ${w}w`)
+    .join(", "),
+};
+
 export async function generateMetadata({
   params,
 }: PageProps<"/[locale]/actividades">): Promise<Metadata> {
@@ -73,15 +87,27 @@ export default async function ActividadesPage({
           mitad-baja con degradados para legibilidad; el navbar pasa a modo claro
           sobre este hero (ver Navbar → hasDarkHero incluye /actividades). */}
       <section className="relative flex min-h-[92svh] w-full flex-col overflow-hidden md:min-h-screen">
-        <Image
-          src="/images/actividades/hero-grupal.webp"
-          alt={t("hero.imageAlt")}
-          fill
-          priority
-          quality={85}
-          sizes="100vw"
-          className="object-cover object-center motion-safe:animate-[heroZoom_20s_ease-out_forwards]"
-        />
+        {/* Dos encuadres: el 3:2 de siempre y un 9:16 para pantallas verticales
+            (ver scripts/optimize-heros.mjs). `sizes` lleva el alto del viewport
+            porque con object-cover en vertical la foto se estira hasta cubrir el
+            alto, y ese ancho estirado —no el del contenedor— es el que hay que
+            descargar. El recorte vertical de la foto grupal viene centrado en el
+            letrero: en 9:16 no entra el grupo completo. */}
+        <picture className="absolute inset-0">
+          <source
+            media="(min-aspect-ratio: 3/4)"
+            srcSet={heroSources.desktop}
+            sizes="(max-aspect-ratio: 3/2) 150vh, 100vw"
+          />
+          <source srcSet={heroSources.movil} sizes="(max-aspect-ratio: 9/16) 56.25vh, 100vw" />
+          <img
+            src="/images/actividades/hero-grupal-1920.webp"
+            alt={t("hero.imageAlt")}
+            fetchPriority="high"
+            decoding="async"
+            className="h-full w-full object-cover object-center motion-safe:animate-[heroZoom_20s_ease-out_forwards]"
+          />
+        </picture>
         {/* Degradados: base fuerte para el texto, lateral izquierdo sutil y una
             franja superior que oscurece el cielo detrás del navbar claro. */}
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/45 to-transparent" />

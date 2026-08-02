@@ -1,4 +1,3 @@
-import Image from "next/image";
 import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { ArrowRight } from "lucide-react";
@@ -14,6 +13,20 @@ import {
   type WineLine,
 } from "@/data/wines";
 import { buildWinesItemListJsonLd } from "@/lib/wineJsonLd";
+
+// El hero C1 va en <picture> y no en next/image, porque next/image no hace art
+// direction: elige a qué tamaño bajar una foto, no cuál de dos. El .webp sin
+// sufijo es el master a su ancho nativo, se sirve tal cual.
+const heroSources = {
+  desktop: [
+    "/images/vinos/hero-corchos-1280.webp 1280w",
+    "/images/vinos/hero-corchos-1920.webp 1920w",
+    "/images/vinos/hero-corchos.webp 2560w",
+  ].join(", "),
+  movil: [828, 1200, 1600]
+    .map((w) => `/images/vinos/hero-corchos-movil-${w}.webp ${w}w`)
+    .join(", "),
+};
 
 const collectionLines = [
   "Estación Francia",
@@ -72,15 +85,26 @@ export default async function VinosPage({ params }: PageProps<"/[locale]/vinos">
 
       {/* C1 — Hero cinematográfico, en el lenguaje visual de Historia. */}
       <section className="relative flex min-h-[100svh] w-full items-center overflow-hidden">
-        <Image
-          src="/images/vinos/hero-corchos.webp"
-          alt={t("hero.imageAlt")}
-          fill
-          priority
-          quality={84}
-          className="object-cover object-center motion-safe:animate-[heroZoom_20s_ease-out_forwards]"
-          sizes="100vw"
-        />
+        {/* Dos encuadres: el 3:2 de siempre y un 9:16 para pantallas verticales
+            (ver scripts/optimize-heros.mjs). `sizes` lleva el alto del viewport
+            porque con object-cover en vertical la foto se estira hasta cubrir el
+            alto, y ese ancho estirado —no el del contenedor— es el que hay que
+            descargar. El umbral de cada media es la proporción de su encuadre. */}
+        <picture className="absolute inset-0">
+          <source
+            media="(min-aspect-ratio: 3/4)"
+            srcSet={heroSources.desktop}
+            sizes="(max-aspect-ratio: 3/2) 150vh, 100vw"
+          />
+          <source srcSet={heroSources.movil} sizes="(max-aspect-ratio: 9/16) 56.25vh, 100vw" />
+          <img
+            src="/images/vinos/hero-corchos-1920.webp"
+            alt={t("hero.imageAlt")}
+            fetchPriority="high"
+            decoding="async"
+            className="h-full w-full object-cover object-center motion-safe:animate-[heroZoom_20s_ease-out_forwards]"
+          />
+        </picture>
         <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/35 to-black/5" />
         <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-transparent to-black/20" />
 

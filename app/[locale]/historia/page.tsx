@@ -7,6 +7,20 @@ import Button from "@/components/ui/Button";
 import HistoriaTimeline from "@/components/HistoriaTimeline";
 import StoryChapter from "@/components/StoryChapter";
 
+// El hero B1 va en <picture> y no en next/image, porque next/image no hace art
+// direction: elige a qué tamaño bajar una foto, no cuál de dos. El .webp sin
+// sufijo es el master a su ancho nativo, se sirve tal cual.
+const heroSources = {
+  desktop: [
+    "/images/historia/vinos-retro-1280.webp 1280w",
+    "/images/historia/vinos-retro-1920.webp 1920w",
+    "/images/historia/vinos-retro.webp 2400w",
+  ].join(", "),
+  movil: [828, 1200, 1600]
+    .map((w) => `/images/historia/vinos-retro-movil-${w}.webp ${w}w`)
+    .join(", "),
+};
+
 export async function generateMetadata({
   params,
 }: PageProps<"/[locale]/historia">): Promise<Metadata> {
@@ -48,15 +62,27 @@ export default async function HistoriaPage({
           degradado sutil (sin velo crema). El navbar se vuelve transparente y
           claro sobre este hero (ver Navbar → hasDarkHero incluye /historia). */}
       <section className="relative min-h-[100svh] w-full flex items-center overflow-hidden">
-        <Image
-          src="/images/historia/vinos-retro.webp"
-          alt={t("hero.imageAlt")}
-          fill
-          priority
-          quality={85}
-          className="object-cover object-[58%_center] motion-safe:animate-[heroZoom_20s_ease-out_forwards]"
-          sizes="100vw"
-        />
+        {/* Dos encuadres: el 3:2 de siempre y un 9:16 para pantallas verticales
+            (ver scripts/optimize-heros.mjs). `sizes` lleva el alto del viewport
+            porque con object-cover en vertical la foto se estira hasta cubrir el
+            alto, y ese ancho estirado —no el del contenedor— es el que hay que
+            descargar. El 58% horizontal solo aplica al encuadre horizontal: el
+            recorte vertical ya viene centrado en el tino con las botellas. */}
+        <picture className="absolute inset-0">
+          <source
+            media="(min-aspect-ratio: 3/4)"
+            srcSet={heroSources.desktop}
+            sizes="(max-aspect-ratio: 3/2) 150vh, 100vw"
+          />
+          <source srcSet={heroSources.movil} sizes="(max-aspect-ratio: 9/16) 56.25vh, 100vw" />
+          <img
+            src="/images/historia/vinos-retro-1920.webp"
+            alt={t("hero.imageAlt")}
+            fetchPriority="high"
+            decoding="async"
+            className="h-full w-full object-cover object-center apaisado:object-[58%_center] motion-safe:animate-[heroZoom_20s_ease-out_forwards]"
+          />
+        </picture>
         {/* Degradados para legibilidad del texto claro (lateral izq + base). */}
         <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/35 to-black/5" />
         <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-transparent to-black/20" />

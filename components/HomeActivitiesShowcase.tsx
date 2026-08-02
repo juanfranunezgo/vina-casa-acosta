@@ -104,6 +104,12 @@ export default function HomeActivitiesShowcase({
         ? experienceCards
         : [...orderedTours, ...experienceCards];
 
+  // En "todas" la lista va tours y después experiencias. En móvil la grilla es
+  // de una columna y los cinco quedan stackeados con el mismo gap, así que no
+  // se ve dónde termina un grupo: a la primera experiencia se le da aire extra.
+  // En sm+ no aplica — ahí el mosaico ya separa por posición.
+  const experiencesStartAt = filter === "all" ? orderedTours.length : -1;
+
   const filters: { key: Filter; label: string; icon: typeof Map }[] = [
     { key: "all", label: labels.all, icon: LayoutGrid },
     { key: "tours", label: labels.tours, icon: Map },
@@ -212,7 +218,9 @@ export default function HomeActivitiesShowcase({
                 key={`${card.slug}-${card.badge}`}
                 className={`group flex flex-col overflow-hidden rounded-2xl bg-surface ambient-shadow transition-all duration-300 hover:ambient-shadow-lg ${
                   isTour ? "min-h-[320px]" : "min-h-[300px]"
-                } ${card.premium ? "ring-1 ring-primary/25" : ""}`}
+                } ${card.premium ? "ring-1 ring-primary/25" : ""} ${
+                  i === experiencesStartAt ? "max-sm:mt-6" : ""
+                }`}
               >
                 <Link
                   href={card.href}
@@ -233,7 +241,7 @@ export default function HomeActivitiesShowcase({
                       {card.premium ? `★ ${card.badge}` : card.badge}
                     </span>
                     {card.duration && (
-                      <span className="inline-flex items-center gap-1.5 font-body text-body-md text-on-surface-variant">
+                      <span className="inline-flex items-center gap-1.5 font-body text-label-sm text-on-surface-variant">
                         <Clock className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
                         {card.duration}
                       </span>
@@ -244,7 +252,10 @@ export default function HomeActivitiesShowcase({
                       {card.name}
                     </Link>
                   </h3>
-                  <div className="mt-1 flex items-center gap-4">
+                  {/* flex-wrap: "Explorar <nombre del tour>" es largo y en móvil
+                      no entra al lado del botón. Sin esto parte la frase por la
+                      mitad; así baja entera a la línea siguiente. */}
+                  <div className="mt-1 flex flex-wrap items-center gap-x-4 gap-y-3">
                     {card.reserveHref && (
                       <Link
                         href={card.reserveHref}

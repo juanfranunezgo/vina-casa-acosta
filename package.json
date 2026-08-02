@@ -11,8 +11,8 @@
     "fotos:rendimiento": "node scripts/optimize-home-performance.mjs",
     "fotos:colecciones": "node scripts/optimize-collection-images.mjs",
     "foto:hero-vinos": "node scripts/optimize-vinos-hero.mjs",
-    "foto:hero-home": "node scripts/optimize-home-hero.mjs",
-    "fotos:contacto": "node scripts/optimize-contact-gallery.mjs"
+    "fotos:contacto": "node scripts/optimize-contact-gallery.mjs",
+    "foto:heros": "node scripts/optimize-heros.mjs"
   },
   "dependencies": {
     "lucide-react": "^1.14.0",
