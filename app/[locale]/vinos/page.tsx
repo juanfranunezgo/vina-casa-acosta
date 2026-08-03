@@ -6,6 +6,7 @@ import Reveal from "@/components/Reveal";
 import Button from "@/components/ui/Button";
 import { lineSlugs, lineMeta, type Wine, type WineLine } from "@/data/wines";
 import { getCatalog, winesByLine } from "@/lib/afeleia/catalog";
+import { labelOr, translatedOr } from "@/lib/afeleia/copy";
 import { buildWinesItemListJsonLd } from "@/lib/wineJsonLd";
 
 // El catálogo lo publica Afeleia (ISR: cambios visibles en ≤60s).
@@ -54,23 +55,24 @@ export default async function VinosPage({ params }: PageProps<"/[locale]/vinos">
   const catalog = await getCatalog();
 
   const eyebrowOf = (wine: Wine) =>
-    `${t(`types.${wine.type}`)} · ${t(`varieties.${wine.variety}`)}`;
+    `${labelOr(t, "types", wine.type)} · ${labelOr(t, "varieties", wine.variety)}`;
   const cardEyebrowOf = (wine: Wine) => {
     if (wine.line === "Ombú") return t("categories.Reserva");
     if (wine.line === "Lajau") {
       return `${t("categories.Reserva")} · ${t("varieties.Ensamblaje")}`;
     }
     if (wine.line === "Estación Francia") {
-      return `${t("categories.Gran Reserva")} · ${t(`varieties.${wine.variety}`)}`;
+      return `${t("categories.Gran Reserva")} · ${labelOr(t, "varieties", wine.variety)}`;
     }
     if (wine.category) {
-      return `${t(`categories.${wine.category}`)} · ${t(`varieties.${wine.variety}`)}`;
+      return `${labelOr(t, "categories", wine.category)} · ${labelOr(t, "varieties", wine.variety)}`;
     }
     return eyebrowOf(wine);
   };
 
   const jsonLd = buildWinesItemListJsonLd(catalog, locale, {
-    shortDescription: (slug) => tWine(`${slug}.shortDescription`),
+    shortDescription: (wine) =>
+      translatedOr(tWine, `${wine.slug}.shortDescription`, wine.shortDescription),
     category: eyebrowOf,
   });
 

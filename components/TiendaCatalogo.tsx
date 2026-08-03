@@ -17,6 +17,7 @@ import {
   type CepaGroup,
 } from "@/data/wines";
 import type { CatalogWine } from "@/lib/afeleia/catalog";
+import { labelOr, translatedOr } from "@/lib/afeleia/copy";
 
 /**
  * Vitrina de la tienda: filtros, orden y grilla.
@@ -397,7 +398,7 @@ export default function TiendaCatalogo({ wines }: { wines: CatalogWine[] }) {
                       />
                       {wine.badge && (
                         <span className="absolute top-4 left-4 bg-primary text-on-primary px-3 py-1 text-label-sm uppercase tracking-wider rounded font-semibold">
-                          {tBadges(wine.badge)}
+                          {translatedOr(tBadges, wine.badge, wine.badge)}
                         </span>
                       )}
                     </Link>
@@ -412,7 +413,8 @@ export default function TiendaCatalogo({ wines }: { wines: CatalogWine[] }) {
                         {wine.name}
                       </Link>
                       <p className="font-body text-body-md text-on-surface-variant mb-4 flex-grow">
-                        {tVinos(`types.${wine.type}`)} · {tVinos(`varieties.${wine.variety}`)}
+                        {labelOr(tVinos, "types", wine.type)} ·{" "}
+                        {labelOr(tVinos, "varieties", wine.variety)}
                       </p>
                       <div className="flex items-center justify-between pt-4 border-t border-outline-variant/30">
                         <span className="font-display text-xl text-primary tabular-nums">

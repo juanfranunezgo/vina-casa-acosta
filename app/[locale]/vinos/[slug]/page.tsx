@@ -9,6 +9,7 @@ import Button from "@/components/ui/Button";
 import ProductPurchase from "@/components/ProductPurchase";
 import TastingProfile from "@/components/TastingProfile";
 import { getCatalog, getWineBySlug } from "@/lib/afeleia/catalog";
+import { labelOr, translatedListOr, translatedOr } from "@/lib/afeleia/copy";
 import { routing } from "@/i18n/routing";
 
 // El catálogo lo publica Afeleia: la ficha se reconstruye cada minuto en vez de
@@ -33,7 +34,7 @@ export async function generateMetadata({
   const tWine = await getTranslations({ locale, namespace: "wines" });
   return {
     title: wine.name,
-    description: tWine(`${slug}.shortDescription`),
+    description: translatedOr(tWine, `${slug}.shortDescription`, wine.shortDescription),
   };
 }
 
@@ -51,8 +52,8 @@ export default async function WinePage({
   const tWine = await getTranslations("wines");
   const tBadges = await getTranslations("vinos.badges");
 
-  const tastingNotes = tWine.raw(`${slug}.tastingNotes`) as string[];
-  const pairings = tWine.raw(`${slug}.pairings`) as string[];
+  const tastingNotes = translatedListOr(tWine, `${slug}.tastingNotes`, wine.tastingNotes);
+  const pairings = translatedListOr(tWine, `${slug}.pairings`, wine.pairings);
 
   const sameLine = catalog
     .filter((w) => w.line === wine.line && w.slug !== wine.slug)
@@ -105,7 +106,7 @@ export default async function WinePage({
               />
               {wine.badge && (
                 <span className="absolute top-6 left-6 bg-primary text-on-primary px-3 py-1.5 text-label-sm uppercase tracking-wider rounded font-semibold">
-                  {tBadges(wine.badge)}
+                  {translatedOr(tBadges, wine.badge, wine.badge)}
                 </span>
               )}
             </div>
@@ -114,7 +115,7 @@ export default async function WinePage({
           <Reveal delay={120} className="md:pt-8">
             <p className="mb-3 font-accent text-xl font-light italic text-primary md:text-2xl">
               {tVinos("lineLabel")} {wine.line}
-              {wine.category ? ` · ${tVinos(`categories.${wine.category}`)}` : ""}
+              {wine.category ? ` · ${labelOr(tVinos, "categories", wine.category)}` : ""}
             </p>
             <h1
               className="font-display text-primary mb-3 leading-tight"
@@ -125,12 +126,12 @@ export default async function WinePage({
               {wine.name}
             </h1>
             <p className="font-body text-body-lg text-on-surface-variant mb-6">
-              {tVinos(`types.${wine.type}`)} · {tVinos(`varieties.${wine.variety}`)} ·{" "}
+              {labelOr(tVinos, "types", wine.type)} · {labelOr(tVinos, "varieties", wine.variety)} ·{" "}
               {wine.vintage ? t("vintageLabel", { year: wine.vintage }) : t("noVintage")}
             </p>
 
             <p className="font-body text-body-md text-on-surface leading-relaxed mb-8">
-              {tWine(`${slug}.description`)}
+              {translatedOr(tWine, `${slug}.description`, wine.description)}
             </p>
 
             <Button
@@ -230,7 +231,7 @@ export default async function WinePage({
                     <div className="p-6">
                       <h3 className="font-display text-xl text-primary mb-1">{r.name}</h3>
                       <p className="font-body text-body-md text-on-surface-variant">
-                        {tVinos(`types.${r.type}`)} · {tVinos(`varieties.${r.variety}`)}
+                        {labelOr(tVinos, "types", r.type)} · {labelOr(tVinos, "varieties", r.variety)}
                       </p>
                     </div>
                   </Link>

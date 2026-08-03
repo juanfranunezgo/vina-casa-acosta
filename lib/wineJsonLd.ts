@@ -2,8 +2,12 @@ import type { Wine } from "@/data/wines";
 import { SITE_URL } from "@/lib/siteUrl";
 
 type WineLabels = {
-  /** Descripción corta ya traducida, por slug. */
-  shortDescription: (slug: string) => string;
+  /**
+   * Descripción corta ya resuelta. Recibe el vino entero y no solo el slug
+   * porque la traducción curada puede no existir (producto creado en el panel)
+   * y hay que poder caer al texto que el propio vino trae.
+   */
+  shortDescription: (wine: Wine) => string;
   /** Categoría legible ya traducida, ej. "Tinto · Carmenere". */
   category: (wine: Wine) => string;
 };
@@ -45,7 +49,7 @@ export function buildWinesItemListJsonLd(
         "@type": "Product",
         name: wine.name,
         image: absoluteImage(wine.image),
-        description: labels.shortDescription(wine.slug),
+        description: labels.shortDescription(wine),
         category: labels.category(wine),
         brand: { "@type": "Brand", name: "Viña Casa Acosta" },
         url: `${SITE_URL}/${locale}/vinos/${wine.slug}`,
