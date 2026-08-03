@@ -1,10 +1,16 @@
-import type {
-  CepaGroup,
-  Variety,
-  Wine,
-  WineLine,
-  WineTechnical,
-  WineType,
+import { cache } from "react";
+import {
+  cepaGroups,
+  varieties,
+  wineCategories,
+  wineLines,
+  wineTypes,
+  type CepaGroup,
+  type Variety,
+  type Wine,
+  type WineLine,
+  type WineTechnical,
+  type WineType,
 } from "@/data/wines";
 import catalogoFallback from "@/data/catalogo-fallback.json";
 
@@ -20,8 +26,33 @@ import catalogoFallback from "@/data/catalogo-fallback.json";
  * de Afeleia.
  */
 
-/** Un vino del catálogo, más el estado de stock que publica la API. */
-export type CatalogWine = Wine & { agotado: boolean };
+/**
+ * Un vino del catálogo, más el estado de stock que publica la API.
+ *
+ * NO es `Wine & { agotado }`. `Wine` describe los 13 vinos escritos a mano, donde
+ * cada campo existe porque lo escribió un desarrollador. Un producto creado desde
+ * el panel puede no tener foto, ni PDF de ficha, ni línea asignada — DEC-5 del
+ * contrato dice justamente que una clave ausente significa "sin valor".
+ *
+ * Por eso los campos que el panel puede dejar vacíos son opcionales acá: si el
+ * adaptador los colapsara a `""`/`0` para encajar en `Wine`, el consumidor no
+ * podría distinguir "sin ficha técnica" de "ficha técnica en la URL vacía", y
+ * terminaría dibujando un botón que no lleva a ninguna parte. Que el tipo diga
+ * la verdad es lo que obliga a cada sección a decidir si se dibuja.
+ */
+export type CatalogWine = Omit<
+  Wine,
+  "line" | "type" | "variety" | "cepaGroup" | "image" | "technicalSheet" | "technical"
+> & {
+  line?: WineLine;
+  type?: WineType;
+  variety?: Variety;
+  cepaGroup?: CepaGroup;
+  image?: string;
+  technicalSheet?: string;
+  technical?: WineTechnical;
+  agotado: boolean;
+};
 
 /** Versión del contrato que esta web sabe leer. */
 const CONTRACT_VERSION = 1;
@@ -87,18 +118,42 @@ function readList(attrs: Record<string, AttributeValue>, key: string): string[] 
 function readGroup(
   attrs: Record<string, AttributeValue>,
   key: string,
-): Record<string, string> {
+): Record<string, string> | undefined {
   const value = attrs[key];
-  if (typeof value !== "object" || value === null || Array.isArray(value)) return {};
+  if (typeof value !== "object" || value === null || Array.isArray(value)) return undefined;
   return value as Record<string, string>;
+}
+
+/**
+ * Valor de un campo de unión (`linea`, `tipo`, `cepa`, `grupo_cepa`, `nivel`).
+ *
+ * Comprueba contra la unión real en vez de afirmar el tipo: el catálogo lo puede
+ * editar cualquiera desde el panel, así que "el importador lo sembró desde
+ * wines.ts" dejó de ser garantía el día que la viña creó su primer producto.
+ * Un valor fuera de la unión vuelve como `undefined` —el mismo caso que "sin
+ * valor"— y el consumidor ya sabe no dibujar esa etiqueta.
+ */
+function readUnion<T extends string>(
+  attrs: Record<string, AttributeValue>,
+  key: string,
+  allowed: readonly T[],
+): T | undefined {
+  const value = readText(attrs, key);
+  return value !== undefined && (allowed as readonly string[]).includes(value)
+    ? (value as T)
+    : undefined;
 }
 
 /**
  * Ficha técnica: el grupo `ficha_tecnica` con subcampos en español (los definió
  * el importador) de vuelta a las claves en inglés del tipo `WineTechnical`.
+ *
+ * Devuelve `undefined` si el grupo entero falta: un producto del panel sin ficha
+ * cargada no tiene una ficha con todos los campos en blanco, no tiene ficha.
  */
-function readTechnical(attrs: Record<string, AttributeValue>): WineTechnical {
+function readTechnical(attrs: Record<string, AttributeValue>): WineTechnical | undefined {
   const group = readGroup(attrs, "ficha_tecnica");
+  if (!group) return undefined;
   return {
     blend: group.blend ?? "",
     alcohol: group.alcohol ?? "",
@@ -117,26 +172,25 @@ function readTechnical(attrs: Record<string, AttributeValue>): WineTechnical {
  *
  * Es el inverso exacto del importador (`scripts/importar-catalogo-vina.mjs` en
  * el repo de Afeleia): lo que aquel escribió en `atributos_personalizados`,
- * esto lo devuelve a su campo de `Wine`.
+ * esto lo devuelve a su campo de `CatalogWine`.
  *
- * Los campos de unión (`line`, `type`, `variety`, `cepaGroup`) se afirman contra
- * su tipo porque el catálogo lo siembra ese mismo importador desde `wines.ts`.
- * Un valor fuera de la unión no rompe el render, pero sí deja sin traducción la
- * etiqueta que lo muestra — ver la nota de i18n en el README de conexión.
+ * Nada se colapsa a `""` ni a `0` para llenar un hueco: lo que la API no trae
+ * sale `undefined` y cada sección decide si se dibuja (DEC-5). Los campos de
+ * unión se validan contra su lista, no se afirman: ver `readUnion`.
  */
 export function apiProductToWine(product: ApiProduct): CatalogWine {
   const attrs = product.atributos ?? {};
   return {
     slug: product.slug,
     name: product.nombre,
-    line: readText(attrs, "linea") as WineLine,
-    type: readText(attrs, "tipo") as WineType,
-    variety: readText(attrs, "cepa") as Variety,
-    cepaGroup: readText(attrs, "grupo_cepa") as CepaGroup,
+    line: readUnion(attrs, "linea", wineLines),
+    type: readUnion(attrs, "tipo", wineTypes),
+    variety: readUnion(attrs, "cepa", varieties),
+    cepaGroup: readUnion(attrs, "grupo_cepa", cepaGroups),
     sweet: readText(attrs, "dulce") === "si",
-    category: readText(attrs, "nivel") as Wine["category"],
-    image: product.imagenes[0] ?? "",
-    technicalSheet: readText(attrs, "ficha_tecnica_pdf") ?? "",
+    category: readUnion(attrs, "nivel", wineCategories),
+    image: product.imagenes[0],
+    technicalSheet: readText(attrs, "ficha_tecnica_pdf"),
     shortDescription: product.descripcion_corta ?? "",
     description: product.descripcion ?? "",
     tastingNotes: readList(attrs, "notas_cata"),
@@ -184,9 +238,41 @@ function isValidCatalog(value: unknown): value is ApiCatalog {
 
 // --- Fetch con fallback -------------------------------------------------------
 
+/**
+ * De dónde salió el catálogo que se está sirviendo.
+ *
+ * `snapshot` significa modo degradado: la web se ve perfectamente sana pero los
+ * precios y el stock son los del último snapshot committeado. Sin este dato el
+ * único rastro es un `console.error` en los logs de Netlify, y un control que
+ * solo se puede auditar entrando a los logs no es un control (H-30): por eso
+ * viaja al HTML en `<CatalogOriginMeta>` y el script de go-live lo asevera
+ * contra la URL pública real.
+ */
+export type CatalogOrigin = "api" | "snapshot";
+
+export type CatalogLoad = {
+  catalog: ApiCatalog;
+  origin: CatalogOrigin;
+};
+
+/**
+ * A partir de acá el snapshot deja de ser "el catálogo de ayer" y pasa a ser
+ * dato viejo servido como vigente. No se deja de servir —una web con precios de
+ * hace un mes es mejor que una web caída— pero se grita distinto y el go-live
+ * lo puede distinguir.
+ */
+const SNAPSHOT_STALE_DAYS = 7;
+
 /** El snapshot committeado: la web sirve esto cuando la API no está disponible. */
 function fallbackCatalog(): ApiCatalog {
   return catalogoFallback as unknown as ApiCatalog;
+}
+
+/** Antigüedad del snapshot en días, o `null` si no trae `generado_en` legible. */
+function snapshotAgeDays(catalog: ApiCatalog): number | null {
+  const generated = Date.parse(catalog.generado_en ?? "");
+  if (Number.isNaN(generated)) return null;
+  return Math.floor((Date.now() - generated) / 86_400_000);
 }
 
 /**
@@ -194,7 +280,16 @@ function fallbackCatalog(): ApiCatalog {
  * del servidor para que quede en los logs de Netlify.
  */
 function reportFallback(reason: string): void {
-  console.error(`[afeleia] catálogo desde el snapshot local — ${reason}`);
+  const catalog = fallbackCatalog();
+  const age = snapshotAgeDays(catalog);
+  const antiguedad =
+    age === null
+      ? "sin generado_en legible"
+      : `generado hace ${age} día(s)`;
+  const nivel = age !== null && age > SNAPSHOT_STALE_DAYS ? "VENCIDO" : "vigente";
+  console.error(
+    `[afeleia] catálogo desde el snapshot local (${nivel}, ${antiguedad}) — ${reason}`,
+  );
 }
 
 function catalogEndpoint(): string | null {
@@ -204,11 +299,20 @@ function catalogEndpoint(): string | null {
   return `${base.replace(/\/+$/, "")}/catalogo-publico?sitio=${encodeURIComponent(sitio)}`;
 }
 
-async function loadCatalog(): Promise<ApiCatalog> {
+function degraded(reason: string): CatalogLoad {
+  reportFallback(reason);
+  return { catalog: fallbackCatalog(), origin: "snapshot" };
+}
+
+/**
+ * `cache()` de React: dentro de UN mismo render, la página y el `<meta>` que
+ * declara el origen comparten la misma lectura. Sin esto, emitir el origen
+ * costaría un fetch extra por página solo para poder informarlo.
+ */
+const loadCatalog = cache(async (): Promise<CatalogLoad> => {
   const url = catalogEndpoint();
   if (!url) {
-    reportFallback("faltan NEXT_PUBLIC_AFELEIA_API_URL o NEXT_PUBLIC_AFELEIA_SITIO");
-    return fallbackCatalog();
+    return degraded("faltan NEXT_PUBLIC_AFELEIA_API_URL o NEXT_PUBLIC_AFELEIA_SITIO");
   }
 
   try {
@@ -218,28 +322,31 @@ async function loadCatalog(): Promise<ApiCatalog> {
     // 429 y 503 no son fallas del contrato sino respuestas normales bajo carga,
     // y como cualquier otra respuesta no-ok caen al snapshot.
     if (!response.ok) {
-      reportFallback(`la API respondió ${response.status}`);
-      return fallbackCatalog();
+      return degraded(`la API respondió ${response.status}`);
     }
     const payload: unknown = await response.json();
     if (!isValidCatalog(payload)) {
-      reportFallback(`la respuesta no cumple el contrato v${CONTRACT_VERSION}`);
-      return fallbackCatalog();
+      return degraded(`la respuesta no cumple el contrato v${CONTRACT_VERSION}`);
     }
-    return payload;
+    return { catalog: payload, origin: "api" };
   } catch (error) {
     const detail = error instanceof Error ? error.message : String(error);
-    reportFallback(`no se pudo consultar la API: ${detail}`);
-    return fallbackCatalog();
+    return degraded(`no se pudo consultar la API: ${detail}`);
   }
-}
+});
 
 // --- API para las páginas -----------------------------------------------------
 
 /** Catálogo completo, en el orden que publica la API (alfabético por nombre). */
 export async function getCatalog(): Promise<CatalogWine[]> {
-  const catalog = await loadCatalog();
+  const { catalog } = await loadCatalog();
   return catalog.productos.map(apiProductToWine);
+}
+
+/** Origen del catálogo de este render. Lo consume `<CatalogOriginMeta>`. */
+export async function getCatalogOrigin(): Promise<CatalogOrigin> {
+  const { origin } = await loadCatalog();
+  return origin;
 }
 
 /** Un vino por slug, o `null` si el catálogo no lo trae. */

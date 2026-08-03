@@ -1,12 +1,12 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslations, useLocale } from "next-intl";
 import { Filter, X } from "lucide-react";
 import Reveal from "@/components/Reveal";
 import AddToCartButton from "@/components/AddToCartButton";
+import WineBottleImage from "@/components/WineBottleImage";
 import {
   wineLines,
   wineTypes,
@@ -17,7 +17,7 @@ import {
   type CepaGroup,
 } from "@/data/wines";
 import type { CatalogWine } from "@/lib/afeleia/catalog";
-import { labelOr, translatedOr } from "@/lib/afeleia/copy";
+import { joinLabels, labelOr, translatedOr } from "@/lib/afeleia/copy";
 
 /**
  * Vitrina de la tienda: filtros, orden y grilla.
@@ -64,11 +64,14 @@ export default function TiendaCatalogo({ wines }: { wines: CatalogWine[] }) {
   };
 
   const filtered = useMemo(() => {
+    // Un producto sin línea (o sin grupo de cepa) NO cae bajo ningún filtro de
+    // esos: sigue apareciendo en la vitrina sin filtrar, que es donde el cliente
+    // lo va a encontrar mientras termina de completarlo en el panel.
     let list = wines.filter((w) => {
       if (selectedTypes.size > 0 && ![...selectedTypes].some((type) => matchesWineType(w, type)))
         return false;
-      if (selectedLines.size > 0 && !selectedLines.has(w.line)) return false;
-      if (selectedCepas.size > 0 && !selectedCepas.has(w.cepaGroup)) return false;
+      if (selectedLines.size > 0 && (!w.line || !selectedLines.has(w.line))) return false;
+      if (selectedCepas.size > 0 && (!w.cepaGroup || !selectedCepas.has(w.cepaGroup))) return false;
       return true;
     });
 
@@ -389,10 +392,9 @@ export default function TiendaCatalogo({ wines }: { wines: CatalogWine[] }) {
                       href={`/${locale}/vinos/${wine.slug}`}
                       className="relative h-[320px] w-full bg-gradient-to-br from-surface-container-highest to-surface-container p-8 flex items-center justify-center"
                     >
-                      <Image
+                      <WineBottleImage
                         src={wine.image}
                         alt={wine.name}
-                        fill
                         className="object-contain p-6 group-hover:scale-105 transition-transform duration-700 drop-shadow-[0_12px_18px_rgba(74,14,14,0.18)]"
                         sizes="(max-width: 768px) 100vw, 33vw"
                       />
@@ -403,9 +405,11 @@ export default function TiendaCatalogo({ wines }: { wines: CatalogWine[] }) {
                       )}
                     </Link>
                     <div className="p-6 flex flex-col flex-grow bg-surface-container-lowest">
-                      <span className="font-body text-label-sm text-on-surface-variant uppercase tracking-widest mb-2">
-                        {wine.line}
-                      </span>
+                      {wine.line && (
+                        <span className="font-body text-label-sm text-on-surface-variant uppercase tracking-widest mb-2">
+                          {wine.line}
+                        </span>
+                      )}
                       <Link
                         href={`/${locale}/vinos/${wine.slug}`}
                         className="font-display text-xl text-primary mb-1 hover:underline underline-offset-4"
@@ -413,8 +417,10 @@ export default function TiendaCatalogo({ wines }: { wines: CatalogWine[] }) {
                         {wine.name}
                       </Link>
                       <p className="font-body text-body-md text-on-surface-variant mb-4 flex-grow">
-                        {labelOr(tVinos, "types", wine.type)} ·{" "}
-                        {labelOr(tVinos, "varieties", wine.variety)}
+                        {joinLabels(
+                          labelOr(tVinos, "types", wine.type),
+                          labelOr(tVinos, "varieties", wine.variety),
+                        )}
                       </p>
                       <div className="flex items-center justify-between pt-4 border-t border-outline-variant/30">
                         <span className="font-display text-xl text-primary tabular-nums">
@@ -425,9 +431,11 @@ export default function TiendaCatalogo({ wines }: { wines: CatalogWine[] }) {
                           item={{
                             slug: wine.slug,
                             name: wine.name,
-                            line: wine.line,
-                            variety: wine.variety,
-                            image: wine.image,
+                            // El carrito los renderiza como texto: `undefined`
+                            // se imprimiría literalmente en el panel lateral.
+                            line: wine.line ?? "",
+                            variety: wine.variety ?? "",
+                            image: wine.image ?? "",
                             priceCLP: wine.priceCLP,
                           }}
                         />

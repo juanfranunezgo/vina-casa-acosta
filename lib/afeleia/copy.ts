@@ -66,3 +66,18 @@ export function labelOr(t: Translator, prefix: string, value: string | undefined
   if (!value) return "";
   return translatedOr(t, `${prefix}.${value}`, value);
 }
+
+/** Separador de las etiquetas del catálogo ("Tinto · Carmenere"). */
+const LABEL_SEPARATOR = " · ";
+
+/**
+ * Une etiquetas descartando las vacías.
+ *
+ * Cualquier etiqueta puede faltar (un producto del panel sin cepa asignada), y
+ * la plantilla `${a} · ${b}` no lo contempla: deja " · Carmenere" o "Tinto · "
+ * impreso en la tarjeta. Unir solo lo que existe es la única forma de que la
+ * ausencia se vea como ausencia.
+ */
+export function joinLabels(...labels: Array<string | undefined>): string {
+  return labels.filter((label) => label && label.trim() !== "").join(LABEL_SEPARATOR);
+}
