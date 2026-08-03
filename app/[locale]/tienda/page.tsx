@@ -1,4 +1,5 @@
 import { setRequestLocale } from "next-intl/server";
+import CatalogOriginMeta from "@/components/CatalogOriginMeta";
 import TiendaCatalogo from "@/components/TiendaCatalogo";
 import { getCatalog } from "@/lib/afeleia/catalog";
 
@@ -18,5 +19,10 @@ export default async function TiendaPage({ params }: PageProps<"/[locale]/tienda
   setRequestLocale(locale);
   const catalog = await getCatalog();
 
-  return <TiendaCatalogo wines={catalog} />;
+  return (
+    <>
+      <CatalogOriginMeta />
+      <TiendaCatalogo wines={catalog} />
+    </>
+  );
 }
