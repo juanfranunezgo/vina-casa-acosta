@@ -70,15 +70,20 @@ test("wine details keep the technical sheet secondary and show four useful recom
 
   assert.match(detailSource, /font-accent text-xl font-light italic text-primary/);
   assert.match(detailSource, /variant="link"/);
-  assert.match(detailSource, /wines\s*\.filter\(\(w\) => w\.line !== wine\.line/);
+  // `catalog` y no `wines`: la ficha dejo de leer data/wines.ts y ahora recorre
+  // el catalogo que sirve la API de Afeleia.
+  assert.match(detailSource, /catalog\s*\.filter\(\(w\) => w\.line !== wine\.line/);
   assert.match(detailSource, /slice\(0, 4\)/);
   assert.match(detailSource, /lg:grid-cols-4/);
   assert.match(purchaseSource, /whitespace-nowrap/);
 });
 
 test("shop eyebrow and mobile activities navigation match the refined site pattern", async () => {
+  // La vitrina de la tienda se partio en servidor (page.tsx, resuelve el catalogo)
+  // y cliente (TiendaCatalogo.tsx, filtros y grilla). El markup que este test
+  // protege vive desde entonces en el componente cliente.
   const [shopSource, navbarSource] = await Promise.all([
-    readFile(new URL("../app/[locale]/tienda/page.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../components/TiendaCatalogo.tsx", import.meta.url), "utf8"),
     readFile(new URL("../components/Navbar.tsx", import.meta.url), "utf8"),
   ]);
 
@@ -90,8 +95,10 @@ test("shop eyebrow and mobile activities navigation match the refined site patte
 });
 
 test("deploy lint avoids synchronous state changes inside effects", async () => {
+  // Mismo motivo que el test de arriba: el estado de los filtros vive en
+  // TiendaCatalogo.tsx desde que la tienda se partio servidor/cliente.
   const [shopSource, cartButtonSource, navbarSource] = await Promise.all([
-    readFile(new URL("../app/[locale]/tienda/page.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../components/TiendaCatalogo.tsx", import.meta.url), "utf8"),
     readFile(new URL("../components/CartButton.tsx", import.meta.url), "utf8"),
     readFile(new URL("../components/Navbar.tsx", import.meta.url), "utf8"),
   ]);
