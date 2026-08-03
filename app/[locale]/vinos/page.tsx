@@ -1,12 +1,14 @@
 import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { ArrowRight } from "lucide-react";
+import CatalogOriginMeta from "@/components/CatalogOriginMeta";
 import CollectionBand, { type CollectionWine } from "@/components/CollectionBand";
+import JsonLd from "@/components/JsonLd";
 import Reveal from "@/components/Reveal";
 import Button from "@/components/ui/Button";
-import { lineSlugs, lineMeta, type Wine, type WineLine } from "@/data/wines";
-import { getCatalog, winesByLine } from "@/lib/afeleia/catalog";
-import { labelOr, translatedOr } from "@/lib/afeleia/copy";
+import { lineSlugs, lineMeta, type WineLine } from "@/data/wines";
+import { getCatalog, winesByLine, type CatalogWine } from "@/lib/afeleia/catalog";
+import { joinLabels, labelOr, translatedOr } from "@/lib/afeleia/copy";
 import { buildWinesItemListJsonLd } from "@/lib/wineJsonLd";
 
 // El catálogo lo publica Afeleia (ISR: cambios visibles en ≤60s).
@@ -54,18 +56,23 @@ export default async function VinosPage({ params }: PageProps<"/[locale]/vinos">
   const tWine = await getTranslations("wines");
   const catalog = await getCatalog();
 
-  const eyebrowOf = (wine: Wine) =>
-    `${labelOr(t, "types", wine.type)} · ${labelOr(t, "varieties", wine.variety)}`;
-  const cardEyebrowOf = (wine: Wine) => {
+  // `joinLabels` y no plantillas con " · ": un producto del panel puede no traer
+  // tipo o cepa, y concatenar a ciegas deja separadores colgando ("Tinto · ").
+  const eyebrowOf = (wine: CatalogWine) =>
+    joinLabels(labelOr(t, "types", wine.type), labelOr(t, "varieties", wine.variety));
+  const cardEyebrowOf = (wine: CatalogWine) => {
     if (wine.line === "Ombú") return t("categories.Reserva");
     if (wine.line === "Lajau") {
-      return `${t("categories.Reserva")} · ${t("varieties.Ensamblaje")}`;
+      return joinLabels(t("categories.Reserva"), t("varieties.Ensamblaje"));
     }
     if (wine.line === "Estación Francia") {
-      return `${t("categories.Gran Reserva")} · ${labelOr(t, "varieties", wine.variety)}`;
+      return joinLabels(t("categories.Gran Reserva"), labelOr(t, "varieties", wine.variety));
     }
     if (wine.category) {
-      return `${labelOr(t, "categories", wine.category)} · ${labelOr(t, "varieties", wine.variety)}`;
+      return joinLabels(
+        labelOr(t, "categories", wine.category),
+        labelOr(t, "varieties", wine.variety),
+      );
     }
     return eyebrowOf(wine);
   };
@@ -78,11 +85,12 @@ export default async function VinosPage({ params }: PageProps<"/[locale]/vinos">
 
   return (
     <>
-      <script
-        type="application/ld+json"
-        // JSON-LD del catálogo para que los buscadores entiendan la lista de productos.
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-      />
+      {/* JSON-LD del catálogo para que los buscadores entiendan la lista de
+          productos. Va por <JsonLd> y NUNCA por JSON.stringify a mano: `name` y
+          `description` los escribe el cliente en el panel, y `JSON.stringify` no
+          escapa `</script>` (ver lib/jsonLd.ts). */}
+      <JsonLd data={jsonLd} />
+      <CatalogOriginMeta />
 
       {/* C1 — Hero cinematográfico, en el lenguaje visual de Historia. */}
       <section className="relative flex min-h-[100svh] w-full items-center overflow-hidden">

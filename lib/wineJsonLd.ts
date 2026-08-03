@@ -1,4 +1,4 @@
-import type { Wine } from "@/data/wines";
+import type { CatalogWine } from "@/lib/afeleia/catalog";
 import { SITE_URL } from "@/lib/siteUrl";
 
 type WineLabels = {
@@ -7,9 +7,9 @@ type WineLabels = {
    * porque la traducción curada puede no existir (producto creado en el panel)
    * y hay que poder caer al texto que el propio vino trae.
    */
-  shortDescription: (wine: Wine) => string;
+  shortDescription: (wine: CatalogWine) => string;
   /** Categoría legible ya traducida, ej. "Tinto · Carmenere". */
-  category: (wine: Wine) => string;
+  category: (wine: CatalogWine) => string;
 };
 
 /**
@@ -25,6 +25,18 @@ function absoluteImage(image: string): string {
 }
 
 /**
+ * Campos vacíos fuera del bloque.
+ *
+ * Un `"image": ""` o un `"category": ""` no son "sin dato" para un buscador:
+ * son un dato inválido declarado, y ensucian el structured data del sitio.
+ */
+function withoutEmpty<T extends Record<string, unknown>>(item: T): Partial<T> {
+  return Object.fromEntries(
+    Object.entries(item).filter(([, value]) => value !== undefined && value !== ""),
+  ) as Partial<T>;
+}
+
+/**
  * Construye el JSON-LD `ItemList` de los vinos del catálogo (`/vinos`).
  *
  * Cada ítem es un `Product` con los campos que SÍ se ven en la página
@@ -33,7 +45,7 @@ function absoluteImage(image: string): string {
  * reflejar el contenido visible. El precio va en la ficha del producto.
  */
 export function buildWinesItemListJsonLd(
-  wines: Wine[],
+  wines: CatalogWine[],
   locale: string,
   labels: WineLabels,
 ) {
@@ -45,15 +57,15 @@ export function buildWinesItemListJsonLd(
     itemListElement: wines.map((wine, index) => ({
       "@type": "ListItem",
       position: index + 1,
-      item: {
+      item: withoutEmpty({
         "@type": "Product",
         name: wine.name,
-        image: absoluteImage(wine.image),
+        image: wine.image ? absoluteImage(wine.image) : undefined,
         description: labels.shortDescription(wine),
         category: labels.category(wine),
         brand: { "@type": "Brand", name: "Viña Casa Acosta" },
         url: `${SITE_URL}/${locale}/vinos/${wine.slug}`,
-      },
+      }),
     })),
   };
 }
