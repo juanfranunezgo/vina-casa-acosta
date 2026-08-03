@@ -4,15 +4,13 @@ import { ArrowRight } from "lucide-react";
 import CollectionBand, { type CollectionWine } from "@/components/CollectionBand";
 import Reveal from "@/components/Reveal";
 import Button from "@/components/ui/Button";
-import {
-  wines,
-  lineSlugs,
-  lineMeta,
-  getWinesByLine,
-  type Wine,
-  type WineLine,
-} from "@/data/wines";
+import { lineSlugs, lineMeta, type Wine, type WineLine } from "@/data/wines";
+import { getCatalog, winesByLine } from "@/lib/afeleia/catalog";
 import { buildWinesItemListJsonLd } from "@/lib/wineJsonLd";
+
+// El catálogo lo publica Afeleia (ISR: cambios visibles en ≤60s).
+// Tiene que ser un literal: Next lee la config de segmento estáticamente.
+export const revalidate = 60;
 
 // El hero C1 va en <picture> y no en next/image, porque next/image no hace art
 // direction: elige a qué tamaño bajar una foto, no cuál de dos. El .webp sin
@@ -53,6 +51,7 @@ export default async function VinosPage({ params }: PageProps<"/[locale]/vinos">
   setRequestLocale(locale);
   const t = await getTranslations("vinos");
   const tWine = await getTranslations("wines");
+  const catalog = await getCatalog();
 
   const eyebrowOf = (wine: Wine) =>
     `${t(`types.${wine.type}`)} · ${t(`varieties.${wine.variety}`)}`;
@@ -70,7 +69,7 @@ export default async function VinosPage({ params }: PageProps<"/[locale]/vinos">
     return eyebrowOf(wine);
   };
 
-  const jsonLd = buildWinesItemListJsonLd(wines, locale, {
+  const jsonLd = buildWinesItemListJsonLd(catalog, locale, {
     shortDescription: (slug) => tWine(`${slug}.shortDescription`),
     category: eyebrowOf,
   });
@@ -135,7 +134,7 @@ export default async function VinosPage({ params }: PageProps<"/[locale]/vinos">
 
       {/* C2 — Colecciones por línea (banda editorial: foto de ambiente + tarjetas) */}
       {collectionLines.map((line, lineIdx) => {
-        const lineWines = getWinesByLine(line);
+        const lineWines = winesByLine(catalog, line);
         if (lineWines.length === 0) return null;
 
         const meta = lineMeta[line];

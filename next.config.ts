@@ -3,6 +3,33 @@ import createNextIntlPlugin from "next-intl/plugin";
 
 const withNextIntl = createNextIntlPlugin("./i18n/request.ts");
 
+/**
+ * Las fotos de producto del catálogo vivo las sirve el Storage de Afeleia, así
+ * que su host tiene que estar permitido para `next/image`. Se deriva de la misma
+ * variable que usa el fetch del catálogo en vez de hardcodearse: local y
+ * producción son hosts distintos y no debe haber una segunda fuente de verdad.
+ * Sin la variable definida la web sirve el snapshot, cuyas imágenes salen de
+ * `public/` y no necesitan permiso remoto.
+ */
+function afeleiaStoragePatterns() {
+  const apiUrl = process.env.NEXT_PUBLIC_AFELEIA_API_URL;
+  if (!apiUrl) return [];
+  try {
+    const { protocol, hostname, port } = new URL(apiUrl);
+    if (protocol !== "http:" && protocol !== "https:") return [];
+    return [
+      {
+        protocol: protocol.slice(0, -1) as "http" | "https",
+        hostname,
+        port,
+        pathname: "/storage/v1/object/public/**",
+      },
+    ];
+  } catch {
+    return [];
+  }
+}
+
 const nextConfig: NextConfig = {
   // Permite abrir el dev server desde otros dispositivos de la LAN (celular).
   // Next 16 bloquea por defecto los recursos de dev (HMR, chunks) si el origen
@@ -19,6 +46,7 @@ const nextConfig: NextConfig = {
         hostname: "images.unsplash.com",
         pathname: "/**",
       },
+      ...afeleiaStoragePatterns(),
     ],
   },
   // Headers de seguridad. Van acá y no solo en netlify.toml: los headers del

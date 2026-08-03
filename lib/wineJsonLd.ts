@@ -9,6 +9,18 @@ type WineLabels = {
 };
 
 /**
+ * URL absoluta de la foto del vino.
+ *
+ * Desde que el catálogo llega de la API de Afeleia, `image` puede ser tanto una
+ * ruta de `public/` (snapshot de fallback) como una URL completa del Storage.
+ * Concatenarle el dominio a la segunda deja un `https://casaacosta.clhttps://…`
+ * roto en silencio dentro del structured data.
+ */
+function absoluteImage(image: string): string {
+  return /^https?:\/\//i.test(image) ? image : `${SITE_URL}${image}`;
+}
+
+/**
  * Construye el JSON-LD `ItemList` de los vinos del catálogo (`/vinos`).
  *
  * Cada ítem es un `Product` con los campos que SÍ se ven en la página
@@ -32,7 +44,7 @@ export function buildWinesItemListJsonLd(
       item: {
         "@type": "Product",
         name: wine.name,
-        image: `${SITE_URL}${wine.image}`,
+        image: absoluteImage(wine.image),
         description: labels.shortDescription(wine.slug),
         category: labels.category(wine),
         brand: { "@type": "Brand", name: "Viña Casa Acosta" },

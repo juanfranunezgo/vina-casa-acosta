@@ -1,0 +1,591 @@
+{
+  "version": 1,
+  "sitio": "afeleia-demo",
+  "generado_en": "2026-08-03T01:24:36.401Z",
+  "categorias": [
+    {
+      "slug": "vinos",
+      "nombre": "Vinos",
+      "orden": 0
+    }
+  ],
+  "productos": [
+    {
+      "slug": "bera",
+      "codigo": "VINO-BERA",
+      "nombre": "Berá",
+      "descripcion": "Rosé de color rosa y perfil complejo. Aromas a frambuesa fresca, muy floral, con notas a cereza roja. Boca fresca, de interesante acidez, jugoso y de agradable final.",
+      "descripcion_corta": "Rosé fresco y floral de Carmenere y Cabernet Sauvignon.",
+      "precio": 16900,
+      "moneda": "CLP",
+      "imagenes": [
+        "/vinos/bera.png"
+      ],
+      "destacado": false,
+      "categoria": "vinos",
+      "agotado": false,
+      "atributos": {
+        "cepa": "Carmenere",
+        "tipo": "Rosado",
+        "dulce": "no",
+        "linea": "Berá",
+        "cosecha": 2025,
+        "maridajes": [
+          "Comida oriental",
+          "Panaché de verduras",
+          "Pastrami",
+          "Paella"
+        ],
+        "grupo_cepa": "Ensamblaje",
+        "notas_cata": [
+          "Frambuesa fresca",
+          "Floral",
+          "Cereza roja",
+          "Acidez jugosa"
+        ],
+        "ficha_tecnica": {
+          "blend": "90% Carmenere, 10% Cabernet Sauvignon",
+          "valle": "Valle Cachapoal, Chile",
+          "cierre": "DIAM",
+          "alcohol": "13%",
+          "servicio": "7° – 9°",
+          "conduccion": "Espaldera Vertical",
+          "volumen_ml": "750"
+        },
+        "ficha_tecnica_pdf": "/documentos/fichas-tecnicas/bera-rose.pdf"
+      }
+    },
+    {
+      "slug": "estacion-francia-carmenere",
+      "codigo": "VINO-ESTACION-FRANCIA-CARMENERE",
+      "nombre": "Estación Francia Carmenere",
+      "descripcion": "Vivo color rojo guinda, con notas violáceas. Aromas a frutos negros, chocolate y especias, con toques de grosella, frutos secos y tabaco. En boca hay taninos sedosos; es jugoso y de buen equilibrio, con un final persistente.",
+      "descripcion_corta": "Gran Reserva de Carmenere y Petit Verdot, de gran complejidad y guarda.",
+      "precio": 24000,
+      "moneda": "CLP",
+      "imagenes": [
+        "/vinos/estacion-francia-carmenere.png"
+      ],
+      "destacado": true,
+      "categoria": "vinos",
+      "agotado": false,
+      "atributos": {
+        "cepa": "Carmenere",
+        "tipo": "Tinto",
+        "dulce": "no",
+        "linea": "Estación Francia",
+        "nivel": "Gran Reserva",
+        "cosecha": 2021,
+        "maridajes": [
+          "Costillas de cerdo",
+          "Morcillas a la parrilla"
+        ],
+        "grupo_cepa": "Ensamblaje",
+        "notas_cata": [
+          "Frutos negros",
+          "Chocolate",
+          "Grosella",
+          "Tabaco"
+        ],
+        "ficha_tecnica": {
+          "blend": "95% Carmenere, 5% Petit Verdot",
+          "valle": "Valle Cachapoal, Chile",
+          "cierre": "DIAM",
+          "alcohol": "14%",
+          "servicio": "16° – 18°",
+          "conduccion": "Espaldera Vertical",
+          "volumen_ml": "750"
+        },
+        "ficha_tecnica_pdf": "/documentos/fichas-tecnicas/estacion-francia-carmenere.pdf"
+      }
+    },
+    {
+      "slug": "estacion-francia-tannat",
+      "codigo": "VINO-ESTACION-FRANCIA-TANNAT",
+      "nombre": "Estación Francia Tannat",
+      "descripcion": "Vino de intenso color. Aromas a frutos rojos maduros, ciruela y mora, con toques a cereza negra y notas a tabaco. Boca potente y de gran estructura, cuerpo robusto, largo y persistente.",
+      "descripcion_corta": "Gran Reserva de Tannat y Carmenere, potente y de gran estructura.",
+      "precio": 24000,
+      "moneda": "CLP",
+      "imagenes": [
+        "/vinos/estacion-francia-tannat.png"
+      ],
+      "destacado": false,
+      "categoria": "vinos",
+      "agotado": false,
+      "atributos": {
+        "cepa": "Tannat",
+        "tipo": "Tinto",
+        "dulce": "no",
+        "linea": "Estación Francia",
+        "nivel": "Gran Reserva",
+        "cosecha": 2021,
+        "maridajes": [
+          "Garrón de cordero",
+          "Quesos azules"
+        ],
+        "grupo_cepa": "Ensamblaje",
+        "notas_cata": [
+          "Frutos rojos maduros",
+          "Ciruela",
+          "Cereza negra",
+          "Tabaco"
+        ],
+        "ficha_tecnica": {
+          "blend": "90% Tannat, 10% Carmenere",
+          "valle": "Valle Cachapoal, Chile",
+          "cierre": "DIAM",
+          "alcohol": "14%",
+          "servicio": "16° – 18°",
+          "conduccion": "Espaldera Vertical",
+          "volumen_ml": "750"
+        },
+        "ficha_tecnica_pdf": "/documentos/fichas-tecnicas/estacion-francia-tannat.pdf"
+      }
+    },
+    {
+      "slug": "guidai",
+      "codigo": "VINO-GUIDAI",
+      "nombre": "Guidaí",
+      "descripcion": "Espumante de color rosado pálido. Aromas a fresas, con un toque picante. Corona blanquecina, con persistentes burbujas pequeñas; fresco y de equilibrada acidez.",
+      "descripcion_corta": "Espumante rosado, fresco y de burbuja fina.",
+      "precio": 22000,
+      "moneda": "CLP",
+      "imagenes": [
+        "/vinos/guidai.png"
+      ],
+      "destacado": false,
+      "categoria": "vinos",
+      "agotado": false,
+      "atributos": {
+        "cepa": "Carmenere",
+        "tipo": "Espumante",
+        "badge": "Espumante",
+        "dulce": "no",
+        "linea": "Guidaí",
+        "nivel": "Edición Limitada",
+        "maridajes": [
+          "Comida thai",
+          "Sashimi de salmón"
+        ],
+        "grupo_cepa": "Ensamblaje",
+        "notas_cata": [
+          "Fresas",
+          "Rosado pálido",
+          "Burbuja fina",
+          "Acidez fresca"
+        ],
+        "ficha_tecnica": {
+          "blend": "90% Carmenere, 10% Cabernet Sauvignon",
+          "valle": "Valle Cachapoal, Chile",
+          "cierre": "Natural, doble arandela",
+          "alcohol": "12,5%",
+          "servicio": "6° – 8°",
+          "conduccion": "Espaldera Vertical",
+          "volumen_ml": "750"
+        },
+        "ficha_tecnica_pdf": "/documentos/fichas-tecnicas/guidai-espumante.pdf"
+      }
+    },
+    {
+      "slug": "lajau-betum",
+      "codigo": "VINO-LAJAU-BETUM",
+      "nombre": "Lajau Betúm",
+      "descripcion": "Vino de intenso color rojo rubí con tintes violáceos. Muy complejo: fruta roja madura y fruta negra, con toques de humo y pimienta. Boca de buena estructura y volumen, de taninos jugosos, gran retrogusto y largo final.",
+      "descripcion_corta": "Ensamblaje de cuatro cepas, complejo y de gran volumen.",
+      "precio": 28000,
+      "moneda": "CLP",
+      "imagenes": [
+        "/vinos/lajau-betum.png"
+      ],
+      "destacado": false,
+      "categoria": "vinos",
+      "agotado": false,
+      "atributos": {
+        "cepa": "Ensamblaje",
+        "tipo": "Tinto",
+        "dulce": "no",
+        "linea": "Lajau",
+        "nivel": "Edición Limitada",
+        "cosecha": 2024,
+        "maridajes": [
+          "Queso de cabra",
+          "Pato a la naranja",
+          "Cordero"
+        ],
+        "grupo_cepa": "Ensamblaje",
+        "notas_cata": [
+          "Fruta roja madura",
+          "Fruta negra",
+          "Humo",
+          "Pimienta"
+        ],
+        "ficha_tecnica": {
+          "blend": "30% Carmenere, 30% Cot, 20% Carignan, 20% Tannat",
+          "valle": "Valle Cachapoal, Chile",
+          "cierre": "DIAM",
+          "alcohol": "13,5%",
+          "servicio": "16° – 18°",
+          "conduccion": "Espaldera Vertical",
+          "volumen_ml": "750"
+        },
+        "ficha_tecnica_pdf": "/documentos/fichas-tecnicas/lajau-betum.pdf"
+      }
+    },
+    {
+      "slug": "lajau-betum-yu",
+      "codigo": "VINO-LAJAU-BETUM-YU",
+      "nombre": "Lajau Betúm Yú",
+      "descripcion": "Vino de intenso color rojo rubí, de taninos presentes pero redondos y una acidez equilibrada. Final de boca con un toque a chocolate amargo y algo de humo, de largo final.",
+      "descripcion_corta": "Ensamblaje de cinco cepas, expresión cumbre de la línea Lajau.",
+      "precio": 48000,
+      "moneda": "CLP",
+      "imagenes": [
+        "/vinos/lajau-betum-yu.png"
+      ],
+      "destacado": false,
+      "categoria": "vinos",
+      "agotado": false,
+      "atributos": {
+        "cepa": "Ensamblaje",
+        "tipo": "Tinto",
+        "badge": "Edición Limitada",
+        "dulce": "no",
+        "linea": "Lajau",
+        "nivel": "Edición Limitada",
+        "cosecha": 2024,
+        "maridajes": [
+          "Carnes rojas a la parrilla"
+        ],
+        "grupo_cepa": "Ensamblaje",
+        "notas_cata": [
+          "Rojo rubí",
+          "Chocolate amargo",
+          "Humo",
+          "Taninos redondos"
+        ],
+        "ficha_tecnica": {
+          "blend": "40% Carmenere, 20% Syrah, 20% Cabernet Franc, 10% Marselan, 10% Arinarnoa",
+          "valle": "Valle Cachapoal, Chile",
+          "cierre": "DIAM",
+          "alcohol": "13,5%",
+          "servicio": "16° – 18°",
+          "conduccion": "Espaldera Vertical",
+          "volumen_ml": "750"
+        },
+        "ficha_tecnica_pdf": "/documentos/fichas-tecnicas/lajau-betum-yu.pdf"
+      }
+    },
+    {
+      "slug": "lajau-deti",
+      "codigo": "VINO-LAJAU-DETI",
+      "nombre": "Lajau Detí",
+      "descripcion": "Interesante rojo cereza con aromas frescos y complejos: intensa fruta negra, cacao y humo. Boca estructurada, de taninos suaves y elegantes, largo y de agradable final.",
+      "descripcion_corta": "Ensamblaje de Carmenere, Cabernet Sauvignon y Petit Verdot, elegante y complejo.",
+      "precio": 28000,
+      "moneda": "CLP",
+      "imagenes": [
+        "/vinos/lajau-deti.png"
+      ],
+      "destacado": false,
+      "categoria": "vinos",
+      "agotado": false,
+      "atributos": {
+        "cepa": "Ensamblaje",
+        "tipo": "Tinto",
+        "dulce": "no",
+        "linea": "Lajau",
+        "nivel": "Edición Limitada",
+        "cosecha": 2024,
+        "maridajes": [
+          "Quesos maduros",
+          "Jabalí al romero"
+        ],
+        "grupo_cepa": "Ensamblaje",
+        "notas_cata": [
+          "Fruta negra",
+          "Cacao",
+          "Humo",
+          "Taninos elegantes"
+        ],
+        "ficha_tecnica": {
+          "blend": "50% Carmenere, 40% Cabernet Sauvignon, 10% Petit Verdot",
+          "valle": "Valle Cachapoal, Chile",
+          "cierre": "DIAM",
+          "alcohol": "13,5%",
+          "servicio": "16° – 18°",
+          "conduccion": "Espaldera Vertical",
+          "volumen_ml": "750"
+        },
+        "ficha_tecnica_pdf": "/documentos/fichas-tecnicas/lajau-deti.pdf"
+      }
+    },
+    {
+      "slug": "lajau-sam",
+      "codigo": "VINO-LAJAU-SAM",
+      "nombre": "Lajau Sam",
+      "descripcion": "Aromas a frutos negros muy maduros, especias y chocolate amargo. En boca es estructurado, equilibrado y de largo retrogusto.",
+      "descripcion_corta": "Ensamblaje Carmenere–Tannat, estructurado y de largo retrogusto.",
+      "precio": 32500,
+      "moneda": "CLP",
+      "imagenes": [
+        "/vinos/lajau-sam.png"
+      ],
+      "destacado": true,
+      "categoria": "vinos",
+      "agotado": false,
+      "atributos": {
+        "cepa": "Ensamblaje",
+        "tipo": "Tinto",
+        "badge": "Edición Limitada",
+        "dulce": "no",
+        "linea": "Lajau",
+        "nivel": "Edición Limitada",
+        "cosecha": 2024,
+        "maridajes": [
+          "Masas con carne",
+          "Entraña"
+        ],
+        "grupo_cepa": "Ensamblaje",
+        "notas_cata": [
+          "Frutos negros maduros",
+          "Especias",
+          "Chocolate amargo",
+          "Largo retrogusto"
+        ],
+        "ficha_tecnica": {
+          "blend": "68% Carmenere, 32% Tannat",
+          "valle": "Valle Cachapoal, Chile",
+          "cierre": "DIAM",
+          "alcohol": "13,5%",
+          "servicio": "16° – 18°",
+          "conduccion": "Espaldera Vertical",
+          "volumen_ml": "750"
+        },
+        "ficha_tecnica_pdf": "/documentos/fichas-tecnicas/lajau-sam.pdf"
+      }
+    },
+    {
+      "slug": "ombu-sauvignon",
+      "codigo": "VINO-OMBU-SAUVIGNON",
+      "nombre": "Ombú Cabernet Sauvignon",
+      "descripcion": "Nariz fresca, con notas a frutos secos, especias y frutos rojos maduros, y un leve toque de vainilla. Es equilibrado y carnoso, con taninos presentes pero sedosos, buen volumen y un final largo de muy buena persistencia.",
+      "descripcion_corta": "Cabernet Sauvignon 100% del Valle del Cachapoal, equilibrado y sedoso.",
+      "precio": 18900,
+      "moneda": "CLP",
+      "imagenes": [
+        "/vinos/ombu-sauvignon.png"
+      ],
+      "destacado": false,
+      "categoria": "vinos",
+      "agotado": false,
+      "atributos": {
+        "cepa": "Cabernet Sauvignon",
+        "tipo": "Tinto",
+        "dulce": "no",
+        "linea": "Ombú",
+        "nivel": "Reserva",
+        "cosecha": 2024,
+        "maridajes": [
+          "Cordero al palo",
+          "Comida árabe"
+        ],
+        "grupo_cepa": "Monovarietario",
+        "notas_cata": [
+          "Frutos secos",
+          "Especias",
+          "Frutos rojos maduros",
+          "Vainilla"
+        ],
+        "ficha_tecnica": {
+          "blend": "100% Cabernet Sauvignon",
+          "valle": "Valle Cachapoal, Chile",
+          "cierre": "DIAM",
+          "alcohol": "13,5%",
+          "servicio": "16° – 18°",
+          "conduccion": "Espaldera Vertical",
+          "volumen_ml": "750"
+        },
+        "ficha_tecnica_pdf": "/documentos/fichas-tecnicas/ombu-cabernet-sauvignon.pdf"
+      }
+    },
+    {
+      "slug": "ombu-carmenere",
+      "codigo": "VINO-OMBU-CARMENERE",
+      "nombre": "Ombú Carmenere",
+      "descripcion": "Intenso color rojo cereza. Nariz compleja, de intensas notas especiadas y frutos negros maduros. En boca, taninos suaves y redondos, de buena estructura, largo y agradable final.",
+      "descripcion_corta": "Carmenere Reserva 100%, de intensas notas especiadas y frutos negros maduros.",
+      "precio": 18900,
+      "moneda": "CLP",
+      "imagenes": [
+        "/vinos/ombu-carmenere.png"
+      ],
+      "destacado": true,
+      "categoria": "vinos",
+      "agotado": false,
+      "atributos": {
+        "cepa": "Carmenere",
+        "tipo": "Tinto",
+        "badge": "Insignia",
+        "dulce": "no",
+        "linea": "Ombú",
+        "nivel": "Reserva",
+        "cosecha": 2024,
+        "maridajes": [
+          "Pastas",
+          "Filete mignon",
+          "Pastelera de maíz"
+        ],
+        "grupo_cepa": "Monovarietario",
+        "notas_cata": [
+          "Frutos negros maduros",
+          "Especias",
+          "Rojo cereza",
+          "Taninos redondos"
+        ],
+        "ficha_tecnica": {
+          "blend": "100% Carmenere",
+          "valle": "Valle Cachapoal, Chile",
+          "cierre": "DIAM",
+          "alcohol": "13,5%",
+          "servicio": "16° – 18°",
+          "conduccion": "Espaldera Vertical",
+          "volumen_ml": "750"
+        },
+        "ficha_tecnica_pdf": "/documentos/fichas-tecnicas/ombu-carmenere.pdf"
+      }
+    },
+    {
+      "slug": "ombu-tannat",
+      "codigo": "VINO-OMBU-TANNAT",
+      "nombre": "Ombú Tannat",
+      "descripcion": "Rojo cereza. En nariz, aromas a frutos negros como arándanos y moras, con algo de especias como pimienta negra y clavo de olor. De cuerpo complejo, con taninos firmes, acidez equilibrada y buen potencial de guarda.",
+      "descripcion_corta": "Tannat Reserva 100%, de taninos firmes y buen potencial de guarda.",
+      "precio": 18900,
+      "moneda": "CLP",
+      "imagenes": [
+        "/vinos/ombu-tannat.png"
+      ],
+      "destacado": false,
+      "categoria": "vinos",
+      "agotado": false,
+      "atributos": {
+        "cepa": "Tannat",
+        "tipo": "Tinto",
+        "dulce": "no",
+        "linea": "Ombú",
+        "nivel": "Reserva",
+        "cosecha": 2024,
+        "maridajes": [
+          "Carnes rojas",
+          "Quesos maduros"
+        ],
+        "grupo_cepa": "Monovarietario",
+        "notas_cata": [
+          "Arándanos",
+          "Moras",
+          "Pimienta negra",
+          "Clavo de olor"
+        ],
+        "ficha_tecnica": {
+          "blend": "100% Tannat",
+          "valle": "Valle Cachapoal, Chile",
+          "cierre": "DIAM",
+          "alcohol": "13,5%",
+          "servicio": "16° – 18°",
+          "conduccion": "Espaldera Vertical",
+          "volumen_ml": "750"
+        },
+        "ficha_tecnica_pdf": "/documentos/fichas-tecnicas/ombu-tannat.pdf"
+      }
+    },
+    {
+      "slug": "yaray-gua-tinto",
+      "codigo": "VINO-YARAY-GUA-TINTO",
+      "nombre": "Yaráy Guá Carmenere",
+      "descripcion": "Color rojo teja. Aromas de frutas rojas confitadas, higos y miel. En boca es goloso, con un dulzor balanceado y una acidez que evita que sea empalagoso.",
+      "descripcion_corta": "Carmenere de cosecha tardía, goloso y de dulzor balanceado.",
+      "precio": 19000,
+      "moneda": "CLP",
+      "imagenes": [
+        "/vinos/yaray-gua-tinto.png"
+      ],
+      "destacado": false,
+      "categoria": "vinos",
+      "agotado": false,
+      "atributos": {
+        "cepa": "Carmenere",
+        "tipo": "Tinto",
+        "badge": "Cosecha Tardía",
+        "dulce": "si",
+        "linea": "Yaráy Guá",
+        "cosecha": 2023,
+        "maridajes": [
+          "Chocolate amargo",
+          "Queso azul"
+        ],
+        "grupo_cepa": "Monovarietario",
+        "notas_cata": [
+          "Frutas rojas confitadas",
+          "Higos",
+          "Miel",
+          "Rojo teja"
+        ],
+        "ficha_tecnica": {
+          "blend": "100% Carmenere",
+          "valle": "Valle Cachapoal, Chile",
+          "cierre": "DIAM",
+          "alcohol": "14,5%",
+          "servicio": "10° – 12°",
+          "conduccion": "Espaldera Vertical",
+          "volumen_ml": "500"
+        },
+        "ficha_tecnica_pdf": "/documentos/fichas-tecnicas/yaray-gua-carmenere.pdf"
+      }
+    },
+    {
+      "slug": "yaray-gua-blanco",
+      "codigo": "VINO-YARAY-GUA-BLANCO",
+      "nombre": "Yaráy Guá Chardonnay Viognier",
+      "descripcion": "Color amarillo oro con marcados reflejos ambarinos y brillantes. De gran volumen, potente, de grata acidez firme y vibrante. Final larguísimo y untuoso, con un retrogusto complejo donde regresan las notas de mermelada de naranja amarga, frutos secos tostados y un sutil toque de miel.",
+      "descripcion_corta": "Blanco de cosecha tardía, untuoso y de retrogusto complejo.",
+      "precio": 19000,
+      "moneda": "CLP",
+      "imagenes": [
+        "/vinos/yaray-gua-blanco.png"
+      ],
+      "destacado": false,
+      "categoria": "vinos",
+      "agotado": false,
+      "atributos": {
+        "cepa": "Chardonnay + Viognier",
+        "tipo": "Dulce",
+        "badge": "Cosecha Tardía",
+        "dulce": "si",
+        "linea": "Yaráy Guá",
+        "cosecha": 2023,
+        "maridajes": [
+          "Foie gras",
+          "Cheesecake de maracuyá"
+        ],
+        "grupo_cepa": "Chardonnay + Viognier",
+        "notas_cata": [
+          "Mermelada de naranja",
+          "Frutos secos tostados",
+          "Miel",
+          "Amarillo oro"
+        ],
+        "ficha_tecnica": {
+          "blend": "85% Chardonnay, 15% Viognier",
+          "valle": "Valle Cachapoal, Chile",
+          "cierre": "DIAM",
+          "alcohol": "14,5%",
+          "servicio": "8° – 10°",
+          "conduccion": "Espaldera Vertical",
+          "volumen_ml": "500"
+        },
+        "ficha_tecnica_pdf": "/documentos/fichas-tecnicas/yaray-gua-chardonnay-viognier.pdf"
+      }
+    }
+  ]
+}

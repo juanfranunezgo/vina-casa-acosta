@@ -8,12 +8,19 @@ import Reveal from "@/components/Reveal";
 import Button from "@/components/ui/Button";
 import ProductPurchase from "@/components/ProductPurchase";
 import TastingProfile from "@/components/TastingProfile";
-import { wines, getWineBySlug } from "@/data/wines";
+import { getCatalog, getWineBySlug } from "@/lib/afeleia/catalog";
 import { routing } from "@/i18n/routing";
 
+// El catálogo lo publica Afeleia: la ficha se reconstruye cada minuto en vez de
+// quedar congelada en el build. Un vino nuevo que no estaba al compilar se
+// renderiza on-demand (`dynamicParams` por defecto).
+// Tiene que ser un literal: Next lee la config de segmento estáticamente.
+export const revalidate = 60;
+
 export async function generateStaticParams() {
+  const catalog = await getCatalog();
   return routing.locales.flatMap((locale) =>
-    wines.map((w) => ({ locale, slug: w.slug })),
+    catalog.map((w) => ({ locale, slug: w.slug })),
   );
 }
 
@@ -21,7 +28,7 @@ export async function generateMetadata({
   params,
 }: PageProps<"/[locale]/vinos/[slug]">): Promise<Metadata> {
   const { locale, slug } = await params;
-  const wine = getWineBySlug(slug);
+  const wine = await getWineBySlug(slug);
   if (!wine) return { title: "—" };
   const tWine = await getTranslations({ locale, namespace: "wines" });
   return {
@@ -35,7 +42,8 @@ export default async function WinePage({
 }: PageProps<"/[locale]/vinos/[slug]">) {
   const { locale, slug } = await params;
   setRequestLocale(locale);
-  const wine = getWineBySlug(slug);
+  const catalog = await getCatalog();
+  const wine = catalog.find((w) => w.slug === slug);
   if (!wine) notFound();
 
   const t = await getTranslations("wineDetail");
@@ -46,12 +54,12 @@ export default async function WinePage({
   const tastingNotes = tWine.raw(`${slug}.tastingNotes`) as string[];
   const pairings = tWine.raw(`${slug}.pairings`) as string[];
 
-  const sameLine = wines
+  const sameLine = catalog
     .filter((w) => w.line === wine.line && w.slug !== wine.slug)
     .sort((a, b) => Number(Boolean(b.featured)) - Number(Boolean(a.featured)));
   const related = [
     ...sameLine,
-    ...wines
+    ...catalog
       .filter((w) => w.line !== wine.line && w.slug !== wine.slug)
       .sort((a, b) => Number(Boolean(b.featured)) - Number(Boolean(a.featured))),
   ].slice(0, 4);
