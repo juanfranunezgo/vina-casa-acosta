@@ -8,7 +8,7 @@ plan Free de Netlify sí permite uso comercial, con un límite duro de créditos
 por exceso. Ver [Costos](#costos-lo-que-hay-que-vigilar) al final: el límite existe y
 conviene entenderlo antes de empezar a deployar diez veces al día.
 
-Última actualización: 2026-08-02. Sitio en producción: <https://vinacasaacosta.netlify.app>.
+Última actualización: 2026-08-03. Sitio en producción: <https://vinacasaacosta.cl>.
 
 ---
 
@@ -68,9 +68,9 @@ Netlify asigna un nombre random tipo `celebrated-pika-3f9a21`. Cambiarlo:
 **Project configuration → General → Project details → Change project name** →
 `vinacasaacosta`
 
-Quedó en `https://vinacasaacosta.netlify.app`. No hay que tocar nada en el código: el build
-recibe esa URL en la variable `URL` y `lib/siteUrl.ts` la usa para canonical, Open Graph y
-JSON-LD. Es provisorio hasta que exista el dominio propio.
+Quedó en `https://vinacasaacosta.netlify.app`, hoy detrás del dominio propio. No hay que
+tocar nada en el código: el build recibe la URL pública en el entorno y `lib/siteUrl.ts` la
+usa para canonical, Open Graph y JSON-LD (ver Paso 6).
 
 ## Paso 4 — Verificar el deploy
 
@@ -82,8 +82,11 @@ Abrir el sitio y revisar, en este orden:
 - [ ] `/es/vinos` muestra las botellas y `/es/vinos/ombu-carmenere` abre la ficha.
 - [ ] Las imágenes se ven nítidas (van por el Image CDN de Netlify) y el hero no salta.
 - [ ] El carrito abre, suma y el checkout arma el mensaje de WhatsApp.
-- [ ] `Ctrl+U` en la home: el `<link rel="canonical">` dice `vinacasaacosta.netlify.app`, no
-      `web-casa-acosta.vercel.app`.
+- [ ] `Ctrl+U` en la home: el `<link rel="canonical">` dice `vinacasaacosta.cl`.
+- [ ] `Ctrl+U` en `/es/vinos/ombu-carmenere`: el canonical apunta **a esa ficha**, no a la
+      home. Si apunta a la home, `alternates` volvió a heredarse del layout — ver
+      `lib/alternates.ts`.
+- [ ] `/sitemap.xml` lista 69 URLs y `/robots.txt` termina con la línea `Sitemap:`.
 
 Si algo falla, el log completo está en **Deploys → [el deploy] → Deploy log**.
 
@@ -98,23 +101,36 @@ Con Vercel el push no disparaba deploy porque el proyecto apuntaba a otro repo
 
 Ya no hace falta correr ningún comando a mano para publicar.
 
-## Paso 6 — Dominio propio (cuando exista)
+## Paso 6 — Dominio propio: `vinacasaacosta.cl` (hecho)
 
-Mientras se use `*.netlify.app` este paso se puede saltar.
+El dominio está registrado en **NIC Chile**, el DNS lo administra **Cloudflare** (solo como
+DNS, todo en gris / "DNS only": el CDN y el SSL los pone Netlify, encimar dos CDNs solo
+suma puntos de falla) y el hosting es Netlify.
 
-1. **Project configuration → Domain management → Add a domain** → escribir el dominio
-   (ej. `casaacosta.cl`).
-2. Netlify da dos caminos:
-   - **Netlify DNS** (recomendado): cambiar los nameservers del dominio en el registrador
-     (NIC Chile o donde esté) por los cuatro que muestra Netlify. Certificado SSL
-     automático.
-   - **DNS externo**: dejar el DNS donde está y crear un registro `A` a la IP que indica
-     Netlify para el apex, más un `CNAME` de `www` a `vinacasaacosta.netlify.app`.
-3. Esperar la propagación (minutos a algunas horas) y confirmar que el candado SSL aparece.
-4. **Project configuration → Environment variables → Add a variable**:
-   `NEXT_PUBLIC_SITE_URL = https://casaacosta.cl`
-5. **Deploys → Trigger deploy → Deploy site**, para que los canonical y el JSON-LD salgan
-   con el dominio definitivo.
+**Registros en Cloudflare** — los que importan:
+
+| Nombre | Tipo | Contenido | Proxy |
+|---|---|---|---|
+| `vinacasaacosta.cl` | A | `75.2.60.5` (apex de Netlify) | DNS only |
+| `www` | CNAME | `vinacasaacosta.netlify.app` | DNS only |
+| `vinacasaacosta.cl` | MX | `mail.vinacasaacosta.cl` | DNS only |
+| `mail` | A | `216.246.46.90` (cPanel de BanaHosting) | DNS only |
+
+⚠️ El correo `@vinacasaacosta.cl` sigue en BanaHosting, **no** en Netlify. El MX apunta a
+`mail.` y no al apex justamente porque el apex ahora resuelve a Netlify. Si alguna vez se
+activa el proxy naranja de Cloudflare sobre `mail`, el correo deja de llegar: el proxy solo
+pasa HTTP/HTTPS. Lo mismo vale para `cpanel`, `webmail`, `webdisk`, `cpcalendars` y
+`cpcontacts`.
+
+**En Netlify**: `vinacasaacosta.cl` es el *Primary domain* y `www` redirige a él.
+
+**En Netlify → Environment variables**:
+`NEXT_PUBLIC_SITE_URL = https://vinacasaacosta.cl` (sin barra final).
+
+Netlify ya expone el dominio primario en su variable `URL`, así que un redeploy solo
+también alcanzaría; se define explícita para que no dependa de cuál dominio esté marcado
+como primario. Después de definirla hay que **Trigger deploy → Deploy site**: los canonical,
+el hreflang, el sitemap y el JSON-LD se calculan en build time.
 
 ## Paso 7 — Apagar Vercel (sin romper los links viejos)
 

@@ -2,7 +2,7 @@
 
 # Viña Casa Acosta — sitio web
 
-Sitio público boutique de la viña (San Vicente de Tagua Tagua, Valle del Cachapoal). Live: https://vinacasaacosta.netlify.app (hasta que haya dominio propio).
+Sitio público boutique de la viña (San Vicente de Tagua Tagua, Valle del Cachapoal). Live: https://vinacasaacosta.cl (dominio propio en NIC, DNS en Cloudflare, hosting en Netlify).
 
 ## Estructura
 

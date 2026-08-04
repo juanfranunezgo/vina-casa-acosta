@@ -47,13 +47,29 @@ Solución provisoria mientras no haya backend. Plan Free: **100 envíos/mes**.
 
 ## Lo que falta para producción
 
-**Infraestructura de SEO (nada de esto existe):**
-- No hay `app/sitemap.ts` ni `app/robots.ts`.
+**Infraestructura de SEO:**
+- ~~No hay `app/sitemap.ts` ni `app/robots.ts`~~ → hechos. El sitemap emite 69 URLs
+  (23 rutas × 3 locales) con el set completo de hreflang + `x-default`, y sale de `data/`,
+  así que agregar un vino o un tour lo incluye solo. Va **sin `lastmod`** a propósito: no
+  existe fecha real de modificación y estampar la hora del build entrena a Google a ignorar
+  el campo. Cuando el catálogo traiga `updated_at` desde Afeleia, se agrega.
 - ~~`metadataBase` y `SITE_URL` apuntan al dominio de preview de Vercel~~ → resuelto:
-  ambos leen `lib/siteUrl.ts`, que toma la URL del entorno. Queda pendiente definir
-  `NEXT_PUBLIC_SITE_URL` en Netlify cuando exista el dominio propio.
-- `/tienda` no tiene metadata: es `"use client"`, así que no admite `generateMetadata`.
-  Necesita un `layout.tsx` propio y una clave `metadata.tienda` en los mensajes.
+  ambos leen `lib/siteUrl.ts`. **Falta definir `NEXT_PUBLIC_SITE_URL =
+  https://vinacasaacosta.cl` en Netlify y redeployar** — sin eso los canonical siguen
+  saliendo con el dominio `*.netlify.app`.
+- ~~Canonical roto en todo el sitio~~ → resuelto. Las 78 páginas declaraban **la home**
+  como su canónica (solo `/actividades` estaba bien): `alternates` vivía en el layout y se
+  hereda entero, así que toda ruta que no lo redeclarara heredaba el de la portada. Google
+  lo lee como "indexá una sola página". Ahora cada ruta lo declara con `alternatesFor()`
+  de `lib/alternates.ts` y el layout ya **no** lo trae — si una ruta nueva se olvida, queda
+  sin canonical (Google se auto-canonicaliza) en vez de apuntar mal.
+- ~~`/tienda` no tiene metadata: es `"use client"`~~ → tiene su `layout.tsx` con el
+  canonical. **Sigue faltando la clave `metadata.tienda`** en `messages/*.json`: hasta que
+  exista, hereda el title y la description genéricos del sitio. Es copy y necesita
+  validación del cliente, por eso no se inventó.
+- Las fichas de vino y tour ya emiten su propio Open Graph (antes compartir un vino por
+  WhatsApp mostraba el título y la foto genéricos del sitio). Ojo: `tour-ombu` y
+  `tour-bera` todavía usan fotos de Unsplash como `og:image`.
 - JSON-LD solo en `/vinos` (`ItemList`). Faltan `Winery`/`LocalBusiness` en el inicio,
   `Product` con `offers` en la ficha de vino, y `BreadcrumbList`.
 - `app/[locale]/vinos/page.tsx` pide `quality={84}` y `next.config.ts` solo permite
