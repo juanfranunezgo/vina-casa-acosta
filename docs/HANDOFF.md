@@ -4,15 +4,15 @@ Estado real del proyecto para quien lo retome (persona o agente). `CLAUDE.md` ex
 stack y las convenciones; este archivo explica **en qué punto está**, qué no funciona
 todavía y qué trampas ya se pagaron.
 
-Última actualización: 2026-07-30.
+Última actualización: 2026-08-03.
 
 ---
 
 ## En una línea
 
-El sitio está **completo como pieza visual y vacío como software**: 74 páginas SSG en tres
-idiomas, sin backend, sin base de datos y sin pagos. Nada de lo que el visitante escribe
-llega a ninguna parte.
+El sitio está **completo como pieza visual y casi vacío como software**: 74 páginas SSG en
+tres idiomas, sin backend propio, sin base de datos y sin pagos. Los dos formularios ya
+llegan a la viña vía Netlify Forms; el carrito sigue derivando a WhatsApp sin cobro.
 
 ---
 
@@ -22,11 +22,26 @@ Esto es lo primero que hay que saber, porque no se nota mirando la interfaz:
 
 | Formulario | Qué hace realmente |
 |---|---|
-| Reserva de tours (`components/TourReservationForm.tsx`) | **No envía nada.** El submit es un `setTimeout` que muestra "enviado". Al lado hay un botón de WhatsApp que sí funciona. |
-| Contacto (`components/ContactForm.tsx`) | Abre el cliente de correo del visitante con un `mailto:` prearmado. Si no tiene cliente configurado, el mensaje se pierde en silencio. |
-| Carrito (`components/CartDrawer.tsx`) | El "checkout" arma un mensaje de WhatsApp con el pedido. No hay cobro. |
+| Reserva de tours (`components/TourReservationForm.tsx`) | Envía a **Netlify Forms** (`reserva-tour`). Al lado hay un botón de WhatsApp que sí funciona. |
+| Contacto (`components/ContactForm.tsx`) | Envía a **Netlify Forms** (`contacto`). Antes era un `mailto:` que se perdía si el visitante no tenía cliente de correo. |
+| Carrito (`components/CartDrawer.tsx`) | El "checkout" arma un mensaje de WhatsApp con el pedido. **No hay cobro.** |
 
-El formulario de tours es el más urgente: promete algo que no cumple.
+### Netlify Forms — cómo está armado
+
+Solución provisoria mientras no haya backend. Plan Free: **100 envíos/mes**.
+
+- `public/__forms.html` declara los dos formularios. Existe porque Netlify detecta
+  formularios parseando el HTML **estático** del deploy, y con OpenNext los `<form>` de
+  React no existen como HTML en el build. **Cada campo que envíe un componente tiene que
+  estar declarado ahí**: Netlify descarta en silencio los que no figuren.
+- `lib/netlifyForms.ts` hace el POST contra `/__forms.html` (no contra una ruta de Next,
+  que se la llevaría OpenNext antes de que Forms la vea).
+- ⚠️ **En `npm run dev` los formularios siempre fallan** (405/404): el handler de Forms es
+  parte del runtime de Netlify. Se prueban en un deploy preview, no en local.
+- La casilla de destino se configura en Netlify → Notifications → Form submission
+  notifications. **No sale de `lib/contact.ts`**: cambiar esa constante no cambia a dónde
+  llegan los envíos.
+- Los envíos quedan guardados en el panel aunque la notificación por correo falle.
 
 ---
 

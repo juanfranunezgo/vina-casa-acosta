@@ -69,7 +69,8 @@ alguna parte de la narrativa.
 
 - ☐ Dirección exacta + cómo llegar
 - ☐ Teléfono(s) de contacto reales (hoy el WhatsApp del carrito apunta a `+56 9 0000 0000` placeholder)
-- ☐ Email de contacto real (hoy: `contacto@vinacasaacosta.cl` — confirmar si existe)
+- ☑ Email de contacto real: `contacto@casaacosta.cl` (confirmado por el cliente 2026-08-03).
+      Ojo: el dominio del correo NO es el del sitio (`vinacasaacosta.cl`) — ver si lo migran.
 - ☐ Horarios oficiales (los del boceto son razonables pero hay que validar)
 - ☐ Redes sociales activas (Instagram, Facebook, TikTok)
 - ☐ ¿Despachan a regiones? ¿Solo zona centro? ¿Retiro en viña?

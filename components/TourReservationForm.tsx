@@ -1,18 +1,18 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { Loader2, Check, Send, MessageCircle, CalendarDays } from "lucide-react";
 import { CONTACT_WHATSAPP_URL } from "@/lib/contact";
+import { submitToNetlifyForms } from "@/lib/netlifyForms";
 
-type Status = "idle" | "submitting" | "success";
-
-/** Piso de personas por reserva: los tours no salen con menos de 2. */
-const MIN_PEOPLE = 2;
+type Status = "idle" | "submitting" | "success" | "error";
 
 type Props = {
   /** Nombre del tour, para el prefill del mensaje de WhatsApp. */
   tourName: string;
+  /** Piso de personas por reserva del tour (`minPeople` en data/activities.ts). */
+  minPeople: number;
 };
 
 const inputClass =
@@ -20,15 +20,17 @@ const inputClass =
 const labelClass =
   "font-body text-label-sm text-on-surface-variant uppercase tracking-wider block mb-2";
 
-export default function TourReservationForm({ tourName }: Props) {
+export default function TourReservationForm({ tourName, minPeople }: Props) {
   const t = useTranslations("tourDetail.form");
+  const locale = useLocale();
   const [status, setStatus] = useState<Status>("idle");
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
-  const [people, setPeople] = useState(String(MIN_PEOPLE));
+  const [people, setPeople] = useState(String(minPeople));
   const [date, setDate] = useState("");
   const [note, setNote] = useState("");
+  const [botField, setBotField] = useState("");
   const dateRef = useRef<HTMLInputElement>(null);
 
   // El mínimo de fecha se pone al montar: calcularlo en el render rompería la
@@ -46,21 +48,41 @@ export default function TourReservationForm({ tourName }: Props) {
     else input.focus();
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  /**
+   * La solicitud va a Netlify Forms: queda en el panel del proyecto y dispara
+   * la notificación por correo. Los campos tienen que estar declarados en
+   * `public/__forms.html` o Netlify los descarta en silencio.
+   */
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (status === "submitting") return;
     setStatus("submitting");
-    setTimeout(() => {
+
+    try {
+      await submitToNetlifyForms("reserva-tour", {
+        tour: tourName,
+        nombre: name,
+        email,
+        telefono: phone,
+        personas: people,
+        fecha: date,
+        nota: note,
+        idioma: locale,
+        "bot-field": botField,
+      });
       setStatus("success");
-      setTimeout(() => {
+      window.setTimeout(() => {
         setName("");
         setEmail("");
         setPhone("");
-        setPeople(String(MIN_PEOPLE));
+        setPeople(String(minPeople));
         setDate("");
         setNote("");
         setStatus("idle");
-      }, 3500);
-    }, 700);
+      }, 5000);
+    } catch {
+      setStatus("error");
+    }
   };
 
   const whatsappUrl = () => {
@@ -80,6 +102,20 @@ export default function TourReservationForm({ tourName }: Props) {
         <h2 className="font-display text-3xl text-primary mb-2">{t("title")}</h2>
         <p className="font-body text-body-md text-on-surface-variant">{t("subtitle")}</p>
       </div>
+
+      {/* Honeypot: invisible para personas, tentador para bots. Si llega con
+          algo, Netlify descarta el envío como spam. */}
+      <p className="hidden" aria-hidden="true">
+        <label>
+          No llenar este campo
+          <input
+            tabIndex={-1}
+            autoComplete="off"
+            value={botField}
+            onChange={(e) => setBotField(e.target.value)}
+          />
+        </label>
+      </p>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
         <div>
@@ -123,21 +159,21 @@ export default function TourReservationForm({ tourName }: Props) {
             required
             type="number"
             inputMode="numeric"
-            min={MIN_PEOPLE}
+            min={minPeople}
             step={1}
             value={people}
             onChange={(e) => setPeople(e.target.value)}
             onBlur={() =>
               setPeople((current) => {
                 const parsed = Number.parseInt(current, 10);
-                return String(Number.isNaN(parsed) ? MIN_PEOPLE : Math.max(MIN_PEOPLE, parsed));
+                return String(Number.isNaN(parsed) ? minPeople : Math.max(minPeople, parsed));
               })
             }
             aria-describedby="tour-people-hint"
             className={`${inputClass} tabular-nums`}
           />
           <p id="tour-people-hint" className="mt-2 font-body text-xs text-on-surface-variant/80">
-            {t("peopleHint")}
+            {t("peopleHint", { min: minPeople })}
           </p>
         </div>
         <div className="sm:col-span-2">
@@ -198,12 +234,13 @@ export default function TourReservationForm({ tourName }: Props) {
         >
           {status === "submitting" && <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />}
           {status === "success" && <Check className="h-4 w-4" aria-hidden="true" />}
-          {status === "idle" && (
+          {(status === "idle" || status === "error") && (
             <Send className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-0.5" aria-hidden="true" />
           )}
           {status === "idle" && t("submitIdle")}
           {status === "submitting" && t("submitting")}
           {status === "success" && t("success")}
+          {status === "error" && t("error")}
         </button>
 
         <a
@@ -217,9 +254,10 @@ export default function TourReservationForm({ tourName }: Props) {
         </a>
       </div>
 
-      {status === "success" && (
-        <p className="font-body text-body-md text-primary">{t("successMessage")}</p>
-      )}
+      <p aria-live="polite" className="font-body text-body-md">
+        {status === "success" && <span className="text-primary">{t("successMessage")}</span>}
+        {status === "error" && <span className="text-error">{t("errorMessage")}</span>}
+      </p>
     </form>
   );
 }

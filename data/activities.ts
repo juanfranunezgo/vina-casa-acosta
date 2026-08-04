@@ -19,6 +19,8 @@ export type Experience = {
   purchaseUrl?: string;
 };
 
+// Orden fijo: de menor a mayor precio. Es el que se ve en el menú de Actividades
+// del navbar, en la grilla D2 y en "otras experiencias" del detalle.
 export const tours: Tour[] = [
   {
     slug: "tour-ombu",
@@ -33,18 +35,6 @@ export const tours: Tour[] = [
       "https://images.unsplash.com/photo-1474722883778-792e7990302f?auto=format&fit=crop&w=1400&q=70",
   },
   {
-    slug: "tour-carmenere",
-    name: "Tour Carmenere",
-    description:
-      "Nuestra experiencia premium. Viaje detallado por la historia de la cepa insignia, con degustación de añadas históricas directamente de la barrica.",
-    priceCLP: 45000,
-    duration: "3 horas",
-    minPeople: 4,
-    highlights: ["Añadas históricas", "Cata desde barrica", "Almuerzo ligero"],
-    image: "/images/actividades/tour-carmenere.webp",
-    premium: true,
-  },
-  {
     slug: "tour-bera",
     name: "Tour Berá",
     description:
@@ -55,6 +45,18 @@ export const tours: Tour[] = [
     highlights: ["4 vinos Gran Reserva", "Bodega subterránea", "Maridaje"],
     image:
       "https://images.unsplash.com/photo-1506377247377-2a5b3b417ebb?auto=format&fit=crop&w=1400&q=70",
+  },
+  {
+    slug: "tour-carmenere",
+    name: "Tour Carmenere",
+    description:
+      "Nuestra experiencia premium. Viaje detallado por la historia de la cepa insignia, con degustación de añadas históricas directamente de la barrica.",
+    priceCLP: 45000,
+    duration: "3 horas",
+    minPeople: 4,
+    highlights: ["Añadas históricas", "Cata desde barrica", "Almuerzo ligero"],
+    image: "/images/actividades/tour-carmenere.webp",
+    premium: true,
   },
 ];
 
