@@ -47,8 +47,45 @@ Tengo **13 vinos** cargados en el sistema, todos con datos placeholder que **el 
 
 - Notas de cata (4 descriptores por vino)
 - Maridajes sugeridos
-- Precio real en CLP
+- ☑ Precio real en CLP → **recibidos el 2026-08-03**, ver abajo. Todavía **no están cargados**:
+  los que muestra el sitio siguen siendo inventados.
 - Año de cosecha actual en venta
+
+#### Precios reales (recibidos del cliente, 2026-08-03)
+
+⚠️ **Estos precios no se cargan en el repositorio, se cargan en el panel de Afeleia.** La
+tienda, `/vinos`, la ficha de cada vino y el carrusel del inicio leen el catálogo desde la
+API del panel (`lib/afeleia/catalog.ts`); editar precios en el código no cambia nada de lo
+que ve el visitante. Una vez cargados: `npm run catalogo:snapshot` y commitear el
+`data/catalogo-fallback.json` regenerado, para que la copia de respaldo no quede con los
+precios inventados.
+
+La planilla llegó encabezada **"Precio (Caja x 6)"** — hay que confirmar con el cliente si
+es el precio por botella comprando caja de 6 o el de la caja completa, porque la tienda web
+vende por unidad.
+
+| Vino (como lo escribió el cliente) | Variedad / Tipo | Precio | Producto en el catálogo |
+|---|---|---|---|
+| Berá Rosé | Carménère | $9.120 | `bera` |
+| Ombú – Tannat | Tannat | $9.900 | `ombu-tannat` |
+| Ombú – Cabernet Sauvignon | Cabernet Sauvignon | $9.900 | `ombu-sauvignon` |
+| Ombú | Carménère | $9.900 | `ombu-carmenere` |
+| Lajau – Betúm | Ensamblaje | $9.900 | `lajau-betum` |
+| Lajau – Detí | Ensamblaje | $9.900 | `lajau-deti` |
+| Lajau – Sam | Ensamblaje | $9.900 | `lajau-sam` |
+| Lajau – Betum-Yu | Ensamblaje | $9.900 | `lajau-betum-yu` |
+| Estación Francia | Carménère | $18.800 | `estacion-francia-carmenere` |
+| Estación Francia – Tannat | Carménère / Tannat | $18.800 | `estacion-francia-tannat` |
+| Guidaí – Brut | Carménère | $22.460 | `guidai` |
+| Yaráy Guá Blanco | Blanco | $9.120 | `yaray-gua-blanco` |
+| Yaráy Guá Tinto | Tinto | $9.120 | `yaray-gua-tinto` |
+
+Los 13 calzan uno a uno con el catálogo. Tres nombres de la planilla no coinciden con los
+del sitio y conviene aprovechar de zanjarlos al cargar: **Berá Rosé** (en el catálogo es
+"Berá", y las fichas de tour lo llaman "Berá Rosé Carménère"), **Estación Francia – Tannat**
+(la planilla lo declara ensamblaje Carménère/Tannat, el catálogo lo tiene como Tannat) y
+**Guidaí – Brut** (la planilla lo declara Carménère, el catálogo lo tiene como espumante de
+ensamblaje).
 
 Líneas a confirmar:
 - **Ombú** (Carmenere, Tannat, Cabernet Sauvignon) — Reserva
