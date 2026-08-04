@@ -47,22 +47,25 @@ Tengo **13 vinos** cargados en el sistema, todos con datos placeholder que **el 
 
 - Notas de cata (4 descriptores por vino)
 - Maridajes sugeridos
-- ☑ Precio real en CLP → **recibidos el 2026-08-03**, ver abajo. Todavía **no están cargados**:
-  los que muestra el sitio siguen siendo inventados.
+- ☑ Precio real en CLP → **recibidos y aplicados el 2026-08-03**, ver abajo. Falta cargarlos
+  en el panel de Afeleia, que es lo que ve el visitante mientras la API responda.
 - Año de cosecha actual en venta
 
 #### Precios reales (recibidos del cliente, 2026-08-03)
 
-⚠️ **Estos precios no se cargan en el repositorio, se cargan en el panel de Afeleia.** La
-tienda, `/vinos`, la ficha de cada vino y el carrusel del inicio leen el catálogo desde la
-API del panel (`lib/afeleia/catalog.ts`); editar precios en el código no cambia nada de lo
-que ve el visitante. Una vez cargados: `npm run catalogo:snapshot` y commitear el
-`data/catalogo-fallback.json` regenerado, para que la copia de respaldo no quede con los
-precios inventados.
+Reemplazan a los inventados de la demo. Están aplicados en el repositorio: `data/wines.ts`
+(catálogo curado) y `data/catalogo-fallback.json` (respaldo que se sirve si la API no
+responde).
 
-La planilla llegó encabezada **"Precio (Caja x 6)"** — hay que confirmar con el cliente si
-es el precio por botella comprando caja de 6 o el de la caja completa, porque la tienda web
-vende por unidad.
+⚠️ **Falta cargarlos en el panel de Afeleia.** La tienda, `/vinos`, la ficha de cada vino y
+el carrusel del inicio leen el catálogo desde la API del panel (`lib/afeleia/catalog.ts`),
+así que mientras la API responda el visitante ve los precios del panel, no estos. Al
+cargarlos allá conviene correr `npm run catalogo:snapshot` y commitear el archivo
+regenerado: hoy el respaldo está editado a mano y el script lo va a sobrescribir con lo que
+diga el panel.
+
+La planilla llegó encabezada "Precio (Caja x 6)"; el cliente confirmó el 2026-08-03 que se
+usan tal cual, como precio de la tienda.
 
 | Vino (como lo escribió el cliente) | Variedad / Tipo | Precio | Producto en el catálogo |
 |---|---|---|---|
@@ -80,12 +83,9 @@ vende por unidad.
 | Yaráy Guá Blanco | Blanco | $9.120 | `yaray-gua-blanco` |
 | Yaráy Guá Tinto | Tinto | $9.120 | `yaray-gua-tinto` |
 
-Los 13 calzan uno a uno con el catálogo. Tres nombres de la planilla no coinciden con los
-del sitio y conviene aprovechar de zanjarlos al cargar: **Berá Rosé** (en el catálogo es
-"Berá", y las fichas de tour lo llaman "Berá Rosé Carménère"), **Estación Francia – Tannat**
-(la planilla lo declara ensamblaje Carménère/Tannat, el catálogo lo tiene como Tannat) y
-**Guidaí – Brut** (la planilla lo declara Carménère, el catálogo lo tiene como espumante de
-ensamblaje).
+Los 13 calzan uno a uno con el catálogo. Tres nombres de la planilla se escriben distinto en
+el sitio —**Berá Rosé** / "Berá", **Estación Francia – Tannat** y **Guidaí – Brut**— y el
+cliente confirmó el 2026-08-03 que los del sitio están bien: no se tocan.
 
 Líneas a confirmar:
 - **Ombú** (Carmenere, Tannat, Cabernet Sauvignon) — Reserva
