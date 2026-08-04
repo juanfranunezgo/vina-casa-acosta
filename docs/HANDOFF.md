@@ -59,15 +59,14 @@ Solución provisoria mientras no haya backend. Plan Free: **100 envíos/mes**.
 - `app/[locale]/vinos/page.tsx` pide `quality={84}` y `next.config.ts` solo permite
   `[65, 70, 75, 85, 95]` → warning en cada build. Cambiar a 85.
 
-**Catálogo:** los 13 precios que hoy muestra el sitio son **inventados** (placeholders de la
-demo). Los reales llegaron el 2026-08-03 y están anotados en
-[`../CONTENT_BRIEF.md`](../CONTENT_BRIEF.md#2-texto-de-cada-vino), con una pregunta abierta:
-la planilla dice "Caja x 6" y la tienda vende por unidad. **No se cargan en el repositorio**
-— desde el M3 el precio sale de `producto.precio` de la API de Afeleia
-(`lib/afeleia/catalog.ts`), así que la fuente de verdad es el panel y editar el código no
-cambia lo que ve el visitante. Después de cargarlos allá: `npm run catalogo:snapshot` y
-commitear el `data/catalogo-fallback.json` regenerado, o el respaldo seguirá sirviendo los
-precios de la demo el día que la API no responda.
+**Catálogo:** los 13 precios reales llegaron el 2026-08-03 y están aplicados en el repo
+(`data/wines.ts` y `data/catalogo-fallback.json`), pero **falta cargarlos en el panel de
+Afeleia**: desde el M3 el precio sale de `producto.precio` de la API
+(`lib/afeleia/catalog.ts`), así que mientras la API responda el visitante sigue viendo los
+precios inventados de la demo. Ojo con el orden al hacerlo: el respaldo de hoy está editado
+a mano y `npm run catalogo:snapshot` lo sobrescribe con lo que diga el panel. La lista y su
+mapeo a cada producto están en
+[`../CONTENT_BRIEF.md`](../CONTENT_BRIEF.md#2-texto-de-cada-vino).
 
 **Legal:** no existen Privacidad, Términos ni Mapa de Sitio (en el footer son texto sin
 enlace, a propósito). Tampoco hay verificación de edad ni aviso de consumo moderado: para

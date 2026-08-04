@@ -16,7 +16,7 @@
       "nombre": "Berá",
       "descripcion": "Rosé de color rosa y perfil complejo. Aromas a frambuesa fresca, muy floral, con notas a cereza roja. Boca fresca, de interesante acidez, jugoso y de agradable final.",
       "descripcion_corta": "Rosé fresco y floral de Carmenere y Cabernet Sauvignon.",
-      "precio": 16900,
+      "precio": 9120,
       "moneda": "CLP",
       "imagenes": [
         "/vinos/bera.png"
@@ -61,7 +61,7 @@
       "nombre": "Estación Francia Carmenere",
       "descripcion": "Vivo color rojo guinda, con notas violáceas. Aromas a frutos negros, chocolate y especias, con toques de grosella, frutos secos y tabaco. En boca hay taninos sedosos; es jugoso y de buen equilibrio, con un final persistente.",
       "descripcion_corta": "Gran Reserva de Carmenere y Petit Verdot, de gran complejidad y guarda.",
-      "precio": 24000,
+      "precio": 18800,
       "moneda": "CLP",
       "imagenes": [
         "/vinos/estacion-francia-carmenere.png"
@@ -105,7 +105,7 @@
       "nombre": "Estación Francia Tannat",
       "descripcion": "Vino de intenso color. Aromas a frutos rojos maduros, ciruela y mora, con toques a cereza negra y notas a tabaco. Boca potente y de gran estructura, cuerpo robusto, largo y persistente.",
       "descripcion_corta": "Gran Reserva de Tannat y Carmenere, potente y de gran estructura.",
-      "precio": 24000,
+      "precio": 18800,
       "moneda": "CLP",
       "imagenes": [
         "/vinos/estacion-francia-tannat.png"
@@ -149,7 +149,7 @@
       "nombre": "Guidaí",
       "descripcion": "Espumante de color rosado pálido. Aromas a fresas, con un toque picante. Corona blanquecina, con persistentes burbujas pequeñas; fresco y de equilibrada acidez.",
       "descripcion_corta": "Espumante rosado, fresco y de burbuja fina.",
-      "precio": 22000,
+      "precio": 22460,
       "moneda": "CLP",
       "imagenes": [
         "/vinos/guidai.png"
@@ -193,7 +193,7 @@
       "nombre": "Lajau Betúm",
       "descripcion": "Vino de intenso color rojo rubí con tintes violáceos. Muy complejo: fruta roja madura y fruta negra, con toques de humo y pimienta. Boca de buena estructura y volumen, de taninos jugosos, gran retrogusto y largo final.",
       "descripcion_corta": "Ensamblaje de cuatro cepas, complejo y de gran volumen.",
-      "precio": 28000,
+      "precio": 9900,
       "moneda": "CLP",
       "imagenes": [
         "/vinos/lajau-betum.png"
@@ -238,7 +238,7 @@
       "nombre": "Lajau Betúm Yú",
       "descripcion": "Vino de intenso color rojo rubí, de taninos presentes pero redondos y una acidez equilibrada. Final de boca con un toque a chocolate amargo y algo de humo, de largo final.",
       "descripcion_corta": "Ensamblaje de cinco cepas, expresión cumbre de la línea Lajau.",
-      "precio": 48000,
+      "precio": 9900,
       "moneda": "CLP",
       "imagenes": [
         "/vinos/lajau-betum-yu.png"
@@ -282,7 +282,7 @@
       "nombre": "Lajau Detí",
       "descripcion": "Interesante rojo cereza con aromas frescos y complejos: intensa fruta negra, cacao y humo. Boca estructurada, de taninos suaves y elegantes, largo y de agradable final.",
       "descripcion_corta": "Ensamblaje de Carmenere, Cabernet Sauvignon y Petit Verdot, elegante y complejo.",
-      "precio": 28000,
+      "precio": 9900,
       "moneda": "CLP",
       "imagenes": [
         "/vinos/lajau-deti.png"
@@ -326,7 +326,7 @@
       "nombre": "Lajau Sam",
       "descripcion": "Aromas a frutos negros muy maduros, especias y chocolate amargo. En boca es estructurado, equilibrado y de largo retrogusto.",
       "descripcion_corta": "Ensamblaje Carmenere–Tannat, estructurado y de largo retrogusto.",
-      "precio": 32500,
+      "precio": 9900,
       "moneda": "CLP",
       "imagenes": [
         "/vinos/lajau-sam.png"
@@ -371,7 +371,7 @@
       "nombre": "Ombú Cabernet Sauvignon",
       "descripcion": "Nariz fresca, con notas a frutos secos, especias y frutos rojos maduros, y un leve toque de vainilla. Es equilibrado y carnoso, con taninos presentes pero sedosos, buen volumen y un final largo de muy buena persistencia.",
       "descripcion_corta": "Cabernet Sauvignon 100% del Valle del Cachapoal, equilibrado y sedoso.",
-      "precio": 18900,
+      "precio": 9900,
       "moneda": "CLP",
       "imagenes": [
         "/vinos/ombu-sauvignon.png"
@@ -415,7 +415,7 @@
       "nombre": "Ombú Carmenere",
       "descripcion": "Intenso color rojo cereza. Nariz compleja, de intensas notas especiadas y frutos negros maduros. En boca, taninos suaves y redondos, de buena estructura, largo y agradable final.",
       "descripcion_corta": "Carmenere Reserva 100%, de intensas notas especiadas y frutos negros maduros.",
-      "precio": 18900,
+      "precio": 9900,
       "moneda": "CLP",
       "imagenes": [
         "/vinos/ombu-carmenere.png"
@@ -461,7 +461,7 @@
       "nombre": "Ombú Tannat",
       "descripcion": "Rojo cereza. En nariz, aromas a frutos negros como arándanos y moras, con algo de especias como pimienta negra y clavo de olor. De cuerpo complejo, con taninos firmes, acidez equilibrada y buen potencial de guarda.",
       "descripcion_corta": "Tannat Reserva 100%, de taninos firmes y buen potencial de guarda.",
-      "precio": 18900,
+      "precio": 9900,
       "moneda": "CLP",
       "imagenes": [
         "/vinos/ombu-tannat.png"
@@ -505,7 +505,7 @@
       "nombre": "Yaráy Guá Carmenere",
       "descripcion": "Color rojo teja. Aromas de frutas rojas confitadas, higos y miel. En boca es goloso, con un dulzor balanceado y una acidez que evita que sea empalagoso.",
       "descripcion_corta": "Carmenere de cosecha tardía, goloso y de dulzor balanceado.",
-      "precio": 19000,
+      "precio": 9120,
       "moneda": "CLP",
       "imagenes": [
         "/vinos/yaray-gua-tinto.png"
@@ -549,7 +549,7 @@
       "nombre": "Yaráy Guá Chardonnay Viognier",
       "descripcion": "Color amarillo oro con marcados reflejos ambarinos y brillantes. De gran volumen, potente, de grata acidez firme y vibrante. Final larguísimo y untuoso, con un retrogusto complejo donde regresan las notas de mermelada de naranja amarga, frutos secos tostados y un sutil toque de miel.",
       "descripcion_corta": "Blanco de cosecha tardía, untuoso y de retrogusto complejo.",
-      "precio": 19000,
+      "precio": 9120,
       "moneda": "CLP",
       "imagenes": [
         "/vinos/yaray-gua-blanco.png"
