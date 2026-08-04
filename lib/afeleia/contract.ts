@@ -1,4 +1,13 @@
-/** Version of the public Afeleia catalog contract supported by this site. */
+/**
+ * Contrato v1 del catálogo público de Afeleia: tipos, endpoint y validación.
+ *
+ * Vive aparte de `catalog.ts` porque lo consumen los dos lados. `catalog.ts`
+ * importa el snapshot de fallback (`data/catalogo-fallback.json`) y es código de
+ * servidor; el `CartDrawer` corre en el browser y necesita el mismo contrato sin
+ * arrastrar ese JSON al bundle. Por eso este archivo NO importa nada.
+ */
+
+/** Versión del contrato que esta web sabe leer. */
 export const CONTRACT_VERSION = 1;
 
 export type AttributeValue = string | number | string[] | Record<string, string>;
@@ -33,6 +42,14 @@ export function catalogEndpoint(): string | null {
   return `${base.replace(/\/+$/, "")}/catalogo-publico?sitio=${encodeURIComponent(sitio)}`;
 }
 
+/**
+ * Campos que TODO producto del contrato v1 trae. Si falta uno, la respuesta no
+ * se renderiza: la web sirve el snapshot. Un catálogo a medias se ve peor que
+ * un catálogo viejo, y encima sin avisar.
+ *
+ * Valida un subconjunto de `ApiProduct` a propósito: los campos que el sitio lee
+ * para decidir qué mostrar. El resto del tipo describe el contrato, no lo exige.
+ */
 function isValidProduct(value: unknown): value is ApiProduct {
   if (typeof value !== "object" || value === null) return false;
   const product = value as Record<string, unknown>;
