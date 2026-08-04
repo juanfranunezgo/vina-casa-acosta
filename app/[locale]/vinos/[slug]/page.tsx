@@ -211,6 +211,7 @@ export default async function WinePage({
                 </span>
               </div>
               <ProductPurchase
+                agotado={wine.agotado}
                 item={{
                   slug: wine.slug,
                   name: wine.name,

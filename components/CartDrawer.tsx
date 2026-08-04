@@ -2,11 +2,83 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { X, Wine, Trash2, MessageCircle } from "lucide-react";
 import { useCart } from "@/lib/cart";
 import { CONTACT_WHATSAPP_URL } from "@/lib/contact";
+
+type CatalogProduct = {
+  slug: string;
+  nombre: string;
+  precio: number;
+  imagenes: unknown[];
+  agotado: boolean;
+  atributos: Record<string, unknown>;
+};
+
+type PublicCatalog = {
+  version: 1;
+  productos: CatalogProduct[];
+};
+
+let catalogRequest: Promise<ReadonlySet<string> | null> | null = null;
+
+function catalogEndpoint(): string | null {
+  const base = process.env.NEXT_PUBLIC_AFELEIA_API_URL;
+  const sitio = process.env.NEXT_PUBLIC_AFELEIA_SITIO;
+  if (!base || !sitio) return null;
+  return `${base.replace(/\/+$/, "")}/catalogo-publico?sitio=${encodeURIComponent(sitio)}`;
+}
+
+function isCatalogProduct(value: unknown): value is CatalogProduct {
+  if (typeof value !== "object" || value === null) return false;
+  const product = value as Record<string, unknown>;
+  return (
+    typeof product.slug === "string" &&
+    product.slug !== "" &&
+    typeof product.nombre === "string" &&
+    product.nombre !== "" &&
+    typeof product.precio === "number" &&
+    Number.isFinite(product.precio) &&
+    Array.isArray(product.imagenes) &&
+    typeof product.agotado === "boolean" &&
+    typeof product.atributos === "object" &&
+    product.atributos !== null
+  );
+}
+
+function isPublicCatalog(value: unknown): value is PublicCatalog {
+  if (typeof value !== "object" || value === null) return false;
+  const catalog = value as Record<string, unknown>;
+  return (
+    catalog.version === 1 &&
+    Array.isArray(catalog.productos) &&
+    catalog.productos.every(isCatalogProduct)
+  );
+}
+
+async function fetchSoldOutSlugs(): Promise<ReadonlySet<string> | null> {
+  const endpoint = catalogEndpoint();
+  if (!endpoint) return null;
+
+  try {
+    const response = await fetch(endpoint);
+    if (!response.ok) return null;
+    const payload: unknown = await response.json();
+    if (!isPublicCatalog(payload)) return null;
+    return new Set(
+      payload.productos.filter((product) => product.agotado).map((product) => product.slug),
+    );
+  } catch {
+    return null;
+  }
+}
+
+function getSoldOutSlugs(): Promise<ReadonlySet<string> | null> {
+  catalogRequest ??= fetchSoldOutSlugs();
+  return catalogRequest;
+}
 
 export default function CartDrawer() {
   const t = useTranslations("cart");
@@ -18,6 +90,7 @@ export default function CartDrawer() {
   const decrement = useCart((s) => s.decrement);
   const remove = useCart((s) => s.remove);
   const totalCLP = useCart((s) => s.totalCLP());
+  const [soldOutSlugs, setSoldOutSlugs] = useState<ReadonlySet<string> | null>(null);
 
   const priceLocale = locale === "pt" ? "pt-BR" : locale === "en" ? "en-US" : "es-CL";
   const formatPrice = (amount: number) =>
@@ -34,6 +107,19 @@ export default function CartDrawer() {
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
   }, [toggle]);
+
+  useEffect(() => {
+    if (!isOpen || soldOutSlugs !== null) return;
+    let active = true;
+
+    void getSoldOutSlugs().then((slugs) => {
+      if (active && slugs !== null) setSoldOutSlugs(slugs);
+    });
+
+    return () => {
+      active = false;
+    };
+  }, [isOpen, soldOutSlugs]);
 
   const whatsappMessage = encodeURIComponent(
     [
@@ -94,9 +180,16 @@ export default function CartDrawer() {
             </div>
           ) : (
             <ul className="space-y-5">
-              {items.map((item) => (
-                <li key={item.slug} className="flex gap-4 pb-5 border-b border-outline-variant/20 last:border-0">
-                  <div className="relative w-20 h-24 shrink-0 bg-surface-container rounded-md overflow-hidden">
+              {items.map((item) => {
+                const isSoldOut = soldOutSlugs?.has(item.slug) ?? false;
+                return (
+                  <li
+                    key={item.slug}
+                    className={`flex gap-4 border-b border-outline-variant/20 pb-5 last:border-0 ${
+                      isSoldOut ? "opacity-70" : ""
+                    }`}
+                  >
+                    <div className="relative w-20 h-24 shrink-0 bg-surface-container rounded-md overflow-hidden">
                     <Image
                       src={item.image}
                       alt={item.name}
@@ -114,6 +207,11 @@ export default function CartDrawer() {
                         <h3 className="font-display text-lg text-primary truncate">
                           {item.name}
                         </h3>
+                        {isSoldOut && (
+                          <span className="mt-1 inline-flex rounded bg-surface-container-highest px-2 py-0.5 font-body text-label-sm font-semibold uppercase tracking-wider text-on-surface-variant">
+                            {t("soldOut")}
+                          </span>
+                        )}
                       </div>
                       <button
                         onClick={() => remove(item.slug)}
@@ -145,9 +243,10 @@ export default function CartDrawer() {
                         {formatPrice(item.priceCLP * item.quantity)}
                       </span>
                     </div>
-                  </div>
-                </li>
-              ))}
+                    </div>
+                  </li>
+                );
+              })}
             </ul>
           )}
         </div>

@@ -53,6 +53,7 @@ export default async function VinosPage({ params }: PageProps<"/[locale]/vinos">
   const { locale } = await params;
   setRequestLocale(locale);
   const t = await getTranslations("vinos");
+  const tCart = await getTranslations("cart");
   const tWine = await getTranslations("wines");
   const catalog = await getCatalog();
 
@@ -154,6 +155,8 @@ export default async function VinosPage({ params }: PageProps<"/[locale]/vinos">
           image: wine.image,
           name: wine.name,
           eyebrow: cardEyebrowOf(wine),
+          agotado: wine.agotado,
+          soldOutLabel: tCart("soldOut"),
         }));
 
         return (

@@ -428,6 +428,7 @@ export default function TiendaCatalogo({ wines }: { wines: CatalogWine[] }) {
                         </span>
                         <AddToCartButton
                           variant="icon"
+                          agotado={wine.agotado}
                           item={{
                             slug: wine.slug,
                             name: wine.name,

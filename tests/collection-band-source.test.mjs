@@ -152,6 +152,54 @@ test("WineCard uses the full card format for the initial two-wine presentation",
   assert.match(source, /border-t border-on-surface-variant\/10/);
 });
 
+test("sold-out source guard keeps stock wired to cards and purchase actions", async () => {
+  // Este test es un guard de cableado, no cobertura del DOM: el repo todavía no
+  // tiene renderer. La Task 8 debe comprobar el atributo disabled renderizado.
+  const [cardSource, bandSource, winesSource, cartButtonSource, shopSource, purchaseSource, detailSource] =
+    await Promise.all([
+      readFile(new URL("../components/WineCard.tsx", import.meta.url), "utf8"),
+      readFile(new URL("../components/CollectionBand.tsx", import.meta.url), "utf8"),
+      readFile(new URL("../app/[locale]/vinos/page.tsx", import.meta.url), "utf8"),
+      readFile(new URL("../components/AddToCartButton.tsx", import.meta.url), "utf8"),
+      readFile(new URL("../components/TiendaCatalogo.tsx", import.meta.url), "utf8"),
+      readFile(new URL("../components/ProductPurchase.tsx", import.meta.url), "utf8"),
+      readFile(new URL("../app/[locale]/vinos/[slug]/page.tsx", import.meta.url), "utf8"),
+    ]);
+
+  assert.match(cardSource, /\{agotado && \(/);
+  assert.match(cardSource, /\{soldOutLabel\}/);
+  assert.match(cardSource, /bg-surface-container-highest/);
+  assert.match(bandSource, /agotado=\{wine\.agotado\}/);
+  assert.match(winesSource, /agotado:\s*wine\.agotado/);
+
+  assert.match(cartButtonSource, /disabled=\{agotado\}/);
+  assert.match(cartButtonSource, /aria-disabled=\{agotado\}/);
+  assert.match(cartButtonSource, /t\("soldOut"\)/);
+  assert.match(shopSource, /agotado=\{wine\.agotado\}/);
+
+  assert.match(purchaseSource, /disabled=\{agotado\}/);
+  assert.match(purchaseSource, /aria-disabled=\{agotado\}/);
+  assert.match(purchaseSource, /t\("soldOut"\)/);
+  assert.match(detailSource, /agotado=\{wine\.agotado\}/);
+});
+
+test("cart sold-out source guard refreshes stock once per session and fails open", async () => {
+  // También es un guard de cableado: sin renderer no demuestra el resultado
+  // visual, pero evita volver a persistir un dato de stock que nace obsoleto.
+  const [drawerSource, cartSource] = await Promise.all([
+    readFile(new URL("../components/CartDrawer.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../lib/cart.ts", import.meta.url), "utf8"),
+  ]);
+
+  assert.doesNotMatch(cartSource, /export type CartItem = \{[\s\S]*?\bagotado\b[\s\S]*?\};/);
+  assert.match(drawerSource, /if \(!isOpen \|\| soldOutSlugs !== null\) return/);
+  assert.match(drawerSource, /catalogRequest \?\?= fetchSoldOutSlugs\(\)/);
+  assert.match(drawerSource, /if \(!response\.ok\) return null/);
+  assert.match(drawerSource, /if \(!isPublicCatalog\(payload\)\) return null/);
+  assert.match(drawerSource, /soldOutSlugs\?\.has\(item\.slug\) \?\? false/);
+  assert.match(drawerSource, /\{t\("soldOut"\)\}/);
+});
+
 test("wine collection cards use their line hierarchy instead of the generic wine type", async () => {
   const source = await readFile(new URL("../app/[locale]/vinos/page.tsx", import.meta.url), "utf8");
   assert.match(source, /const cardEyebrowOf/);

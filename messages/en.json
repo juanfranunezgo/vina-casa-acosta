@@ -743,6 +743,7 @@
     "checkout": "Check out via WhatsApp",
     "checkoutDisclaimer": "Online checkout coming soon. For now we confirm each order with you.",
     "addLabel": "Add to cart",
+    "soldOut": "Sold out",
     "addedLabel": "Added",
     "quantityLabel": "Quantity",
     "addAriaLabel": "Add {name} to cart",

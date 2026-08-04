@@ -743,6 +743,7 @@
     "checkout": "Concretar por WhatsApp",
     "checkoutDisclaimer": "Pago online disponible próximamente. Por ahora confirmamos cada pedido contigo.",
     "addLabel": "Añadir al carrito",
+    "soldOut": "Agotado",
     "addedLabel": "Agregado",
     "quantityLabel": "Cantidad",
     "addAriaLabel": "Añadir {name} al carrito",
