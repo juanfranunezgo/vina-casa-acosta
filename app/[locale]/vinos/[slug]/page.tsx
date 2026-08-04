@@ -10,6 +10,7 @@ import ProductPurchase from "@/components/ProductPurchase";
 import TastingProfile from "@/components/TastingProfile";
 import { wines, getWineBySlug } from "@/data/wines";
 import { routing } from "@/i18n/routing";
+import { alternatesFor } from "@/lib/alternates";
 
 export async function generateStaticParams() {
   return routing.locales.flatMap((locale) =>
@@ -24,9 +25,31 @@ export async function generateMetadata({
   const wine = getWineBySlug(slug);
   if (!wine) return { title: "—" };
   const tWine = await getTranslations({ locale, namespace: "wines" });
+  const tMeta = await getTranslations({ locale, namespace: "metadata" });
+  const description = tWine(`${slug}.shortDescription`);
+  const path = `/vinos/${slug}`;
+  // El `title` recibe la plantilla del layout ("%s · Viña Casa Acosta"), pero
+  // Open Graph no: hay que escribir el título completo a mano. Sin esto la ficha
+  // heredaba el og del layout y compartir un vino por WhatsApp mostraba el
+  // título y la foto genéricos del sitio en lugar de los del vino.
+  const ogTitle = `${wine.name} · ${tMeta("siteName")}`;
   return {
     title: wine.name,
-    description: tWine(`${slug}.shortDescription`),
+    description,
+    alternates: alternatesFor(locale, path),
+    openGraph: {
+      type: "website",
+      title: ogTitle,
+      description,
+      url: `/${locale}${path}`,
+      images: [{ url: wine.image, alt: wine.name }],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: ogTitle,
+      description,
+      images: [wine.image],
+    },
   };
 }
 

@@ -13,6 +13,7 @@ import {
   type WineLine,
 } from "@/data/wines";
 import { buildWinesItemListJsonLd } from "@/lib/wineJsonLd";
+import { alternatesFor } from "@/lib/alternates";
 
 // El hero C1 va en <picture> y no en next/image, porque next/image no hace art
 // direction: elige a qué tamaño bajar una foto, no cuál de dos. El .webp sin
@@ -45,6 +46,7 @@ export async function generateMetadata({
   return {
     title: t("title"),
     description: t("description"),
+    alternates: alternatesFor(locale, "/vinos"),
   };
 }
 

@@ -9,7 +9,7 @@ import Button from "@/components/ui/Button";
 import ActivitiesTabs from "@/components/ActivitiesTabs";
 import { tours, experiences } from "@/data/activities";
 import { CONTACT_WHATSAPP_URL, CONTACT_PHONE_DISPLAY, INSTAGRAM_URL } from "@/lib/contact";
-import { routing } from "@/i18n/routing";
+import { alternatesFor } from "@/lib/alternates";
 
 // El hero D1 va en <picture> y no en next/image, porque next/image no hace art
 // direction: elige a qué tamaño bajar una foto, no cuál de dos. El .webp sin
@@ -42,12 +42,7 @@ export async function generateMetadata({
   return {
     title: t("title"),
     description: t("description"),
-    alternates: {
-      canonical: path,
-      languages: Object.fromEntries(
-        routing.locales.map((l) => [l, `/${l}/actividades`]),
-      ),
-    },
+    alternates: alternatesFor(locale, "/actividades"),
     openGraph: {
       title: t("title"),
       description: t("description"),

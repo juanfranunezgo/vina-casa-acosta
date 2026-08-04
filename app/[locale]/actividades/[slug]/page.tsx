@@ -29,6 +29,7 @@ import Button from "@/components/ui/Button";
 import TourReservationForm from "@/components/TourReservationForm";
 import { tours, getTourBySlug } from "@/data/activities";
 import { routing } from "@/i18n/routing";
+import { alternatesFor } from "@/lib/alternates";
 
 /**
  * Íconos de la lista "¿Qué incluye?", uno por ítem y en el MISMO orden que el
@@ -59,9 +60,30 @@ export async function generateMetadata({
   if (!tour) return { title: "—" };
   const tTour = await getTranslations({ locale, namespace: "tours" });
   const tDetail = await getTranslations({ locale, namespace: "tourDetail" });
+  const tMeta = await getTranslations({ locale, namespace: "metadata" });
+  const name = tTour(`${slug}.name`);
+  const description = tDetail(`${slug}.tagline`);
+  const path = `/actividades/${slug}`;
+  // Ver la nota equivalente en vinos/[slug]: Open Graph no aplica la plantilla
+  // de `title`, así que el título completo va escrito.
+  const ogTitle = `${name} · ${tMeta("siteName")}`;
   return {
-    title: tTour(`${slug}.name`),
-    description: tDetail(`${slug}.tagline`),
+    title: name,
+    description,
+    alternates: alternatesFor(locale, path),
+    openGraph: {
+      type: "website",
+      title: ogTitle,
+      description,
+      url: `/${locale}${path}`,
+      images: [{ url: tour.image, alt: name }],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: ogTitle,
+      description,
+      images: [tour.image],
+    },
   };
 }
 

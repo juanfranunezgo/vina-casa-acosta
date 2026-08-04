@@ -6,6 +6,7 @@ import Reveal from "@/components/Reveal";
 import Button from "@/components/ui/Button";
 import HistoriaTimeline from "@/components/HistoriaTimeline";
 import StoryChapter from "@/components/StoryChapter";
+import { alternatesFor } from "@/lib/alternates";
 
 // El hero B1 va en <picture> y no en next/image, porque next/image no hace art
 // direction: elige a qué tamaño bajar una foto, no cuál de dos. El .webp sin
@@ -29,6 +30,7 @@ export async function generateMetadata({
   return {
     title: t("title"),
     description: t("description"),
+    alternates: alternatesFor(locale, "/historia"),
   };
 }
 

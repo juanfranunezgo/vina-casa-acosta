@@ -2,6 +2,7 @@ import Image from "next/image";
 import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import Reveal from "@/components/Reveal";
+import { alternatesFor } from "@/lib/alternates";
 
 // Cada persona es una fila editorial: foto grande + texto, alternando lados.
 // `image`: retrato real. `pos`: object-position para encuadrar bien el rostro
@@ -40,6 +41,7 @@ export async function generateMetadata({
   return {
     title: t("title"),
     description: t("description"),
+    alternates: alternatesFor(locale, "/staff"),
   };
 }
 

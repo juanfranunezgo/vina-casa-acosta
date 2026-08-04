@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { getTranslations, setRequestLocale } from "next-intl/server";
@@ -9,6 +10,16 @@ import HomeActivitiesShowcase from "@/components/HomeActivitiesShowcase";
 import FeaturedLinesCarousel from "@/components/FeaturedLinesCarousel";
 import { featuredLineOrder, lineSlugs, getWinesByLine } from "@/data/wines";
 import { tours as tourData, experiences as experienceData } from "@/data/activities";
+import { alternatesFor } from "@/lib/alternates";
+
+// El título y la descripción de la home son los del layout; acá solo se declara
+// el canonical, que el layout dejó de proveer a propósito.
+export async function generateMetadata({
+  params,
+}: PageProps<"/[locale]">): Promise<Metadata> {
+  const { locale } = await params;
+  return { alternates: alternatesFor(locale) };
+}
 
 // El hero va en <picture> con dos encuadres (ver scripts/optimize-home-hero.mjs):
 // el 3:2 de siempre para desktop y un 9:16 recortado para pantallas verticales.

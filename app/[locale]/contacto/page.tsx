@@ -5,6 +5,7 @@ import { ArrowUpRight, Clock, Mail, MapPin, Phone } from "lucide-react";
 import Reveal from "@/components/Reveal";
 import ContactForm from "@/components/ContactForm";
 import MapEmbed from "@/components/MapEmbed";
+import { alternatesFor } from "@/lib/alternates";
 import {
   CONTACT_EMAIL,
   CONTACT_MAILTO_URL,
@@ -20,7 +21,11 @@ export async function generateMetadata({
 }: PageProps<"/[locale]/contacto">): Promise<Metadata> {
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: "metadata.contacto" });
-  return { title: t("title"), description: t("description") };
+  return {
+    title: t("title"),
+    description: t("description"),
+    alternates: alternatesFor(locale, "/contacto"),
+  };
 }
 
 export default async function ContactoPage({

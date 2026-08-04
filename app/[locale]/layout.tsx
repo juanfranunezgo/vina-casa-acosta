@@ -62,12 +62,12 @@ export async function generateMetadata({
       "Tannat",
       "enoturismo Chile",
     ],
-    alternates: {
-      canonical: `/${locale}`,
-      languages: Object.fromEntries(
-        routing.locales.map((l) => [l, `/${l}`]),
-      ),
-    },
+    // OJO: acá NO va `alternates`. El canonical del layout es el de la home, y
+    // como `alternates` se hereda entero, toda página que no lo redeclare queda
+    // apuntando a la portada. Cada ruta declara el suyo con `alternatesFor()`
+    // de `lib/alternates.ts`. Si alguna se olvida, no emite canonical y Google
+    // se auto-canonicaliza — molesto, pero infinitamente menos dañino que
+    // declarar la home como canónica de las 78 URLs.
     openGraph: {
       type: "website",
       locale: locale === "es" ? "es_CL" : locale === "pt" ? "pt_BR" : "en_US",
