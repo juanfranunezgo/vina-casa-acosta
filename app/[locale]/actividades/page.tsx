@@ -183,9 +183,12 @@ export default async function ActividadesPage({
               const highlights = tTour.raw(`${tour.slug}.highlights`) as string[];
               return (
                 <Reveal key={tour.slug} delay={idx * 100}>
+                  {/* La tarjeta destacada es la del tour premium, no una posición
+                      fija: el orden de `tours` va de menor a mayor precio. Se
+                      distingue por anillo y sombra, sin desalinearse de la fila. */}
                   <article
                     className={`relative bg-surface-container-low rounded-xl overflow-hidden group h-full flex flex-col hover:-translate-y-1 hover:shadow-[0_24px_48px_-12px_rgba(74,14,14,0.12)] transition-all duration-300 ${
-                      idx === 1 ? "md:-mt-8 ring-1 ring-primary/25 ambient-shadow-lg" : ""
+                      tour.premium ? "ring-1 ring-primary/25 ambient-shadow-lg" : ""
                     }`}
                   >
                     {/* La tarjeta completa enlaza al detalle; el botón "Reservar"

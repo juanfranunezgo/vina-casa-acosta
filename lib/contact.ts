@@ -11,8 +11,16 @@ export const CONTACT_PHONE_E164 = "56966740633";
 export const CONTACT_WHATSAPP_URL = `https://wa.me/${CONTACT_PHONE_E164}`;
 export const CONTACT_TEL_URL = `tel:+${CONTACT_PHONE_E164}`;
 
-/** Casilla oficial: recibe los mensajes del formulario de contacto. */
-export const CONTACT_EMAIL = "contacto@vinacasaacosta.cl";
+/**
+ * Casilla oficial de la viña. Ojo: el dominio del correo (`casaacosta.cl`) no
+ * es el mismo que el del sitio — cuando se configure `vinacasaacosta.cl`, ver
+ * con el cliente si migran la casilla o la dejan donde está.
+ *
+ * Las notificaciones de los formularios se configuran aparte, en Netlify →
+ * Notifications → Form submission notifications. Cambiar esta constante NO
+ * cambia a dónde llegan los envíos.
+ */
+export const CONTACT_EMAIL = "contacto@casaacosta.cl";
 export const CONTACT_MAILTO_URL = `mailto:${CONTACT_EMAIL}`;
 
 /** Perfil oficial de Instagram — canal donde se anuncian fechas y eventos. */

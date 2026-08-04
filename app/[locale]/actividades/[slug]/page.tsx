@@ -17,12 +17,33 @@ import {
   Grape,
   ListChecks,
   Star,
+  Ticket,
+  Footprints,
+  Leaf,
+  Warehouse,
+  Pipette,
+  type LucideIcon,
 } from "lucide-react";
 import Reveal from "@/components/Reveal";
 import Button from "@/components/ui/Button";
 import TourReservationForm from "@/components/TourReservationForm";
 import { tours, getTourBySlug } from "@/data/activities";
 import { routing } from "@/i18n/routing";
+
+/**
+ * Íconos de la lista "¿Qué incluye?", uno por ítem y en el MISMO orden que el
+ * array `includes` de cada tour en `messages/*.json`. Si allá se agrega, quita
+ * o reordena un ítem, hay que actualizar esta tabla: los ítems sobrantes caen
+ * al tick genérico.
+ */
+const includeIcons: Record<string, LucideIcon[]> = {
+  // copa de bienvenida · caminata · bodega y barricas · cata
+  "tour-ombu": [Wine, Footprints, Warehouse, Grape],
+  // copa de bienvenida · caminata · bodega y barricas · desde barrica · cata
+  "tour-bera": [Wine, Footprints, Warehouse, Pipette, Grape],
+  // copa de bienvenida · ampelografía · bodega y barricas · desde barrica · cata
+  "tour-carmenere": [Wine, Leaf, Warehouse, Pipette, Grape],
+};
 
 export async function generateStaticParams() {
   return routing.locales.flatMap((locale) =>
@@ -62,6 +83,8 @@ export default async function TourDetailPage({
   const groupFrom = t(`${slug}.groupFrom`);
   const reservationNote = t(`${slug}.reservationNote`);
   const includes = t.raw(`${slug}.includes`) as string[];
+  // Último ítem de "¿Qué incluye?", destacado dentro de la misma lista.
+  const includesHighlight = t(`${slug}.includesHighlight`);
   const wines = t.raw(`${slug}.wines`) as string[];
   const pairing = t(`${slug}.pairing`);
   const closing = t(`${slug}.closing`);
@@ -228,21 +251,39 @@ export default async function TourDetailPage({
               <h2 className="font-display text-headline-h2 text-primary mb-6">
                 {t("whatIncludes")}
               </h2>
-              <p className="font-body text-body-md text-on-surface-variant mb-6">
+              <p className="font-body text-body-md text-on-surface-variant mb-4">
                 {t("duringExperience")}
               </p>
-              <ul className="mb-10 rounded-xl bg-surface border border-outline-variant/25 ambient-shadow divide-y divide-outline-variant/20">
-                {includes.map((item) => (
-                  <li
-                    key={item}
-                    className="flex items-start gap-3.5 px-5 py-4 font-body text-body-md text-on-surface"
-                  >
-                    <span className="h-7 w-7 rounded-full bg-wine-accent/10 flex items-center justify-center shrink-0 mt-0.5">
-                      <Check className="h-4 w-4 text-wine-accent" aria-hidden="true" />
-                    </span>
-                    {item}
-                  </li>
-                ))}
+              {/* La lista de abajo son los tickets de la reserva: se canjean el
+                  día de la visita, así que conviene decirlo antes de leerla. */}
+              <p className="mb-6 inline-flex items-center gap-2.5 rounded-full border border-wine-accent/25 bg-wine-accent/5 px-4 py-2 font-body text-body-md text-wine-accent">
+                <Ticket className="h-4 w-4 shrink-0" aria-hidden="true" />
+                {t("ticketsNote")}
+              </p>
+              {/* overflow-hidden: el ítem destacado pinta fondo y borde hasta el
+                  filo, y sin esto se sale de las esquinas redondeadas. */}
+              <ul className="mb-10 overflow-hidden rounded-xl bg-surface border border-outline-variant/25 ambient-shadow divide-y divide-outline-variant/20">
+                {includes.map((item, i) => {
+                  const Icon = includeIcons[slug]?.[i] ?? Check;
+                  return (
+                    <li
+                      key={item}
+                      className="flex items-start gap-3.5 px-5 py-4 font-body text-body-md text-on-surface"
+                    >
+                      <span className="h-7 w-7 rounded-full bg-wine-accent/10 flex items-center justify-center shrink-0 mt-0.5">
+                        <Icon className="h-4 w-4 text-wine-accent" aria-hidden="true" />
+                      </span>
+                      {item}
+                    </li>
+                  );
+                })}
+                {/* Cierre de la lista: la tabla de maridaje va destacada. */}
+                <li className="flex items-start gap-3.5 bg-wine-accent/8 border-l-[3px] border-wine-accent px-5 py-4 font-body text-body-md font-semibold text-on-surface">
+                  <span className="h-7 w-7 rounded-full bg-wine-accent flex items-center justify-center shrink-0 mt-0.5">
+                    <UtensilsCrossed className="h-4 w-4 text-on-primary" aria-hidden="true" />
+                  </span>
+                  {includesHighlight}
+                </li>
               </ul>
 
               <div className="flex items-center gap-2.5 mb-4">
@@ -380,7 +421,7 @@ export default async function TourDetailPage({
         <div className="max-w-(--container-max) mx-auto">
           <div className="grid grid-cols-1 lg:grid-cols-[1.1fr_0.9fr] overflow-hidden rounded-2xl bg-surface ambient-shadow-lg ring-1 ring-outline-variant/40">
             <div className="p-8 md:p-12">
-              <TourReservationForm tourName={name} />
+              <TourReservationForm tourName={name} minPeople={tour.minPeople} />
             </div>
             <div className="relative order-first min-h-[260px] lg:order-none">
               <Image

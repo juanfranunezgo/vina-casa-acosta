@@ -67,7 +67,7 @@ Ojo con los créditos: cada deploy de producción cuesta 15 de los 300 mensuales
 | 1.5 parte 2 — polish visual | ✅ |
 | 2 — Supabase / Webpay / admin | ⏳ post-pitch |
 
-Blockers abiertos al cierre: fotos HD de botellas y retratos familiares pendientes, validación humana de copy EN/PT. **Ninguno de los formularios envía nada todavía** — la lista completa está en [`docs/HANDOFF.md`](docs/HANDOFF.md).
+Blockers abiertos al cierre: fotos HD de botellas y retratos familiares pendientes, validación humana de copy EN/PT. Los formularios de contacto y reserva ya envían vía **Netlify Forms** (solución provisoria, 100 envíos/mes) — el carrito sigue sin cobro. La lista completa está en [`docs/HANDOFF.md`](docs/HANDOFF.md).
 
 ## Nomenclatura de secciones
 

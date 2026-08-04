@@ -505,7 +505,7 @@
     "tour-carmenere": {
       "name": "Tour Carménère",
       "description": "Nossa experiência premium focada na cepa insígnia: sua origem, ampelografia e expressão em diferentes linhas de vinho.",
-      "highlights": ["Degustação de 4 vinhos", "Foco em ampelografia", "Degustação direto da barrica"]
+      "highlights": ["Degustação de 5 vinhos", "Foco em ampelografia", "Degustação direto da barrica"]
     }
   },
   "tourDetail": {
@@ -521,6 +521,7 @@
     "nav": { "detail": "Detalhes", "gallery": "Galeria", "reserve": "Reserva", "aria": "Seções do tour" },
     "whatIncludes": "O que inclui?",
     "duringExperience": "Durante a experiência você vai desfrutar de:",
+    "ticketsNote": "Cada item é um ticket que você troca no dia da sua visita.",
     "tastingLabel": "Degustação",
     "pairingLabel": "Harmonização",
     "atCloseLabel": "No encerramento",
@@ -541,7 +542,7 @@
       "phone": "Telefone",
       "phonePlaceholder": "+56 9 ...",
       "people": "Pessoas",
-      "peopleHint": "Mínimo de 2 pessoas por reserva.",
+      "peopleHint": "Mínimo de {min} pessoas por reserva.",
       "date": "Data",
       "datePlaceholder": "--/--/26",
       "dateHint": "Escolha o dia da sua visita — pode mudar quando quiser.",
@@ -552,6 +553,8 @@
       "submitting": "Enviando…",
       "success": "Solicitação enviada!",
       "successMessage": "Obrigado. Entraremos em contato para confirmar sua reserva.",
+      "error": "Não foi enviado",
+      "errorMessage": "Não foi possível enviar sua solicitação. Reserve pelo WhatsApp no botão ao lado.",
       "whatsapp": "Reservar pelo WhatsApp",
       "waIntro": "Olá 👋 Gostaria de reservar o {tour}."
     },
@@ -564,8 +567,10 @@
       "includes": [
         "Recepção no Jardim de Variedades com taça de boas-vindas, Berá Rosé Carménère.",
         "Caminhada entre os vinhedos (opcional).",
-        "Percurso pela adega, sala de vinificação e sala de barricas, com explicação completa do processo produtivo do vinho, da videira à taça."
+        "Percurso pela adega, sala de vinificação e sala de barricas, com explicação completa do processo produtivo do vinho, da videira à taça.",
+        "Degustação de vinhos."
       ],
+      "includesHighlight": "Tábua de harmonização",
       "wines": ["Degustação de 3 vinhos das linhas Ombú e/ou Lajau."],
       "pairing": "Tábua de harmonização incluída.",
       "closing": "Você poderá adquirir nossos vinhos diretamente na adega."
@@ -580,8 +585,10 @@
         "Recepção no Jardim de Variedades com taça de boas-vindas, Berá Rosé Carménère.",
         "Caminhada entre os vinhedos (opcional).",
         "Percurso pela adega, sala de vinificação e sala de barricas, com explicação completa do processo produtivo do vinho, da videira à taça.",
-        "Degustação direto da barrica, para viver o vinho em sua etapa de amadurecimento."
+        "Degustação direto da barrica, para viver o vinho em sua etapa de amadurecimento.",
+        "Degustação de vinhos."
       ],
+      "includesHighlight": "Tábua de harmonização",
       "wines": [
         "2 vinhos das linhas Lajau e/ou Ombú.",
         "1 vinho Gran Reserva «Estación Francia»."
@@ -599,13 +606,16 @@
         "Recepção no Jardim de Variedades com taça de boas-vindas, Berá Rosa Carménère.",
         "Passeio pelo vinhedo com foco em ampelografia: explicação técnica da variedade Carménère e sua história na Casa Acosta.",
         "Percurso pela adega, sala de vinificação e sala de barricas, com explicação completa do processo produtivo do vinho, da videira à taça.",
-        "Degustação direto da barrica, para conhecer o vinho em sua etapa de amadurecimento."
+        "Degustação direto da barrica, para conhecer o vinho em sua etapa de amadurecimento.",
+        "Degustação de vinhos."
       ],
+      "includesHighlight": "Tábua de harmonização",
       "wines": [
         "Carménère Reserva, linha Ombú.",
         "Blend Carménère, linha Lajau.",
         "Gran Reserva «Estación Francia».",
-        "Espumante Guidaí."
+        "Espumante Guidaí.",
+        "Yaráy Guá Late Harvest Carménère."
       ],
       "pairing": "Tábua de harmonização incluída.",
       "closing": "Você terá a opção de adquirir nossos vinhos diretamente na adega."
@@ -677,7 +687,6 @@
       },
       "email": {
         "title": "E-mail",
-        "body": "contacto@vinacasaacosta.cl",
         "cta": "Enviar e-mail"
       }
     },
@@ -695,9 +704,9 @@
   "contactForm": {
     "title": "Envie uma mensagem",
     "subtitle": "Respondemos em até 24 horas úteis.",
-    "emailIntro": "Olá Casa Acosta, estou escrevendo pelo site.",
-    "emailSubject": "{subject} — contato pelo site",
-    "emailNotice": "Ao enviar, seu e-mail abrirá com a mensagem pronta para contacto@vinacasaacosta.cl.",
+    "emailNotice": "Você também pode escrever direto para {email} ou pelo WhatsApp.",
+    "successMessage": "Mensagem enviada! Respondemos em até 24 horas úteis.",
+    "errorMessage": "Não foi possível enviar a mensagem. Escreva para {email} ou pelo WhatsApp.",
     "fields": {
       "name": "Nome",
       "namePlaceholder": "Seu nome",
@@ -715,7 +724,9 @@
       "other": "Outro"
     },
     "buttons": {
-      "idle": "Enviar mensagem"
+      "idle": "Enviar mensagem",
+      "submitting": "Enviando…",
+      "success": "Enviado!"
     }
   },
   "cart": {

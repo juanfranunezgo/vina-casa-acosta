@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>Definiciones de formularios — Netlify</title>
+  </head>
+  <body>
+    <!--
+      Este archivo NO se visita: existe sólo para que Netlify Forms encuentre
+      los formularios durante el deploy.
+
+      Netlify detecta formularios parseando el HTML *estático* del build. Las
+      páginas de este sitio se renderizan con Next/OpenNext, así que los
+      <form> de React no existen como HTML en el deploy y Netlify nunca los
+      vería. La solución oficial es declararlos acá (public/ se copia tal cual
+      al output) y que los componentes hagan POST contra /__forms.html.
+
+      REGLA: cada campo que envíe un componente tiene que estar declarado acá.
+      Netlify descarta en silencio los campos que no figuren en esta lista.
+      Si agregás un input en el .tsx, agregalo también acá.
+    -->
+
+    <form name="contacto" data-netlify="true" data-netlify-honeypot="bot-field" hidden>
+      <input type="hidden" name="form-name" value="contacto" />
+      <input type="text" name="bot-field" />
+      <input type="text" name="nombre" />
+      <input type="email" name="email" />
+      <input type="text" name="asunto" />
+      <textarea name="mensaje"></textarea>
+      <input type="text" name="idioma" />
+    </form>
+
+    <form name="reserva-tour" data-netlify="true" data-netlify-honeypot="bot-field" hidden>
+      <input type="hidden" name="form-name" value="reserva-tour" />
+      <input type="text" name="bot-field" />
+      <input type="text" name="tour" />
+      <input type="text" name="nombre" />
+      <input type="email" name="email" />
+      <input type="tel" name="telefono" />
+      <input type="number" name="personas" />
+      <input type="date" name="fecha" />
+      <textarea name="nota"></textarea>
+      <input type="text" name="idioma" />
+    </form>
+  </body>
+</html>

@@ -505,7 +505,7 @@
     "tour-carmenere": {
       "name": "Carménère Tour",
       "description": "Our premium experience focused on our signature varietal: its origin, ampelography and expression across different wine lines.",
-      "highlights": ["Tasting of 4 wines", "Focus on ampelography", "Tasting straight from the barrel"]
+      "highlights": ["Tasting of 5 wines", "Focus on ampelography", "Tasting straight from the barrel"]
     }
   },
   "tourDetail": {
@@ -521,6 +521,7 @@
     "nav": { "detail": "Details", "gallery": "Gallery", "reserve": "Booking", "aria": "Tour sections" },
     "whatIncludes": "What's included?",
     "duringExperience": "During the experience you'll enjoy:",
+    "ticketsNote": "Each item is a ticket you redeem on the day of your visit.",
     "tastingLabel": "Tasting",
     "pairingLabel": "Pairing",
     "atCloseLabel": "At the close",
@@ -541,7 +542,7 @@
       "phone": "Phone",
       "phonePlaceholder": "+56 9 ...",
       "people": "Guests",
-      "peopleHint": "Minimum 2 guests per booking.",
+      "peopleHint": "Minimum {min} guests per booking.",
       "date": "Date",
       "datePlaceholder": "--/--/26",
       "dateHint": "Pick the day of your visit — you can change it anytime.",
@@ -552,6 +553,8 @@
       "submitting": "Sending…",
       "success": "Request sent!",
       "successMessage": "Thank you. We'll contact you to confirm your booking.",
+      "error": "Couldn't send",
+      "errorMessage": "We couldn't send your request. Book via WhatsApp using the button next to this one.",
       "whatsapp": "Book via WhatsApp",
       "waIntro": "Hi 👋 I'd like to book the {tour}."
     },
@@ -564,8 +567,10 @@
       "includes": [
         "Welcome at the Varieties Garden with a welcome glass of Berá Rosé Carménère.",
         "Walk among the vineyards (optional).",
-        "Tour of the cellar, winemaking room and barrel room, with a full explanation of the wine's production process, from vine to glass."
+        "Tour of the cellar, winemaking room and barrel room, with a full explanation of the wine's production process, from vine to glass.",
+        "Wine tasting."
       ],
+      "includesHighlight": "Pairing board",
       "wines": ["Tasting of 3 wines from the Ombú and/or Lajau lines."],
       "pairing": "Pairing board included.",
       "closing": "You'll be able to purchase our wines directly at the cellar."
@@ -580,8 +585,10 @@
         "Welcome at the Varieties Garden with a welcome glass of Berá Rosé Carménère.",
         "Walk among the vineyards (optional).",
         "Tour of the cellar, winemaking room and barrel room, with a full explanation of the wine's production process, from vine to glass.",
-        "Tasting straight from the barrel, to experience the wine during its aging stage."
+        "Tasting straight from the barrel, to experience the wine during its aging stage.",
+        "Wine tasting."
       ],
+      "includesHighlight": "Pairing board",
       "wines": [
         "2 wines from the Lajau and/or Ombú lines.",
         "1 Gran Reserva «Estación Francia» wine."
@@ -599,13 +606,16 @@
         "Welcome at the Varieties Garden with a welcome glass of Berá Rosa Carménère.",
         "Vineyard walk focused on ampelography: a technical explanation of the Carménère variety and its history at Casa Acosta.",
         "Tour of the cellar, winemaking room and barrel room, with a full explanation of the wine's production process, from vine to glass.",
-        "Tasting straight from the barrel, to get to know the wine during its aging stage."
+        "Tasting straight from the barrel, to get to know the wine during its aging stage.",
+        "Wine tasting."
       ],
+      "includesHighlight": "Pairing board",
       "wines": [
         "Carménère Reserva, Ombú line.",
         "Carménère blend, Lajau line.",
         "Gran Reserva «Estación Francia».",
-        "Guidaí sparkling wine."
+        "Guidaí sparkling wine.",
+        "Yaráy Guá Late Harvest Carménère."
       ],
       "pairing": "Pairing board included.",
       "closing": "You'll have the option to purchase our wines directly at the cellar."
@@ -677,7 +687,6 @@
       },
       "email": {
         "title": "Email",
-        "body": "contacto@vinacasaacosta.cl",
         "cta": "Send email"
       }
     },
@@ -695,9 +704,9 @@
   "contactForm": {
     "title": "Send us a message",
     "subtitle": "We'll get back to you within one business day.",
-    "emailIntro": "Hi Casa Acosta, I'm writing from your website.",
-    "emailSubject": "{subject} — inquiry from the website",
-    "emailNotice": "When you send this form, your email app will open with the message ready for contacto@vinacasaacosta.cl.",
+    "emailNotice": "You can also write to us directly at {email} or via WhatsApp.",
+    "successMessage": "Message sent! We'll get back to you within one business day.",
+    "errorMessage": "We couldn't send your message. Write to us at {email} or via WhatsApp.",
     "fields": {
       "name": "Name",
       "namePlaceholder": "Your name",
@@ -715,7 +724,9 @@
       "other": "Other"
     },
     "buttons": {
-      "idle": "Send message"
+      "idle": "Send message",
+      "submitting": "Sending…",
+      "success": "Sent!"
     }
   },
   "cart": {
