@@ -11,6 +11,8 @@ import FeaturedLinesCarousel from "@/components/FeaturedLinesCarousel";
 import { featuredLineOrder, lineSlugs, getWinesByLine } from "@/data/wines";
 import { tours as tourData, experiences as experienceData } from "@/data/activities";
 import { alternatesFor } from "@/lib/alternates";
+import { jsonLdHtml } from "@/lib/jsonLd";
+import { buildHomeJsonLd } from "@/lib/siteJsonLd";
 
 // El título y la descripción de la home son los del layout; acá solo se declara
 // el canonical, que el layout dejó de proveer a propósito.
@@ -49,7 +51,13 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
   const tTourDetail = await getTranslations("tourDetail");
   const tExp = await getTranslations("experiences");
   const tActividades = await getTranslations("actividades");
+  const tMeta = await getTranslations("metadata");
   const lp = (path: string) => `/${locale}${path}`;
+
+  const jsonLd = buildHomeJsonLd(locale, {
+    name: tMeta("siteName"),
+    description: tMeta("description"),
+  });
 
   const priceLocale = locale === "pt" ? "pt-BR" : locale === "en" ? "en-US" : "es-CL";
   const formatPrice = (amount: number) =>
@@ -115,6 +123,13 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
 
   return (
     <>
+      {/* Identidad de la viña (dirección, horario, coordenadas, perfiles) para
+          buscadores y motores de IA. Ver lib/siteJsonLd.ts. */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: jsonLdHtml(jsonLd) }}
+      />
+
       {/* HERO */}
       <section className="relative min-h-[100svh] w-full flex items-center justify-center overflow-hidden">
         {/* `sizes` lleva el alto del viewport y no solo el ancho: con object-cover

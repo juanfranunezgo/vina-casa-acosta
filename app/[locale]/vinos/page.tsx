@@ -14,6 +14,8 @@ import {
 } from "@/data/wines";
 import { buildWinesItemListJsonLd } from "@/lib/wineJsonLd";
 import { alternatesFor } from "@/lib/alternates";
+import { jsonLdHtml } from "@/lib/jsonLd";
+import { buildVinosJsonLd } from "@/lib/siteJsonLd";
 
 // El hero C1 va en <picture> y no en next/image, porque next/image no hace art
 // direction: elige a qué tamaño bajar una foto, no cuál de dos. El .webp sin
@@ -77,12 +79,26 @@ export default async function VinosPage({ params }: PageProps<"/[locale]/vinos">
     category: eyebrowOf,
   });
 
+  const tMeta = await getTranslations("metadata.vinos");
+  const pageJsonLd = buildVinosJsonLd(locale, {
+    name: tMeta("title"),
+    description: tMeta("description"),
+  });
+
   return (
     <>
       <script
         type="application/ld+json"
         // JSON-LD del catálogo para que los buscadores entiendan la lista de productos.
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+
+      {/* CollectionPage + la entidad de la viña. Va en su propio bloque para no
+          tocar wineJsonLd.ts mientras m3/catalogo-afeleia lo reescribe; dos
+          bloques ld+json en una página son válidos y Google los une por @id. */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: jsonLdHtml(pageJsonLd) }}
       />
 
       {/* C1 — Hero cinematográfico, en el lenguaje visual de Historia. */}

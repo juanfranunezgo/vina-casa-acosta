@@ -70,8 +70,30 @@ Solución provisoria mientras no haya backend. Plan Free: **100 envíos/mes**.
 - Las fichas de vino y tour ya emiten su propio Open Graph (antes compartir un vino por
   WhatsApp mostraba el título y la foto genéricos del sitio). Ojo: `tour-ombu` y
   `tour-bera` todavía usan fotos de Unsplash como `og:image`.
-- JSON-LD solo en `/vinos` (`ItemList`). Faltan `Winery`/`LocalBusiness` en el inicio,
-  `Product` con `offers` en la ficha de vino, y `BreadcrumbList`.
+- ~~JSON-LD solo en `/vinos` (`ItemList`)~~ → las cinco páginas principales (inicio,
+  historia, vinos, actividades, contacto) emiten un `@graph` con la viña como
+  `["Winery","LocalBusiness"]` — NAP, horario, coordenadas y `sameAs` — más el tipo de
+  página que corresponde (`WebSite`, `AboutPage`, `CollectionPage`, `ContactPage`). Los
+  tours de `/actividades` van como `Product` + `Offer` con precio, porque el precio se ve
+  en la grilla. Todo en `lib/siteJsonLd.ts`.
+  - Las **coordenadas** salen del propio listado de Google del negocio (el link del
+    footer resuelve a `@-34.465133,-71.009675`), no de un geocode adivinado.
+  - **Sin `aggregateRating`**: no hay reseñas propias publicadas y copiar las de Google
+    sería marcado falso. **Sin `availability`** en las ofertas de tours: se reservan y
+    tienen mínimo de personas, así que afirmar "InStock" diría algo que el sitio no dice.
+  - **Sin `BreadcrumbList`**, y es a propósito: no existe un breadcrumb visible en
+    ninguna página. Google pide que el schema refleje un rastro que el usuario ve. Si se
+    agrega esa UI, el schema se suma en una línea.
+  - **Sin `SearchAction`** en `WebSite`: el sitio no tiene buscador.
+- Falta todavía `Product` + `offers` en la **ficha individual** de cada vino. Los precios
+  ya son reales, así que es la pieza con más retorno comercial que queda pendiente.
+- ⚠️ `lib/wineJsonLd.ts` sigue serializando con `JSON.stringify` pelado. El escape contra
+  `</script>` vive en `lib/jsonLd.ts` (`jsonLdHtml`) y lo usan los bloques nuevos; la rama
+  `m3/catalogo-afeleia` trae su propia versión dentro de `wineJsonLd.ts`. Al mergear,
+  unificar en `lib/jsonLd.ts` y borrar el duplicado.
+- Deriva menor de NAP: el footer dice "VI Región" y horario "Lun a Sáb · 10:00 – 18:00",
+  mientras `/contacto` dice "O'Higgins" y agrega "Jueves hasta las 20:00". El schema usa
+  la versión completa de `/contacto`. Conviene unificar el texto del footer.
 - `app/[locale]/vinos/page.tsx` pide `quality={84}` y `next.config.ts` solo permite
   `[65, 70, 75, 85, 95]` → warning en cada build. Cambiar a 85.
 

@@ -6,6 +6,8 @@ import Reveal from "@/components/Reveal";
 import ContactForm from "@/components/ContactForm";
 import MapEmbed from "@/components/MapEmbed";
 import { alternatesFor } from "@/lib/alternates";
+import { jsonLdHtml } from "@/lib/jsonLd";
+import { buildContactoJsonLd } from "@/lib/siteJsonLd";
 import {
   CONTACT_EMAIL,
   CONTACT_MAILTO_URL,
@@ -34,6 +36,13 @@ export default async function ContactoPage({
   const { locale } = await params;
   setRequestLocale(locale);
   const t = await getTranslations("contacto");
+  const tMeta = await getTranslations("metadata.contacto");
+
+  const jsonLd = buildContactoJsonLd(locale, {
+    name: tMeta("title"),
+    description: tMeta("description"),
+  });
+
   const galleryImages = [
     { src: "/images/contacto/plato-cena.webp", alt: t("gallery.photoAlts.plato") },
     { src: "/images/contacto/cena.webp", alt: t("gallery.photoAlts.cena") },
@@ -43,6 +52,13 @@ export default async function ContactoPage({
 
   return (
     <>
+      {/* ContactPage + la entidad de la viña: es la página que publica la
+          dirección y el horario que el schema declara. Ver lib/siteJsonLd.ts. */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: jsonLdHtml(jsonLd) }}
+      />
+
       <section className="mx-auto max-w-(--container-max) px-margin-mobile pb-12 pt-32 text-center md:px-margin-desktop">
         <Reveal>
           <p className="mb-2 font-accent text-xl font-light italic text-primary md:text-2xl">

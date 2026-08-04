@@ -7,6 +7,8 @@ import Button from "@/components/ui/Button";
 import HistoriaTimeline from "@/components/HistoriaTimeline";
 import StoryChapter from "@/components/StoryChapter";
 import { alternatesFor } from "@/lib/alternates";
+import { jsonLdHtml } from "@/lib/jsonLd";
+import { buildHistoriaJsonLd } from "@/lib/siteJsonLd";
 
 // El hero B1 va en <picture> y no en next/image, porque next/image no hace art
 // direction: elige a qué tamaño bajar una foto, no cuál de dos. El .webp sin
@@ -40,6 +42,12 @@ export default async function HistoriaPage({
   const { locale } = await params;
   setRequestLocale(locale);
   const t = await getTranslations("historia");
+  const tMeta = await getTranslations("metadata.historia");
+
+  const jsonLd = buildHistoriaJsonLd(locale, {
+    name: tMeta("title"),
+    description: tMeta("description"),
+  });
 
   // Galería (B3): placeholders del repo hasta tener fotos reales. Los alts vienen
   // del array `gallery.items` en messages, en el mismo orden que las imágenes.
@@ -59,6 +67,12 @@ export default async function HistoriaPage({
 
   return (
     <>
+      {/* AboutPage + la entidad de la viña. Ver lib/siteJsonLd.ts. */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: jsonLdHtml(jsonLd) }}
+      />
+
       {/* HERO (B1) — full-screen cinematográfico sobre la foto retro de los vinos
           Ombú. La imagen es oscura y cálida, así que el texto va claro con un
           degradado sutil (sin velo crema). El navbar se vuelve transparente y

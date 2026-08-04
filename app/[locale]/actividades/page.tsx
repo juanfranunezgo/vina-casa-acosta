@@ -10,6 +10,8 @@ import ActivitiesTabs from "@/components/ActivitiesTabs";
 import { tours, experiences } from "@/data/activities";
 import { CONTACT_WHATSAPP_URL, CONTACT_PHONE_DISPLAY, INSTAGRAM_URL } from "@/lib/contact";
 import { alternatesFor } from "@/lib/alternates";
+import { jsonLdHtml } from "@/lib/jsonLd";
+import { buildActividadesJsonLd } from "@/lib/siteJsonLd";
 
 // El hero D1 va en <picture> y no en next/image, porque next/image no hace art
 // direction: elige a qué tamaño bajar una foto, no cuál de dos. El .webp sin
@@ -66,6 +68,21 @@ export default async function ActividadesPage({
   const t = await getTranslations("actividades");
   const tTour = await getTranslations("tours");
   const tExp = await getTranslations("experiences");
+  const tMeta = await getTranslations("metadata.actividades");
+
+  // Solo los tours: son los que tienen ficha propia y precio a la vista. Las
+  // `experiences` no tienen página de detalle ni precio publicado acá.
+  const jsonLd = buildActividadesJsonLd(
+    locale,
+    { name: tMeta("title"), description: tMeta("description") },
+    tours.map((tour) => ({
+      slug: tour.slug,
+      name: tTour(`${tour.slug}.name`),
+      description: tTour(`${tour.slug}.description`),
+      priceCLP: tour.priceCLP,
+      image: tour.image,
+    })),
+  );
 
   const priceLocale = locale === "pt" ? "pt-BR" : locale === "en" ? "en-US" : "es-CL";
   const formatPrice = (amount: number) =>
@@ -77,6 +94,13 @@ export default async function ActividadesPage({
 
   return (
     <>
+      {/* CollectionPage + los tours con su precio, y la entidad de la viña.
+          Ver lib/siteJsonLd.ts. */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: jsonLdHtml(jsonLd) }}
+      />
+
       {/* HERO (D1) — cinematográfico full-bleed sobre la foto grupal de un evento
           en el viñedo (mismo patrón que Inicio e Historia). Texto claro en la
           mitad-baja con degradados para legibilidad; el navbar pasa a modo claro
