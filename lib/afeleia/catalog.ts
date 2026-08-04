@@ -13,6 +13,14 @@ import {
   type WineType,
 } from "@/data/wines";
 import catalogoFallback from "@/data/catalogo-fallback.json";
+import {
+  CONTRACT_VERSION,
+  catalogEndpoint,
+  isValidCatalog,
+  type ApiCatalog,
+  type ApiProduct,
+  type AttributeValue,
+} from "@/lib/afeleia/contract";
 
 /**
  * Catálogo servido por la API pública de Afeleia (contrato v1).
@@ -54,37 +62,8 @@ export type CatalogWine = Omit<
   agotado: boolean;
 };
 
-/** Versión del contrato que esta web sabe leer. */
-const CONTRACT_VERSION = 1;
-
 /** Ventana de revalidación del ISR, en segundos (spec M3: cambios visibles ≤60s). */
 export const CATALOG_REVALIDATE_SECONDS = 60;
-
-/** Valor de un atributo por sitio, según el `tipo` de su definición. */
-type AttributeValue = string | number | string[] | Record<string, string>;
-
-type ApiProduct = {
-  slug: string;
-  codigo: string;
-  nombre: string;
-  descripcion: string | null;
-  descripcion_corta: string | null;
-  precio: number;
-  moneda: string;
-  imagenes: string[];
-  destacado: boolean;
-  categoria: string | null;
-  agotado: boolean;
-  atributos: Record<string, AttributeValue>;
-};
-
-type ApiCatalog = {
-  version: number;
-  sitio: string;
-  generado_en: string;
-  categorias: Array<{ slug: string; nombre: string; orden: number }>;
-  productos: ApiProduct[];
-};
 
 // --- Lectura de atributos -----------------------------------------------------
 // DEC-5 del contrato: si una clave está presente, tiene valor no vacío; y una
@@ -204,38 +183,6 @@ export function apiProductToWine(product: ApiProduct): CatalogWine {
   };
 }
 
-// --- Validación del contrato --------------------------------------------------
-
-/**
- * Campos que TODO producto del contrato v1 trae. Si falta uno, la respuesta no
- * se renderiza: la web sirve el snapshot. Un catálogo a medias se ve peor que
- * un catálogo viejo, y encima sin avisar.
- */
-function isValidProduct(value: unknown): value is ApiProduct {
-  if (typeof value !== "object" || value === null) return false;
-  const product = value as Record<string, unknown>;
-  return (
-    typeof product.slug === "string" &&
-    product.slug !== "" &&
-    typeof product.nombre === "string" &&
-    product.nombre !== "" &&
-    typeof product.precio === "number" &&
-    Number.isFinite(product.precio) &&
-    Array.isArray(product.imagenes) &&
-    typeof product.agotado === "boolean" &&
-    typeof product.atributos === "object" &&
-    product.atributos !== null
-  );
-}
-
-function isValidCatalog(value: unknown): value is ApiCatalog {
-  if (typeof value !== "object" || value === null) return false;
-  const catalog = value as Record<string, unknown>;
-  if (catalog.version !== CONTRACT_VERSION) return false;
-  if (!Array.isArray(catalog.productos)) return false;
-  return catalog.productos.every(isValidProduct);
-}
-
 // --- Fetch con fallback -------------------------------------------------------
 
 /**
@@ -290,13 +237,6 @@ function reportFallback(reason: string): void {
   console.error(
     `[afeleia] catálogo desde el snapshot local (${nivel}, ${antiguedad}) — ${reason}`,
   );
-}
-
-function catalogEndpoint(): string | null {
-  const base = process.env.NEXT_PUBLIC_AFELEIA_API_URL;
-  const sitio = process.env.NEXT_PUBLIC_AFELEIA_SITIO;
-  if (!base || !sitio) return null;
-  return `${base.replace(/\/+$/, "")}/catalogo-publico?sitio=${encodeURIComponent(sitio)}`;
 }
 
 function degraded(reason: string): CatalogLoad {

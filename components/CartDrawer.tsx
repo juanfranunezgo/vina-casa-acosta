@@ -7,66 +7,21 @@ import { useLocale, useTranslations } from "next-intl";
 import { X, Wine, Trash2, MessageCircle } from "lucide-react";
 import { useCart } from "@/lib/cart";
 import { CONTACT_WHATSAPP_URL } from "@/lib/contact";
-
-type CatalogProduct = {
-  slug: string;
-  nombre: string;
-  precio: number;
-  imagenes: unknown[];
-  agotado: boolean;
-  atributos: Record<string, unknown>;
-};
-
-type PublicCatalog = {
-  version: 1;
-  productos: CatalogProduct[];
-};
+import { catalogEndpoint, isValidCatalog } from "@/lib/afeleia/contract";
 
 let catalogRequest: Promise<ReadonlySet<string> | null> | null = null;
-
-function catalogEndpoint(): string | null {
-  const base = process.env.NEXT_PUBLIC_AFELEIA_API_URL;
-  const sitio = process.env.NEXT_PUBLIC_AFELEIA_SITIO;
-  if (!base || !sitio) return null;
-  return `${base.replace(/\/+$/, "")}/catalogo-publico?sitio=${encodeURIComponent(sitio)}`;
-}
-
-function isCatalogProduct(value: unknown): value is CatalogProduct {
-  if (typeof value !== "object" || value === null) return false;
-  const product = value as Record<string, unknown>;
-  return (
-    typeof product.slug === "string" &&
-    product.slug !== "" &&
-    typeof product.nombre === "string" &&
-    product.nombre !== "" &&
-    typeof product.precio === "number" &&
-    Number.isFinite(product.precio) &&
-    Array.isArray(product.imagenes) &&
-    typeof product.agotado === "boolean" &&
-    typeof product.atributos === "object" &&
-    product.atributos !== null
-  );
-}
-
-function isPublicCatalog(value: unknown): value is PublicCatalog {
-  if (typeof value !== "object" || value === null) return false;
-  const catalog = value as Record<string, unknown>;
-  return (
-    catalog.version === 1 &&
-    Array.isArray(catalog.productos) &&
-    catalog.productos.every(isCatalogProduct)
-  );
-}
 
 async function fetchSoldOutSlugs(): Promise<ReadonlySet<string> | null> {
   const endpoint = catalogEndpoint();
   if (!endpoint) return null;
 
   try {
-    const response = await fetch(endpoint);
+    const response = await fetch(endpoint, {
+      signal: AbortSignal.timeout(5_000),
+    });
     if (!response.ok) return null;
     const payload: unknown = await response.json();
-    if (!isPublicCatalog(payload)) return null;
+    if (!isValidCatalog(payload)) return null;
     return new Set(
       payload.productos.filter((product) => product.agotado).map((product) => product.slug),
     );
@@ -75,9 +30,11 @@ async function fetchSoldOutSlugs(): Promise<ReadonlySet<string> | null> {
   }
 }
 
-function getSoldOutSlugs(): Promise<ReadonlySet<string> | null> {
+async function getSoldOutSlugs(): Promise<ReadonlySet<string> | null> {
   catalogRequest ??= fetchSoldOutSlugs();
-  return catalogRequest;
+  const slugs = await catalogRequest;
+  if (slugs === null) catalogRequest = null;
+  return slugs;
 }
 
 export default function CartDrawer() {
@@ -89,7 +46,6 @@ export default function CartDrawer() {
   const increment = useCart((s) => s.increment);
   const decrement = useCart((s) => s.decrement);
   const remove = useCart((s) => s.remove);
-  const totalCLP = useCart((s) => s.totalCLP());
   const [soldOutSlugs, setSoldOutSlugs] = useState<ReadonlySet<string> | null>(null);
 
   const priceLocale = locale === "pt" ? "pt-BR" : locale === "en" ? "en-US" : "es-CL";
@@ -121,14 +77,28 @@ export default function CartDrawer() {
     };
   }, [isOpen, soldOutSlugs]);
 
+  const cartLines = items.map((item) => ({
+    item,
+    isSoldOut: soldOutSlugs?.has(item.slug) ?? false,
+  }));
+  const orderLines = cartLines.filter(({ isSoldOut }) => !isSoldOut);
+  const orderTotalCLP = orderLines.reduce(
+    (total, { item }) => total + item.priceCLP * item.quantity,
+    0,
+  );
+  const allSoldOut = soldOutSlugs !== null && items.length > 0 && orderLines.length === 0;
+  const checkoutClassName =
+    "w-full bg-primary text-on-primary py-3 rounded-md font-body font-semibold flex items-center justify-center gap-2 hover:bg-primary-container transition-colors shadow-[0_8px_24px_-8px_rgba(42,0,2,0.45)]";
+
   const whatsappMessage = encodeURIComponent(
     [
       t("whatsappIntro"),
-      ...items.map(
-        (i) => `· ${i.name} × ${i.quantity} (${formatPrice(i.priceCLP * i.quantity)})`,
+      ...orderLines.map(
+        ({ item }) =>
+          `· ${item.name} × ${item.quantity} (${formatPrice(item.priceCLP * item.quantity)})`,
       ),
       "",
-      t("whatsappTotal", { total: formatPrice(totalCLP) }),
+      t("whatsappTotal", { total: formatPrice(orderTotalCLP) }),
       "",
       t("whatsappOutro"),
     ].join("\n"),
@@ -180,69 +150,79 @@ export default function CartDrawer() {
             </div>
           ) : (
             <ul className="space-y-5">
-              {items.map((item) => {
-                const isSoldOut = soldOutSlugs?.has(item.slug) ?? false;
+              {cartLines.map(({ item, isSoldOut }) => {
                 return (
                   <li
                     key={item.slug}
-                    className={`flex gap-4 border-b border-outline-variant/20 pb-5 last:border-0 ${
-                      isSoldOut ? "opacity-70" : ""
-                    }`}
+                    className="flex gap-4 border-b border-outline-variant/20 pb-5 last:border-0"
                   >
-                    <div className="relative w-20 h-24 shrink-0 bg-surface-container rounded-md overflow-hidden">
-                    <Image
-                      src={item.image}
-                      alt={item.name}
-                      fill
-                      className="object-contain p-2"
-                      sizes="80px"
-                    />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex justify-between gap-2">
-                      <div className="min-w-0">
-                        <p className="font-body text-label-sm uppercase tracking-wider text-on-surface-variant">
-                          {item.line}
-                        </p>
-                        <h3 className="font-display text-lg text-primary truncate">
-                          {item.name}
-                        </h3>
-                        {isSoldOut && (
-                          <span className="mt-1 inline-flex rounded bg-surface-container-highest px-2 py-0.5 font-body text-label-sm font-semibold uppercase tracking-wider text-on-surface-variant">
-                            {t("soldOut")}
+                    <div
+                      className={`relative w-20 h-24 shrink-0 bg-surface-container rounded-md overflow-hidden ${
+                        isSoldOut ? "opacity-70" : ""
+                      }`}
+                    >
+                      <Image
+                        src={item.image}
+                        alt={item.name}
+                        fill
+                        className="object-contain p-2"
+                        sizes="80px"
+                      />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex justify-between gap-2">
+                        <div className="min-w-0">
+                          <p className="font-body text-label-sm uppercase tracking-wider text-on-surface-variant">
+                            {item.line}
+                          </p>
+                          <h3 className="font-display text-lg text-primary truncate">
+                            {item.name}
+                          </h3>
+                          {isSoldOut && (
+                            <>
+                              <span className="mt-1 inline-flex rounded bg-surface-container-highest px-2 py-0.5 font-body text-label-sm font-semibold uppercase tracking-wider text-on-surface-variant">
+                                {t("soldOut")}
+                              </span>
+                              <p className="mt-1 font-body text-xs text-on-surface-variant">
+                                {t("soldOutNotice")}
+                              </p>
+                            </>
+                          )}
+                        </div>
+                        <button
+                          onClick={() => remove(item.slug)}
+                          aria-label={t("remove", { name: item.name })}
+                          className="text-outline hover:text-error transition-colors shrink-0"
+                        >
+                          <Trash2 className="h-4 w-4" aria-hidden="true" />
+                        </button>
+                      </div>
+                      <div className="flex items-center justify-between mt-3">
+                        <div className="flex items-center border border-outline-variant rounded">
+                          <button
+                            onClick={() => decrement(item.slug)}
+                            className="w-8 h-8 flex items-center justify-center hover:bg-surface-container transition-colors"
+                            aria-label={t("decrement")}
+                          >
+                            −
+                          </button>
+                          <span className="w-8 text-center font-body text-body-md">
+                            {item.quantity}
                           </span>
-                        )}
+                          <button
+                            onClick={() => increment(item.slug)}
+                            disabled={isSoldOut}
+                            aria-disabled={isSoldOut}
+                            className="w-8 h-8 flex items-center justify-center hover:bg-surface-container transition-colors disabled:cursor-not-allowed disabled:opacity-50"
+                            aria-label={t("increment")}
+                          >
+                            +
+                          </button>
+                        </div>
+                        <span className="font-body font-semibold text-primary">
+                          {formatPrice(item.priceCLP * item.quantity)}
+                        </span>
                       </div>
-                      <button
-                        onClick={() => remove(item.slug)}
-                        aria-label={t("remove", { name: item.name })}
-                        className="text-outline hover:text-error transition-colors shrink-0"
-                      >
-                        <Trash2 className="h-4 w-4" aria-hidden="true" />
-                      </button>
-                    </div>
-                    <div className="flex items-center justify-between mt-3">
-                      <div className="flex items-center border border-outline-variant rounded">
-                        <button
-                          onClick={() => decrement(item.slug)}
-                          className="w-8 h-8 flex items-center justify-center hover:bg-surface-container transition-colors"
-                          aria-label={t("decrement")}
-                        >
-                          −
-                        </button>
-                        <span className="w-8 text-center font-body text-body-md">{item.quantity}</span>
-                        <button
-                          onClick={() => increment(item.slug)}
-                          className="w-8 h-8 flex items-center justify-center hover:bg-surface-container transition-colors"
-                          aria-label={t("increment")}
-                        >
-                          +
-                        </button>
-                      </div>
-                      <span className="font-body font-semibold text-primary">
-                        {formatPrice(item.priceCLP * item.quantity)}
-                      </span>
-                    </div>
                     </div>
                   </li>
                 );
@@ -255,17 +235,34 @@ export default function CartDrawer() {
           <footer className="px-6 py-5 border-t border-outline-variant/30 bg-surface-container-low space-y-4">
             <div className="flex justify-between font-body text-body-lg">
               <span>{t("totalLabel")}</span>
-              <span className="font-semibold text-primary">{formatPrice(totalCLP)}</span>
+              <span className="font-semibold text-primary">{formatPrice(orderTotalCLP)}</span>
             </div>
-            <a
-              href={`${CONTACT_WHATSAPP_URL}?text=${whatsappMessage}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="w-full bg-primary text-on-primary py-3 rounded-md font-body font-semibold flex items-center justify-center gap-2 hover:bg-primary-container transition-colors shadow-[0_8px_24px_-8px_rgba(42,0,2,0.45)]"
-            >
-              <MessageCircle className="h-4 w-4" aria-hidden="true" />
-              {t("checkout")}
-            </a>
+            {allSoldOut ? (
+              <button
+                type="button"
+                disabled
+                aria-disabled="true"
+                className={`${checkoutClassName} cursor-not-allowed opacity-60`}
+              >
+                <MessageCircle className="h-4 w-4" aria-hidden="true" />
+                {t("checkout")}
+              </button>
+            ) : (
+              <a
+                href={`${CONTACT_WHATSAPP_URL}?text=${whatsappMessage}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={checkoutClassName}
+              >
+                <MessageCircle className="h-4 w-4" aria-hidden="true" />
+                {t("checkout")}
+              </a>
+            )}
+            {allSoldOut && (
+              <p className="text-center text-sm text-on-surface-variant font-body">
+                {t("allSoldOut")}
+              </p>
+            )}
             <p className="text-center text-xs text-on-surface-variant/80 font-body">
               {t("checkoutDisclaimer")}
             </p>

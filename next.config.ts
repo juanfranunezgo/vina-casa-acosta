@@ -76,9 +76,8 @@ function contentSecurityPolicy(): string {
     // Netlify las reescribe al mismo origen, así que `'self'` lo cubre.
     "img-src": ["'self'", "data:", "blob:", "https://images.unsplash.com"],
     "font-src": ["'self'", "data:"],
-    // El catálogo lo pide el servidor, no el browser. `'self'` alcanza para la
-    // navegación RSC; el origen de Afeleia va por si algún día se consulta
-    // desde el cliente.
+    // CartDrawer consulta el catálogo desde el cliente al abrirse. Quitar el
+    // origen de Afeleia rompe el marcado de líneas agotadas del carrito.
     "connect-src": ["'self'"],
     "frame-ancestors": ["'self'"],
     "form-action": ["'self'"],

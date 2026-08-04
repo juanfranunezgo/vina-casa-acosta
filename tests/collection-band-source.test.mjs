@@ -194,10 +194,20 @@ test("cart sold-out source guard refreshes stock once per session and fails open
   assert.doesNotMatch(cartSource, /export type CartItem = \{[\s\S]*?\bagotado\b[\s\S]*?\};/);
   assert.match(drawerSource, /if \(!isOpen \|\| soldOutSlugs !== null\) return/);
   assert.match(drawerSource, /catalogRequest \?\?= fetchSoldOutSlugs\(\)/);
+  assert.match(drawerSource, /if \(slugs === null\) catalogRequest = null/);
+  assert.match(drawerSource, /signal: AbortSignal\.timeout\(5_000\)/);
   assert.match(drawerSource, /if \(!response\.ok\) return null/);
-  assert.match(drawerSource, /if \(!isPublicCatalog\(payload\)\) return null/);
+  assert.match(drawerSource, /if \(!isValidCatalog\(payload\)\) return null/);
   assert.match(drawerSource, /soldOutSlugs\?\.has\(item\.slug\) \?\? false/);
   assert.match(drawerSource, /\{t\("soldOut"\)\}/);
+  assert.match(drawerSource, /disabled=\{isSoldOut\}/);
+  assert.match(drawerSource, /aria-disabled=\{isSoldOut\}/);
+  assert.match(drawerSource, /const orderLines = cartLines\.filter\(\(\{ isSoldOut \}\) => !isSoldOut\)/);
+  assert.match(drawerSource, /orderLines\.reduce/);
+  assert.match(drawerSource, /\.\.\.orderLines\.map/);
+  assert.match(drawerSource, /\{t\("soldOutNotice"\)\}/);
+  assert.match(drawerSource, /disabled\s+aria-disabled="true"/);
+  assert.match(drawerSource, /\{t\("allSoldOut"\)\}/);
 });
 
 test("wine collection cards use their line hierarchy instead of the generic wine type", async () => {
