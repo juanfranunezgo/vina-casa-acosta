@@ -22,7 +22,7 @@ Esta carpeta (`sitio-web/`) es la raíz del proyecto Next.js. Está anidada dent
 app/[locale]/       Páginas (todas i18n-aware, 60 rutas SSG = 3 locales × 20 páginas)
 components/         Componentes UI; ui/ tiene el Button unificado
 components/ui/      Sistema base (Button con 5 variants × 3 sizes)
-data/wines.ts       Catálogo de los 13 vinos — fuente de verdad para tienda y detalle
+data/wines.ts       Respaldo histórico/importación inicial; la tienda lee Afeleia + snapshot
 data/activities.ts  Tours / experiencias / eventos
 i18n/routing.ts     Config de locales
 i18n/request.ts     Loader de mensajes por request
@@ -48,6 +48,22 @@ npm run lint
 El adaptador de Next (OpenNext) lo instala Netlify solo en cada build — no agregarlo a `package.json` ni fijarle versión. La config vive en `netlify.toml`; la URL pública sale del entorno vía `lib/siteUrl.ts` (`NEXT_PUBLIC_SITE_URL` → `URL` de Netlify → localhost), así que **no hay dominio hardcodeado en el código**.
 
 Ojo con los créditos: cada deploy de producción cuesta 15 de los 300 mensuales; los previews son gratis. Iterar en ramas y mergear por tandas. Todo el detalle —creación del proyecto, dominio propio, apagar Vercel, troubleshooting— en [`docs/DEPLOY-NETLIFY.md`](docs/DEPLOY-NETLIFY.md).
+
+## Conexión Afeleia
+
+El catálogo se integra contra el **contrato público v1** de Afeleia. Antes de cambiar
+`lib/afeleia/`, el snapshot, el carrito o cualquier consumidor de productos, leer en el repo
+privado Afeleia:
+
+- `docs/conexiones-web/manual-conexion.md` — contrato reusable, adaptador, fallback,
+  atributos y checklist de cierre;
+- `docs/conexiones-web/casos/vina-casa-acosta.md` — decisiones y errores reales de este caso.
+
+La web solo recibe `NEXT_PUBLIC_AFELEIA_API_URL` y `NEXT_PUBLIC_AFELEIA_SITIO`; nunca una
+service role ni acceso directo a la base. `data/catalogo-fallback.json` es salida de
+`npm run catalogo:snapshot`, no se edita a mano. Si el repo Afeleia no está disponible,
+eso es un prerrequisito bloqueante: no se copia ni se redefine el contrato dentro de este repo
+público.
 
 ## Convenciones
 
