@@ -112,6 +112,20 @@ const nextConfig: NextConfig = {
     // cuando un <Image> pide algo distinto del default (75).
     // 85 = balance calidad/peso del hero full-bleed · 95 = botellas de vino.
     qualities: [65, 70, 75, 85, 95],
+    // Rutas del propio sitio que el optimizador puede servir. Sin esta clave Next
+    // acepta cualquiera, incluida la que un dato del panel logre meter en un
+    // `<Image src>`. Cubre las carpetas de assets de `public/` y nada más.
+    // La lista NO se lee a ojo: una incompleta rompe fotos en producción sin
+    // fallar el build (el optimizador valida por request), así que
+    // `tests/afeleia-local-assets.test.mjs` escanea `public/` y falla si aparece
+    // una carpeta con imágenes sin cubrir.
+    // `search: ""` descarta query strings: ningún asset del sitio usa una.
+    localPatterns: [
+      { pathname: "/images/**", search: "" },
+      { pathname: "/vinos/**", search: "" },
+      { pathname: "/brand/**", search: "" },
+      { pathname: "/ilustraciones/**", search: "" },
+    ],
     remotePatterns: [
       {
         protocol: "https",
