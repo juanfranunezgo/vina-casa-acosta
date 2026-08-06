@@ -105,6 +105,41 @@ export function renderableImage(
   return undefined;
 }
 
+/** Carpeta de `public/` donde viven las fichas técnicas committeadas. */
+export const LOCAL_DOCUMENT_PREFIX = "/documentos/";
+
+/**
+ * Enlace de ficha técnica que esta web puede publicar, o `undefined`.
+ *
+ * `ficha_tecnica_pdf` es texto libre del panel del cliente y va directo a un
+ * `href`. Que hoy no se pueda ejecutar nada por ahí es mérito de React —que
+ * neutraliza los `href` `javascript:`— y del navegador, que bloquea la navegación
+ * top-level a `data:`. Ninguna de las dos es una garantía de este código, y la
+ * CSP del sitio no cubre el hueco: su `script-src` lleva `'unsafe-inline'`, que
+ * es justamente lo que habilita los URI `javascript:`.
+ *
+ * A diferencia de las imágenes, acá NO se restringe el host: la viña puede alojar
+ * su PDF donde quiera y bloquearlo sería romperle una función. Lo que se exige es
+ * el esquema — `http(s)` — o una ruta de `public/documentos/`.
+ */
+export function renderableDocument(value: unknown): string | undefined {
+  if (typeof value !== "string") return undefined;
+  const url = value.trim();
+  if (url === "") return undefined;
+
+  if (url.startsWith(LOCAL_DOCUMENT_PREFIX)) {
+    return url.split("/").includes("..") ? undefined : url;
+  }
+
+  let parsed: URL;
+  try {
+    parsed = new URL(url);
+  } catch {
+    return undefined;
+  }
+  return parsed.protocol === "https:" || parsed.protocol === "http:" ? url : undefined;
+}
+
 /** Origen `https://host:puerto` de la API de Afeleia, o `null` si no está configurada. */
 function storageOrigin(apiUrl: string | undefined): string | null {
   if (!apiUrl) return null;
