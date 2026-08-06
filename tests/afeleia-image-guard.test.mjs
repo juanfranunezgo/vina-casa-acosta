@@ -60,6 +60,28 @@ test("sin API configurada solo sobreviven las rutas del propio sitio", () => {
   assert.equal(renderableImage(["/vinos/bera.webp"], undefined), "/vinos/bera.webp");
 });
 
+test("descarta una ruta del sitio fuera de la carpeta del snapshot", () => {
+  // El snapshot solo emite /vinos/<archivo>. Todo lo demas es superficie sin uso:
+  // el optimizador de Next haria un fetch de esa ruta contra el propio origen.
+  assert.equal(renderableImage(["/api/interno/secreto"], API), undefined);
+  assert.equal(renderableImage(["/_next/static/chunk.js"], API), undefined);
+  assert.equal(renderableImage(["/es/vinos"], API), undefined);
+  assert.equal(renderableImage(["/"], API), undefined);
+});
+
+test("descarta el escape con .. aunque empiece en la carpeta correcta", () => {
+  assert.equal(renderableImage(["/vinos/../../api/interno"], API), undefined);
+  // %2F NO es un escape: el optimizador no lo decodifica como separador y
+  // hasLocalMatch lo trata como un nombre de archivo raro dentro de /vinos/.
+  // Se fija para que nadie "arregle" de mas y rompa nombres legitimos con %.
+  assert.equal(renderableImage(["/vinos/..%2F..%2Fx"], API), "/vinos/..%2F..%2Fx");
+});
+
+test("sigue aceptando lo que el snapshot realmente produce", () => {
+  assert.equal(renderableImage(["/vinos/bera.png"], API), "/vinos/bera.png");
+  assert.equal(renderableImage(["/vinos/sub/bera.webp"], API), "/vinos/sub/bera.webp");
+});
+
 test("tolera formas que el contrato dice que no llegan pero nadie garantiza", () => {
   assert.equal(renderableImage(undefined, API), undefined);
   assert.equal(renderableImage(null, API), undefined);

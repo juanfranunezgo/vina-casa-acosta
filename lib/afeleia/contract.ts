@@ -47,6 +47,16 @@ export type ApiCatalog = {
 export const STORAGE_PUBLIC_PREFIX = "/storage/v1/object/public/";
 
 /**
+ * Carpeta de `public/` donde el snapshot deja las fotos de botella.
+ *
+ * El generador la escribe como `LOCAL_IMAGE_DIR` (`scripts/catalogo-snapshot.mjs`)
+ * y es el ÚNICO prefijo local que el snapshot emite. El guard no acepta otro: una
+ * ruta arbitraria del sitio termina siendo un fetch del optimizador de Next contra
+ * el propio origen, y nada del catálogo necesita eso.
+ */
+export const SNAPSHOT_IMAGE_PREFIX = "/vinos/";
+
+/**
  * Primera imagen del producto que esta web puede realmente dibujar, o `undefined`.
  *
  * `imagenes` lo llena el cliente desde su panel y llega por la red. Aunque el
@@ -71,9 +81,15 @@ export function renderableImage(
     const value = entry.trim();
     if (value === "") continue;
 
-    // Ruta del propio sitio: lo que produce el snapshot de fallback (`/vinos/x.webp`).
-    // `//` queda afuera a propósito: es una URL protocol-relative, no una ruta.
-    if (value.startsWith("/") && !value.startsWith("//")) return value;
+    // Ruta del propio sitio: solo la carpeta que produce el snapshot de fallback
+    // (`/vinos/x.webp`). Cualquier otra ruta la pediría el optimizador de Next
+    // contra el propio origen, y el catálogo no tiene por qué apuntar ahí.
+    // `//` queda afuera solo: una URL protocol-relative no empieza con `/vinos/`.
+    // `..` también, porque el optimizador resolvería el escape antes de pedirla.
+    if (value.startsWith(SNAPSHOT_IMAGE_PREFIX)) {
+      if (value.split("/").includes("..")) continue;
+      return value;
+    }
 
     if (!allowedOrigin) continue;
     let parsed: URL;
