@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import {
   useEffect,
@@ -11,13 +10,15 @@ import {
 } from "react";
 import { ChevronLeft, ChevronRight, ArrowRight } from "lucide-react";
 import Button from "@/components/ui/Button";
+import WineBottleImage from "@/components/WineBottleImage";
 
 export type FeaturedLineWine = {
   /** Nombre completo (para el alt de la imagen). */
   name: string;
   /** Nombre corto/distintivo mostrado bajo la botella (ej. "Sam", "Carmenere"). */
   label: string;
-  image: string;
+  /** Ausente si el producto se creó en el panel sin foto. */
+  image?: string;
   href: string;
 };
 
@@ -235,10 +236,9 @@ function LineCard({
                 aria-hidden
                 className="pointer-events-none absolute inset-x-2 bottom-0 h-2.5 rounded-[50%] bg-primary/25 blur-md sm:inset-x-3 sm:h-3"
               />
-              <Image
+              <WineBottleImage
                 src={wine.image}
                 alt={wine.name}
-                fill
                 className="object-cover object-bottom drop-shadow-[0_10px_14px_rgba(74,14,14,0.22)] transition-transform duration-500 group-hover:-translate-y-2 motion-reduce:transition-none"
                 sizes="300px"
               />

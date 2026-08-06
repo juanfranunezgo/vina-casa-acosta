@@ -1,18 +1,19 @@
 import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { ArrowRight } from "lucide-react";
+import CatalogOriginMeta from "@/components/CatalogOriginMeta";
 import CollectionBand, { type CollectionWine } from "@/components/CollectionBand";
+import JsonLd from "@/components/JsonLd";
 import Reveal from "@/components/Reveal";
 import Button from "@/components/ui/Button";
-import {
-  wines,
-  lineSlugs,
-  lineMeta,
-  getWinesByLine,
-  type Wine,
-  type WineLine,
-} from "@/data/wines";
+import { lineSlugs, lineMeta, type WineLine } from "@/data/wines";
+import { getCatalog, winesByLine, type CatalogWine } from "@/lib/afeleia/catalog";
+import { joinLabels, labelOr, translatedOr } from "@/lib/afeleia/copy";
 import { buildWinesItemListJsonLd } from "@/lib/wineJsonLd";
+
+// El catálogo lo publica Afeleia (ISR: cambios visibles en ≤60s).
+// Tiene que ser un literal: Next lee la config de segmento estáticamente.
+export const revalidate = 60;
 
 // El hero C1 va en <picture> y no en next/image, porque next/image no hace art
 // direction: elige a qué tamaño bajar una foto, no cuál de dos. El .webp sin
@@ -52,36 +53,45 @@ export default async function VinosPage({ params }: PageProps<"/[locale]/vinos">
   const { locale } = await params;
   setRequestLocale(locale);
   const t = await getTranslations("vinos");
+  const tCart = await getTranslations("cart");
   const tWine = await getTranslations("wines");
+  const catalog = await getCatalog();
 
-  const eyebrowOf = (wine: Wine) =>
-    `${t(`types.${wine.type}`)} · ${t(`varieties.${wine.variety}`)}`;
-  const cardEyebrowOf = (wine: Wine) => {
+  // `joinLabels` y no plantillas con " · ": un producto del panel puede no traer
+  // tipo o cepa, y concatenar a ciegas deja separadores colgando ("Tinto · ").
+  const eyebrowOf = (wine: CatalogWine) =>
+    joinLabels(labelOr(t, "types", wine.type), labelOr(t, "varieties", wine.variety));
+  const cardEyebrowOf = (wine: CatalogWine) => {
     if (wine.line === "Ombú") return t("categories.Reserva");
     if (wine.line === "Lajau") {
-      return `${t("categories.Reserva")} · ${t("varieties.Ensamblaje")}`;
+      return joinLabels(t("categories.Reserva"), t("varieties.Ensamblaje"));
     }
     if (wine.line === "Estación Francia") {
-      return `${t("categories.Gran Reserva")} · ${t(`varieties.${wine.variety}`)}`;
+      return joinLabels(t("categories.Gran Reserva"), labelOr(t, "varieties", wine.variety));
     }
     if (wine.category) {
-      return `${t(`categories.${wine.category}`)} · ${t(`varieties.${wine.variety}`)}`;
+      return joinLabels(
+        labelOr(t, "categories", wine.category),
+        labelOr(t, "varieties", wine.variety),
+      );
     }
     return eyebrowOf(wine);
   };
 
-  const jsonLd = buildWinesItemListJsonLd(wines, locale, {
-    shortDescription: (slug) => tWine(`${slug}.shortDescription`),
+  const jsonLd = buildWinesItemListJsonLd(catalog, locale, {
+    shortDescription: (wine) =>
+      translatedOr(tWine, `${wine.slug}.shortDescription`, wine.shortDescription),
     category: eyebrowOf,
   });
 
   return (
     <>
-      <script
-        type="application/ld+json"
-        // JSON-LD del catálogo para que los buscadores entiendan la lista de productos.
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-      />
+      {/* JSON-LD del catálogo para que los buscadores entiendan la lista de
+          productos. Va por <JsonLd> y NUNCA por JSON.stringify a mano: `name` y
+          `description` los escribe el cliente en el panel, y `JSON.stringify` no
+          escapa `</script>` (ver lib/jsonLd.ts). */}
+      <JsonLd data={jsonLd} />
+      <CatalogOriginMeta />
 
       {/* C1 — Hero cinematográfico, en el lenguaje visual de Historia. */}
       <section className="relative flex min-h-[100svh] w-full items-center overflow-hidden">
@@ -135,7 +145,7 @@ export default async function VinosPage({ params }: PageProps<"/[locale]/vinos">
 
       {/* C2 — Colecciones por línea (banda editorial: foto de ambiente + tarjetas) */}
       {collectionLines.map((line, lineIdx) => {
-        const lineWines = getWinesByLine(line);
+        const lineWines = winesByLine(catalog, line);
         if (lineWines.length === 0) return null;
 
         const meta = lineMeta[line];
@@ -145,6 +155,8 @@ export default async function VinosPage({ params }: PageProps<"/[locale]/vinos">
           image: wine.image,
           name: wine.name,
           eyebrow: cardEyebrowOf(wine),
+          agotado: wine.agotado,
+          soldOutLabel: tCart("soldOut"),
         }));
 
         return (

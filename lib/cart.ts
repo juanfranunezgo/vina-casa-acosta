@@ -23,7 +23,10 @@ type CartState = {
   clear: () => void;
   toggle: (open?: boolean) => void;
   totalItems: () => number;
-  totalCLP: () => number;
+  // NO agregar un `totalCLP` acá. El total del pedido depende del stock —las
+  // líneas agotadas no suman— y el stock lo consulta `CartDrawer` al abrirse,
+  // no vive en el store. Un total en el store nace sin esa información y suma
+  // lo que no se va a vender.
 };
 
 export const useCart = create<CartState>()(
@@ -68,8 +71,6 @@ export const useCart = create<CartState>()(
       toggle: (open) =>
         set((state) => ({ isOpen: open ?? !state.isOpen })),
       totalItems: () => get().items.reduce((sum, i) => sum + i.quantity, 0),
-      totalCLP: () =>
-        get().items.reduce((sum, i) => sum + i.priceCLP * i.quantity, 0),
     }),
     {
       name: "casa-acosta-cart",

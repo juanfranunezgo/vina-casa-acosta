@@ -1,19 +1,28 @@
-import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { ArrowLeft, ArrowRight, FileText, UtensilsCrossed } from "lucide-react";
+import CatalogOriginMeta from "@/components/CatalogOriginMeta";
 import Reveal from "@/components/Reveal";
 import Button from "@/components/ui/Button";
 import ProductPurchase from "@/components/ProductPurchase";
 import TastingProfile from "@/components/TastingProfile";
-import { wines, getWineBySlug } from "@/data/wines";
+import WineBottleImage from "@/components/WineBottleImage";
+import { getCatalog, getWineBySlug } from "@/lib/afeleia/catalog";
+import { joinLabels, labelOr, translatedListOr, translatedOr } from "@/lib/afeleia/copy";
 import { routing } from "@/i18n/routing";
 
+// El catálogo lo publica Afeleia: la ficha se reconstruye cada minuto en vez de
+// quedar congelada en el build. Un vino nuevo que no estaba al compilar se
+// renderiza on-demand (`dynamicParams` por defecto).
+// Tiene que ser un literal: Next lee la config de segmento estáticamente.
+export const revalidate = 60;
+
 export async function generateStaticParams() {
+  const catalog = await getCatalog();
   return routing.locales.flatMap((locale) =>
-    wines.map((w) => ({ locale, slug: w.slug })),
+    catalog.map((w) => ({ locale, slug: w.slug })),
   );
 }
 
@@ -21,12 +30,12 @@ export async function generateMetadata({
   params,
 }: PageProps<"/[locale]/vinos/[slug]">): Promise<Metadata> {
   const { locale, slug } = await params;
-  const wine = getWineBySlug(slug);
+  const wine = await getWineBySlug(slug);
   if (!wine) return { title: "—" };
   const tWine = await getTranslations({ locale, namespace: "wines" });
   return {
     title: wine.name,
-    description: tWine(`${slug}.shortDescription`),
+    description: translatedOr(tWine, `${slug}.shortDescription`, wine.shortDescription),
   };
 }
 
@@ -35,7 +44,8 @@ export default async function WinePage({
 }: PageProps<"/[locale]/vinos/[slug]">) {
   const { locale, slug } = await params;
   setRequestLocale(locale);
-  const wine = getWineBySlug(slug);
+  const catalog = await getCatalog();
+  const wine = catalog.find((w) => w.slug === slug);
   if (!wine) notFound();
 
   const t = await getTranslations("wineDetail");
@@ -43,15 +53,23 @@ export default async function WinePage({
   const tWine = await getTranslations("wines");
   const tBadges = await getTranslations("vinos.badges");
 
-  const tastingNotes = tWine.raw(`${slug}.tastingNotes`) as string[];
-  const pairings = tWine.raw(`${slug}.pairings`) as string[];
+  const tastingNotes = translatedListOr(tWine, `${slug}.tastingNotes`, wine.tastingNotes);
+  const pairings = translatedListOr(tWine, `${slug}.pairings`, wine.pairings);
 
-  const sameLine = wines
+  // "Línea Ombú · Reserva" — pero sin línea asignada no se imprime el rótulo solo.
+  const lineEyebrow = wine.line
+    ? joinLabels(
+        `${tVinos("lineLabel")} ${wine.line}`,
+        labelOr(tVinos, "categories", wine.category),
+      )
+    : labelOr(tVinos, "categories", wine.category);
+
+  const sameLine = catalog
     .filter((w) => w.line === wine.line && w.slug !== wine.slug)
     .sort((a, b) => Number(Boolean(b.featured)) - Number(Boolean(a.featured)));
   const related = [
     ...sameLine,
-    ...wines
+    ...catalog
       .filter((w) => w.line !== wine.line && w.slug !== wine.slug)
       .sort((a, b) => Number(Boolean(b.featured)) - Number(Boolean(a.featured))),
   ].slice(0, 4);
@@ -65,6 +83,7 @@ export default async function WinePage({
 
   return (
     <>
+      <CatalogOriginMeta />
       <section className="pt-32 pb-section-gap px-margin-mobile md:px-margin-desktop max-w-(--container-max) mx-auto">
         <Button
           href={`/${locale}/vinos`}
@@ -87,27 +106,27 @@ export default async function WinePage({
                     "radial-gradient(circle at 50% 30%, rgba(255,255,255,0.4) 0%, transparent 60%)",
                 }}
               />
-              <Image
+              <WineBottleImage
                 src={wine.image}
                 alt={wine.name}
-                fill
                 className="object-contain p-12 drop-shadow-[0_24px_32px_rgba(74,14,14,0.18)]"
                 sizes="(max-width: 768px) 100vw, 50vw"
                 priority
               />
               {wine.badge && (
                 <span className="absolute top-6 left-6 bg-primary text-on-primary px-3 py-1.5 text-label-sm uppercase tracking-wider rounded font-semibold">
-                  {tBadges(wine.badge)}
+                  {translatedOr(tBadges, wine.badge, wine.badge)}
                 </span>
               )}
             </div>
           </Reveal>
 
           <Reveal delay={120} className="md:pt-8">
-            <p className="mb-3 font-accent text-xl font-light italic text-primary md:text-2xl">
-              {tVinos("lineLabel")} {wine.line}
-              {wine.category ? ` · ${tVinos(`categories.${wine.category}`)}` : ""}
-            </p>
+            {lineEyebrow && (
+              <p className="mb-3 font-accent text-xl font-light italic text-primary md:text-2xl">
+                {lineEyebrow}
+              </p>
+            )}
             <h1
               className="font-display text-primary mb-3 leading-tight"
               style={{
@@ -117,52 +136,70 @@ export default async function WinePage({
               {wine.name}
             </h1>
             <p className="font-body text-body-lg text-on-surface-variant mb-6">
-              {tVinos(`types.${wine.type}`)} · {tVinos(`varieties.${wine.variety}`)} ·{" "}
-              {wine.vintage ? t("vintageLabel", { year: wine.vintage }) : t("noVintage")}
+              {joinLabels(
+                labelOr(tVinos, "types", wine.type),
+                labelOr(tVinos, "varieties", wine.variety),
+                wine.vintage ? t("vintageLabel", { year: wine.vintage }) : t("noVintage"),
+              )}
             </p>
 
             <p className="font-body text-body-md text-on-surface leading-relaxed mb-8">
-              {tWine(`${slug}.description`)}
+              {translatedOr(tWine, `${slug}.description`, wine.description)}
             </p>
 
-            <Button
-              href={wine.technicalSheet}
-              target="_blank"
-              rel="noopener noreferrer"
-              variant="link"
-              iconLeft={<FileText className="h-4 w-4" />}
-              className="mb-10 normal-case tracking-normal text-body-md"
-            >
-              {t("technicalSheet")}
-            </Button>
+            {/* DEC-5: cada sección se dibuja solo si su dato existe. Un producto
+                creado en el panel sin PDF dejaba antes un botón con href="" que
+                abría una copia de esta misma página en una pestaña nueva; sin
+                notas ni maridajes dejaba dos encabezados sobre listas vacías. */}
+            {wine.technicalSheet && (
+              <Button
+                href={wine.technicalSheet}
+                target="_blank"
+                rel="noopener noreferrer"
+                variant="link"
+                iconLeft={<FileText className="h-4 w-4" />}
+                className="mb-10 normal-case tracking-normal text-body-md"
+              >
+                {t("technicalSheet")}
+              </Button>
+            )}
 
-            <div className="space-y-8 mb-10">
-              <div>
-                <h3 className="font-body text-label-sm uppercase tracking-widest text-primary mb-4 flex items-center gap-2">
-                  <span className="h-px w-6 bg-primary/40" />
-                  {t("tastingNotes")}
-                </h3>
-                <TastingProfile notes={tastingNotes} />
-              </div>
+            {(tastingNotes.length > 0 || pairings.length > 0) && (
+              <div className="space-y-8 mb-10">
+                {tastingNotes.length > 0 && (
+                  <div>
+                    <h3 className="font-body text-label-sm uppercase tracking-widest text-primary mb-4 flex items-center gap-2">
+                      <span className="h-px w-6 bg-primary/40" />
+                      {t("tastingNotes")}
+                    </h3>
+                    <TastingProfile notes={tastingNotes} />
+                  </div>
+                )}
 
-              <div>
-                <h3 className="font-body text-label-sm uppercase tracking-widest text-primary mb-4 flex items-center gap-2">
-                  <span className="h-px w-6 bg-primary/40" />
-                  {t("pairing")}
-                </h3>
-                <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 font-body text-body-md text-on-surface-variant">
-                  {pairings.map((p) => (
-                    <li
-                      key={p}
-                      className="flex items-center gap-3 bg-surface-container-low rounded-md px-3 py-2.5 border border-outline-variant/20"
-                    >
-                      <UtensilsCrossed className="h-4 w-4 text-primary shrink-0" aria-hidden="true" />
-                      {p}
-                    </li>
-                  ))}
-                </ul>
+                {pairings.length > 0 && (
+                  <div>
+                    <h3 className="font-body text-label-sm uppercase tracking-widest text-primary mb-4 flex items-center gap-2">
+                      <span className="h-px w-6 bg-primary/40" />
+                      {t("pairing")}
+                    </h3>
+                    <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 font-body text-body-md text-on-surface-variant">
+                      {pairings.map((p) => (
+                        <li
+                          key={p}
+                          className="flex items-center gap-3 bg-surface-container-low rounded-md px-3 py-2.5 border border-outline-variant/20"
+                        >
+                          <UtensilsCrossed
+                            className="h-4 w-4 text-primary shrink-0"
+                            aria-hidden="true"
+                          />
+                          {p}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
               </div>
-            </div>
+            )}
 
             <div className="flex flex-col gap-6 border-t border-outline-variant/40 pt-6 sm:flex-row sm:items-center sm:justify-between">
               <div className="flex flex-col">
@@ -174,12 +211,15 @@ export default async function WinePage({
                 </span>
               </div>
               <ProductPurchase
+                agotado={wine.agotado}
                 item={{
                   slug: wine.slug,
                   name: wine.name,
-                  line: wine.line,
-                  variety: wine.variety,
-                  image: wine.image,
+                  // El carrito muestra estos campos como texto: `undefined` se
+                  // imprimiría literalmente en el panel lateral.
+                  line: wine.line ?? "",
+                  variety: wine.variety ?? "",
+                  image: wine.image ?? "",
                   priceCLP: wine.priceCLP,
                 }}
               />
@@ -211,10 +251,9 @@ export default async function WinePage({
                     className="group block bg-surface rounded-xl overflow-hidden hover:-translate-y-1 hover:shadow-[0_24px_48px_-12px_rgba(74,14,14,0.12)] transition-all duration-300"
                   >
                     <div className="aspect-[3/4] relative bg-gradient-to-br from-surface-container-low to-surface-container">
-                      <Image
+                      <WineBottleImage
                         src={r.image}
                         alt={r.name}
-                        fill
                         className="object-contain p-8 group-hover:scale-105 transition-transform duration-500 drop-shadow-[0_12px_18px_rgba(74,14,14,0.15)]"
                         sizes="(max-width: 639px) 100vw, (max-width: 1023px) 50vw, 25vw"
                       />
@@ -222,7 +261,10 @@ export default async function WinePage({
                     <div className="p-6">
                       <h3 className="font-display text-xl text-primary mb-1">{r.name}</h3>
                       <p className="font-body text-body-md text-on-surface-variant">
-                        {tVinos(`types.${r.type}`)} · {tVinos(`varieties.${r.variety}`)}
+                        {joinLabels(
+                          labelOr(tVinos, "types", r.type),
+                          labelOr(tVinos, "varieties", r.variety),
+                        )}
                       </p>
                     </div>
                   </Link>

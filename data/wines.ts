@@ -523,10 +523,6 @@ export const lineMeta: Record<WineLine, LineMeta> = {
 /** Líneas destacadas en el home (A3), en orden de aparición. */
 export const featuredLineOrder: WineLine[] = ["Ombú", "Lajau", "Estación Francia"];
 
-export function getWinesByLine(line: WineLine): Wine[] {
-  return wines.filter((w) => w.line === line);
-}
-
 /** Tipos de vino disponibles para el filtro de la tienda. */
 export const wineTypes: WineType[] = ["Tinto", "Rosado", "Blanco", "Espumante", "Dulce"];
 
@@ -534,26 +530,46 @@ export const wineTypes: WineType[] = ["Tinto", "Rosado", "Blanco", "Espumante", 
 export const cepaGroups: CepaGroup[] = ["Monovarietario", "Ensamblaje", "Chardonnay + Viognier"];
 
 /**
+ * Las uniones de arriba, como valores.
+ *
+ * `wineLines`, `wineTypes` y `cepaGroups` ya existían para poblar los filtros;
+ * estas dos existen para lo mismo que ellas cumplen de paso: ser la lista contra
+ * la que `lib/afeleia/catalog.ts` VALIDA lo que llega de la API. El catálogo lo
+ * edita el cliente, así que un `tipo: "Naranjo"` es posible y no debe entrar al
+ * tipo `WineType` por la vía de un cast.
+ */
+export const varieties: Variety[] = [
+  "Carmenere",
+  "Tannat",
+  "Cabernet Sauvignon",
+  "Chardonnay + Viognier",
+  "Ensamblaje",
+];
+
+/** Niveles de línea que el sitio sabe etiquetar. */
+export const wineCategories: NonNullable<Wine["category"]>[] = [
+  "Reserva",
+  "Gran Reserva",
+  "Edición Limitada",
+];
+
+/**
  * ¿Cae el vino bajo este tipo del filtro? "Dulce" cruza los tipos: incluye a
  * todo vino de cosecha tardía, aunque su tipo propio sea Tinto.
  */
-export function matchesWineType(wine: Wine, type: WineType): boolean {
+export function matchesWineType(
+  // Estructural y no `Wine`: el filtro también corre sobre `CatalogWine`, donde
+  // el tipo puede faltar (producto del panel a medio completar).
+  wine: { type?: WineType; sweet?: boolean },
+  type: WineType,
+): boolean {
   if (type === "Dulce") return wine.type === "Dulce" || wine.sweet === true;
   return wine.type === type;
 }
 
-export function getWineBySlug(slug: string): Wine | undefined {
-  return wines.find((w) => w.slug === slug);
-}
-
-export function getFeaturedWines(): Wine[] {
-  return wines.filter((w) => w.featured);
-}
-
-export function formatCLP(amount: number): string {
-  return new Intl.NumberFormat("es-CL", {
-    style: "currency",
-    currency: "CLP",
-    maximumFractionDigits: 0,
-  }).format(amount);
-}
+// `getWinesByLine`, `getWineBySlug`, `getFeaturedWines` y `formatCLP` vivían acá
+// y se borraron al pasar el catálogo a la API: ningún consumidor los importaba
+// desde entonces. El segundo, además, colisionaba de nombre con el
+// `getWineBySlug` de `lib/afeleia/catalog.ts` —el que sí consulta el catálogo
+// vivo—, y un autoimport tomando el equivocado habría servido los 13 vinos
+// congelados de este archivo sin que nada fallara.

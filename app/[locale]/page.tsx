@@ -7,8 +7,13 @@ import Button from "@/components/ui/Button";
 import AboutSection from "@/components/AboutSection";
 import HomeActivitiesShowcase from "@/components/HomeActivitiesShowcase";
 import FeaturedLinesCarousel from "@/components/FeaturedLinesCarousel";
-import { featuredLineOrder, lineSlugs, getWinesByLine } from "@/data/wines";
+import { featuredLineOrder, lineSlugs } from "@/data/wines";
+import { getCatalog, winesByLine } from "@/lib/afeleia/catalog";
 import { tours as tourData, experiences as experienceData } from "@/data/activities";
+
+// El carrusel de líneas destacadas se alimenta del catálogo de Afeleia (ISR 60s).
+// Tiene que ser un literal: Next lee la config de segmento estáticamente.
+export const revalidate = 60;
 
 // El hero va en <picture> con dos encuadres (ver scripts/optimize-home-hero.mjs):
 // el 3:2 de siempre para desktop y un 9:16 recortado para pantallas verticales.
@@ -63,10 +68,11 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
     image: ex.image,
   }));
 
+  const catalog = await getCatalog();
   const featuredLineCards = featuredLineOrder.map((line) => {
     const slug = lineSlugs[line];
     const base = `featuredLines.lines.${slug}`;
-    const lineWines = getWinesByLine(line);
+    const lineWines = winesByLine(catalog, line);
     const details = [
       { label: t("featuredLines.detailLabels.estilo"), value: t(`${base}.estilo`) },
       { label: t("featuredLines.detailLabels.crianza"), value: t(`${base}.crianza`) },
