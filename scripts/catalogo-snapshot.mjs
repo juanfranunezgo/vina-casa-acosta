@@ -3,9 +3,11 @@
  * Regenera `data/catalogo-fallback.json`: la copia committeada del catálogo que
  * la web sirve cuando la API de Afeleia no responde.
  *
- * El snapshot es la respuesta literal del contrato v1, así que `lib/afeleia/catalog.ts`
- * lo pasa por el mismo adaptador que la respuesta viva. Si divergieran, el modo
- * degradado se vería distinto del normal justo el día que importa.
+ * El snapshot es la respuesta del contrato v1 con UNA transformación: las rutas de
+ * imagen se reapuntan a `public/vinos/` (ver `localizarImagenes`). Salvo eso,
+ * `lib/afeleia/catalog.ts` lo pasa por el mismo adaptador que la respuesta viva —
+ * si divergieran, el modo degradado se vería distinto del normal justo el día que
+ * importa.
  *
  * Uso:
  *   npm run catalogo:snapshot -- --url <API_URL> --sitio <slug>
@@ -53,13 +55,28 @@ if (!apiUrl || !sitio) {
 const endpoint = `${apiUrl.replace(/\/+$/, "")}/catalogo-publico?sitio=${encodeURIComponent(sitio)}`;
 console.info(`Consultando ${endpoint}`);
 
-const response = await fetch(endpoint);
+// La API caída es el caso NORMAL de este script —es el motivo por el que existe
+// el fallback— así que se informa como los demás fallos y no como un stack trace.
+let response;
+try {
+  response = await fetch(endpoint);
+} catch (error) {
+  const detalle = error instanceof Error ? error.message : String(error);
+  console.error(`No se pudo consultar la API (${detalle}). El snapshot NO se tocó.`);
+  process.exit(1);
+}
 if (!response.ok) {
   console.error(`La API respondió ${response.status}. El snapshot NO se tocó.`);
   process.exit(1);
 }
 
-const payload = await response.json();
+let payload;
+try {
+  payload = await response.json();
+} catch {
+  console.error("La API respondió algo que no es JSON. El snapshot NO se tocó.");
+  process.exit(1);
+}
 
 // Nunca pisar un snapshot bueno con uno inservible: el fallback es la última
 // línea de defensa de la web y se regenera a mano, no en cada deploy.
@@ -85,22 +102,41 @@ if (!Array.isArray(payload.productos) || payload.productos.length === 0) {
  */
 function localizarImagenes(productos) {
   const sinFotoLocal = [];
+  const duenoDe = new Map();
+  const colisiones = [];
   for (const producto of productos) {
     producto.imagenes = producto.imagenes.map((url) => {
       const archivo = path.posix.basename(new URL(url, "http://local").pathname);
       const rutaPublica = `${LOCAL_IMAGE_DIR}/${archivo}`;
-      if (existsSync(path.join(ROOT, "public", LOCAL_IMAGE_DIR, archivo))) return rutaPublica;
-      sinFotoLocal.push(`${producto.slug} → ${url}`);
-      return url;
+      if (!existsSync(path.join(ROOT, "public", LOCAL_IMAGE_DIR, archivo))) {
+        sinFotoLocal.push(`${producto.slug} → ${url}`);
+        return url;
+      }
+      // El mapeo es por nombre de archivo: dos productos cuyas fotos remotas
+      // terminan con el mismo basename quedan apuntando a la misma imagen local
+      // y en modo degradado se ven iguales, sin que nada lo diga. Con 13
+      // productos no pasa; es un bug de crecimiento.
+      const previo = duenoDe.get(rutaPublica);
+      if (previo !== undefined && previo !== producto.slug) {
+        colisiones.push(`${rutaPublica} ← ${previo} y ${producto.slug}`);
+      } else {
+        duenoDe.set(rutaPublica, producto.slug);
+      }
+      return rutaPublica;
     });
   }
-  return sinFotoLocal;
+  return { sinFotoLocal, colisiones };
 }
 
-const sinFotoLocal = localizarImagenes(payload.productos);
+const { sinFotoLocal, colisiones } = localizarImagenes(payload.productos);
 if (sinFotoLocal.length > 0) {
   console.warn(
     `Aviso: ${sinFotoLocal.length} imagen(es) sin copia en public${LOCAL_IMAGE_DIR}/ — el fallback las pedirá al Storage:\n  ${sinFotoLocal.join("\n  ")}`,
+  );
+}
+if (colisiones.length > 0) {
+  console.warn(
+    `Aviso: ${colisiones.length} foto(s) local(es) compartida(s) por más de un producto — en modo degradado se verán iguales:\n  ${colisiones.join("\n  ")}`,
   );
 }
 
