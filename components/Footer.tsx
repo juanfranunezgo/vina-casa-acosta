@@ -86,7 +86,10 @@ export default async function Footer() {
               </li>
               <li className="flex items-start gap-2">
                 <Clock className="h-4 w-4 text-primary mt-1 shrink-0" aria-hidden="true" />
-                {t("hours")}
+                {/* El horario trae un salto de línea: la excepción del jueves va en su
+                    propia línea, igual que en /contacto. Sin `whitespace-pre-line` el
+                    HTML lo colapsa y las dos frases quedan pegadas. */}
+                <span className="whitespace-pre-line">{t("hours")}</span>
               </li>
               <li className="flex items-start gap-2">
                 <Phone className="h-4 w-4 text-primary mt-1 shrink-0" aria-hidden="true" />

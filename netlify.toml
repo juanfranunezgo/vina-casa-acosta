@@ -17,6 +17,28 @@
   # Next 16 exige Node >= 20.9. 22 es el LTS con el que Netlify prueba el adaptador.
   NODE_VERSION = "22"
 
+# El subdominio *.netlify.app manda al dominio definitivo con un 301.
+#
+# Marcar vinacasaacosta.cl como "primary domain" en el panel NO alcanza: esa
+# regla la aplica el CDN, y acá las páginas las contesta el handler de Next
+# (verificado — vinacasaacosta.netlify.app/es devolvía 200 con el primary ya
+# puesto, y la raíz daba 307 del proxy de next-intl en vez del 301 de dominio).
+# Es el mismo motivo por el que los headers de seguridad viven en
+# next.config.ts y no acá.
+#
+# `force = true` es lo que hace que esta regla gane por sobre la ruta que el
+# adaptador ya registró para esa URL. `:splat` conserva la ruta completa, así
+# que /es/vinos/ombu-carmenere cae en su equivalente y no en la portada.
+#
+# Sin esto el sitio queda servido por dos hostnames a la vez. El canonical
+# absoluto lo cubre para Google, pero un 301 es una señal más fuerte que un
+# canonical y además evita que alguien comparta el link del subdominio.
+[[redirects]]
+  from = "https://vinacasaacosta.netlify.app/*"
+  to = "https://vinacasaacosta.cl/:splat"
+  status = 301
+  force = true
+
 # Headers de seguridad básicos. No se toca cache-control: lo administra el
 # adaptador de Next (hashes en /_next/static, revalidación en las páginas).
 [[headers]]
