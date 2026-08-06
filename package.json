@@ -7,6 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
+    "test": "node --test \"tests/*.test.mjs\"",
     "typecheck": "next typegen && tsc --noEmit",
     "catalogo:snapshot": "node scripts/catalogo-snapshot.mjs",
     "catalogo:sellar": "node scripts/catalogo-integridad.mjs",
