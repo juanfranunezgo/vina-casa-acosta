@@ -35,6 +35,67 @@ export type ApiCatalog = {
   productos: ApiProduct[];
 };
 
+/**
+ * Prefijo de toda URL pública de Supabase Storage. Se exige, y no solo el host,
+ * porque `images.remotePatterns` de `next.config.ts` lo exige: una URL del mismo
+ * host con otro pathname es un `src` que el optimizador rechaza.
+ */
+const STORAGE_PUBLIC_PREFIX = "/storage/v1/object/public/";
+
+/**
+ * Primera imagen del producto que esta web puede realmente dibujar, o `undefined`.
+ *
+ * `imagenes` lo llena el cliente desde su panel y llega por la red. Aunque el
+ * contrato v1 ya solo emite URLs absolutas, "absoluta" no es lo mismo que
+ * "renderizable acá": `next/image` solo acepta un `src` que empiece con `/` o que
+ * matchee `images.remotePatterns`, y con cualquier otra cosa el comportamiento va
+ * de la foto rota en producción a una excepción en desarrollo. Una excepción
+ * dentro de una página SSG/ISR no rompe la foto: rompe la página entera.
+ *
+ * Por eso el descarte es acá y no en el componente — el manual de conexión lo pide
+ * en §3.11 y §8.D, y hasta H-49 el sitio no lo tenía implementado.
+ */
+export function renderableImage(
+  imagenes: unknown,
+  apiUrl: string | undefined = process.env.NEXT_PUBLIC_AFELEIA_API_URL,
+): string | undefined {
+  if (!Array.isArray(imagenes)) return undefined;
+
+  const allowedOrigin = storageOrigin(apiUrl);
+  for (const entry of imagenes) {
+    if (typeof entry !== "string") continue;
+    const value = entry.trim();
+    if (value === "") continue;
+
+    // Ruta del propio sitio: lo que produce el snapshot de fallback (`/vinos/x.webp`).
+    // `//` queda afuera a propósito: es una URL protocol-relative, no una ruta.
+    if (value.startsWith("/") && !value.startsWith("//")) return value;
+
+    if (!allowedOrigin) continue;
+    let parsed: URL;
+    try {
+      parsed = new URL(value);
+    } catch {
+      continue;
+    }
+    if (parsed.origin !== allowedOrigin) continue;
+    if (!parsed.pathname.startsWith(STORAGE_PUBLIC_PREFIX)) continue;
+    return value;
+  }
+  return undefined;
+}
+
+/** Origen `https://host:puerto` de la API de Afeleia, o `null` si no está configurada. */
+function storageOrigin(apiUrl: string | undefined): string | null {
+  if (!apiUrl) return null;
+  try {
+    const { origin, protocol } = new URL(apiUrl);
+    return protocol === "http:" || protocol === "https:" ? origin : null;
+  } catch {
+    return null;
+  }
+}
+
 export function catalogEndpoint(): string | null {
   const base = process.env.NEXT_PUBLIC_AFELEIA_API_URL;
   const sitio = process.env.NEXT_PUBLIC_AFELEIA_SITIO;
