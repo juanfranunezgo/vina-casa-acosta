@@ -17,6 +17,7 @@ import { existsSync } from "node:fs";
 import { writeFile } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
 import path from "node:path";
+import { sellar } from "./catalogo-integridad.mjs";
 
 const CONTRACT_VERSION = 1;
 const ROOT = path.join(path.dirname(fileURLToPath(import.meta.url)), "..");
@@ -104,6 +105,11 @@ if (sinFotoLocal.length > 0) {
 }
 
 await writeFile(OUTPUT, `${JSON.stringify(payload, null, 2)}\n`, "utf8");
+// Sellar acá y no en un paso aparte: un snapshot regenerado sin sellar deja el
+// test de integridad en rojo, y "acordarse de correr el sello" es exactamente el
+// tipo de regla que ya falló una vez.
+const sello = await sellar();
 console.info(
-  `Snapshot escrito: ${payload.productos.length} productos, ${payload.categorias?.length ?? 0} categorías → data/catalogo-fallback.json`,
+  `Snapshot escrito: ${payload.productos.length} productos, ${payload.categorias?.length ?? 0} categorías → data/catalogo-fallback.json\n` +
+    `Sello: sha256 ${sello.hash}`,
 );
