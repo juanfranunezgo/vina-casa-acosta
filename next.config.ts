@@ -1,5 +1,9 @@
 import type { NextConfig } from "next";
 import createNextIntlPlugin from "next-intl/plugin";
+// Con extensión explícita: además de Next, este archivo lo importa
+// `tests/afeleia-image-config-parity.test.mjs` desde node pelado, que no resuelve
+// especificadores sin extensión.
+import { STORAGE_PUBLIC_PREFIX } from "./lib/afeleia/contract.ts";
 
 const withNextIntl = createNextIntlPlugin("./i18n/request.ts");
 
@@ -22,7 +26,9 @@ function afeleiaStoragePatterns() {
         protocol: protocol.slice(0, -1) as "http" | "https",
         hostname,
         port,
-        pathname: "/storage/v1/object/public/**",
+        // Mismo prefijo que exige `renderableImage`, importado y no repetido: un
+        // guard más permisivo que esta config es el 500 de H-49 volviendo.
+        pathname: `${STORAGE_PUBLIC_PREFIX}**`,
       },
     ];
   } catch {

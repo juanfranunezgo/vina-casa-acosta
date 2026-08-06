@@ -39,8 +39,12 @@ export type ApiCatalog = {
  * Prefijo de toda URL pública de Supabase Storage. Se exige, y no solo el host,
  * porque `images.remotePatterns` de `next.config.ts` lo exige: una URL del mismo
  * host con otro pathname es un `src` que el optimizador rechaza.
+ *
+ * De acá lo deriva `next.config.ts`: son una sola regla y salen de un solo lugar.
+ * Que se cumpla la contención —lo que este guard acepta, la config también— lo
+ * asserta `tests/afeleia-image-config-parity.test.mjs` con el matcher real de Next.
  */
-const STORAGE_PUBLIC_PREFIX = "/storage/v1/object/public/";
+export const STORAGE_PUBLIC_PREFIX = "/storage/v1/object/public/";
 
 /**
  * Primera imagen del producto que esta web puede realmente dibujar, o `undefined`.
