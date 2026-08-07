@@ -7,6 +7,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import CartDrawer from "@/components/CartDrawer";
 import CartButton from "@/components/CartButton";
+import ScrollReset from "@/components/ScrollReset";
 import { routing } from "@/i18n/routing";
 import { SITE_URL } from "@/lib/siteUrl";
 import "../globals.css";
@@ -112,6 +113,7 @@ export default async function LocaleLayout({
     >
       <body className="min-h-full flex flex-col bg-background text-on-background">
         <NextIntlClientProvider>
+          <ScrollReset />
           <Navbar />
           <main className="flex-grow">{children}</main>
           <Footer />
