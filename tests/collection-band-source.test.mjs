@@ -1,6 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { readFile, stat } from "node:fs/promises";
+import { readFile, readdir, stat } from "node:fs/promises";
+import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 import sharp from "sharp";
 
@@ -112,22 +113,25 @@ test("deploy lint avoids synchronous state changes inside effects", async () => 
   assert.doesNotMatch(navbarSource, /if \(!open\) setMobileActivitiesOpen\(false\)/);
 });
 
-test("CollectionBand presents two large wines first and expands the rest on demand", async () => {
-  const source = await readFile(new URL("../components/CollectionBand.tsx", import.meta.url), "utf8");
-  assert.match(source, /^"use client";/);
+test("CollectionBand shows every wine of its line without client state", async () => {
+  const [source, photosSource] = await Promise.all([
+    readFile(new URL("../components/CollectionBand.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../components/CollectionPhotos.tsx", import.meta.url), "utf8"),
+  ]);
+  // El "Ver más vinos" se eliminó: cada banda muestra todos los vinos de su
+  // línea, y sin el estado del acordeón el componente volvió a ser de servidor.
+  // Este test dejó de exigir `"use client"` y el slice(0, 2) por eso, no porque
+  // se hayan roto: pedían lo contrario de lo que el cliente decidió.
+  assert.doesNotMatch(source, /^"use client";/);
+  assert.doesNotMatch(source, /wines\.slice\(0, 2\)/);
+  assert.doesNotMatch(source, /aria-expanded/);
   assert.match(source, /flip\s*\?\s*"lg:grid-cols-\[minmax\(0,6fr\)_minmax\(0,4fr\)\]"\s*:\s*"lg:grid-cols-\[minmax\(0,4fr\)_minmax\(0,6fr\)\]"/);
-  assert.match(source, /wines\.slice\(0, 2\)/);
-  assert.match(source, /aria-expanded=\{isExpanded\}/);
-  assert.match(source, /variant="link"/);
-  assert.match(source, /moreLabel/);
-  assert.match(source, /lessLabel/);
-  assert.match(source, /justify-center/);
-  assert.doesNotMatch(source, /sm:justify-start/);
-  assert.match(source, /sm:col-start-2/);
-  assert.match(source, /aspect-\[4\/5\].*rounded-\[1\.25rem\]/s);
   assert.doesNotMatch(source, /compact/);
-  assert.doesNotMatch(source, /badge/);
   assert.doesNotMatch(source, /lg:min-h-\[680px\]/);
+  // El marco 4:5 se mudó a CollectionPhotos cuando se extrajo el carrusel. Es
+  // la proporción que fija el recorte de las 14 fotos: si alguien la cambia acá
+  // sin regenerar los masters, las fotos se deforman.
+  assert.match(photosSource, /aspect-\[4\/5\].*rounded-\[1\.25rem\]/s);
 });
 
 test("wine page uses the optimized cork image as a full-screen dark hero", async () => {
@@ -136,7 +140,13 @@ test("wine page uses the optimized cork image as a full-screen dark hero", async
     readFile(new URL("../components/Navbar.tsx", import.meta.url), "utf8"),
   ]);
 
-  assert.match(pageSource, /src="\/images\/vinos\/hero-corchos\.webp"/);
+  // El hero pasó a <picture> con dos encuadres (ver scripts/optimize-heros.mjs):
+  // el máster 2560 quedó como el tramo ancho del srcSet y el `src` de respaldo
+  // es el 1920. La intención del test no cambió —corcho, oscuro, a pantalla
+  // completa— solo el markup que la cumple.
+  assert.match(pageSource, /\/images\/vinos\/hero-corchos\.webp 2560w/);
+  assert.match(pageSource, /src="\/images\/vinos\/hero-corchos-1920\.webp"/);
+  assert.match(pageSource, /fetchPriority="high"/);
   assert.match(pageSource, /min-h-\[100svh\]/);
   assert.match(pageSource, /from-black\/70 via-black\/35 to-black\/5/);
   assert.match(navbarSource, /pathname === `\$\{homePath\}\/vinos`/);
@@ -257,14 +267,22 @@ test("Spanish catalog copy calls Berá a Rosé", async () => {
 });
 
 test("collection images are optimized as uniform 4:5 WebP assets", async () => {
-  const files = ["ombu", "lajau", "estacion-francia", "bera", "guidai"];
+  // Antes la lista era fija y con el nombre base de cada línea. Se rompió dos
+  // veces: cuando llegaron las 14 fotos nuevas (Ombú 3, Lajau 3, Estación
+  // Francia 4…) y cuando la portada de Guidaí tuvo que renombrarse a `-v2` para
+  // saltear la caché del optimizador. Ahora barre el directorio: una foto nueva
+  // entra al test sola, y ninguna puede colarse sin cumplir el 4:5.
+  const dir = fileURLToPath(new URL("../public/images/vinos/", import.meta.url));
+  const files = (await readdir(dir)).filter(
+    (name) => name.startsWith("coleccion-") && name.endsWith(".webp"),
+  );
+  assert.ok(files.length >= 14, `esperaba al menos 14 fotos de colección, hay ${files.length}`);
 
   for (const file of files) {
-    const path = new URL(`../public/images/vinos/coleccion-${file}.webp`, import.meta.url);
-    const filePath = fileURLToPath(path);
+    const filePath = join(dir, file);
     const [metadata, fileStat] = await Promise.all([sharp(filePath).metadata(), stat(filePath)]);
-    assert.equal(metadata.width, 1200);
-    assert.equal(metadata.height, 1500);
+    assert.equal(metadata.width, 1200, `${file} debería medir 1200 de ancho`);
+    assert.equal(metadata.height, 1500, `${file} debería medir 1500 de alto`);
     assert.equal(metadata.format, "webp");
     assert.ok(fileStat.size < 700_000, `${file} should remain below 700 KB`);
   }
@@ -292,7 +310,11 @@ test("activities keeps mobile navigation clear and sends EFE visitors to ticket 
 
   assert.match(activitiesSource, /fontSize: "clamp\(2\.25rem, 6\.4vw, 4\.5rem\)"/);
   assert.match(activitiesSource, /target="_blank"/);
-  assert.doesNotMatch(tabsSource, /\bsticky\b/);
+  // La sub-nav volvió a ser sticky, pero solo en desktop: en móvil tapaba la
+  // sección que la persona acababa de elegir. El test pedía que no fuera sticky
+  // nunca — ahora exige exactamente el acuerdo al que se llegó.
+  assert.match(tabsSource, /md:sticky md:top-24/);
+  assert.doesNotMatch(tabsSource, /(?<!md:)\bsticky top-/);
   assert.match(tabsSource, /grid-cols-3/);
   assert.match(navbarSource, /activitiesMenuOpen/);
   assert.match(dataSource, /https:\/\/pasajes\.efe\.cl\/turistico\/casa-acosta/);
@@ -300,7 +322,7 @@ test("activities keeps mobile navigation clear and sends EFE visitors to ticket 
   assert.match(detailSource, /Array\.from\(\{ length: 6 \}\)/);
 });
 
-test("contact page uses the refined eyebrow, exact location, and WhatsApp form handoff", async () => {
+test("contact page keeps the exact address and submits to Netlify Forms", async () => {
   const [pageSource, formSource, esMessages] = await Promise.all([
     readFile(new URL("../app/[locale]/contacto/page.tsx", import.meta.url), "utf8"),
     readFile(new URL("../components/ContactForm.tsx", import.meta.url), "utf8"),
@@ -310,9 +332,19 @@ test("contact page uses the refined eyebrow, exact location, and WhatsApp form h
   assert.match(pageSource, /font-accent text-xl font-light italic text-primary md:text-2xl/);
   assert.match(pageSource, /Fundo\+El\+Llano\+lote\+6/);
   assert.match(pageSource, /rounded-2xl/);
-  assert.match(formSource, /CONTACT_WHATSAPP_URL/);
-  assert.match(formSource, /window\.open/);
-  assert.doesNotMatch(formSource, /setTimeout/);
+  // El formulario dejó de derivar a WhatsApp: ahora llega a Netlify Forms, que
+  // guarda el envío aunque falle la notificación por correo. El handoff a
+  // `window.open` se retiró a propósito y no debe volver sin decisión.
+  assert.match(formSource, /submitToNetlifyForms/);
+  assert.doesNotMatch(formSource, /window\.open/);
+  // El único temporizador que queda devuelve el formulario a reposo después del
+  // acuse de recibo. El `doesNotMatch(/setTimeout/)` de antes cuidaba el handoff
+  // a WhatsApp, que ya no existe: prohibirlo hoy solo prohibiría esto.
+  assert.match(formSource, /setStatus\("success"\)/);
+  assert.match(formSource, /window\.setTimeout\(\(\) => setStatus\("idle"\), 6000\)/);
+  // La dirección es NAP: este string tiene que ser idéntico al del schema
+  // LocalBusiness y al del footer. Si alguien lo edita en un solo lugar, acá se
+  // ve.
   assert.match(esMessages, /Fundo El Llano, lote 6, San Vicente de Tagua Tagua, O'Higgins, Chile/);
 });
 
@@ -346,8 +378,15 @@ test("home keeps the LCP image lightweight and does not preload below-the-fold p
     readFile(new URL("../components/StackedPhotos.tsx", import.meta.url), "utf8"),
   ]);
 
-  assert.match(homeSource, /const heroImage = "\/images\/home\/hero\.webp"/);
-  assert.match(homeSource, /quality=\{85\}/);
+  // El hero dejó de ser un next/image único: son dos encuadres en <picture>
+  // (3:2 para desktop, 9:16 para pantallas verticales) porque hace art
+  // direction, no solo escalado. Lo que el test cuida sigue siendo lo mismo —
+  // que el LCP baje una sola foto y del tamaño correcto— así que ahora exige
+  // los dos srcSet y la prioridad explícita, en vez del nombre de archivo viejo.
+  assert.match(homeSource, /const heroSources = \{/);
+  assert.match(homeSource, /\/images\/home\/hero-\$\{w\}\.webp \$\{w\}w/);
+  assert.match(homeSource, /\/images\/home\/hero-movil-\$\{w\}\.webp \$\{w\}w/);
+  assert.match(homeSource, /fetchPriority="high"/);
   assert.doesNotMatch(stackedPhotosSource, /priority=\{i === 0\}/);
 });
 
