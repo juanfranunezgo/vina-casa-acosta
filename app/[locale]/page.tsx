@@ -8,10 +8,11 @@ import Button from "@/components/ui/Button";
 import AboutSection from "@/components/AboutSection";
 import HomeActivitiesShowcase from "@/components/HomeActivitiesShowcase";
 import FeaturedLinesCarousel from "@/components/FeaturedLinesCarousel";
-import { featuredLineOrder, lineSlugs, getWinesByLine } from "@/data/wines";
+import { featuredLineOrder, lineSlugs } from "@/data/wines";
+import { getCatalog, winesByLine } from "@/lib/afeleia/catalog";
 import { tours as tourData, experiences as experienceData } from "@/data/activities";
 import { alternatesFor } from "@/lib/alternates";
-import { jsonLdHtml } from "@/lib/jsonLd";
+import JsonLd from "@/components/JsonLd";
 import { buildHomeJsonLd } from "@/lib/siteJsonLd";
 
 // El título y la descripción de la home son los del layout; acá solo se declara
@@ -22,6 +23,10 @@ export async function generateMetadata({
   const { locale } = await params;
   return { alternates: alternatesFor(locale) };
 }
+
+// El carrusel de líneas destacadas se alimenta del catálogo de Afeleia (ISR 60s).
+// Tiene que ser un literal: Next lee la config de segmento estáticamente.
+export const revalidate = 60;
 
 // El hero va en <picture> con dos encuadres (ver scripts/optimize-home-hero.mjs):
 // el 3:2 de siempre para desktop y un 9:16 recortado para pantallas verticales.
@@ -82,10 +87,11 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
     image: ex.image,
   }));
 
+  const catalog = await getCatalog();
   const featuredLineCards = featuredLineOrder.map((line) => {
     const slug = lineSlugs[line];
     const base = `featuredLines.lines.${slug}`;
-    const lineWines = getWinesByLine(line);
+    const lineWines = winesByLine(catalog, line);
     const details = [
       { label: t("featuredLines.detailLabels.estilo"), value: t(`${base}.estilo`) },
       { label: t("featuredLines.detailLabels.crianza"), value: t(`${base}.crianza`) },
@@ -125,10 +131,7 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
     <>
       {/* Identidad de la viña (dirección, horario, coordenadas, perfiles) para
           buscadores y motores de IA. Ver lib/siteJsonLd.ts. */}
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: jsonLdHtml(jsonLd) }}
-      />
+      <JsonLd data={jsonLd} />
 
       {/* HERO */}
       <section className="relative min-h-[100svh] w-full flex items-center justify-center overflow-hidden">

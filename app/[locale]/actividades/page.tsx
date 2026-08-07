@@ -10,7 +10,7 @@ import ActivitiesTabs from "@/components/ActivitiesTabs";
 import { tours, experiences } from "@/data/activities";
 import { CONTACT_WHATSAPP_URL, CONTACT_PHONE_DISPLAY, INSTAGRAM_URL } from "@/lib/contact";
 import { alternatesFor } from "@/lib/alternates";
-import { jsonLdHtml } from "@/lib/jsonLd";
+import JsonLd from "@/components/JsonLd";
 import { buildActividadesJsonLd } from "@/lib/siteJsonLd";
 
 // El hero D1 va en <picture> y no en next/image, porque next/image no hace art
@@ -96,10 +96,7 @@ export default async function ActividadesPage({
     <>
       {/* CollectionPage + los tours con su precio, y la entidad de la viña.
           Ver lib/siteJsonLd.ts. */}
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: jsonLdHtml(jsonLd) }}
-      />
+      <JsonLd data={jsonLd} />
 
       {/* HERO (D1) — cinematográfico full-bleed sobre la foto grupal de un evento
           en el viñedo (mismo patrón que Inicio e Historia). Texto claro en la

@@ -1,31 +1,34 @@
 /**
- * Serializa un valor a JSON-LD listo para inyectar en un `<script>`.
+ * Serialización segura de structured data para `<script type="application/ld+json">`.
  *
- * El escape no es opcional: `JSON.stringify` deja pasar `</script>` tal cual, así
- * que basta con que un texto de catálogo o una traducción lo contenga para que la
- * etiqueta se cierre antes de tiempo y el resto del bloque se interprete como HTML.
- * Por eso `<` sale escapado: JSON lo vuelve a leer como `<`, así que el valor
- * parseado es idéntico. U+2028 y U+2029 también, porque son saltos de línea
- * válidos dentro de JSON pero ilegales dentro de un literal de JavaScript.
+ * `JSON.stringify` NO escapa `<`, y dentro de un `<script>` eso es ejecución de
+ * código, no un detalle de formato. El parser de HTML cierra el bloque en el
+ * primer `</script` literal que ve, sin importar que esté dentro de comillas
+ * JSON — a partir de ahí, lo que sigue es markup vivo:
  *
- * Los patrones se arman con `new RegExp` sobre secuencias `\u....` en vez de
- * literales `/.../`: U+2028 es un terminador de línea para el parser de JS, así que
- * un literal de expresión regular no puede contenerlo. De paso, el archivo queda en
- * ASCII puro y ningún editor puede comerse un carácter invisible.
+ *   nombre = 'Vino</script><img src=x onerror=alert(1)>'
+ *   → <script type="application/ld+json">{…"name":"Vino</script><img …>"…}</script>
+ *                                                      ↑ el script cierra acá
  *
- * NOTA DE MERGE: la rama `m3/catalogo-afeleia` agrega un helper equivalente dentro
- * de `lib/wineJsonLd.ts`. Cuando esa rama entre a `main`, unificar los dos acá y
- * borrar el duplicado. Se escribió aparte para no tocar `wineJsonLd.ts` mientras
- * ese trabajo está en vuelo.
+ * Desde que el catálogo lo administra Afeleia, `name`/`description`/`category`
+ * son texto que se escribe desde el panel del cliente: contenido no confiable
+ * llegando a un sink de HTML. Escaparlo es obligatorio, no defensivo.
+ *
+ * La sustitución es semánticamente neutra: "<" es la forma escapada de "<"
+ * en JSON, así que el bloque parsea al MISMO string —los buscadores leen el
+ * valor original intacto— pero ya no contiene el carácter que el parser de HTML
+ * necesita para cerrar el bloque.
+ *
+ * U+2028 y U+2029 se escapan por una razón distinta: son saltos de línea
+ * válidos en JSON pero terminadores de sentencia en JavaScript, y rompen a
+ * cualquier consumidor que evalúe el bloque en vez de parsearlo.
+ *
+ * No usar `JSON.stringify` directo para JSON-LD: usar `<JsonLd>`
+ * (`components/JsonLd.tsx`), que es el único emisor sancionado y ya llama acá.
  */
-const LINE_SEPARATOR = String.fromCharCode(0x2028);
-
-const UNSAFE = new RegExp("[<\\u2028\\u2029]", "g");
-
-export function jsonLdHtml(value: unknown): string {
-  return JSON.stringify(value).replace(UNSAFE, (character) => {
-    if (character === "<") return "\\u003c";
-    if (character === LINE_SEPARATOR) return "\\u2028";
-    return "\\u2029";
-  });
+export function serializeJsonLd(data: unknown): string {
+  return JSON.stringify(data)
+    .replace(/</g, "\\u003c")
+    .replace(/\u2028/g, "\\u2028")
+    .replace(/\u2029/g, "\\u2029");
 }

@@ -70,15 +70,20 @@ test("wine details keep the technical sheet secondary and show four useful recom
 
   assert.match(detailSource, /font-accent text-xl font-light italic text-primary/);
   assert.match(detailSource, /variant="link"/);
-  assert.match(detailSource, /wines\s*\.filter\(\(w\) => w\.line !== wine\.line/);
+  // `catalog` y no `wines`: la ficha dejo de leer data/wines.ts y ahora recorre
+  // el catalogo que sirve la API de Afeleia.
+  assert.match(detailSource, /catalog\s*\.filter\(\(w\) => w\.line !== wine\.line/);
   assert.match(detailSource, /slice\(0, 4\)/);
   assert.match(detailSource, /lg:grid-cols-4/);
   assert.match(purchaseSource, /whitespace-nowrap/);
 });
 
 test("shop eyebrow and mobile activities navigation match the refined site pattern", async () => {
+  // La vitrina de la tienda se partio en servidor (page.tsx, resuelve el catalogo)
+  // y cliente (TiendaCatalogo.tsx, filtros y grilla). El markup que este test
+  // protege vive desde entonces en el componente cliente.
   const [shopSource, navbarSource] = await Promise.all([
-    readFile(new URL("../app/[locale]/tienda/page.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../components/TiendaCatalogo.tsx", import.meta.url), "utf8"),
     readFile(new URL("../components/Navbar.tsx", import.meta.url), "utf8"),
   ]);
 
@@ -90,8 +95,10 @@ test("shop eyebrow and mobile activities navigation match the refined site patte
 });
 
 test("deploy lint avoids synchronous state changes inside effects", async () => {
+  // Mismo motivo que el test de arriba: el estado de los filtros vive en
+  // TiendaCatalogo.tsx desde que la tienda se partio servidor/cliente.
   const [shopSource, cartButtonSource, navbarSource] = await Promise.all([
-    readFile(new URL("../app/[locale]/tienda/page.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../components/TiendaCatalogo.tsx", import.meta.url), "utf8"),
     readFile(new URL("../components/CartButton.tsx", import.meta.url), "utf8"),
     readFile(new URL("../components/Navbar.tsx", import.meta.url), "utf8"),
   ]);
@@ -143,6 +150,91 @@ test("WineCard uses the full card format for the initial two-wine presentation",
   assert.match(source, /aspect-\[4\/5\]/);
   assert.match(source, /object-contain p-5/);
   assert.match(source, /border-t border-on-surface-variant\/10/);
+});
+
+test("sold-out source guard keeps stock wired to cards and purchase actions", async () => {
+  // Este test es un guard de cableado, no cobertura del DOM: el repo todavía no
+  // tiene renderer. La Task 8 debe comprobar el atributo disabled renderizado.
+  const [cardSource, bandSource, winesSource, cartButtonSource, shopSource, purchaseSource, detailSource] =
+    await Promise.all([
+      readFile(new URL("../components/WineCard.tsx", import.meta.url), "utf8"),
+      readFile(new URL("../components/CollectionBand.tsx", import.meta.url), "utf8"),
+      readFile(new URL("../app/[locale]/vinos/page.tsx", import.meta.url), "utf8"),
+      readFile(new URL("../components/AddToCartButton.tsx", import.meta.url), "utf8"),
+      readFile(new URL("../components/TiendaCatalogo.tsx", import.meta.url), "utf8"),
+      readFile(new URL("../components/ProductPurchase.tsx", import.meta.url), "utf8"),
+      readFile(new URL("../app/[locale]/vinos/[slug]/page.tsx", import.meta.url), "utf8"),
+    ]);
+
+  assert.match(cardSource, /\{agotado && \(/);
+  assert.match(cardSource, /\{soldOutLabel\}/);
+  assert.match(cardSource, /bg-surface-container-highest/);
+  assert.match(bandSource, /agotado=\{wine\.agotado\}/);
+  assert.match(winesSource, /agotado:\s*wine\.agotado/);
+
+  assert.match(cartButtonSource, /disabled=\{agotado\}/);
+  assert.match(cartButtonSource, /aria-disabled=\{agotado\}/);
+  assert.match(cartButtonSource, /t\("soldOut"\)/);
+  assert.match(shopSource, /agotado=\{wine\.agotado\}/);
+
+  assert.match(purchaseSource, /disabled=\{agotado\}/);
+  assert.match(purchaseSource, /aria-disabled=\{agotado\}/);
+  assert.match(purchaseSource, /t\("soldOut"\)/);
+  assert.match(detailSource, /agotado=\{wine\.agotado\}/);
+});
+
+test("the sold-out badge stays outside the dimmed container so it keeps AA contrast", async () => {
+  // Guard de contraste, no de estilo. `text-on-surface-variant` (#544341) sobre
+  // `bg-surface-container-highest` (#e4e2e1) da 7.21:1; adentro del contenedor
+  // con `opacity-70` compone sobre la tarjeta blanca y cae a 3.41:1, bajo el
+  // 4.5:1 que AA pide para 12px/600. Atenuar la foto es intencional; atenuar el
+  // aviso de agotado es perder la señal que la feature existe para dar.
+  //
+  // Es source-level y por lo tanto frágil: si alguien reordena el JSX sin romper
+  // la propiedad, este test miente. El chequeo real —contraste sobre el DOM
+  // renderizado— depende de la decisión de renderer de la Task 8.
+  const cardSource = await readFile(new URL("../components/WineCard.tsx", import.meta.url), "utf8");
+
+  // El badge se posiciona contra el <Link>, que por eso tiene que ser `relative`.
+  assert.match(cardSource, /className="group relative flex/);
+  // Y aparece recién después de cerrar el div atenuado, sin que se abra otro
+  // <div> en el medio: eso último es lo que volvería a meterlo en un contenedor.
+  assert.match(cardSource, /agotado \? "opacity-70" : ""[\s\S]*?<\/div>(?:(?!<div)[\s\S])*?\{agotado && \(/);
+});
+
+test("cart sold-out source guard refreshes stock once per session and fails open", async () => {
+  // También es un guard de cableado: sin renderer no demuestra el resultado
+  // visual, pero evita volver a persistir un dato de stock que nace obsoleto.
+  const [drawerSource, cartSource, contractSource] = await Promise.all([
+    readFile(new URL("../components/CartDrawer.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../lib/cart.ts", import.meta.url), "utf8"),
+    readFile(new URL("../lib/afeleia/contract.ts", import.meta.url), "utf8"),
+  ]);
+
+  assert.doesNotMatch(cartSource, /export type CartItem = \{[\s\S]*?\bagotado\b[\s\S]*?\};/);
+  // El store no expone un total: el del pedido depende del stock y lo calcula
+  // el CartDrawer. Se mira la declaración (`totalCLP:`) y no la palabra suelta,
+  // porque el comentario de lib/cart.ts la nombra justamente para prohibirla.
+  assert.doesNotMatch(cartSource, /totalCLP\s*:/);
+  // `contract.ts` existe para que el browser lea el contrato sin arrastrar el
+  // snapshot de fallback. Un solo import puede meter ese JSON en el bundle.
+  assert.doesNotMatch(contractSource, /^\s*import\s/m);
+  assert.match(drawerSource, /if \(!isOpen \|\| soldOutSlugs !== null\) return/);
+  assert.match(drawerSource, /catalogRequest \?\?= fetchSoldOutSlugs\(\)/);
+  assert.match(drawerSource, /if \(slugs === null\) catalogRequest = null/);
+  assert.match(drawerSource, /signal: AbortSignal\.timeout\(5_000\)/);
+  assert.match(drawerSource, /if \(!response\.ok\) return null/);
+  assert.match(drawerSource, /if \(!isValidCatalog\(payload\)\) return null/);
+  assert.match(drawerSource, /soldOutSlugs\?\.has\(item\.slug\) \?\? false/);
+  assert.match(drawerSource, /\{t\("soldOut"\)\}/);
+  assert.match(drawerSource, /disabled=\{isSoldOut\}/);
+  assert.match(drawerSource, /aria-disabled=\{isSoldOut\}/);
+  assert.match(drawerSource, /const orderLines = cartLines\.filter\(\(\{ isSoldOut \}\) => !isSoldOut\)/);
+  assert.match(drawerSource, /orderLines\.reduce/);
+  assert.match(drawerSource, /\.\.\.orderLines\.map/);
+  assert.match(drawerSource, /\{t\("soldOutNotice"\)\}/);
+  assert.match(drawerSource, /disabled\s+aria-disabled="true"/);
+  assert.match(drawerSource, /\{t\("allSoldOut"\)\}/);
 });
 
 test("wine collection cards use their line hierarchy instead of the generic wine type", async () => {

@@ -6,7 +6,7 @@ import Reveal from "@/components/Reveal";
 import ContactForm from "@/components/ContactForm";
 import MapEmbed from "@/components/MapEmbed";
 import { alternatesFor } from "@/lib/alternates";
-import { jsonLdHtml } from "@/lib/jsonLd";
+import JsonLd from "@/components/JsonLd";
 import { buildContactoJsonLd } from "@/lib/siteJsonLd";
 import {
   CONTACT_EMAIL,
@@ -54,10 +54,7 @@ export default async function ContactoPage({
     <>
       {/* ContactPage + la entidad de la viña: es la página que publica la
           dirección y el horario que el schema declara. Ver lib/siteJsonLd.ts. */}
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: jsonLdHtml(jsonLd) }}
-      />
+      <JsonLd data={jsonLd} />
 
       <section className="mx-auto max-w-(--container-max) px-margin-mobile pb-12 pt-32 text-center md:px-margin-desktop">
         <Reveal>

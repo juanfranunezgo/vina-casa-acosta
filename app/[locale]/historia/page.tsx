@@ -7,7 +7,7 @@ import Button from "@/components/ui/Button";
 import HistoriaTimeline from "@/components/HistoriaTimeline";
 import StoryChapter from "@/components/StoryChapter";
 import { alternatesFor } from "@/lib/alternates";
-import { jsonLdHtml } from "@/lib/jsonLd";
+import JsonLd from "@/components/JsonLd";
 import { buildHistoriaJsonLd } from "@/lib/siteJsonLd";
 
 // El hero B1 va en <picture> y no en next/image, porque next/image no hace art
@@ -68,10 +68,7 @@ export default async function HistoriaPage({
   return (
     <>
       {/* AboutPage + la entidad de la viña. Ver lib/siteJsonLd.ts. */}
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: jsonLdHtml(jsonLd) }}
-      />
+      <JsonLd data={jsonLd} />
 
       {/* HERO (B1) — full-screen cinematográfico sobre la foto retro de los vinos
           Ombú. La imagen es oscura y cálida, así que el texto va claro con un

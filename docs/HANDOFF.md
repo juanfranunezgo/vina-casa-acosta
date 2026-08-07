@@ -87,13 +87,15 @@ Solución provisoria mientras no haya backend. Plan Free: **100 envíos/mes**.
   - **Sin `SearchAction`** en `WebSite`: el sitio no tiene buscador.
 - Falta todavía `Product` + `offers` en la **ficha individual** de cada vino. Los precios
   ya son reales, así que es la pieza con más retorno comercial que queda pendiente.
-- ⚠️ `lib/wineJsonLd.ts` sigue serializando con `JSON.stringify` pelado. El escape contra
-  `</script>` vive en `lib/jsonLd.ts` (`jsonLdHtml`) y lo usan los bloques nuevos; la rama
-  `m3/catalogo-afeleia` trae su propia versión dentro de `wineJsonLd.ts`. Al mergear,
-  unificar en `lib/jsonLd.ts` y borrar el duplicado.
-- Deriva menor de NAP: el footer dice "VI Región" y horario "Lun a Sáb · 10:00 – 18:00",
-  mientras `/contacto` dice "O'Higgins" y agrega "Jueves hasta las 20:00". El schema usa
-  la versión completa de `/contacto`. Conviene unificar el texto del footer.
+- ~~Dos helpers para escapar el JSON-LD~~ → unificado al mergear `main`. Quedó
+  `serializeJsonLd()` de `lib/jsonLd.ts`, y **el único emisor sancionado es
+  `<JsonLd data={...} />`** (`components/JsonLd.tsx`). El `jsonLdHtml()` que traía la rama
+  de SEO se borró y sus cinco bloques pasaron por el componente. No volver a escribir
+  `application/ld+json` a mano: `tests/json-ld-source.test.mjs` falla si aparece en
+  cualquier archivo que no sea `JsonLd.tsx`.
+- ~~Deriva de NAP entre el footer y `/contacto`~~ → resuelto: el footer dice "O'Higgins" y
+  suma la excepción del jueves en los tres idiomas, igual que `/contacto` y que el
+  `OpeningHoursSpecification` del schema.
 - `app/[locale]/vinos/page.tsx` pide `quality={84}` y `next.config.ts` solo permite
   `[65, 70, 75, 85, 95]` → warning en cada build. Cambiar a 85.
 

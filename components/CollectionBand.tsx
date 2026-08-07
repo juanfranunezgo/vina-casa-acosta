@@ -92,6 +92,8 @@ export default function CollectionBand({
                     image={wine.image}
                     name={wine.name}
                     eyebrow={wine.eyebrow}
+                    agotado={wine.agotado}
+                    soldOutLabel={wine.soldOutLabel}
                   />
                 </Reveal>
               ))}
