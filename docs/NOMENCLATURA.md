@@ -64,19 +64,40 @@ Sistema de IDs para referirse a páginas y secciones del sitio de forma rápida 
 | D3 | Experiencias (`#experiencias`) |
 | D4 | Eventos (`#eventos`) |
 
-## Dd — Detalle de actividad (`app/[locale]/actividades/[slug]/page.tsx`)
+## Dd — Detalle de actividad (`app/[locale]/actividades/[categoria]/[slug]/page.tsx`)
 
-Subpágina dinámica de D (un tour por página). Mismo patrón que `Cd`.
+Subpágina dinámica de D (una actividad por página). Mismo patrón que `Cd`.
+La ruta lleva la categoría: `/actividades/tours/ombu`, `/actividades/talleres/pizzas`.
 
 | ID | Sección |
 |---|---|
-| Dd1 | Hero + ficha rápida (Lugar · Duración · Participantes · Reservas + intro) |
+| Dd1 | Hero + breadcrumbs + ficha rápida (Lugar · Duración · Participantes · Reservas + intro) |
 | Dd2 | Sub-nav ancla (Detalle · Galería · Reserva) |
-| Dd3 | Detalle / ¿Qué incluye? (bullets, vinos de la degustación, maridaje, cierre, precio) |
-| Dd4 | Condiciones |
-| Dd5 | Galería (placeholder hasta tener fotos) |
-| Dd6 | Reserva (formulario **sin backend** — ver `HANDOFF.md` — + botón WhatsApp con prefill) |
-| Dd7 | Otros tours |
+| Dd3 | Estacionalidad (franja de 12 meses) |
+| Dd4 | Detalle — tickets (tours) o programa de la jornada (talleres · experiencias) |
+| Dd5 | Tarjeta de reserva: precio **o** "a consultar", más condiciones |
+| Dd6 | Galería (placeholder hasta tener fotos) |
+| Dd7 | Reserva o cotización (formulario Netlify Forms + botón WhatsApp con prefill) |
+| Dd8 | Otras actividades de la misma categoría |
+
+## Dv — Hub de Vendimia (`app/[locale]/actividades/vendimia/page.tsx`)
+
+| ID | Sección |
+|---|---|
+| Dv1 | Hero + breadcrumbs |
+| Dv2 | Qué es la vendimia en Casa Acosta |
+| Dv3 | El ciclo de la vid a lo largo del año |
+| Dv4 | El programa: corta, pisa y celebra |
+| Dv5 | Otras actividades de temporada |
+| Dv6 | Galería |
+| Dv7 | Reserva / cotización |
+
+## Dc, De — Reservados (aún no existen)
+
+| ID | Página | Estado |
+|---|---|---|
+| Dc | Landing de categoría (`/actividades/tours`, `/talleres`, `/experiencias`) | Reservado. Hoy esas URLs redirigen en 307 al ancla del índice. |
+| De | Eventos privados (`/actividades/eventos-privados`) | Reservado. Hoy es la sección D4 del índice. |
 
 ## E — Contacto (`app/[locale]/contacto/page.tsx`)
 
@@ -121,6 +142,6 @@ Subpágina dinámica de D (un tour por página). Mismo patrón que `Cd`.
 ## Notas de mantenimiento
 
 - Cuando se agrega una sección **al medio**, conviene renombrar los siguientes IDs para mantener el orden top→bottom. Si renumerar es costoso (mucha referencia cruzada), se acepta usar `A2.5` puntualmente, pero como excepción, no regla.
-- Cuando se agrega una **nueva página**, se le asigna la siguiente letra disponible (la próxima sería **I**).
+- Cuando se agrega una **nueva página**, se le asigna la siguiente letra disponible (la próxima sería **I**). Si la página nueva es hija de otra —una subpágina, un hub, una landing de categoría— usa el prefijo de su madre en minúscula (`Cd`, `Dd`, `Dv`, `Dc`), no una letra propia.
 - Si una página crece mucho, se puede sub-numerar como en C2a/C2b.
 - Este archivo es el contrato. Cualquier cambio se refleja primero acá, después en el código.
