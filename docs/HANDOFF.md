@@ -4,7 +4,7 @@ Estado real del proyecto para quien lo retome (persona o agente). `CLAUDE.md` ex
 stack y las convenciones; este archivo explica **en qué punto está**, qué no funciona
 todavía y qué trampas ya se pagaron.
 
-Última actualización: 2026-08-03.
+Última actualización: 2026-08-16.
 
 ---
 
@@ -71,13 +71,62 @@ un build verde— y por eso existen `tests/actividades-i18n-parity.test.mjs` y
 `tests/alias-hook.mjs` enseña a `node --test` el alias `@/` de tsconfig. Sin él, todo
 módulo que use el alias solo se puede cubrir con un guard que lee su propio texto.
 
-**Medición tras esta rama:** build limpio **≈7,9 s**, 79 páginas estáticas (Turbopack
-genera las 79 en ~0,6 s con 15 workers). Agregar las 11 actividades restantes son 33
-páginas más: el costo por página es marginal, el trabajo real es el copy en tres idiomas.
+**Medición tras el plan 2:** build limpio **≈9,9 s**, **109 páginas estáticas** (Turbopack
+las genera en 731 ms con 15 workers). El sitemap emite **102 URLs**, 42 de ellas fichas de
+actividad. El costo por página resultó marginal, como se había estimado: el trabajo real
+fue el copy en tres idiomas.
 
-**Pendiente (planes 2 y 3):** las 11 actividades restantes del catálogo, el hub de
-Vendimia, las tarjetas selectoras y el mega-menú. El copy EN/PT del taller de Pizzas está
-traducido pero **sin validación humana**, igual que el resto del sitio.
+El catálogo son **14 actividades**: 3 tours, 3 talleres y 8 experiencias. Ninguna de las 11
+nuevas publica precio, así que sus fichas salen en modo cotización. El orden dentro de cada
+categoría es el del catálogo del cliente y **se ve en pantalla** (bloque "otras actividades
+de la misma categoría").
+
+**Las 11 fichas nuevas no reciben enlaces del sitio.** El submenú del navbar itera `tours`
+y el índice no tiene sección de Talleres ni lista las experiencias: se llega a ellas por el
+sitemap y por el bloque de hermanas de cada ficha. **El mega-menú del plan 3 es prerequisito
+para mergear a `main`** — publicar antes le entrega a Google 33 URLs huérfanas.
+
+**Copy sin validar por el cliente.** De cada actividad, el `intro` es texto del catálogo
+verbatim; `name`, `description`, `tagline` y `closing` los escribimos nosotros porque el
+catálogo no los trae. EN y PT, además, sin validación humana como el resto del sitio.
+
+**Las actividades nuevas no llevan `highlights`.** Ese array lo lee un solo lugar
+(`app/[locale]/actividades/page.tsx`, dentro de `tours.map`), así que escribirlo para las
+otras once serían 90 strings en tres idiomas que nada renderiza. Se escriben cuando las
+tarjetas del plan 3 los necesiten. Los de `pizzas` quedaron de antes y tampoco se muestran.
+
+**Fotos:** las 11 fichas nuevas comparten dos imágenes de categoría (`talleres.jpg` y
+`pareja-columpio.webp`), que son hero, tarjeta de reserva y `og:image` a la vez; en las
+experiencias esa foto aparece además tres veces en la misma página. **Aceptado por el
+cliente**, que va a entregar fotos por actividad. Cuando lleguen es una línea `image` por
+actividad, sin tocar componentes.
+
+**Anclas de categoría:** solo `tours` tiene en el índice una sección que lista su categoría,
+así que es la única cuya miga lleva fragmento. Talleres no tiene sección y la que se llama
+Experiencias son tres tarjetas-puerta donde no está ninguna de las ocho experiencias. La
+regla vive en `CATEGORIES_WITH_INDEX_ANCHOR` (`data/activities.ts`) y la afirman las tres
+superficies que llevan ese enlace —miga visible, `BreadcrumbList` y redirect de URL padre—
+en `tests/actividades-anclas.test.mjs`. Cuando el plan 3 estrene las secciones, el test se
+pone rojo hasta que la lista las reconozca.
+
+**Tres cosas que preguntarle al cliente:**
+- *Cena Sensorial* es la única actividad sin lista de contenidos: el catálogo habla de
+  "cinco tiempos" y no los enumera. Su ficha sale sin bloque de detalle a propósito. Si
+  llegan los cinco tiempos, entran como `program`.
+- Los tres talleres de cocina declaran "Cocción en horno tradicional", incluido el de
+  ñoquis, donde el plato se hierve. Se transcribió tal cual.
+- El catálogo da "3 horas + cierre" para *Cosecha tu historia*, que a la vez describe un
+  ciclo completo de poda a embotellado. Se transcribió tal cual; probablemente sean las
+  horas de cada jornada.
+
+**Pendiente (plan 3):** hub de Vendimia, tarjetas selectoras y mega-menú. El hub necesita
+contenido que el catálogo **no tiene** (qué es la vendimia en Casa Acosta, el ciclo de la
+vid a lo largo del año): es material a pedirle al cliente, no a redactar por nuestra cuenta.
+
+**Detalle de UI anotado, sin resolver:** en una ficha de experiencia se apilan tres
+encabezados antes del contenido —"¿Qué incluye?" → "Durante la experiencia disfrutarás de:"
+→ "Programa de la jornada"— donde en un taller son dos. El tercero lo trae
+`ActivityProgram`. No es incorrecto, pero sobra un nivel.
 
 ---
 
