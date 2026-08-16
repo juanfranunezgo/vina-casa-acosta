@@ -26,7 +26,10 @@ async function leer(ruta) {
  * Toda fuente que monte un panel de navegacion entra aca. La lista se amplia
  * cuando aparece una superficie nueva: el guard no descubre archivos solo.
  */
-const FUENTES = ["../components/Navbar.tsx"];
+const FUENTES = [
+  "../components/Navbar.tsx",
+  "../components/CategoryChooserCard.tsx",
+];
 
 for (const ruta of FUENTES) {
   const nombre = ruta.split("/").pop();

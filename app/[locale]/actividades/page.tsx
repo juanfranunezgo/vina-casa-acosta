@@ -7,19 +7,31 @@ import InstagramIcon from "@/components/icons/InstagramIcon";
 import Reveal from "@/components/Reveal";
 import Button from "@/components/ui/Button";
 import ActivitiesTabs from "@/components/ActivitiesTabs";
-import { tours, activityPath } from "@/data/activities";
+import CategoryChooserCard from "@/components/CategoryChooserCard";
+import { tours, activityPath, activitiesByCategory } from "@/data/activities";
 import { CONTACT_WHATSAPP_URL, CONTACT_PHONE_DISPLAY, INSTAGRAM_URL } from "@/lib/contact";
 import { alternatesFor } from "@/lib/alternates";
 import JsonLd from "@/components/JsonLd";
 import { buildActividadesJsonLd } from "@/lib/siteJsonLd";
 
 // Tarjetas de la sección D3. Viven acá y no en `data/activities.ts` porque no
-// son actividades del catálogo: son puertas de entrada. Las reemplaza
-// `CategoryChooserCard` en el plan 3 —ver el spec de subpáginas de actividades—,
-// donde pasan a desplegar un menú con las fichas de su categoría.
+// son actividades del catálogo: son puertas de entrada. Ahora despliegan la
+// lista de su categoría en vez de decorar — dos de las tres eran `<article>`
+// sin enlace, prometiendo algo que no llevaba a ninguna parte.
+//
+// La de Vendimia abre las experiencias: su hub todavía no existe (ver
+// VENDIMIA_HUB en data/activities.ts). Cuando exista, va destacado arriba.
 const experiences = [
-  { slug: "vendimia-2026", image: "/images/actividades/vendimia-2026.jpg" },
-  { slug: "talleres", image: "/images/actividades/talleres.jpg" },
+  {
+    slug: "vendimia-2026",
+    image: "/images/actividades/vendimia-2026.jpg",
+    category: "experiencias" as const,
+  },
+  {
+    slug: "talleres",
+    image: "/images/actividades/talleres.jpg",
+    category: "talleres" as const,
+  },
   {
     slug: "tren-efe",
     image: "/images/actividades/tren-efe.jpg",
@@ -370,48 +382,25 @@ export default async function ActividadesPage({
           </Reveal>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-gutter">
-            {experiences.map((exp, idx) => {
-              const content = (
-                <>
-                  <Image
-                    src={exp.image}
-                    alt={tExp(`${exp.slug}.name`)}
-                    fill
-                    className="object-cover transition-transform duration-700 group-hover:scale-105"
-                    sizes="(max-width: 768px) 100vw, 33vw"
-                  />
-                  <div className="absolute inset-0 flex flex-col justify-end bg-gradient-to-t from-primary/85 via-primary/35 to-transparent p-6">
-                    <span className="mb-2 font-body text-label-sm uppercase tracking-wider text-on-primary/85">
-                      {tExp(`${exp.slug}.badge`)}
-                    </span>
-                    <h3 className="font-display text-2xl text-on-primary">{tExp(`${exp.slug}.name`)}</h3>
-                    {exp.purchaseUrl && (
-                      <span className="mt-4 inline-flex min-h-11 w-fit items-center gap-2 rounded-full border border-on-primary/45 bg-on-primary/10 px-4 font-body text-label-sm font-semibold uppercase tracking-wider text-on-primary backdrop-blur-sm transition-colors group-hover:bg-on-primary group-hover:text-primary">
-                        {t("experiences.efeCta")}
-                        <ArrowUpRight className="h-4 w-4" aria-hidden="true" />
-                      </span>
-                    )}
-                  </div>
-                </>
-              );
-
-              return (
-                <Reveal key={exp.slug} delay={idx * 100}>
-                  {exp.purchaseUrl ? (
-                    <a
-                      href={exp.purchaseUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="group relative block h-80 overflow-hidden rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-4"
-                    >
-                      {content}
-                    </a>
-                  ) : (
-                    <article className="group relative h-80 overflow-hidden rounded-xl">{content}</article>
-                  )}
-                </Reveal>
-              );
-            })}
+            {experiences.map((exp, idx) => (
+              <Reveal key={exp.slug} delay={idx * 100}>
+                <CategoryChooserCard
+                  name={tExp(`${exp.slug}.name`)}
+                  image={exp.image}
+                  externalUrl={exp.purchaseUrl}
+                  externalLabel={t("experiences.efeCta")}
+                  openLabel={t("experiences.chooseCta")}
+                  items={
+                    exp.category
+                      ? activitiesByCategory(exp.category).map((activity) => ({
+                          href: `/${locale}${activityPath(activity)}`,
+                          label: tTour(`${activity.slug}.name`),
+                        }))
+                      : undefined
+                  }
+                />
+              </Reveal>
+            ))}
           </div>
 
           {/* Aviso: las experiencias son temporales; invitamos a dejar el contacto

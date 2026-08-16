@@ -10,7 +10,11 @@ import HomeActivitiesShowcase from "@/components/HomeActivitiesShowcase";
 import FeaturedLinesCarousel from "@/components/FeaturedLinesCarousel";
 import { featuredLineOrder, lineSlugs } from "@/data/wines";
 import { getCatalog, winesByLine } from "@/lib/afeleia/catalog";
-import { tours as tourData, activityPath } from "@/data/activities";
+import {
+  tours as tourData,
+  activityPath,
+  categoryIndexHref,
+} from "@/data/activities";
 import { alternatesFor } from "@/lib/alternates";
 import JsonLd from "@/components/JsonLd";
 import { buildHomeJsonLd } from "@/lib/siteJsonLd";
@@ -305,7 +309,10 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
             tours={showcaseTours}
             experiences={showcaseExperiences}
             events={eventsBlock}
-            experiencesHref={lp("/actividades#experiencias")}
+            // Sin fragmento: la sección #experiencias del índice muestra tres
+            // tarjetas-puerta y ninguna de las ocho experiencias del catálogo.
+            // La regla vive en categoryIndexHref — ver data/activities.ts.
+            experiencesHref={categoryIndexHref(locale, "experiencias")}
           />
 
           <div className="text-center mt-12 md:mt-16">
