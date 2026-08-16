@@ -4,7 +4,6 @@ import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import {
-  ArrowLeft,
   ArrowRight,
   MapPin,
   Clock,
@@ -26,6 +25,7 @@ import {
 } from "lucide-react";
 import Reveal from "@/components/Reveal";
 import Button from "@/components/ui/Button";
+import ActivityBreadcrumbs from "@/components/ActivityBreadcrumbs";
 import TourReservationForm from "@/components/TourReservationForm";
 import {
   activities,
@@ -105,6 +105,7 @@ export default async function ActivityDetailPage({
 
   const t = await getTranslations("activities.labels");
   const tTour = await getTranslations("activities.items");
+  const tCategories = await getTranslations("activities.categories");
 
   const name = tTour(`${slug}.name`);
   const tagline = tTour(`${slug}.tagline`);
@@ -166,15 +167,22 @@ export default async function ActivityDetailPage({
           {/* Vignette vino oscuro para profundidad y legibilidad */}
           <div className="absolute inset-0 bg-gradient-to-t from-[#1a0203]/85 via-[#1a0203]/40 to-[#1a0203]/15" />
 
+          {/* La miga reemplaza al "Volver a actividades": su segundo nivel hace
+              lo mismo y además dice en qué categoría estás. */}
           <div className="absolute top-24 left-0 right-0 px-margin-mobile md:px-margin-desktop">
             <div className="max-w-(--container-max) mx-auto">
-              <Link
-                href={`/${locale}/actividades`}
-                className="inline-flex items-center gap-2 font-body text-label-sm uppercase tracking-wider text-white/70 hover:text-white transition-colors"
-              >
-                <ArrowLeft className="h-4 w-4" aria-hidden="true" />
-                {t("back")}
-              </Link>
+              <ActivityBreadcrumbs
+                aria={t("breadcrumbAria")}
+                items={[
+                  { href: `/${locale}`, label: t("breadcrumbHome") },
+                  { href: `/${locale}/actividades`, label: t("breadcrumbActivities") },
+                  {
+                    href: `/${locale}/actividades#${tour.category}`,
+                    label: tCategories(`${tour.category}.name`),
+                  },
+                  { href: `/${locale}${activityPath(tour)}`, label: name },
+                ]}
+              />
             </div>
           </div>
 
