@@ -150,6 +150,13 @@ export default async function ActivityDetailPage({
   const pairing = isTour ? tTour(`${slug}.pairing`) : "";
   const program = asList("program");
 
+  /**
+   * Cena Sensorial no trae inclusiones ni programa: el catálogo describe cinco
+   * tiempos y no los enumera. Sin este cruce, la ficha dibuja "¿Qué incluye?"
+   * seguido de nada — un encabezado que promete una lista inexistente.
+   */
+  const hasDetail = includes.length > 0 || program.length > 0;
+
   const priceLocale = locale === "pt" ? "pt-BR" : locale === "en" ? "en-US" : "es-CL";
   // Undefined cuando la actividad no publica precio. La tarjeta de reserva
   // decide qué mostrar en ese caso.
@@ -360,12 +367,16 @@ export default async function ActivityDetailPage({
           <div className="lg:col-span-2">
             <Reveal>
               <span className="block h-px w-12 bg-wine-accent/60 mb-5" />
-              <h2 className="font-display text-headline-h2 text-primary mb-6">
-                {t("whatIncludes")}
-              </h2>
-              <p className="font-body text-body-md text-on-surface-variant mb-4">
-                {t("duringExperience")}
-              </p>
+              {hasDetail && (
+                <>
+                  <h2 className="font-display text-headline-h2 text-primary mb-6">
+                    {t("whatIncludes")}
+                  </h2>
+                  <p className="font-body text-body-md text-on-surface-variant mb-4">
+                    {t("duringExperience")}
+                  </p>
+                </>
+              )}
               {/* La lista de abajo son los tickets de la reserva: se canjean el
                   día de la visita, así que conviene decirlo antes de leerla.
                   Solo aplica a los tours — un taller no entrega tickets. */}

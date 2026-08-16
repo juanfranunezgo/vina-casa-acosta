@@ -718,6 +718,16 @@
         ],
         "pairing": "Pairing board included.",
         "closing": "You'll have the option to purchase our wines directly at the cellar."
+      },
+      "cena-sensorial": {
+        "name": "Sensory Dinner",
+        "description": "Five courses paired with our labels, guided by the winemaker, the chef and the sommelier.",
+        "tagline": "Five courses, each with its own label",
+        "intro": "A dining experience that invites you to discover wine with every sense: five carefully designed courses, each paired with one of our labels, chosen to bring out the best in the dish. Through the evening, our winemaker, chef and sommelier guide the table across the aromas, flavours and feelings each pairing awakens.",
+        "duration": "3 hours + closing",
+        "groupFrom": "Groups from 12 people",
+        "reservationNote": "Subject to availability — we arrange the date with you",
+        "closing": "You leave having tasted five pairings, and having heard why each one works."
       }
     }
   },

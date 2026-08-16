@@ -132,6 +132,14 @@ export const activities: Activity[] = [
     image: CATEGORY_IMAGE.tours,
     premium: true,
   },
+  {
+    slug: "cena-sensorial",
+    category: "experiencias",
+    minPeople: 12,
+    months: TODO_EL_ANO,
+    durationISO: "PT3H",
+    image: CATEGORY_IMAGE.experiencias,
+  },
 ];
 
 export const alliances: Alliance[] = [

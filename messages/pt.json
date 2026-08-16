@@ -718,6 +718,16 @@
         ],
         "pairing": "Tábua de harmonização incluída.",
         "closing": "Você terá a opção de adquirir nossos vinhos diretamente na adega."
+      },
+      "cena-sensorial": {
+        "name": "Jantar Sensorial",
+        "description": "Cinco tempos harmonizados com nossos rótulos, guiados pelo enólogo, pelo chef e pelo sommelier.",
+        "tagline": "Cinco tempos, cada um com seu rótulo",
+        "intro": "Uma experiência gastronômica que convida a descobrir o vinho com todos os sentidos: cinco tempos cuidadosamente pensados, cada um harmonizado com um de nossos rótulos, escolhidos especialmente para realçar cada preparo. Durante a noite, nosso enólogo, chef e sommelier guiam a mesa por um percurso de aromas, sabores e emoções que cada combinação desperta.",
+        "duration": "3 horas + encerramento",
+        "groupFrom": "Grupos a partir de 12 pessoas",
+        "reservationNote": "Sujeito à disponibilidade — combinamos a data com você",
+        "closing": "Você leva cinco harmonizações provadas e o porquê de cada uma explicado à mesa."
       }
     }
   },

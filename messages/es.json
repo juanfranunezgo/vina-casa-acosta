@@ -718,6 +718,16 @@
         ],
         "pairing": "Tabla de maridaje incluida.",
         "closing": "Tendrás la opción de adquirir nuestros vinos directamente en la bodega."
+      },
+      "cena-sensorial": {
+        "name": "Cena Sensorial",
+        "description": "Cinco tiempos maridados con nuestras etiquetas, guiados por el enólogo, el chef y el sommelier.",
+        "tagline": "Cinco tiempos, cada uno con su etiqueta",
+        "intro": "Una experiencia gastronómica única que invita a descubrir el vino con todos los sentidos: cinco tiempos cuidadosamente diseñados, cada uno maridado con una de nuestras etiquetas, seleccionadas especialmente para realzar cada preparación. Durante la velada, nuestro enólogo, chef y sommelier guían a los comensales en un recorrido por los aromas, sabores y emociones que despierta cada combinación.",
+        "duration": "3 horas + cierre",
+        "groupFrom": "Grupos desde 12 personas",
+        "reservationNote": "Sujeto a disponibilidad — coordinamos la fecha contigo",
+        "closing": "Te vas con cinco maridajes probados y con el porqué de cada uno explicado en la mesa."
       }
     }
   },
