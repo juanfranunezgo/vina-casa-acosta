@@ -81,10 +81,20 @@ nuevas publica precio, así que sus fichas salen en modo cotización. El orden d
 categoría es el del catálogo del cliente y **se ve en pantalla** (bloque "otras actividades
 de la misma categoría").
 
-**Las 11 fichas nuevas no reciben enlaces del sitio.** El submenú del navbar itera `tours`
-y el índice no tiene sección de Talleres ni lista las experiencias: se llega a ellas por el
-sitemap y por el bloque de hermanas de cada ficha. **El mega-menú del plan 3 es prerequisito
-para mergear a `main`** — publicar antes le entrega a Google 33 URLs huérfanas.
+**Las 14 fichas están a un salto desde cualquier página** (plan 3). Medido sobre el HTML del
+build, no en el navegador: `/es/contacto`, `/es/historia`, `/es/staff`, `/es/tienda` y
+`/es/vinos` traen las 14; antes traían **cero**. Ninguna ficha queda sin enlaces entrantes.
+
+El desplegable de Actividades que existía **nunca contó como enlazado interno**: se montaba
+con `{activitiesMenuOpen && <panel/>}` y el estado arranca cerrado, así que sus enlaces no
+llegaban al HTML servido. Es la trampa que da nombre a `tests/navegacion-enlaces-source.test.mjs`:
+**los paneles se renderizan siempre y se ocultan con el atributo `hidden`**, nunca se montan
+por estado. Se rompe sin síntoma visible — la interfaz sigue funcionando y el crawler deja de
+ver los enlaces.
+
+Ojo con `hidden`: aplica `display:none` desde la hoja del navegador y **cualquier clase de
+display lo pisa**. El elemento que lo lleva no puede traer `flex`, `grid` ni `block`; la
+grilla va en un hijo. El test también lo afirma.
 
 **Copy sin validar por el cliente.** De cada actividad, el `intro` es texto del catálogo
 verbatim; `name`, `description`, `tagline` y `closing` los escribimos nosotros porque el
@@ -119,9 +129,22 @@ pone rojo hasta que la lista las reconozca.
   ciclo completo de poda a embotellado. Se transcribió tal cual; probablemente sean las
   horas de cada jornada.
 
-**Pendiente (plan 3):** hub de Vendimia, tarjetas selectoras y mega-menú. El hub necesita
-contenido que el catálogo **no tiene** (qué es la vendimia en Casa Acosta, el ciclo de la
-vid a lo largo del año): es material a pedirle al cliente, no a redactar por nuestra cuenta.
+**Pendiente tras el plan 3:**
+
+- **Hub de Vendimia.** Necesita contenido que el catálogo **no tiene** (qué es la vendimia en
+  Casa Acosta, el ciclo de la vid a lo largo del año): es material a pedirle al cliente, no a
+  redactar por nuestra cuenta. Mientras no exista, `VENDIMIA_HUB` en `data/activities.ts` vale
+  `null` y ni el mega-menú ni las tarjetas lo ofrecen — enlazar a un 404 desde el navbar de
+  todo el sitio sería peor que no ofrecerlo. **Es el único lugar que cambia** cuando llegue: la
+  entrada destacada arriba del menú y del panel de la tarjeta ya están previstas.
+- **Las tarjetas del mosaico `A4` (home) siguen sin selector.** Las de `D3` (índice) sí lo
+  tienen. Convertir las de la home exige que `HomeActivitiesShowcase` ramifique sus dos rutas
+  de render, y ese componente ya está en 328 líneas mezclando filtros, mosaico y banner — el
+  spec dice explícitamente no refactorizarlo en este trabajo. Sus tarjetas de experiencia sí
+  dejaron de apuntar al ancla `#experiencias`, que no lista la categoría. No es un agujero de
+  enlazado: el mega-menú está en la home igual que en el resto del sitio.
+- **`ActivitiesTabs` sigue con sus tres pestañas escritas a mano**, sin Talleres. Se resuelve
+  con la reestructuración del índice, que el cliente no aprobó.
 
 **Detalle de UI anotado, sin resolver:** en una ficha de experiencia se apilan tres
 encabezados antes del contenido —"¿Qué incluye?" → "Durante la experiencia disfrutarás de:"

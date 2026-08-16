@@ -61,7 +61,7 @@ Sistema de IDs para referirse a páginas y secciones del sitio de forma rápida 
 | D1 | Hero cinematográfico full-bleed (foto grupal, texto claro sobre degradados) |
 | D1b | Sub-nav de sección (pestañas Tours/Experiencias/Eventos + scroll-spy), debajo del hero. Sticky **solo en desktop** (`md:sticky md:top-24`) |
 | D2 | Tours (`#tours`) |
-| D3 | Experiencias (`#experiencias`) |
+| D3 | Experiencias (`#experiencias`) — tres tarjetas-puerta, no la categoría. Las dos primeras son **selectoras** (`CategoryChooserCard`): despliegan la lista de su categoría. Tren EFE es enlace externo, sin desplegable. La miga de una ficha **no** apunta acá: ver `CATEGORIES_WITH_INDEX_ANCHOR` en `data/activities.ts`. |
 | D4 | Eventos (`#eventos`) |
 
 ## Dd — Detalle de actividad (`app/[locale]/actividades/[categoria]/[slug]/page.tsx`)
@@ -133,7 +133,7 @@ La ruta lleva la categoría: `/actividades/tours/ombu`, `/actividades/talleres/p
 
 | ID | Componente | Notas |
 |---|---|---|
-| NV | Navbar | Header con logo + nav + LanguageSwitcher + CartButton |
+| NV | Navbar | Header con logo + nav + LanguageSwitcher + CartButton. Bajo "Actividades" cuelga el **mega-menú**: panel ancho con una columna por categoría (Tours · Talleres · Experiencias) más un pie con Eventos y Ver todo. En móvil, acordeón de dos niveles dentro del drawer. Se deriva de `data/activities.ts` y su contenido vive en `components/ActivitiesMenu.tsx`, compartido por las dos formas. |
 | FT | Footer | Pie de página |
 | CD | CartDrawer | Carrito lateral overlay (z-index alto) |
 
