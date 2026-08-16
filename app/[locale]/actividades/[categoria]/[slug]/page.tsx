@@ -26,6 +26,8 @@ import {
 import Reveal from "@/components/Reveal";
 import Button from "@/components/ui/Button";
 import ActivityBreadcrumbs from "@/components/ActivityBreadcrumbs";
+import ActivityProgram from "@/components/ActivityProgram";
+import SeasonStrip from "@/components/SeasonStrip";
 import TourReservationForm from "@/components/TourReservationForm";
 import {
   activities,
@@ -113,12 +115,30 @@ export default async function ActivityDetailPage({
   const duration = tTour(`${slug}.duration`);
   const groupFrom = tTour(`${slug}.groupFrom`);
   const reservationNote = tTour(`${slug}.reservationNote`);
-  const includes = tTour.raw(`${slug}.includes`) as string[];
-  // Último ítem de "¿Qué incluye?", destacado dentro de la misma lista.
-  const includesHighlight = tTour(`${slug}.includesHighlight`);
-  const wines = tTour.raw(`${slug}.wines`) as string[];
-  const pairing = tTour(`${slug}.pairing`);
   const closing = tTour(`${slug}.closing`);
+
+  /**
+   * Los tours describen la visita como tickets canjeables (`includes`, más los
+   * vinos y el maridaje); los talleres y experiencias, como una jornada en
+   * orden (`program`). Qué bloque se dibuja lo decide la categoría, sin un flag
+   * aparte que pueda contradecirla.
+   *
+   * `t.raw` de una clave ausente NO devuelve undefined: devuelve la ruta de la
+   * clave como string. Sin este `Array.isArray` el `.map` de más abajo revienta
+   * en pleno build con "map is not a function".
+   */
+  const isTour = tour.category === "tours";
+  const asList = (key: string) => {
+    const raw = tTour.raw(`${slug}.${key}`);
+    return Array.isArray(raw) ? (raw as string[]) : [];
+  };
+
+  const includes = asList("includes");
+  // Último ítem de "¿Qué incluye?", destacado dentro de la misma lista.
+  const includesHighlight = isTour ? tTour(`${slug}.includesHighlight`) : "";
+  const wines = asList("wines");
+  const pairing = isTour ? tTour(`${slug}.pairing`) : "";
+  const program = asList("program");
 
   const priceLocale = locale === "pt" ? "pt-BR" : locale === "en" ? "en-US" : "es-CL";
   // Undefined cuando la actividad no publica precio. La tarjeta de reserva
@@ -281,6 +301,22 @@ export default async function ActivityDetailPage({
                 ))}
               </nav>
             </div>
+
+            {/* Dd3 — Estacionalidad. Va antes del detalle a propósito: si la
+                actividad no se hace en la fecha de quien lee, el resto del
+                contenido no le sirve. */}
+            <div className="mt-10 md:mt-12">
+              <SeasonStrip
+                months={tour.months}
+                locale={locale}
+                labels={{
+                  title: t("seasonTitle"),
+                  allYear: t("seasonAllYear"),
+                  availableIn: t("seasonAvailableIn"),
+                  aria: t("seasonAria"),
+                }}
+              />
+            </div>
           </div>
         </div>
       </section>
@@ -301,13 +337,19 @@ export default async function ActivityDetailPage({
                 {t("duringExperience")}
               </p>
               {/* La lista de abajo son los tickets de la reserva: se canjean el
-                  día de la visita, así que conviene decirlo antes de leerla. */}
-              <p className="mb-6 inline-flex items-center gap-2.5 rounded-full border border-wine-accent/25 bg-wine-accent/5 px-4 py-2 font-body text-body-md text-wine-accent">
-                <Ticket className="h-4 w-4 shrink-0" aria-hidden="true" />
-                {t("ticketsNote")}
-              </p>
+                  día de la visita, así que conviene decirlo antes de leerla.
+                  Solo aplica a los tours — un taller no entrega tickets. */}
+              {isTour && (
+                <p className="mb-6 inline-flex items-center gap-2.5 rounded-full border border-wine-accent/25 bg-wine-accent/5 px-4 py-2 font-body text-body-md text-wine-accent">
+                  <Ticket className="h-4 w-4 shrink-0" aria-hidden="true" />
+                  {t("ticketsNote")}
+                </p>
+              )}
+
+              {!isTour && <ActivityProgram steps={program} title={t("programTitle")} />}
               {/* overflow-hidden: el ítem destacado pinta fondo y borde hasta el
                   filo, y sin esto se sale de las esquinas redondeadas. */}
+              {isTour && (
               <ul className="mb-10 overflow-hidden rounded-xl bg-surface border border-outline-variant/25 ambient-shadow divide-y divide-outline-variant/20">
                 {includes.map((item, i) => {
                   const Icon = includeIcons[slug]?.[i] ?? Check;
@@ -331,33 +373,40 @@ export default async function ActivityDetailPage({
                   {includesHighlight}
                 </li>
               </ul>
+              )}
 
-              <div className="flex items-center gap-2.5 mb-4">
-                <Wine className="h-5 w-5 text-wine-accent" aria-hidden="true" />
-                <h3 className="font-body text-label-sm uppercase tracking-widest text-wine-accent">
-                  {t("tastingLabel")}
-                </h3>
-              </div>
-              <ul className="space-y-2.5 mb-10">
-                {wines.map((w) => (
-                  <li
-                    key={w}
-                    className="flex items-start gap-3 bg-surface rounded-md pl-4 pr-5 py-3.5 border-l-[3px] border-primary/70 shadow-[0_2px_10px_-6px_rgba(74,14,14,0.15)] font-body text-body-md text-on-surface"
-                  >
-                    <Grape className="h-4 w-4 text-wine-accent mt-1 shrink-0" aria-hidden="true" />
-                    {w}
-                  </li>
-                ))}
-              </ul>
+              {isTour && (
+                <>
+                  <div className="flex items-center gap-2.5 mb-4">
+                    <Wine className="h-5 w-5 text-wine-accent" aria-hidden="true" />
+                    <h3 className="font-body text-label-sm uppercase tracking-widest text-wine-accent">
+                      {t("tastingLabel")}
+                    </h3>
+                  </div>
+                  <ul className="space-y-2.5 mb-10">
+                    {wines.map((w) => (
+                      <li
+                        key={w}
+                        className="flex items-start gap-3 bg-surface rounded-md pl-4 pr-5 py-3.5 border-l-[3px] border-primary/70 shadow-[0_2px_10px_-6px_rgba(74,14,14,0.15)] font-body text-body-md text-on-surface"
+                      >
+                        <Grape className="h-4 w-4 text-wine-accent mt-1 shrink-0" aria-hidden="true" />
+                        {w}
+                      </li>
+                    ))}
+                  </ul>
+                </>
+              )}
 
-              {/* Callout maridaje + cierre */}
+              {/* Callout: el maridaje solo lo tienen los tours; el cierre, todas. */}
               <div className="rounded-xl bg-primary/5 border border-primary/12 p-6 space-y-4">
-                <p className="flex items-start gap-3 font-body text-body-md text-on-surface">
-                  <UtensilsCrossed className="h-5 w-5 text-wine-accent mt-0.5 shrink-0" aria-hidden="true" />
-                  <span>
-                    <span className="font-semibold">{t("pairingLabel")}:</span> {pairing}
-                  </span>
-                </p>
+                {isTour && (
+                  <p className="flex items-start gap-3 font-body text-body-md text-on-surface">
+                    <UtensilsCrossed className="h-5 w-5 text-wine-accent mt-0.5 shrink-0" aria-hidden="true" />
+                    <span>
+                      <span className="font-semibold">{t("pairingLabel")}:</span> {pairing}
+                    </span>
+                  </p>
+                )}
                 <p className="flex items-start gap-3 font-body text-body-md text-on-surface">
                   <Wine className="h-5 w-5 text-wine-accent mt-0.5 shrink-0" aria-hidden="true" />
                   <span>
