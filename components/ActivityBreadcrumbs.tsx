@@ -27,7 +27,13 @@ export default function ActivityBreadcrumbs({ items, aria }: Props) {
         {items.map((item, index) => {
           const isLast = index === items.length - 1;
           return (
-            <li key={item.href} className="flex items-center gap-1.5">
+            // La clave es la posición y no el href: dos migas pueden compartir
+            // destino. Mientras una categoría no tenga sección propia en el
+            // índice, "Actividades" y su categoría apuntan las dos a
+            // `/actividades` (ver CATEGORIES_WITH_INDEX_ANCHOR), y React avisa
+            // por clave duplicada. La lista es fija y ordenada: el índice la
+            // identifica bien.
+            <li key={index} className="flex items-center gap-1.5">
               {index > 0 && (
                 <ChevronRight
                   className="h-3.5 w-3.5 shrink-0 text-white/40"

@@ -1,5 +1,5 @@
 import { SITE_URL } from "@/lib/siteUrl";
-import { type Activity, activityPath } from "@/data/activities";
+import { type Activity, activityPath, categoryIndexHref } from "@/data/activities";
 
 /**
  * Structured data de una ficha de actividad.
@@ -65,7 +65,7 @@ export function buildActivityJsonLd(
     { name: crumbLabels.activities, item: `${SITE_URL}/${locale}/actividades` },
     {
       name: crumbLabels.category,
-      item: `${SITE_URL}/${locale}/actividades#${activity.category}`,
+      item: `${SITE_URL}${categoryIndexHref(locale, activity.category)}`,
     },
     { name: copy.name, item: url },
   ];

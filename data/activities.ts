@@ -58,6 +58,37 @@ export const RESERVED_ACTIVITY_SEGMENTS: readonly string[] = [
   "eventos-privados",
 ];
 
+/**
+ * Categorías que HOY tienen en el índice `/actividades` una sección que las
+ * LISTA. No es una preferencia de diseño: es el estado del índice. Solo `tours`
+ * califica. Talleres no tiene sección, y la que se llama Experiencias son tres
+ * tarjetas-puerta —Vendimia, Talleres, Tren EFE— donde no está ninguna de las
+ * ocho experiencias del catálogo.
+ *
+ * La miga de una ficha y el redirect de la URL padre enlazan al ancla solo si
+ * la categoría figura acá; el resto va al índice sin fragmento. Un ancla que no
+ * existe no falla —el navegador deja al visitante arriba de la página— y una
+ * que existe pero muestra otra cosa es peor: el `BreadcrumbList` declara una
+ * jerarquía que la página no sostiene.
+ *
+ * `tests/actividades-anclas.test.mjs` empareja esta lista con los `id=` que el
+ * índice renderiza, en las dos direcciones. Cuando el plan 3 estrene las
+ * secciones que faltan, se pone rojo hasta que esta lista las reconozca.
+ */
+export const CATEGORIES_WITH_INDEX_ANCHOR: readonly ActivityCategory[] = [
+  "tours",
+];
+
+/** Destino de la miga de categoría, con prefijo de idioma. */
+export function categoryIndexHref(
+  locale: string,
+  category: ActivityCategory,
+): string {
+  return CATEGORIES_WITH_INDEX_ANCHOR.includes(category)
+    ? `/${locale}/actividades#${category}`
+    : `/${locale}/actividades`;
+}
+
 const TODO_EL_ANO = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
 
 /**

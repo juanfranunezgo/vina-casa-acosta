@@ -33,6 +33,7 @@ import {
   activities,
   activitiesByCategory,
   activityPath,
+  categoryIndexHref,
   getActivity,
 } from "@/data/activities";
 import { routing } from "@/i18n/routing";
@@ -139,6 +140,13 @@ export default async function ActivityDetailPage({
    */
   const isTour = tour.category === "tours";
   const asList = (key: string) => {
+    // `has` antes de `raw`: pedir una clave ausente NO lanza, pero next-intl
+    // escribe un MISSING_MESSAGE en la consola del servidor igual. Como cada
+    // ficha pregunta por las tres formas y solo tiene una, sin este cruce el
+    // build imprime cuatro errores por página que no son errores — y tapan los
+    // que sí lo son. El `Array.isArray` de abajo se queda: cubre el caso de una
+    // clave que existe con el tipo equivocado.
+    if (!tTour.has(`${slug}.${key}`)) return [];
     const raw = tTour.raw(`${slug}.${key}`);
     return Array.isArray(raw) ? (raw as string[]) : [];
   };
@@ -234,7 +242,7 @@ export default async function ActivityDetailPage({
                   { href: `/${locale}`, label: crumbLabels.home },
                   { href: `/${locale}/actividades`, label: crumbLabels.activities },
                   {
-                    href: `/${locale}/actividades#${tour.category}`,
+                    href: categoryIndexHref(locale, tour.category),
                     label: crumbLabels.category,
                   },
                   { href: `/${locale}${activityPath(tour)}`, label: name },

@@ -181,14 +181,20 @@ const nextConfig: NextConfig = {
         destination: "/:locale/actividades#tours",
         permanent: false,
       },
+      // Estas dos van al índice SIN fragmento, a diferencia de la de tours: no
+      // hay sección que liste su categoría (ver CATEGORIES_WITH_INDEX_ANCHOR en
+      // data/activities.ts). La de talleres nunca existió; la de experiencias
+      // existe de nombre y muestra tarjetas-puerta, que para quien llega es lo
+      // mismo que no existir. Siguen siendo temporales, así que el día que las
+      // secciones existan el destino cambia sin pelear con ninguna caché.
       {
         source: `${actividades}/talleres`,
-        destination: "/:locale/actividades#talleres",
+        destination: "/:locale/actividades",
         permanent: false,
       },
       {
         source: `${actividades}/experiencias`,
-        destination: "/:locale/actividades#experiencias",
+        destination: "/:locale/actividades",
         permanent: false,
       },
     ];
