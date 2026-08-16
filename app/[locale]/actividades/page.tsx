@@ -93,6 +93,7 @@ export default async function ActividadesPage({
       slug: tour.slug,
       name: tTour(`${tour.slug}.name`),
       description: tTour(`${tour.slug}.description`),
+      path: activityPath(tour),
       priceCLP: tour.priceCLP,
       image: tour.image,
     })),

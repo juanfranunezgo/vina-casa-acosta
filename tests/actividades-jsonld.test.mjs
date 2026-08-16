@@ -97,3 +97,47 @@ test("la URL del producto es la ruta anidada, no la plana", () => {
   assert.match(product.url, /\/actividades\/tours\/ombu$/);
   assert.doesNotMatch(product.url, /\/actividades\/ombu$/);
 });
+
+/**
+ * El indice emite su propio Product por cada tour, con otro constructor. La
+ * migracion a /actividades/{categoria}/{slug} lo dejo atras: seguia armando la
+ * ruta plana desde el slug, que hoy es un 404.
+ */
+
+const { buildActividadesJsonLd } = await import("@/lib/siteJsonLd");
+
+const COPY_INDICE = { name: "Actividades", description: "Bajada del indice" };
+
+const ENTRADA = {
+  slug: "ombu",
+  name: "Tour Ombu",
+  description: "Bajada",
+  path: "/actividades/tours/ombu",
+  priceCLP: 30000,
+  image: "/images/actividades/tour-carmenere.webp",
+};
+
+test("el ItemList del indice apunta a la ruta anidada, no a la plana", () => {
+  const graph = buildActividadesJsonLd("es", COPY_INDICE, [ENTRADA]);
+  const [lista] = nodes(graph, "ItemList");
+  const producto = lista.itemListElement[0].item;
+  assert.match(producto.url, /\/es\/actividades\/tours\/ombu$/);
+  assert.doesNotMatch(producto.url, /\/es\/actividades\/ombu$/);
+});
+
+test("la URL del Offer del indice es la misma del Product", () => {
+  const graph = buildActividadesJsonLd("es", COPY_INDICE, [ENTRADA]);
+  const [lista] = nodes(graph, "ItemList");
+  const producto = lista.itemListElement[0].item;
+  assert.equal(producto.offers.url, producto.url);
+});
+
+test("el indice y la ficha declaran la MISMA url para la misma actividad", () => {
+  // Dos Product con la misma identidad y distinta url son dos senales que se
+  // contradicen. La ficha manda: es la pagina que existe.
+  const indice = buildActividadesJsonLd("es", COPY_INDICE, [ENTRADA]);
+  const ficha = buildActivityJsonLd("es", CON_PRECIO, COPY, CRUMBS);
+  const [lista] = nodes(indice, "ItemList");
+  const [productoFicha] = nodes(ficha, "Product");
+  assert.equal(lista.itemListElement[0].item.url, productoFicha.url);
+});

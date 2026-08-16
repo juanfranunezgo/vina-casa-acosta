@@ -164,6 +164,13 @@ type TourEntry = {
   slug: string;
   name: string;
   description: string;
+  /**
+   * Ruta de la ficha SIN prefijo de idioma, tal como la arma `activityPath()`.
+   * Llega armada a propósito: reconstruirla acá desde el slug fue lo que dejó
+   * este `ItemList` apuntando a la URL plana anterior a la migración por
+   * categoría, que hoy es un 404.
+   */
+  path: string;
   /** Ausente cuando la actividad no publica precio: entonces no se emite `offers`. */
   priceCLP?: number;
   image: string;
@@ -213,7 +220,7 @@ export function buildActividadesJsonLd(
           image: tour.image.startsWith("http")
             ? tour.image
             : `${SITE_URL}${tour.image}`,
-          url: `${SITE_URL}/${locale}/actividades/${tour.slug}`,
+          url: `${SITE_URL}/${locale}${tour.path}`,
           brand: { "@type": "Brand", name: "Viña Casa Acosta" },
           ...(tour.priceCLP === undefined
             ? {}
@@ -222,7 +229,7 @@ export function buildActividadesJsonLd(
                   "@type": "Offer",
                   price: tour.priceCLP,
                   priceCurrency: "CLP",
-                  url: `${SITE_URL}/${locale}/actividades/${tour.slug}`,
+                  url: `${SITE_URL}/${locale}${tour.path}`,
                   seller: { "@id": WINERY_ID },
                 },
               }),
