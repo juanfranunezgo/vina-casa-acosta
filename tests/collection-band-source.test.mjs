@@ -304,7 +304,7 @@ test("activities keeps mobile navigation clear and sends EFE visitors to ticket 
     readFile(new URL("../app/[locale]/actividades/page.tsx", import.meta.url), "utf8"),
     readFile(new URL("../components/ActivitiesTabs.tsx", import.meta.url), "utf8"),
     readFile(new URL("../components/Navbar.tsx", import.meta.url), "utf8"),
-    readFile(new URL("../app/[locale]/actividades/[slug]/page.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/[locale]/actividades/[categoria]/[slug]/page.tsx", import.meta.url), "utf8"),
     readFile(new URL("../data/activities.ts", import.meta.url), "utf8"),
   ]);
 

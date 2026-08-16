@@ -27,7 +27,12 @@ import {
 import Reveal from "@/components/Reveal";
 import Button from "@/components/ui/Button";
 import TourReservationForm from "@/components/TourReservationForm";
-import { tours, getActivity } from "@/data/activities";
+import {
+  activities,
+  activitiesByCategory,
+  activityPath,
+  getActivity,
+} from "@/data/activities";
 import { routing } from "@/i18n/routing";
 import { alternatesFor } from "@/lib/alternates";
 
@@ -39,30 +44,34 @@ import { alternatesFor } from "@/lib/alternates";
  */
 const includeIcons: Record<string, LucideIcon[]> = {
   // copa de bienvenida · caminata · bodega y barricas · cata
-  "tour-ombu": [Wine, Footprints, Warehouse, Grape],
+  "ombu": [Wine, Footprints, Warehouse, Grape],
   // copa de bienvenida · caminata · bodega y barricas · desde barrica · cata
-  "tour-bera": [Wine, Footprints, Warehouse, Pipette, Grape],
+  "bera": [Wine, Footprints, Warehouse, Pipette, Grape],
   // copa de bienvenida · ampelografía · bodega y barricas · desde barrica · cata
-  "tour-carmenere": [Wine, Leaf, Warehouse, Pipette, Grape],
+  "carmenere": [Wine, Leaf, Warehouse, Pipette, Grape],
 };
 
 export async function generateStaticParams() {
   return routing.locales.flatMap((locale) =>
-    tours.map((t) => ({ locale, slug: t.slug })),
+    activities.map((activity) => ({
+      locale,
+      categoria: activity.category,
+      slug: activity.slug,
+    })),
   );
 }
 
 export async function generateMetadata({
   params,
-}: PageProps<"/[locale]/actividades/[slug]">): Promise<Metadata> {
-  const { locale, slug } = await params;
-  const tour = getActivity("tours", slug);
+}: PageProps<"/[locale]/actividades/[categoria]/[slug]">): Promise<Metadata> {
+  const { locale, categoria, slug } = await params;
+  const tour = getActivity(categoria, slug);
   if (!tour) return { title: "—" };
   const tTour = await getTranslations({ locale, namespace: "activities.items" });
   const tMeta = await getTranslations({ locale, namespace: "metadata" });
   const name = tTour(`${slug}.name`);
   const description = tTour(`${slug}.tagline`);
-  const path = `/actividades/${slug}`;
+  const path = activityPath(tour);
   // Ver la nota equivalente en vinos/[slug]: Open Graph no aplica la plantilla
   // de `title`, así que el título completo va escrito.
   const ogTitle = `${name} · ${tMeta("siteName")}`;
@@ -86,12 +95,12 @@ export async function generateMetadata({
   };
 }
 
-export default async function TourDetailPage({
+export default async function ActivityDetailPage({
   params,
-}: PageProps<"/[locale]/actividades/[slug]">) {
-  const { locale, slug } = await params;
+}: PageProps<"/[locale]/actividades/[categoria]/[slug]">) {
+  const { locale, categoria, slug } = await params;
   setRequestLocale(locale);
-  const tour = getActivity("tours", slug);
+  const tour = getActivity(categoria, slug);
   if (!tour) notFound();
 
   const t = await getTranslations("activities.labels");
@@ -136,7 +145,10 @@ export default async function TourDetailPage({
     t("conditionMinors"),
   ];
 
-  const otherTours = tours.filter((o) => o.slug !== slug);
+  // Hermanas de la MISMA categoría: un taller no propone tours al cerrar.
+  const otherTours = activitiesByCategory(tour.category).filter(
+    (o) => o.slug !== slug,
+  );
 
   return (
     <>
@@ -474,7 +486,7 @@ export default async function TourDetailPage({
               {otherTours.map((o, idx) => (
                 <Reveal key={o.slug} delay={idx * 80}>
                   <Link
-                    href={`/${locale}/actividades/${o.slug}`}
+                    href={`/${locale}${activityPath(o)}`}
                     className="group flex gap-5 bg-surface rounded-xl overflow-hidden border border-outline-variant/25 ambient-shadow hover:-translate-y-1 hover:ambient-shadow-lg transition-all duration-300"
                   >
                     <div className="relative w-32 sm:w-44 shrink-0 overflow-hidden">

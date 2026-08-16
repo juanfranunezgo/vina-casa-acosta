@@ -1,6 +1,6 @@
 import type { MetadataRoute } from "next";
 import { wines } from "@/data/wines";
-import { tours } from "@/data/activities";
+import { activities, activityPath } from "@/data/activities";
 import { routing } from "@/i18n/routing";
 import { SITE_URL } from "@/lib/siteUrl";
 
@@ -36,7 +36,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   const paths: string[] = [
     ...STATIC_PATHS,
     ...wines.map((wine) => `/vinos/${wine.slug}`),
-    ...tours.map((tour) => `/actividades/${tour.slug}`),
+    ...activities.map(activityPath),
   ];
 
   return paths.flatMap((path) =>

@@ -77,7 +77,7 @@ const CATEGORY_IMAGE: Record<ActivityCategory, string> = {
  */
 export const activities: Activity[] = [
   {
-    slug: "tour-ombu",
+    slug: "ombu",
     category: "tours",
     priceCLP: 30000,
     minPeople: 2,
@@ -87,7 +87,7 @@ export const activities: Activity[] = [
       "https://images.unsplash.com/photo-1474722883778-792e7990302f?auto=format&fit=crop&w=1400&q=70",
   },
   {
-    slug: "tour-bera",
+    slug: "bera",
     category: "tours",
     priceCLP: 35000,
     minPeople: 2,
@@ -97,7 +97,7 @@ export const activities: Activity[] = [
       "https://images.unsplash.com/photo-1506377247377-2a5b3b417ebb?auto=format&fit=crop&w=1400&q=70",
   },
   {
-    slug: "tour-carmenere",
+    slug: "carmenere",
     category: "tours",
     priceCLP: 45000,
     minPeople: 4,
@@ -133,3 +133,13 @@ export function getActivity(category: string, slug: string): Activity | undefine
 
 /** Vista derivada. Los consumidores actuales siguen importando `tours`. */
 export const tours: Activity[] = activitiesByCategory("tours");
+
+/**
+ * Ruta de la ficha, SIN prefijo de idioma. Es la única función que arma esta
+ * URL: navbar, home, índice, sitemap y JSON-LD la consumen. Que exista una sola
+ * es lo que hace que la próxima mudanza sea un cambio de una línea — la
+ * anterior obligó a tocar cinco archivos y a publicar tres redirects.
+ */
+export function activityPath(activity: Activity): string {
+  return `/actividades/${activity.category}/${activity.slug}`;
+}

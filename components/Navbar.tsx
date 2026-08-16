@@ -7,7 +7,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { Menu, X, ArrowRight, ChevronDown } from "lucide-react";
 import { routing } from "@/i18n/routing";
-import { tours } from "@/data/activities";
+import { tours, activityPath } from "@/data/activities";
 import LanguageSwitcher from "./LanguageSwitcher";
 
 export default function Navbar() {
@@ -214,7 +214,7 @@ export default function Navbar() {
                         {tours.map((tour) => (
                           <Link
                             key={tour.slug}
-                            href={localePath(`/actividades/${tour.slug}`)}
+                            href={localePath(activityPath(tour))}
                             className="group/item flex items-center justify-between gap-3 px-3.5 py-2.5 rounded-lg text-on-surface-variant hover:bg-primary/5 hover:text-primary transition-colors"
                           >
                             <span className="font-body text-body-md">
@@ -406,7 +406,7 @@ export default function Navbar() {
                           {tours.map((tour) => (
                             <li key={tour.slug}>
                               <Link
-                                href={localePath(`/actividades/${tour.slug}`)}
+                                href={localePath(activityPath(tour))}
                                 onClick={closeMobileMenu}
                                 className="flex min-h-11 items-center justify-between gap-3 rounded-md px-3 py-2 font-body text-body-md text-on-primary/75 transition-colors hover:bg-on-primary/10 hover:text-on-primary"
                               >

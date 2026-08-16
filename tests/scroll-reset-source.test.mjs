@@ -61,7 +61,7 @@ test("el reset es instantaneo porque el CSS declara scroll suave", async () => {
 test("las anclas que el guard protege siguen existiendo", async () => {
   const [navbar, tour] = await Promise.all([
     leer("components/Navbar.tsx"),
-    leer("app/[locale]/actividades/[slug]/page.tsx"),
+    leer("app/[locale]/actividades/[categoria]/[slug]/page.tsx"),
   ]);
   // Si estas desaparecen, el guard del hash queda sin motivo y conviene saberlo
   // antes de que alguien lo borre por parecer muerto.

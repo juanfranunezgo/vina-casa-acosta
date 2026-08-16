@@ -10,7 +10,7 @@ import HomeActivitiesShowcase from "@/components/HomeActivitiesShowcase";
 import FeaturedLinesCarousel from "@/components/FeaturedLinesCarousel";
 import { featuredLineOrder, lineSlugs } from "@/data/wines";
 import { getCatalog, winesByLine } from "@/lib/afeleia/catalog";
-import { tours as tourData } from "@/data/activities";
+import { tours as tourData, activityPath } from "@/data/activities";
 import { alternatesFor } from "@/lib/alternates";
 import JsonLd from "@/components/JsonLd";
 import { buildHomeJsonLd } from "@/lib/siteJsonLd";
@@ -76,6 +76,7 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
   const showcaseTours = tourData.map((tr) => ({
     slug: tr.slug,
     name: tActivity(`${tr.slug}.name`),
+    href: lp(activityPath(tr)),
     duration: tActivity(`${tr.slug}.duration`),
     image: tr.image,
     premium: tr.premium,
@@ -291,9 +292,7 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
             </p>
           </Reveal>
 
-          <HomeActivitiesShowcase
-            locale={locale}
-            labels={{
+          <HomeActivitiesShowcase            labels={{
               all: t("activities.tabs.all"),
               tours: t("activities.tabs.tours"),
               experiences: t("activities.tabs.experiences"),

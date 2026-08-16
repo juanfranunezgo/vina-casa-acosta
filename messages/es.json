@@ -578,7 +578,7 @@
       }
     },
     "items": {
-      "tour-ombu": {
+      "ombu": {
         "name": "Tour Ombú",
         "description": "Introducción al mundo del vino: recorre nuestros viñedos de Carménère, la bodega y la sala de barricas, junto a una degustación guiada.",
         "highlights": [
@@ -604,7 +604,7 @@
         "pairing": "Tabla de maridaje incluida.",
         "closing": "Podrás adquirir nuestros vinos directamente en la bodega."
       },
-      "tour-bera": {
+      "bera": {
         "name": "Tour Berá",
         "description": "Una experiencia más profunda y técnica: distintas expresiones del Carménère, desde la barrica hasta nuestras líneas más complejas.",
         "highlights": [
@@ -632,7 +632,7 @@
         "pairing": "Tabla de maridaje incluida.",
         "closing": "Nuestros vinos estarán disponibles para la venta en la misma bodega."
       },
-      "tour-carmenere": {
+      "carmenere": {
         "name": "Tour Carménère",
         "description": "Nuestra experiencia premium enfocada en la cepa emblema: su origen, ampelografía y expresión en distintas líneas de vino.",
         "highlights": [

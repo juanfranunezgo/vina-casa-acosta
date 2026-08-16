@@ -578,7 +578,7 @@
       }
     },
     "items": {
-      "tour-ombu": {
+      "ombu": {
         "name": "Ombú Tour",
         "description": "An introduction to the world of wine: walk our Carménère vineyards, the cellar and the barrel room, with a guided tasting.",
         "highlights": [
@@ -604,7 +604,7 @@
         "pairing": "Pairing board included.",
         "closing": "You'll be able to purchase our wines directly at the cellar."
       },
-      "tour-bera": {
+      "bera": {
         "name": "Berá Tour",
         "description": "A deeper, more technical experience: different expressions of Carménère, from the barrel to our most complex lines.",
         "highlights": [
@@ -632,7 +632,7 @@
         "pairing": "Pairing board included.",
         "closing": "Our wines will be available for sale at the cellar itself."
       },
-      "tour-carmenere": {
+      "carmenere": {
         "name": "Carménère Tour",
         "description": "Our premium experience focused on our signature varietal: its origin, ampelography and expression across different wine lines.",
         "highlights": [

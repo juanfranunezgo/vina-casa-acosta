@@ -7,7 +7,7 @@ import InstagramIcon from "@/components/icons/InstagramIcon";
 import Reveal from "@/components/Reveal";
 import Button from "@/components/ui/Button";
 import ActivitiesTabs from "@/components/ActivitiesTabs";
-import { tours } from "@/data/activities";
+import { tours, activityPath } from "@/data/activities";
 import { CONTACT_WHATSAPP_URL, CONTACT_PHONE_DISPLAY, INSTAGRAM_URL } from "@/lib/contact";
 import { alternatesFor } from "@/lib/alternates";
 import JsonLd from "@/components/JsonLd";
@@ -224,7 +224,7 @@ export default async function ActividadesPage({
                     {/* La tarjeta completa enlaza al detalle; el botón "Reservar"
                         (z superior) salta directo a la reserva sin anidar <a>. */}
                     <Link
-                      href={`/${locale}/actividades/${tour.slug}`}
+                      href={`/${locale}${activityPath(tour)}`}
                       className="absolute inset-0 z-[1]"
                       aria-label={tTour(`${tour.slug}.name`)}
                     />
@@ -272,7 +272,7 @@ export default async function ActividadesPage({
                         ))}
                       </ul>
                       <Button
-                        href={`/${locale}/actividades/${tour.slug}#reserva`}
+                        href={`/${locale}${activityPath(tour)}#reserva`}
                         variant={tour.premium ? "primary" : "outline"}
                         fullWidth
                         className="z-[2]"

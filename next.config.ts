@@ -135,6 +135,65 @@ const nextConfig: NextConfig = {
       ...afeleiaStoragePatterns(),
     ],
   },
+  /**
+   * Redirects de la migración de Actividades.
+   *
+   * Van acá y no en `netlify.toml` por el mismo motivo que los headers de
+   * seguridad: las reglas del toml las aplica el CDN sobre archivos estáticos,
+   * pero estas páginas las contesta el handler de Next y se las saltan.
+   *
+   * `permanent: true` emite **308** y `false` emite **307** — Next no usa
+   * 301/302 para preservar el método de la petición. Para Google, 308 consolida
+   * igual que un 301.
+   *
+   * El locale se restringe a `(es|en|pt)` para no capturar rutas ajenas. Es el
+   * patrón que la doc de esta versión indica para App Router: acá el idioma lo
+   * maneja next-intl desde `proxy.ts`, no el i18n propio de Next.
+   */
+  async redirects() {
+    const actividades = "/:locale(es|en|pt)/actividades";
+
+    return [
+      // Las fichas de tour se mudaron bajo su categoría. Definitivo: la URL
+      // plana no vuelve.
+      {
+        source: `${actividades}/tour-ombu`,
+        destination: "/:locale/actividades/tours/ombu",
+        permanent: true,
+      },
+      {
+        source: `${actividades}/tour-bera`,
+        destination: "/:locale/actividades/tours/bera",
+        permanent: true,
+      },
+      {
+        source: `${actividades}/tour-carmenere`,
+        destination: "/:locale/actividades/tours/carmenere",
+        permanent: true,
+      },
+
+      // URLs padre: hoy no tienen landing propia, y truncar la ruta es algo que
+      // hacen tanto las personas como los crawlers. TEMPORAL a propósito — la
+      // landing está planificada (ver `Dc` en docs/NOMENCLATURA.md) y un 308
+      // cacheado en los navegadores impediría estrenarla.
+      {
+        source: `${actividades}/tours`,
+        destination: "/:locale/actividades#tours",
+        permanent: false,
+      },
+      {
+        source: `${actividades}/talleres`,
+        destination: "/:locale/actividades#talleres",
+        permanent: false,
+      },
+      {
+        source: `${actividades}/experiencias`,
+        destination: "/:locale/actividades#experiencias",
+        permanent: false,
+      },
+    ];
+  },
+
   // Headers de seguridad. Van acá y no solo en netlify.toml: los headers del
   // toml los aplica el CDN a los archivos estáticos, pero las páginas las sirve
   // el handler de Next y se las saltan. Definidos en Next, valen para todo.

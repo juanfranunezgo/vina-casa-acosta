@@ -8,6 +8,9 @@ import { ArrowRight, ChevronRight, LayoutGrid, Map, Wine, CalendarDays, Clock } 
 type TourItem = {
   slug: string;
   name: string;
+  /** Ruta ya armada, con prefijo de idioma. La construye `activityPath` en la
+   *  página: este componente no tiene por qué saber cómo se forma una URL. */
+  href: string;
   duration: string;
   image: string;
   premium?: boolean;
@@ -39,7 +42,6 @@ type Labels = {
 };
 
 type Props = {
-  locale: string;
   labels: Labels;
   tours: TourItem[];
   experiences: ExperienceItem[];
@@ -61,7 +63,6 @@ type Card = {
 };
 
 export default function HomeActivitiesShowcase({
-  locale,
   labels,
   tours,
   experiences,
@@ -74,8 +75,8 @@ export default function HomeActivitiesShowcase({
     slug: tr.slug,
     name: tr.name,
     image: tr.image,
-    href: `/${locale}/actividades/${tr.slug}`,
-    reserveHref: `/${locale}/actividades/${tr.slug}#reserva`,
+    href: tr.href,
+    reserveHref: `${tr.href}#reserva`,
     badge: labels.catTour,
     premium: tr.premium,
     duration: tr.duration,
