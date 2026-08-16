@@ -133,6 +133,41 @@ export const activities: Activity[] = [
     premium: true,
   },
   {
+    slug: "cosecha-tu-historia",
+    category: "experiencias",
+    minPeople: 8,
+    months: TODO_EL_ANO,
+    durationISO: "PT3H",
+    image: CATEGORY_IMAGE.experiencias,
+  },
+  {
+    slug: "enologo-por-un-dia",
+    category: "experiencias",
+    minPeople: 8,
+    months: TODO_EL_ANO,
+    durationISO: "PT3H",
+    image: CATEGORY_IMAGE.experiencias,
+  },
+  {
+    // El catálogo lo llama "Taller mimbre" y lo clasifica como experiencia.
+    // La taxonomía del cliente manda: el nombre dice taller, la URL dice
+    // experiencias. Ver el spec de subpáginas de actividades.
+    slug: "mimbre",
+    category: "experiencias",
+    minPeople: 8,
+    months: TODO_EL_ANO,
+    durationISO: "PT4H",
+    image: CATEGORY_IMAGE.experiencias,
+  },
+  {
+    slug: "yoga",
+    category: "experiencias",
+    minPeople: 8,
+    months: TODO_EL_ANO,
+    durationISO: "PT3H",
+    image: CATEGORY_IMAGE.experiencias,
+  },
+  {
     slug: "cena-sensorial",
     category: "experiencias",
     minPeople: 12,

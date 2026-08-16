@@ -719,6 +719,78 @@
         "pairing": "Tabla de maridaje incluida.",
         "closing": "Tendrás la opción de adquirir nuestros vinos directamente en la bodega."
       },
+      "cosecha-tu-historia": {
+        "name": "Cosecha tu historia",
+        "description": "Trabajas un grupo definido de parras durante todo el ciclo y acompañas tu propia uva en bodega hasta embotellarla.",
+        "tagline": "Tu propia uva, desde la poda hasta la botella",
+        "intro": "Una experiencia única y personalizada donde realizas labores reales en un grupo definido de parras, desde la poda hasta la vendimia. Luego, acompañas tu propia uva en bodega, siguiendo de cerca su fermentación, mezcla y embotellado final. Una conexión completa, trazable y profundamente significativa con el vino que tú mismo ayudaste a crear.",
+        "duration": "3 horas + cierre",
+        "groupFrom": "Grupos desde 8 personas",
+        "reservationNote": "El ciclo completo se coordina con la viña",
+        "program": [
+          "Poda y amarra (invierno)",
+          "Desbrote (primavera)",
+          "Deshoje (verano)",
+          "Vendimia (fin del verano / inicio del otoño)",
+          "Fermentación",
+          "Mezclas",
+          "Embotellado final"
+        ],
+        "closing": "Cosechaste tu historia y la embotellaste: esa botella lleva tu trabajo de todo el ciclo."
+      },
+      "enologo-por-un-dia": {
+        "name": "Enólogo por un día",
+        "description": "Guiado por un enólogo, creas tu propio vino, lo evalúas a ciegas y compites por el mejor ensamblaje del grupo.",
+        "tagline": "Crea tu ensamblaje, cátalo a ciegas y compite por el mejor",
+        "intro": "Una experiencia única donde cada participante se convierte en enólogo por un día, guiado por un enólogo. Crearás tu propio vino, lo evaluarás a ciegas y competirás por el mejor ensamblaje. Diversión, aprendizaje y espíritu de equipo en una jornada inolvidable.",
+        "duration": "3 horas + cierre",
+        "groupFrom": "Grupos desde 8 personas",
+        "reservationNote": "Sujeto a disponibilidad — coordinamos la fecha contigo",
+        "program": [
+          "Charla técnica de bienvenida",
+          "Introducción al uso de los materiales",
+          "Primer tiempo: creación y embotellado",
+          "Entretiempo: pausa sensorial con maridaje",
+          "Instrucción para la cata a ciegas",
+          "Evaluación y votación grupal",
+          "Cata final",
+          "Premiación de los ganadores"
+        ],
+        "closing": "Te vas con tu botella ensamblada y, si el grupo lo decide, con el premio."
+      },
+      "mimbre": {
+        "name": "Taller de mimbre",
+        "description": "Desde la preparación del mimbre hasta el tejido de tu propia pieza, acompañado por artesanos de la zona.",
+        "tagline": "Tejer tu propia pieza junto a artesanos locales",
+        "intro": "Una experiencia artesanal donde la tradición y la creatividad se entrelazan. Acompañados por artesanos locales, los participantes aprenderán desde la preparación del mimbre hasta el tejido de su propia pieza, en un entorno cálido y lleno de historia. Una jornada para reconectar con lo hecho a mano, disfrutar sabores locales y llevarse un recuerdo tejido con raíz.",
+        "duration": "4 horas + cierre",
+        "groupFrom": "Grupos desde 8 personas",
+        "reservationNote": "Sujeto a disponibilidad — coordinamos la fecha contigo",
+        "program": [
+          "Desayuno campesino",
+          "Introducción al oficio",
+          "Preparación del material",
+          "Tejido guiado",
+          "Cierre"
+        ],
+        "closing": "Te vas con la pieza que tejiste y con el oficio visto de cerca."
+      },
+      "yoga": {
+        "name": "Yoga: respirar, estirar y compartir",
+        "description": "Yoga al aire libre entre viñedos, brunch saludable y productores locales, en una mañana tranquila.",
+        "tagline": "Una sesión entre parras, y un brunch para cerrar",
+        "intro": "Una experiencia de bienestar entre viñedos que invita a conectar cuerpo, mente y naturaleza. Combina una sesión de yoga al aire libre con un brunch saludable y la oportunidad de descubrir productos locales en un ambiente tranquilo y armonioso.",
+        "duration": "3 horas + cierre",
+        "groupFrom": "Grupos desde 8 personas",
+        "reservationNote": "Sujeto a disponibilidad — coordinamos la fecha contigo",
+        "program": [
+          "Sesión de yoga",
+          "Brunch saludable",
+          "Productores locales",
+          "Cierre y venta de vinos"
+        ],
+        "closing": "Te vas con el cuerpo suelto y la mañana bien empezada."
+      },
       "cena-sensorial": {
         "name": "Cena Sensorial",
         "description": "Cinco tiempos maridados con nuestras etiquetas, guiados por el enólogo, el chef y el sommelier.",

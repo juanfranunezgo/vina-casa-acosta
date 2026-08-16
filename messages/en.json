@@ -719,6 +719,78 @@
         "pairing": "Pairing board included.",
         "closing": "You'll have the option to purchase our wines directly at the cellar."
       },
+      "cosecha-tu-historia": {
+        "name": "Harvest Your Story",
+        "description": "You work a defined set of vines through the whole cycle and follow your own grapes in the cellar until they're bottled.",
+        "tagline": "Your own grapes, from pruning to bottle",
+        "intro": "A one-of-a-kind, personal experience where you do real work on a defined set of vines, from pruning through harvest. Then you follow your own grapes into the cellar, watching their fermentation, blending and final bottling up close. A complete, traceable and deeply meaningful connection with the wine you helped create.",
+        "duration": "3 hours + closing",
+        "groupFrom": "Groups from 8 people",
+        "reservationNote": "The full cycle is arranged with the winery",
+        "program": [
+          "Pruning and tying (winter)",
+          "Shoot thinning (spring)",
+          "Leaf removal (summer)",
+          "Harvest (late summer / early autumn)",
+          "Fermentation",
+          "Blending",
+          "Final bottling"
+        ],
+        "closing": "You harvested your story and bottled it: that bottle carries your work across the whole cycle."
+      },
+      "enologo-por-un-dia": {
+        "name": "Winemaker for a Day",
+        "description": "Guided by a winemaker, you create your own wine, judge it blind and compete for the best blend of the group.",
+        "tagline": "Build your blend, taste it blind, compete for the best",
+        "intro": "A one-of-a-kind experience where every participant becomes a winemaker for a day, guided by a winemaker. You'll create your own wine, judge it blind and compete for the best blend. Fun, learning and team spirit in one unforgettable session.",
+        "duration": "3 hours + closing",
+        "groupFrom": "Groups from 8 people",
+        "reservationNote": "Subject to availability — we arrange the date with you",
+        "program": [
+          "Technical welcome talk",
+          "Introduction to the materials",
+          "First half: blending and bottling",
+          "Half-time: a sensory pause with a pairing",
+          "Briefing for the blind tasting",
+          "Group judging and vote",
+          "Final tasting",
+          "Prizes for the winners"
+        ],
+        "closing": "You leave with the bottle you blended and, if the group says so, with the prize."
+      },
+      "mimbre": {
+        "name": "Wicker Workshop",
+        "description": "From preparing the wicker to weaving your own piece, alongside craftspeople from the area.",
+        "tagline": "Weave your own piece alongside local craftspeople",
+        "intro": "A craft experience where tradition and creativity come together. Alongside local artisans, you'll learn everything from preparing the wicker to weaving your own piece, in a warm setting full of history. A day to reconnect with what's made by hand, enjoy local flavours and take home a keepsake woven with roots.",
+        "duration": "4 hours + closing",
+        "groupFrom": "Groups from 8 people",
+        "reservationNote": "Subject to availability — we arrange the date with you",
+        "program": [
+          "Country breakfast",
+          "Introduction to the craft",
+          "Preparing the material",
+          "Guided weaving",
+          "Closing"
+        ],
+        "closing": "You leave with the piece you wove and the craft seen up close."
+      },
+      "yoga": {
+        "name": "Yoga: breathe, stretch and share",
+        "description": "Outdoor yoga among the vines, a healthy brunch and local producers, in one unhurried morning.",
+        "tagline": "A session among the vines, and a brunch to close",
+        "intro": "A wellbeing experience among the vines that invites you to connect body, mind and nature. It combines an outdoor yoga session with a healthy brunch and the chance to discover local products in a calm, harmonious setting.",
+        "duration": "3 hours + closing",
+        "groupFrom": "Groups from 8 people",
+        "reservationNote": "Subject to availability — we arrange the date with you",
+        "program": [
+          "Yoga session",
+          "Healthy brunch",
+          "Local producers",
+          "Closing and wine sales"
+        ],
+        "closing": "You leave loose, and with the morning well started."
+      },
       "cena-sensorial": {
         "name": "Sensory Dinner",
         "description": "Five courses paired with our labels, guided by the winemaker, the chef and the sommelier.",
