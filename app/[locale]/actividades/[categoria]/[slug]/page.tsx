@@ -120,10 +120,18 @@ export default async function ActivityDetailPage({
   const closing = tTour(`${slug}.closing`);
 
   /**
-   * Los tours describen la visita como tickets canjeables (`includes`, más los
-   * vinos y el maridaje); los talleres y experiencias, como una jornada en
-   * orden (`program`). Qué bloque se dibuja lo decide la categoría, sin un flag
-   * aparte que pueda contradecirla.
+   * Tres formas de contar lo mismo, y el catálogo del cliente las distingue:
+   *
+   * - Tours: `includes` es una lista de tickets canjeables, más los vinos y el
+   *   maridaje. El aviso de tickets solo aplica acá.
+   * - Talleres: `includes` es lo que el taller incluye —ingredientes, recetas
+   *   impresas, jugos para menores—. No tiene orden y numerarlo lo haría leer
+   *   como pasos de la jornada.
+   * - Experiencias: `program` sí es una secuencia (desayuno → oficio → tejido →
+   *   cierre) y se dibuja como línea de tiempo numerada.
+   *
+   * Qué bloque aparece lo decide el dato presente, no un flag aparte que pueda
+   * contradecir a la categoría.
    *
    * `t.raw` de una clave ausente NO devuelve undefined: devuelve la ruta de la
    * clave como string. Sin este `Array.isArray` el `.map` de más abajo revienta
@@ -368,10 +376,12 @@ export default async function ActivityDetailPage({
                 </p>
               )}
 
-              {!isTour && <ActivityProgram steps={program} title={t("programTitle")} />}
+              {program.length > 0 && (
+                <ActivityProgram steps={program} title={t("programTitle")} />
+              )}
               {/* overflow-hidden: el ítem destacado pinta fondo y borde hasta el
                   filo, y sin esto se sale de las esquinas redondeadas. */}
-              {isTour && (
+              {includes.length > 0 && (
               <ul className="mb-10 overflow-hidden rounded-xl bg-surface border border-outline-variant/25 ambient-shadow divide-y divide-outline-variant/20">
                 {includes.map((item, i) => {
                   const Icon = includeIcons[slug]?.[i] ?? Check;
@@ -387,13 +397,16 @@ export default async function ActivityDetailPage({
                     </li>
                   );
                 })}
-                {/* Cierre de la lista: la tabla de maridaje va destacada. */}
-                <li className="flex items-start gap-3.5 bg-wine-accent/8 border-l-[3px] border-wine-accent px-5 py-4 font-body text-body-md font-semibold text-on-surface">
-                  <span className="h-7 w-7 rounded-full bg-wine-accent flex items-center justify-center shrink-0 mt-0.5">
-                    <UtensilsCrossed className="h-4 w-4 text-on-primary" aria-hidden="true" />
-                  </span>
-                  {includesHighlight}
-                </li>
+                {/* Cierre de la lista: la tabla de maridaje va destacada. Solo
+                    los tours la tienen. */}
+                {isTour && (
+                  <li className="flex items-start gap-3.5 bg-wine-accent/8 border-l-[3px] border-wine-accent px-5 py-4 font-body text-body-md font-semibold text-on-surface">
+                    <span className="h-7 w-7 rounded-full bg-wine-accent flex items-center justify-center shrink-0 mt-0.5">
+                      <UtensilsCrossed className="h-4 w-4 text-on-primary" aria-hidden="true" />
+                    </span>
+                    {includesHighlight}
+                  </li>
+                )}
               </ul>
               )}
 

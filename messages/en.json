@@ -577,6 +577,29 @@
       }
     },
     "items": {
+      "pizzas": {
+        "name": "Pizza Workshop",
+        "description": "Knead, stretch and build your own pizza, bake it in a traditional oven and share it fresh out, glass of wine in hand.",
+        "highlights": [
+          "Dough from scratch",
+          "Baked in a traditional oven",
+          "Wine tasting"
+        ],
+        "tagline": "Knead, bake and share, glass in hand",
+        "intro": "We'll make the dough from scratch, knead it, stretch it and build your own pizza. Then we'll bake it and share it as a group, straight out of the oven and with a glass of wine.",
+        "duration": "3 hours + closing",
+        "groupFrom": "Groups from 8 people",
+        "reservationNote": "Subject to availability — we arrange the date with you",
+        "includes": [
+          "Fresh ingredients and utensils.",
+          "Printed recipes to take home.",
+          "Baked in a traditional oven.",
+          "Wine tasting: on arrival, during the workshop and at the close.",
+          "Natural juices for under-18s.",
+          "Dough ready to take home."
+        ],
+        "closing": "You leave with the recipe, dough to do it again at home, and the table talk."
+      },
       "ombu": {
         "name": "Ombú Tour",
         "description": "An introduction to the world of wine: walk our Carménère vineyards, the cellar and the barrel room, with a guided tasting.",

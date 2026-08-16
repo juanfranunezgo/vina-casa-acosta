@@ -77,6 +77,16 @@ const CATEGORY_IMAGE: Record<ActivityCategory, string> = {
  */
 export const activities: Activity[] = [
   {
+    slug: "pizzas",
+    category: "talleres",
+    // Sin precio: el catálogo del cliente no publica ninguno para los talleres.
+    // La ficha pasa sola a "precio a consultar" y el formulario, a cotización.
+    minPeople: 8,
+    months: TODO_EL_ANO,
+    durationISO: "PT3H",
+    image: CATEGORY_IMAGE.talleres,
+  },
+  {
     slug: "ombu",
     category: "tours",
     priceCLP: 30000,

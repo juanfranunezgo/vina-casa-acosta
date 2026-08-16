@@ -42,6 +42,42 @@ Solución provisoria mientras no haya backend. Plan Free: **100 envíos/mes**.
   notifications. **No sale de `lib/contact.ts`**: cambiar esa constante no cambia a dónde
   llegan los envíos.
 - Los envíos quedan guardados en el panel aunque la notificación por correo falle.
+- El formulario de reserva pasó de llamarse `reserva-tour` a **`reserva-actividad`**
+  (campos nuevos: `actividad` y `tipo`, que vale `reserva` o `cotizacion`). Los envíos
+  anteriores **no se pierden**: quedan en el panel bajo el nombre viejo, en su propia
+  lista. Si la notificación por correo estaba configurada sobre `reserva-tour`, hay que
+  volver a configurarla para el nombre nuevo.
+
+---
+
+## Actividades — arquitectura (rama `feat/actividades-subpaginas`)
+
+Cada actividad tiene página propia bajo su categoría:
+`/actividades/{tours|talleres|experiencias}/{slug}`. Las tres URLs planas de tour
+(`/actividades/tour-ombu` y hermanas) redirigen **308** desde `next.config.ts`; las URLs
+padre de categoría redirigen **307**, a propósito: sus landings están planificadas y un
+308 cacheado en los navegadores impediría estrenarlas.
+
+**Agregar una actividad** cuesta un objeto en `data/activities.ts` y un bloque en
+`activities.items` de **los tres** archivos de `messages/`. Nada más: ruta, sitemap,
+submenú del navbar y JSON-LD se derivan de esos datos.
+
+**Las traducciones no son opcionales.** next-intl no falla cuando falta una clave:
+`getMessageFallback` devuelve la ruta de la clave y la página se publica mostrando
+`activities.items.pizzas.name` en pantalla. Pasó de verdad —tres portadas salieron así de
+un build verde— y por eso existen `tests/actividades-i18n-parity.test.mjs` y
+`tests/actividades-namespace-source.test.mjs`.
+
+`tests/alias-hook.mjs` enseña a `node --test` el alias `@/` de tsconfig. Sin él, todo
+módulo que use el alias solo se puede cubrir con un guard que lee su propio texto.
+
+**Medición tras esta rama:** build limpio **≈7,9 s**, 79 páginas estáticas (Turbopack
+genera las 79 en ~0,6 s con 15 workers). Agregar las 11 actividades restantes son 33
+páginas más: el costo por página es marginal, el trabajo real es el copy en tres idiomas.
+
+**Pendiente (planes 2 y 3):** las 11 actividades restantes del catálogo, el hub de
+Vendimia, las tarjetas selectoras y el mega-menú. El copy EN/PT del taller de Pizzas está
+traducido pero **sin validación humana**, igual que el resto del sitio.
 
 ---
 

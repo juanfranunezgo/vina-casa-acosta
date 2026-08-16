@@ -577,6 +577,29 @@
       }
     },
     "items": {
+      "pizzas": {
+        "name": "Taller de Pizzas",
+        "description": "Amasa, estira y arma tu propia pizza, cocínala en horno tradicional y compártela recién salida, con una copa de vino en la mano.",
+        "highlights": [
+          "Masa desde cero",
+          "Cocción en horno tradicional",
+          "Degustación de vinos"
+        ],
+        "tagline": "Amasar, hornear y compartir, con una copa en la mano",
+        "intro": "Prepararemos la masa desde cero, amasaremos, estiraremos y armaremos tu propia pizza. Luego la cocinaremos en horno y la compartiremos en grupo, disfrutándola recién salida del horno con una copa de vino.",
+        "duration": "3 horas + cierre",
+        "groupFrom": "Grupos desde 8 personas",
+        "reservationNote": "Sujeto a disponibilidad — coordinamos la fecha contigo",
+        "includes": [
+          "Ingredientes frescos y utensilios.",
+          "Recetas impresas para llevar.",
+          "Cocción en horno tradicional.",
+          "Degustación de vinos: de bienvenida, durante el taller y al cierre.",
+          "Jugos naturales para menores.",
+          "Masa lista para llevar a casa."
+        ],
+        "closing": "Te vas con la receta, la masa para repetirla en casa y la sobremesa."
+      },
       "ombu": {
         "name": "Tour Ombú",
         "description": "Introducción al mundo del vino: recorre nuestros viñedos de Carménère, la bodega y la sala de barricas, junto a una degustación guiada.",

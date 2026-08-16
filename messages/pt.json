@@ -577,6 +577,29 @@
       }
     },
     "items": {
+      "pizzas": {
+        "name": "Oficina de Pizzas",
+        "description": "Sove, abra e monte a sua própria pizza, asse em forno tradicional e compartilhe recém-saída, com uma taça de vinho na mão.",
+        "highlights": [
+          "Massa do zero",
+          "Assada em forno tradicional",
+          "Degustação de vinhos"
+        ],
+        "tagline": "Sovar, assar e compartilhar, com uma taça na mão",
+        "intro": "Vamos preparar a massa do zero, sovar, abrir e montar a sua própria pizza. Depois vamos assá-la e compartilhar em grupo, recém-saída do forno e com uma taça de vinho.",
+        "duration": "3 horas + encerramento",
+        "groupFrom": "Grupos a partir de 8 pessoas",
+        "reservationNote": "Sujeito à disponibilidade — combinamos a data com você",
+        "includes": [
+          "Ingredientes frescos e utensílios.",
+          "Receitas impressas para levar.",
+          "Assada em forno tradicional.",
+          "Degustação de vinhos: de boas-vindas, durante a oficina e no encerramento.",
+          "Sucos naturais para menores.",
+          "Massa pronta para levar para casa."
+        ],
+        "closing": "Você leva a receita, a massa para repetir em casa e a conversa da mesa."
+      },
       "ombu": {
         "name": "Tour Ombú",
         "description": "Uma introdução ao mundo do vinho: percorra nossos vinhedos de Carménère, a adega e a sala de barricas, com uma degustação guiada.",

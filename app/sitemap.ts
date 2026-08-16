@@ -19,16 +19,22 @@ const STATIC_PATHS = [
 ] as const;
 
 /**
- * Sitemap del sitio: 26 rutas × 3 locales = 78 URLs, cada una con el set
+ * Sitemap del sitio: una entrada por ruta y locale, cada una con el set
  * completo de hreflang (los tres idiomas + `x-default`).
+ *
+ * El total no se escribe acá a propósito: las rutas dinámicas salen de `data/`
+ * y el número cambia con cada vino o actividad que se agregue. Un comentario
+ * con una cifra que envejece es peor que ninguno —este decía 78 hasta que las
+ * actividades pasaron a vivir bajo su categoría—. `tests/actividades-sitemap.test.mjs`
+ * verifica la cobertura, que es lo que de verdad importa.
  *
  * Sin `lastmod`, `changefreq` ni `priority`, y es deliberado:
  *
  * - `lastmod` tendría que ser la fecha real de modificación de cada página, y
  *   hoy no existe ese dato: ni `data/wines.ts` ni `data/activities.ts` guardan
- *   fechas. Estampar la hora del build en las 78 URLs sería mentirle al crawler,
- *   y como cambiaría en cada deploy, Google aprende a ignorar el campo. Un
- *   sitemap sin `lastmod` es válido; uno con `lastmod` falso es peor que nada.
+ *   fechas. Estampar la hora del build en todas las URLs sería mentirle al
+ *   crawler, y como cambiaría en cada deploy, Google aprende a ignorar el campo.
+ *   Un sitemap sin `lastmod` es válido; uno con `lastmod` falso es peor que nada.
  *   Cuando el catálogo venga de Afeleia con `updated_at`, se agrega acá.
  * - `changefreq` y `priority` Google los ignora casi por completo.
  */
