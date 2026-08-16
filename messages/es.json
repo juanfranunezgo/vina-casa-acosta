@@ -529,7 +529,7 @@
       "conditionMinors": "Degustación no apta para menores de 18 años · Ley N° 19.925",
       "galleryTitle": "Galería",
       "galleryComing": "Estamos preparando la galería de fotos de esta experiencia.",
-      "otherInCategory": "Otras experiencias que te pueden interesar",
+      "otherInCategory": "Otras actividades que te pueden interesar",
       "form": {
         "title": "Reserva",
         "titleQuote": "Solicitar cotización",
@@ -599,6 +599,40 @@
           "Masa lista para llevar a casa."
         ],
         "closing": "Te vas con la receta, la masa para repetirla en casa y la sobremesa."
+      },
+      "pastas": {
+        "name": "Taller de Pastas",
+        "description": "Prepara la masa desde cero, estírala y córtala en distintas formas, y comparte las pastas recién hechas con una copa de vino.",
+        "tagline": "Del amasado al plato, con una copa en la mano",
+        "intro": "Prepararemos la masa desde cero, la amasaremos, estiraremos y cortaremos en distintas formas. Luego cocinaremos y compartiremos en grupo, disfrutando las pastas recién hechas con una copa de vino.",
+        "duration": "3 horas + cierre",
+        "groupFrom": "Grupos desde 8 personas",
+        "reservationNote": "Sujeto a disponibilidad — coordinamos la fecha contigo",
+        "includes": [
+          "Ingredientes frescos y utensilios.",
+          "Recetas impresas para llevar.",
+          "Cocción en horno tradicional.",
+          "Degustación de vinos: de bienvenida, durante el taller y al cierre.",
+          "Jugos naturales para menores."
+        ],
+        "closing": "Te vas con la receta, el corte aprendido y la sobremesa."
+      },
+      "noquis": {
+        "name": "Taller de Ñoquis",
+        "description": "Prepara la masa, dales forma a los ñoquis y acompáñalos con salsas caseras para cerrar con una cena compartida.",
+        "tagline": "Formar, cocinar y cerrar con una cena de grupo",
+        "intro": "Prepararemos la masa desde cero, la amasaremos, cortaremos y daremos forma a los ñoquis para luego cocinarlos y acompañarlos con salsas caseras. Finalmente, compartiremos este plato terminado en una cena grupal, disfrutando la experiencia.",
+        "duration": "3 horas + cierre",
+        "groupFrom": "Grupos desde 8 personas",
+        "reservationNote": "Sujeto a disponibilidad — coordinamos la fecha contigo",
+        "includes": [
+          "Ingredientes frescos y utensilios.",
+          "Recetas impresas para llevar.",
+          "Cocción en horno tradicional.",
+          "Degustación de vinos: de bienvenida, durante el taller y al cierre.",
+          "Jugos naturales para menores."
+        ],
+        "closing": "Te vas con la receta, las salsas anotadas y la cena compartida."
       },
       "ombu": {
         "name": "Tour Ombú",

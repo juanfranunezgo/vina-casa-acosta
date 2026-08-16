@@ -87,6 +87,22 @@ export const activities: Activity[] = [
     image: CATEGORY_IMAGE.talleres,
   },
   {
+    slug: "pastas",
+    category: "talleres",
+    minPeople: 8,
+    months: TODO_EL_ANO,
+    durationISO: "PT3H",
+    image: CATEGORY_IMAGE.talleres,
+  },
+  {
+    slug: "noquis",
+    category: "talleres",
+    minPeople: 8,
+    months: TODO_EL_ANO,
+    durationISO: "PT3H",
+    image: CATEGORY_IMAGE.talleres,
+  },
+  {
     slug: "ombu",
     category: "tours",
     priceCLP: 30000,

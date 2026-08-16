@@ -529,7 +529,7 @@
       "conditionMinors": "Degustação não indicada para menores de 18 anos · Lei N° 19.925",
       "galleryTitle": "Galeria",
       "galleryComing": "Estamos preparando a galeria de fotos desta experiência.",
-      "otherInCategory": "Outras experiências que podem interessar",
+      "otherInCategory": "Outras atividades que podem interessar",
       "form": {
         "title": "Reserva",
         "titleQuote": "Solicitar orçamento",
@@ -599,6 +599,40 @@
           "Massa pronta para levar para casa."
         ],
         "closing": "Você leva a receita, a massa para repetir em casa e a conversa da mesa."
+      },
+      "pastas": {
+        "name": "Oficina de Massas",
+        "description": "Prepare a massa do zero, abra e corte em diferentes formatos, e compartilhe as massas recém-feitas com uma taça de vinho.",
+        "tagline": "Da massa ao prato, com uma taça na mão",
+        "intro": "Vamos preparar a massa do zero, sovar, abrir e cortar em diferentes formatos. Depois vamos cozinhar e compartilhar em grupo, aproveitando as massas recém-feitas com uma taça de vinho.",
+        "duration": "3 horas + encerramento",
+        "groupFrom": "Grupos a partir de 8 pessoas",
+        "reservationNote": "Sujeito à disponibilidade — combinamos a data com você",
+        "includes": [
+          "Ingredientes frescos e utensílios.",
+          "Receitas impressas para levar.",
+          "Cozimento em forno tradicional.",
+          "Degustação de vinhos: de boas-vindas, durante a oficina e no encerramento.",
+          "Sucos naturais para menores."
+        ],
+        "closing": "Você leva a receita, o corte aprendido e a conversa da mesa."
+      },
+      "noquis": {
+        "name": "Oficina de Nhoque",
+        "description": "Prepare a massa, dê forma ao nhoque e acompanhe com molhos caseiros para encerrar com um jantar compartilhado.",
+        "tagline": "Modelar, cozinhar e encerrar com um jantar em grupo",
+        "intro": "Vamos preparar a massa do zero, sovar, cortar e dar forma ao nhoque para depois cozinhá-lo e acompanhá-lo com molhos caseiros. No final, vamos compartilhar esse prato pronto em um jantar em grupo.",
+        "duration": "3 horas + encerramento",
+        "groupFrom": "Grupos a partir de 8 pessoas",
+        "reservationNote": "Sujeito à disponibilidade — combinamos a data com você",
+        "includes": [
+          "Ingredientes frescos e utensílios.",
+          "Receitas impressas para levar.",
+          "Cozimento em forno tradicional.",
+          "Degustação de vinhos: de boas-vindas, durante a oficina e no encerramento.",
+          "Sucos naturais para menores."
+        ],
+        "closing": "Você leva a receita, os molhos anotados e o jantar compartilhado."
       },
       "ombu": {
         "name": "Tour Ombú",

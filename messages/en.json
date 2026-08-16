@@ -529,7 +529,7 @@
       "conditionMinors": "Tasting not available to under-18s · Law No. 19.925",
       "galleryTitle": "Gallery",
       "galleryComing": "We're putting together the photo gallery for this experience.",
-      "otherInCategory": "Other experiences you might like",
+      "otherInCategory": "Other activities you might like",
       "form": {
         "title": "Booking",
         "titleQuote": "Request a quote",
@@ -599,6 +599,40 @@
           "Dough ready to take home."
         ],
         "closing": "You leave with the recipe, dough to do it again at home, and the table talk."
+      },
+      "pastas": {
+        "name": "Pasta Workshop",
+        "description": "Make the dough from scratch, roll it out and cut it into different shapes, then share the fresh pasta with a glass of wine.",
+        "tagline": "From the dough to the plate, glass in hand",
+        "intro": "We'll make the dough from scratch, knead it, roll it out and cut it into different shapes. Then we'll cook it and share it as a group, enjoying the fresh pasta with a glass of wine.",
+        "duration": "3 hours + closing",
+        "groupFrom": "Groups from 8 people",
+        "reservationNote": "Subject to availability — we arrange the date with you",
+        "includes": [
+          "Fresh ingredients and utensils.",
+          "Printed recipes to take home.",
+          "Cooked in a traditional oven.",
+          "Wine tasting: on arrival, during the workshop and at the close.",
+          "Natural juices for under-18s."
+        ],
+        "closing": "You leave with the recipe, the cut you learned, and the table talk."
+      },
+      "noquis": {
+        "name": "Gnocchi Workshop",
+        "description": "Make the dough, shape the gnocchi and pair them with homemade sauces to close with a shared dinner.",
+        "tagline": "Shape it, cook it, and close with a group dinner",
+        "intro": "We'll make the dough from scratch, knead it, cut it and shape the gnocchi, then cook them and pair them with homemade sauces. To finish, we'll share the finished dish over a group dinner.",
+        "duration": "3 hours + closing",
+        "groupFrom": "Groups from 8 people",
+        "reservationNote": "Subject to availability — we arrange the date with you",
+        "includes": [
+          "Fresh ingredients and utensils.",
+          "Printed recipes to take home.",
+          "Cooked in a traditional oven.",
+          "Wine tasting: on arrival, during the workshop and at the close.",
+          "Natural juices for under-18s."
+        ],
+        "closing": "You leave with the recipe, the sauces written down, and the dinner you shared."
       },
       "ombu": {
         "name": "Ombú Tour",
