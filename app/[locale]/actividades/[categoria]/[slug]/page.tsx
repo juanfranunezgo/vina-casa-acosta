@@ -37,6 +37,8 @@ import {
 } from "@/data/activities";
 import { routing } from "@/i18n/routing";
 import { alternatesFor } from "@/lib/alternates";
+import JsonLd from "@/components/JsonLd";
+import { buildActivityJsonLd } from "@/lib/activityJsonLd";
 
 /**
  * Íconos de la lista "¿Qué incluye?", uno por ítem y en el MISMO orden que el
@@ -171,8 +173,28 @@ export default async function ActivityDetailPage({
     (o) => o.slug !== slug,
   );
 
+  // Las MISMAS tres traducciones que recibe la miga visible: el BreadcrumbList
+  // describe lo que está en pantalla, no una jerarquía aparte para el crawler.
+  const crumbLabels = {
+    home: t("breadcrumbHome"),
+    activities: t("breadcrumbActivities"),
+    category: tCategories(`${tour.category}.name`),
+  };
+
   return (
     <>
+      {/* Product + BreadcrumbList de esta actividad. La entidad de la viña la
+          emiten las páginas principales; acá se referencia por @id.
+          Ver lib/activityJsonLd.ts. */}
+      <JsonLd
+        data={buildActivityJsonLd(
+          locale,
+          tour,
+          { name, description: tagline, image: tour.image },
+          crumbLabels,
+        )}
+      />
+
       {/* Dd1 — Hero */}
       <section className="relative">
         <div className="relative h-[52svh] min-h-[400px] w-full overflow-hidden md:h-[58vh] md:min-h-[460px]">
@@ -194,11 +216,11 @@ export default async function ActivityDetailPage({
               <ActivityBreadcrumbs
                 aria={t("breadcrumbAria")}
                 items={[
-                  { href: `/${locale}`, label: t("breadcrumbHome") },
-                  { href: `/${locale}/actividades`, label: t("breadcrumbActivities") },
+                  { href: `/${locale}`, label: crumbLabels.home },
+                  { href: `/${locale}/actividades`, label: crumbLabels.activities },
                   {
                     href: `/${locale}/actividades#${tour.category}`,
-                    label: tCategories(`${tour.category}.name`),
+                    label: crumbLabels.category,
                   },
                   { href: `/${locale}${activityPath(tour)}`, label: name },
                 ]}
