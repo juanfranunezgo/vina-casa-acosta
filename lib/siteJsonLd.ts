@@ -164,7 +164,8 @@ type TourEntry = {
   slug: string;
   name: string;
   description: string;
-  priceCLP: number;
+  /** Ausente cuando la actividad no publica precio: entonces no se emite `offers`. */
+  priceCLP?: number;
   image: string;
 };
 
@@ -176,6 +177,10 @@ type TourEntry = {
  * mínimo de personas, así que afirmar "InStock" sería decir algo que el sitio
  * no dice. Google puede no mostrar rich result sin ese campo — preferible eso a
  * marcar disponibilidad que no está confirmada.
+ *
+ * Por el mismo criterio, una actividad sin precio publicado sale **sin**
+ * `offers`: un `Offer` sin `price` no produce rich result y afirma una oferta
+ * que la página no hace.
  */
 export function buildActividadesJsonLd(
   locale: string,
@@ -210,13 +215,17 @@ export function buildActividadesJsonLd(
             : `${SITE_URL}${tour.image}`,
           url: `${SITE_URL}/${locale}/actividades/${tour.slug}`,
           brand: { "@type": "Brand", name: "Viña Casa Acosta" },
-          offers: {
-            "@type": "Offer",
-            price: tour.priceCLP,
-            priceCurrency: "CLP",
-            url: `${SITE_URL}/${locale}/actividades/${tour.slug}`,
-            seller: { "@id": WINERY_ID },
-          },
+          ...(tour.priceCLP === undefined
+            ? {}
+            : {
+                offers: {
+                  "@type": "Offer",
+                  price: tour.priceCLP,
+                  priceCurrency: "CLP",
+                  url: `${SITE_URL}/${locale}/actividades/${tour.slug}`,
+                  seller: { "@id": WINERY_ID },
+                },
+              }),
         },
       })),
     },

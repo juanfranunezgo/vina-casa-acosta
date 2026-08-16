@@ -10,7 +10,17 @@ import HomeActivitiesShowcase from "@/components/HomeActivitiesShowcase";
 import FeaturedLinesCarousel from "@/components/FeaturedLinesCarousel";
 import { featuredLineOrder, lineSlugs } from "@/data/wines";
 import { getCatalog, winesByLine } from "@/lib/afeleia/catalog";
-import { tours as tourData, experiences as experienceData } from "@/data/activities";
+import { tours as tourData } from "@/data/activities";
+
+// Tarjetas de experiencia del mosaico A4. Viven acá y no en `data/activities.ts`
+// porque no son actividades del catálogo: son puertas de entrada. Las reemplaza
+// `CategoryChooserCard` en el plan 3 —ver el spec de subpáginas de actividades—,
+// donde pasan a desplegar un menú con las fichas de su categoría.
+const experienceData = [
+  { slug: "vendimia-2026", image: "/images/actividades/vendimia-2026.jpg" },
+  { slug: "talleres", image: "/images/actividades/talleres.jpg" },
+  { slug: "tren-efe", image: "/images/actividades/tren-efe.jpg" },
+];
 import { alternatesFor } from "@/lib/alternates";
 import JsonLd from "@/components/JsonLd";
 import { buildHomeJsonLd } from "@/lib/siteJsonLd";
@@ -64,18 +74,9 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
     description: tMeta("description"),
   });
 
-  const priceLocale = locale === "pt" ? "pt-BR" : locale === "en" ? "en-US" : "es-CL";
-  const formatPrice = (amount: number) =>
-    new Intl.NumberFormat(priceLocale, {
-      style: "currency",
-      currency: "CLP",
-      maximumFractionDigits: 0,
-    }).format(amount);
-
   const showcaseTours = tourData.map((tr) => ({
     slug: tr.slug,
     name: tTours(`${tr.slug}.name`),
-    price: formatPrice(tr.priceCLP),
     duration: tTourDetail(`${tr.slug}.duration`),
     image: tr.image,
     premium: tr.premium,

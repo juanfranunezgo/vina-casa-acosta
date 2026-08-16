@@ -8,7 +8,6 @@ import { ArrowRight, ChevronRight, LayoutGrid, Map, Wine, CalendarDays, Clock } 
 type TourItem = {
   slug: string;
   name: string;
-  price: string;
   duration: string;
   image: string;
   premium?: boolean;
@@ -58,7 +57,6 @@ type Card = {
   reserveHref?: string;
   badge: string;
   premium?: boolean;
-  price?: string;
   duration?: string;
 };
 
@@ -80,7 +78,6 @@ export default function HomeActivitiesShowcase({
     reserveHref: `/${locale}/actividades/${tr.slug}#reserva`,
     badge: labels.catTour,
     premium: tr.premium,
-    price: tr.price,
     duration: tr.duration,
   }));
 

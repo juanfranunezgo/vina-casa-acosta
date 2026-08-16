@@ -7,7 +7,21 @@ import InstagramIcon from "@/components/icons/InstagramIcon";
 import Reveal from "@/components/Reveal";
 import Button from "@/components/ui/Button";
 import ActivitiesTabs from "@/components/ActivitiesTabs";
-import { tours, experiences } from "@/data/activities";
+import { tours } from "@/data/activities";
+
+// Tarjetas de la sección D3. Viven acá y no en `data/activities.ts` porque no
+// son actividades del catálogo: son puertas de entrada. Las reemplaza
+// `CategoryChooserCard` en el plan 3 —ver el spec de subpáginas de actividades—,
+// donde pasan a desplegar un menú con las fichas de su categoría.
+const experiences = [
+  { slug: "vendimia-2026", image: "/images/actividades/vendimia-2026.jpg" },
+  { slug: "talleres", image: "/images/actividades/talleres.jpg" },
+  {
+    slug: "tren-efe",
+    image: "/images/actividades/tren-efe.jpg",
+    purchaseUrl: "https://pasajes.efe.cl/turistico/casa-acosta",
+  },
+];
 import { CONTACT_WHATSAPP_URL, CONTACT_PHONE_DISPLAY, INSTAGRAM_URL } from "@/lib/contact";
 import { alternatesFor } from "@/lib/alternates";
 import JsonLd from "@/components/JsonLd";
@@ -235,9 +249,13 @@ export default async function ActividadesPage({
                     <div className="p-6 flex flex-col flex-grow">
                       <div className="flex justify-between items-start mb-4 gap-3">
                         <h3 className="font-display text-2xl text-primary">{tTour(`${tour.slug}.name`)}</h3>
-                        <span className="shrink-0 font-body text-body-md font-semibold tabular-nums text-on-surface bg-surface-container-high px-3 py-1 rounded-full">
-                          {formatPrice(tour.priceCLP)}
-                        </span>
+                        {/* Sin precio publicado no se muestra badge: el texto de
+                            "a consultar" llega con la tarjeta bimodal de la ficha. */}
+                        {tour.priceCLP !== undefined && (
+                          <span className="shrink-0 font-body text-body-md font-semibold tabular-nums text-on-surface bg-surface-container-high px-3 py-1 rounded-full">
+                            {formatPrice(tour.priceCLP)}
+                          </span>
+                        )}
                       </div>
                       <p className="font-body text-body-md text-on-surface-variant mb-4 flex-grow">
                         {tTour(`${tour.slug}.description`)}

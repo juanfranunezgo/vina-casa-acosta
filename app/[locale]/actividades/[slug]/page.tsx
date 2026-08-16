@@ -27,7 +27,7 @@ import {
 import Reveal from "@/components/Reveal";
 import Button from "@/components/ui/Button";
 import TourReservationForm from "@/components/TourReservationForm";
-import { tours, getTourBySlug } from "@/data/activities";
+import { tours, getActivity } from "@/data/activities";
 import { routing } from "@/i18n/routing";
 import { alternatesFor } from "@/lib/alternates";
 
@@ -56,7 +56,7 @@ export async function generateMetadata({
   params,
 }: PageProps<"/[locale]/actividades/[slug]">): Promise<Metadata> {
   const { locale, slug } = await params;
-  const tour = getTourBySlug(slug);
+  const tour = getActivity("tours", slug);
   if (!tour) return { title: "—" };
   const tTour = await getTranslations({ locale, namespace: "tours" });
   const tDetail = await getTranslations({ locale, namespace: "tourDetail" });
@@ -92,7 +92,7 @@ export default async function TourDetailPage({
 }: PageProps<"/[locale]/actividades/[slug]">) {
   const { locale, slug } = await params;
   setRequestLocale(locale);
-  const tour = getTourBySlug(slug);
+  const tour = getActivity("tours", slug);
   if (!tour) notFound();
 
   const t = await getTranslations("tourDetail");
@@ -112,11 +112,16 @@ export default async function TourDetailPage({
   const closing = t(`${slug}.closing`);
 
   const priceLocale = locale === "pt" ? "pt-BR" : locale === "en" ? "en-US" : "es-CL";
-  const priceFormatted = new Intl.NumberFormat(priceLocale, {
-    style: "currency",
-    currency: "CLP",
-    maximumFractionDigits: 0,
-  }).format(tour.priceCLP);
+  // Undefined cuando la actividad no publica precio. La tarjeta de reserva
+  // decide qué mostrar en ese caso.
+  const priceFormatted =
+    tour.priceCLP === undefined
+      ? undefined
+      : new Intl.NumberFormat(priceLocale, {
+          style: "currency",
+          currency: "CLP",
+          maximumFractionDigits: 0,
+        }).format(tour.priceCLP);
 
   const ficha = [
     { icon: MapPin, label: t("placeLabel"), value: t("placeValue") },
