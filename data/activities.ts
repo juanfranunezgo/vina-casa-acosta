@@ -269,3 +269,32 @@ export const tours: Activity[] = activitiesByCategory("tours");
 export function activityPath(activity: Activity): string {
   return `/actividades/${activity.category}/${activity.slug}`;
 }
+
+/**
+ * Ruta del hub de Vendimia, sin prefijo de idioma. `null` mientras no exista.
+ *
+ * El spec le da entrada propia en el mega-menú y el primer lugar en el menú de
+ * la tarjeta selectora. La página quedó fuera del plan 2 porque sus dos
+ * secciones centrales —qué es la vendimia en Casa Acosta y el ciclo de la vid a
+ * lo largo del año— piden contenido que el catálogo del cliente no trae, y eso
+ * se le pide a la viña, no se redacta.
+ *
+ * Enlazar igual sería mandar al visitante y al crawler a un 404 desde el navbar
+ * de todo el sitio. Cuando el hub exista, esta constante es el único lugar que
+ * cambia: las dos superficies ya preguntan por ella.
+ */
+export const VENDIMIA_HUB: string | null = null;
+
+export type MenuColumn = { category: ActivityCategory; items: Activity[] };
+
+/**
+ * El árbol que consumen el mega-menú del navbar y las tarjetas selectoras. Una
+ * sola fuente: que las dos superficies muestren lo mismo no puede depender de
+ * que alguien se acuerde de actualizar las dos.
+ */
+export function activityMenu(): MenuColumn[] {
+  return ACTIVITY_CATEGORIES.map((category) => ({
+    category,
+    items: activitiesByCategory(category),
+  }));
+}
