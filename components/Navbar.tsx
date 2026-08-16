@@ -7,14 +7,13 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { Menu, X, ArrowRight, ChevronDown } from "lucide-react";
 import { routing } from "@/i18n/routing";
-import { tours, activityPath } from "@/data/activities";
+import ActivitiesMenu from "./ActivitiesMenu";
 import LanguageSwitcher from "./LanguageSwitcher";
 
 export default function Navbar() {
   const pathname = usePathname();
   const locale = useLocale();
   const t = useTranslations("nav");
-  const tTours = useTranslations("activities.items");
   // El hero ya pasó por debajo del header (o, en páginas claras, hay scroll).
   const [pastHero, setPastHero] = useState(false);
   // El texto del hero está pasando por detrás del header transparente.
@@ -27,14 +26,6 @@ export default function Navbar() {
     setOpen(false);
     setMobileActivitiesOpen(false);
   }, []);
-
-  // Submenú de Actividades: los tours con ficha propia y, debajo, las secciones
-  // de la página de actividades.
-  const activitiesSections = [
-    { href: "/actividades#experiencias", label: t("activitiesExperiences") },
-    { href: "/actividades#eventos", label: t("activitiesEvents") },
-    { href: "/actividades", label: t("activitiesAll") },
-  ];
 
   const links = [
     { href: "", label: t("home") },
@@ -182,6 +173,8 @@ export default function Navbar() {
                   <Link
                     href={localePath(link.href)}
                     onClick={isActividades ? () => setActivitiesMenuOpen(false) : undefined}
+                    aria-expanded={isActividades ? activitiesMenuOpen : undefined}
+                    aria-controls={isActividades ? "nav-actividades-menu" : undefined}
                     className={`relative pb-1 inline-flex items-center gap-1 transition-colors ${
                       active
                         ? overHero
@@ -208,41 +201,20 @@ export default function Navbar() {
                     )}
                   </Link>
 
-                  {isActividades && activitiesMenuOpen && (
-                    <div className="absolute left-1/2 top-full z-50 -translate-x-1/2 pt-3 transition-all duration-200">
-                      <div className="min-w-[248px] bg-surface rounded-xl border border-outline-variant/40 ambient-shadow p-2">
-                        {tours.map((tour) => (
-                          <Link
-                            key={tour.slug}
-                            href={localePath(activityPath(tour))}
-                            className="group/item flex items-center justify-between gap-3 px-3.5 py-2.5 rounded-lg text-on-surface-variant hover:bg-primary/5 hover:text-primary transition-colors"
-                          >
-                            <span className="font-body text-body-md">
-                              {tTours(`${tour.slug}.name`)}
-                            </span>
-                            <ArrowRight
-                              className="h-4 w-4 opacity-0 -translate-x-1 group-hover/item:opacity-100 group-hover/item:translate-x-0 transition-all duration-200"
-                              aria-hidden="true"
-                            />
-                          </Link>
-                        ))}
-
-                        <div className="my-1.5 h-px bg-outline-variant/40" aria-hidden="true" />
-
-                        {activitiesSections.map((section) => (
-                          <Link
-                            key={section.href}
-                            href={localePath(section.href)}
-                            onClick={() => setActivitiesMenuOpen(false)}
-                            className="group/item flex items-center justify-between gap-3 px-3.5 py-2.5 rounded-lg text-on-surface-variant hover:bg-primary/5 hover:text-primary transition-colors"
-                          >
-                            <span className="font-body text-body-md">{section.label}</span>
-                            <ArrowRight
-                              className="h-4 w-4 opacity-0 -translate-x-1 group-hover/item:opacity-100 group-hover/item:translate-x-0 transition-all duration-200"
-                              aria-hidden="true"
-                            />
-                          </Link>
-                        ))}
+                  {/* El panel se renderiza SIEMPRE y solo se oculta. Antes se
+                      montaba con `activitiesMenuOpen &&`, y como el estado
+                      arranca cerrado sus enlaces no existían en el HTML del
+                      servidor: un menú que parecía navegación y no enlazaba
+                      nada. El elemento que lleva `hidden` no puede traer clase
+                      de display —la pisaría—, por eso la grilla va adentro. */}
+                  {isActividades && (
+                    <div
+                      id="nav-actividades-menu"
+                      hidden={!activitiesMenuOpen}
+                      className="absolute left-1/2 top-full z-50 -translate-x-1/2 pt-3"
+                    >
+                      <div className="w-[min(92vw,52rem)] rounded-xl border border-outline-variant/40 bg-surface p-5 ambient-shadow">
+                        <ActivitiesMenu locale={locale} variant="desktop" />
                       </div>
                     </div>
                   )}
@@ -390,7 +362,7 @@ export default function Navbar() {
                           type="button"
                           onClick={() => setMobileActivitiesOpen((current) => !current)}
                           aria-expanded={mobileActivitiesOpen}
-                          aria-controls="mobile-activities-tours"
+                          aria-controls="mobile-activities-menu"
                           aria-label={mobileActivitiesOpen ? t("closeTours") : t("openTours")}
                           className="-mr-2 inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-on-primary transition-colors hover:bg-on-primary/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-on-primary/60"
                         >
@@ -401,37 +373,20 @@ export default function Navbar() {
                         </button>
                       </div>
 
-                      {mobileActivitiesOpen && (
-                        <ul id="mobile-activities-tours" className="py-2">
-                          {tours.map((tour) => (
-                            <li key={tour.slug}>
-                              <Link
-                                href={localePath(activityPath(tour))}
-                                onClick={closeMobileMenu}
-                                className="flex min-h-11 items-center justify-between gap-3 rounded-md px-3 py-2 font-body text-body-md text-on-primary/75 transition-colors hover:bg-on-primary/10 hover:text-on-primary"
-                              >
-                                {tTours(`${tour.slug}.name`)}
-                                <ArrowRight className="h-4 w-4 shrink-0" aria-hidden="true" />
-                              </Link>
-                            </li>
-                          ))}
-
-                          <li aria-hidden="true" className="mx-3 my-1.5 h-px bg-on-primary/15" />
-
-                          {activitiesSections.map((section) => (
-                            <li key={section.href}>
-                              <Link
-                                href={localePath(section.href)}
-                                onClick={closeMobileMenu}
-                                className="flex min-h-11 items-center justify-between gap-3 rounded-md px-3 py-2 font-body text-body-md text-on-primary/75 transition-colors hover:bg-on-primary/10 hover:text-on-primary"
-                              >
-                                {section.label}
-                                <ArrowRight className="h-4 w-4 shrink-0" aria-hidden="true" />
-                              </Link>
-                            </li>
-                          ))}
-                        </ul>
-                      )}
+                      {/* Mismo criterio que el panel de escritorio: se
+                          renderiza siempre y se oculta. `py-2` no toca display,
+                          así que `hidden` manda. */}
+                      <div
+                        id="mobile-activities-menu"
+                        hidden={!mobileActivitiesOpen}
+                        className="py-2"
+                      >
+                        <ActivitiesMenu
+                          locale={locale}
+                          variant="mobile"
+                          onNavigate={closeMobileMenu}
+                        />
+                      </div>
                     </>
                   ) : (
                     <Link

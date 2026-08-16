@@ -59,13 +59,17 @@ test("el reset es instantaneo porque el CSS declara scroll suave", async () => {
 });
 
 test("las anclas que el guard protege siguen existiendo", async () => {
-  const [navbar, tour] = await Promise.all([
-    leer("components/Navbar.tsx"),
+  const [menu, tour] = await Promise.all([
+    leer("components/ActivitiesMenu.tsx"),
     leer("app/[locale]/actividades/[categoria]/[slug]/page.tsx"),
   ]);
   // Si estas desaparecen, el guard del hash queda sin motivo y conviene saberlo
   // antes de que alguien lo borre por parecer muerto.
-  assert.match(navbar, /#experiencias/);
-  assert.match(navbar, /#eventos/);
+  //
+  // Vivian en Navbar.tsx hasta el mega-menu; ahora las emite ActivitiesMenu.
+  // `#experiencias` ya no se afirma: el plan 2 la retiro a proposito porque esa
+  // seccion del indice no lista la categoria. Esa regla la cuida
+  // tests/actividades-anclas.test.mjs, que es su dueño.
+  assert.match(menu, /#eventos/);
   assert.match(tour, /href="#reserva"/);
 });

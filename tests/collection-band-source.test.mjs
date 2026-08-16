@@ -92,7 +92,11 @@ test("shop eyebrow and mobile activities navigation match the refined site patte
   assert.match(navbarSource, /mobileActivitiesOpen/);
   assert.match(navbarSource, /setMobileActivitiesOpen/);
   assert.match(navbarSource, /aria-expanded=\{mobileActivitiesOpen\}/);
-  assert.match(navbarSource, /tours\.map\(\(tour\)/);
+  // El acordeon listaba los tours con un `tours.map` propio. Desde el mega-menu
+  // delega en ActivitiesMenu, que dibuja las 14 actividades agrupadas y lo
+  // comparte con el panel de escritorio. Lo que este test cuida sigue siendo lo
+  // mismo: que el acordeon exista y liste actividades.
+  assert.match(navbarSource, /<ActivitiesMenu[\s\S]{0,160}variant="mobile"/);
 });
 
 test("deploy lint avoids synchronous state changes inside effects", async () => {
