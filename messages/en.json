@@ -775,6 +775,56 @@
         ],
         "closing": "You leave with the piece you wove and the craft seen up close."
       },
+      "alpacas": {
+        "name": "Alpaca Shearing",
+        "description": "You learn the craft of alpaca wool, from shearing to spinning, and take home your own ball of yarn.",
+        "tagline": "From the shears to the yarn, with local artisans",
+        "intro": "A one-of-a-kind experience where you'll learn the craft process behind alpaca wool, from shearing to the final spinning. Guided by local artisans, you'll go through every stage with your own hands and take home your own ball of yarn as a keepsake.",
+        "duration": "3 hours + closing",
+        "groupFrom": "Groups from 20 people",
+        "reservationNote": "Spring only — we arrange the date with you",
+        "program": [
+          "Country breakfast",
+          "Introduction to the craft",
+          "Hands-on shearing",
+          "Washing and preparing",
+          "Traditional spinning",
+          "Closing"
+        ],
+        "closing": "You leave with the yarn you spun and the whole process seen end to end."
+      },
+      "lagrimas-de-invierno": {
+        "name": "Winter Tears",
+        "description": "During late pruning the vines weep clear sap: a short outing to see the start of the cycle up close.",
+        "tagline": "The weeping vine that announces a new cycle",
+        "intro": "A natural, symbolic experience that celebrates life waking up. During late pruning the vines weep drops of clear sap — known as winter tears — marking the start of a new cycle in the vineyard.",
+        "duration": "Short seasonal activity",
+        "groupFrom": "Groups from 10 people",
+        "reservationNote": "Deep winter only — we arrange the date with you",
+        "program": [
+          "Introductory talk",
+          "Demonstration in the field",
+          "A winemaking curiosity",
+          "Symbolic close"
+        ],
+        "closing": "You leave having seen the exact moment the vineyard starts over."
+      },
+      "apicultura": {
+        "name": "Beekeeping at Casa Acosta",
+        "description": "With a local beekeeper, you learn the role of bees, watch a live hive and taste honey straight from the source.",
+        "tagline": "A live hive, and honey straight from the source",
+        "intro": "An immersive experience that invites you into the fascinating world of bees. With a local beekeeper, you'll discover their role in nature, observe a live hive and taste honey straight from its source, in a natural and educational setting.",
+        "duration": "3 hours + closing",
+        "groupFrom": "Groups from 8 people",
+        "reservationNote": "Spring only — we arrange the date with you",
+        "program": [
+          "Country breakfast",
+          "Introductory talk",
+          "Time in the apiary",
+          "Closing"
+        ],
+        "closing": "You leave with the taste of honey straight from the hive, and the bees seen up close."
+      },
       "yoga": {
         "name": "Yoga: breathe, stretch and share",
         "description": "Outdoor yoga among the vines, a healthy brunch and local producers, in one unhurried morning.",

@@ -775,6 +775,56 @@
         ],
         "closing": "Você leva a peça que teceu e o ofício visto de perto."
       },
+      "alpacas": {
+        "name": "Tosquia de alpacas",
+        "description": "Você aprende o processo artesanal da lã de alpaca, da tosquia à fiação, e leva o seu próprio novelo.",
+        "tagline": "Da tosquia ao novelo, com artesãs locais",
+        "intro": "Uma experiência única em que você aprende o processo artesanal da lã de alpaca, da tosquia até a fiação final. Guiado por artesãs locais, você vive cada etapa com as próprias mãos e leva o seu próprio novelo como lembrança.",
+        "duration": "3 horas + encerramento",
+        "groupFrom": "Grupos a partir de 20 pessoas",
+        "reservationNote": "Somente na primavera — combinamos a data com você",
+        "program": [
+          "Café da manhã caipira",
+          "Introdução ao ofício",
+          "Tosquia participativa",
+          "Lavagem e preparação",
+          "Fiação tradicional",
+          "Encerramento"
+        ],
+        "closing": "Você leva o novelo que fiou e o processo completo visto do começo ao fim."
+      },
+      "lagrimas-de-invierno": {
+        "name": "Lágrimas de inverno",
+        "description": "Durante a poda tardia as videiras choram seiva cristalina: uma saída breve para ver de perto o início do ciclo.",
+        "tagline": "O choro da videira que anuncia o novo ciclo",
+        "intro": "Uma experiência natural e simbólica que celebra o despertar da vida. Durante a poda tardia, as videiras choram gotas de seiva cristalina, conhecidas como lágrimas de inverno, marcando o início de um novo ciclo na vinha.",
+        "duration": "Atividade breve de temporada",
+        "groupFrom": "Grupos a partir de 10 pessoas",
+        "reservationNote": "Somente em pleno inverno — combinamos a data com você",
+        "program": [
+          "Palestra introdutória",
+          "Demonstração no campo",
+          "Curiosidade enológica",
+          "Encerramento simbólico"
+        ],
+        "closing": "Você sai tendo visto o momento exato em que a vinha recomeça."
+      },
+      "apicultura": {
+        "name": "Apicultura na Casa Acosta",
+        "description": "Com um apicultor local, você conhece o papel das abelhas, observa uma colmeia ao vivo e prova mel direto da origem.",
+        "tagline": "Uma colmeia ao vivo e mel direto da origem",
+        "intro": "Uma experiência imersiva que convida você a conhecer o fascinante mundo das abelhas. Com um apicultor local, você descobre o papel delas na natureza, observa uma colmeia ao vivo e prova mel direto da origem, em um ambiente natural e educativo.",
+        "duration": "3 horas + encerramento",
+        "groupFrom": "Grupos a partir de 8 pessoas",
+        "reservationNote": "Somente na primavera — combinamos a data com você",
+        "program": [
+          "Café da manhã caipira",
+          "Palestra introdutória",
+          "Experiência no apiário",
+          "Encerramento"
+        ],
+        "closing": "Você sai com o sabor do mel recém-colhido e com as abelhas vistas de perto."
+      },
       "yoga": {
         "name": "Yoga: respirar, alongar e compartilhar",
         "description": "Yoga ao ar livre entre as videiras, brunch saudável e produtores locais, em uma manhã tranquila.",

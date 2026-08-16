@@ -46,3 +46,40 @@ test("la grilla se oculta a la accesibilidad y el resumen queda en texto", () =>
 test("no es un componente de cliente: no necesita estado ni eventos", () => {
   assert.doesNotMatch(source, /"use client"/);
 });
+
+/**
+ * El cableado entre la ficha y la franja, que las reglas de arriba no ven.
+ *
+ * `availableIn` es el unico mensaje del sitio cuyo placeholder lo resuelve el
+ * componente y no next-intl. Pedirlo con `t()` hace que next-intl parsee el
+ * ICU, no encuentre el argumento `months` y devuelva la RUTA DE LA CLAVE como
+ * texto: la ficha imprime "activities.labels.seasonAvailableIn" en pantalla.
+ *
+ * No se ve hasta que existe una actividad que no se hace los doce meses, y
+ * entonces se ve en las tres. Paso de verdad al cargar las de temporada.
+ */
+
+const ficha = await readFile(
+  new URL(
+    "../app/[locale]/actividades/[categoria]/[slug]/page.tsx",
+    import.meta.url,
+  ),
+  "utf8",
+);
+
+test("la ficha pide el mensaje crudo, con su placeholder intacto", () => {
+  assert.match(ficha, /availableIn:\s*t\.raw\("seasonAvailableIn"\)/);
+});
+
+test("el mensaje sigue trayendo el placeholder que la franja reemplaza", async () => {
+  for (const locale of ["es", "en", "pt"]) {
+    const bundle = JSON.parse(
+      await readFile(new URL(`../messages/${locale}.json`, import.meta.url), "utf8"),
+    );
+    assert.match(
+      bundle.activities.labels.seasonAvailableIn,
+      /\{months\}/,
+      `${locale}: sin {months} la franja no tiene donde poner la enumeracion`,
+    );
+  }
+});

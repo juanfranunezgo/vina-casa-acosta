@@ -775,6 +775,56 @@
         ],
         "closing": "Te vas con la pieza que tejiste y con el oficio visto de cerca."
       },
+      "alpacas": {
+        "name": "Trasquilado de alpacas",
+        "description": "Aprendes el proceso artesanal de la lana de alpaca, del trasquilado al hilado, y te llevas tu propio ovillo.",
+        "tagline": "De la trasquila al ovillo, con artesanas locales",
+        "intro": "Una experiencia única donde aprenderás el proceso artesanal de la lana de alpaca, desde el trasquilado hasta el hilado final. Guiado por artesanas locales, vivirás cada etapa con tus propias manos y te llevarás tu propio ovillo como recuerdo.",
+        "duration": "3 horas + cierre",
+        "groupFrom": "Grupos desde 20 personas",
+        "reservationNote": "Solo en primavera — coordinamos la fecha contigo",
+        "program": [
+          "Desayuno campesino",
+          "Introducción al oficio",
+          "Trasquilado participativo",
+          "Lavado y preparación",
+          "Hilado tradicional",
+          "Cierre"
+        ],
+        "closing": "Te vas con tu ovillo hilado y con el proceso completo visto de principio a fin."
+      },
+      "lagrimas-de-invierno": {
+        "name": "Lágrimas de invierno",
+        "description": "Durante la poda tardía las parras lloran savia cristalina: una salida breve para ver de cerca el inicio del ciclo.",
+        "tagline": "El llanto de la parra que anuncia el ciclo nuevo",
+        "intro": "Una experiencia natural y simbólica que celebra el despertar de la vida. Durante la poda tardía, las parras lloran gotas de savia cristalina, conocidas como lágrimas de invierno, marcando el inicio de un nuevo ciclo en la viña.",
+        "duration": "Actividad breve de temporada",
+        "groupFrom": "Grupos desde 10 personas",
+        "reservationNote": "Solo en pleno invierno — coordinamos la fecha contigo",
+        "program": [
+          "Charla introductoria",
+          "Demostración en campo",
+          "Curiosidad enológica",
+          "Cierre simbólico"
+        ],
+        "closing": "Te vas habiendo visto el momento exacto en que la viña vuelve a empezar."
+      },
+      "apicultura": {
+        "name": "Apicultura en Casa Acosta",
+        "description": "De la mano de un apicultor local, conoces el rol de las abejas, observas una colmena en vivo y pruebas miel recién sacada.",
+        "tagline": "Una colmena en vivo y miel desde su origen",
+        "intro": "Una experiencia inmersiva que te invita a conocer el fascinante mundo de las abejas. De la mano de un apicultor local, descubrirás su rol en la naturaleza, observarás una colmena en vivo y probarás miel directamente desde su origen, en un entorno natural y educativo.",
+        "duration": "3 horas + cierre",
+        "groupFrom": "Grupos desde 8 personas",
+        "reservationNote": "Solo en primavera — coordinamos la fecha contigo",
+        "program": [
+          "Desayuno campesino",
+          "Charla introductoria",
+          "Experiencia en el apiario",
+          "Cierre"
+        ],
+        "closing": "Te vas con el sabor de la miel recién sacada y con las abejas vistas de cerca."
+      },
       "yoga": {
         "name": "Yoga: respirar, estirar y compartir",
         "description": "Yoga al aire libre entre viñedos, brunch saludable y productores locales, en una mañana tranquila.",

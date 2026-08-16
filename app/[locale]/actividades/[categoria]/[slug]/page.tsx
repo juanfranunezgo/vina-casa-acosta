@@ -349,7 +349,12 @@ export default async function ActivityDetailPage({
                 labels={{
                   title: t("seasonTitle"),
                   allYear: t("seasonAllYear"),
-                  availableIn: t("seasonAvailableIn"),
+                  // `t.raw` y no `t`: este mensaje lleva `{months}` y la
+                  // enumeración la arma SeasonStrip con Intl.ListFormat, que
+                  // sabe el locale. Con `t()`, next-intl parsea el ICU, no
+                  // encuentra el argumento y devuelve la ruta de la clave como
+                  // texto — la ficha imprime "activities.labels.seasonAvailableIn".
+                  availableIn: t.raw("seasonAvailableIn"),
                   aria: t("seasonAria"),
                 }}
               />

@@ -160,6 +160,32 @@ export const activities: Activity[] = [
     image: CATEGORY_IMAGE.experiencias,
   },
   {
+    slug: "alpacas",
+    category: "experiencias",
+    minPeople: 20,
+    months: [9, 10, 11],
+    durationISO: "PT3H",
+    image: CATEGORY_IMAGE.experiencias,
+  },
+  {
+    // Sin `durationISO`: el catálogo dice "Actividad breve de temporada", que
+    // no es una duración medible. Inventar PT1H sería marcar un dato que el
+    // cliente no dio.
+    slug: "lagrimas-de-invierno",
+    category: "experiencias",
+    minPeople: 10,
+    months: [7, 8],
+    image: CATEGORY_IMAGE.experiencias,
+  },
+  {
+    slug: "apicultura",
+    category: "experiencias",
+    minPeople: 8,
+    months: [9, 10],
+    durationISO: "PT3H",
+    image: CATEGORY_IMAGE.experiencias,
+  },
+  {
     slug: "yoga",
     category: "experiencias",
     minPeople: 8,
