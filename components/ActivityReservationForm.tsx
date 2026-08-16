@@ -9,10 +9,16 @@ import { submitToNetlifyForms } from "@/lib/netlifyForms";
 type Status = "idle" | "submitting" | "success" | "error";
 
 type Props = {
-  /** Nombre del tour, para el prefill del mensaje de WhatsApp. */
-  tourName: string;
-  /** Piso de personas por reserva del tour (`minPeople` en data/activities.ts). */
+  /** Nombre de la actividad, para el prefill del mensaje de WhatsApp. */
+  activityName: string;
+  /** Piso de personas por reserva (`minPeople` en data/activities.ts). */
   minPeople: number;
+  /**
+   * `cotizacion` cuando la actividad no publica precio. Cambia los textos y el
+   * campo `tipo` del envío, no el formulario: son los mismos datos los que la
+   * viña necesita para responder cualquiera de las dos.
+   */
+  mode: "reserva" | "cotizacion";
 };
 
 const inputClass =
@@ -20,9 +26,10 @@ const inputClass =
 const labelClass =
   "font-body text-label-sm text-on-surface-variant uppercase tracking-wider block mb-2";
 
-export default function TourReservationForm({ tourName, minPeople }: Props) {
+export default function ActivityReservationForm({ activityName, minPeople, mode }: Props) {
   const t = useTranslations("activities.labels.form");
   const locale = useLocale();
+  const isQuote = mode === "cotizacion";
   const [status, setStatus] = useState<Status>("idle");
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -59,8 +66,9 @@ export default function TourReservationForm({ tourName, minPeople }: Props) {
     setStatus("submitting");
 
     try {
-      await submitToNetlifyForms("reserva-tour", {
-        tour: tourName,
+      await submitToNetlifyForms("reserva-actividad", {
+        actividad: activityName,
+        tipo: mode,
         nombre: name,
         email,
         telefono: phone,
@@ -87,7 +95,7 @@ export default function TourReservationForm({ tourName, minPeople }: Props) {
 
   const whatsappUrl = () => {
     const lines = [
-      t("waIntro", { activity: tourName }),
+      t(isQuote ? "waIntroQuote" : "waIntro", { activity: activityName }),
       name && `${t("name")}: ${name}`,
       people && `${t("people")}: ${people}`,
       date && `${t("date")}: ${date}`,
@@ -99,8 +107,8 @@ export default function TourReservationForm({ tourName, minPeople }: Props) {
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       <div>
-        <h2 className="font-display text-3xl text-primary mb-2">{t("title")}</h2>
-        <p className="font-body text-body-md text-on-surface-variant">{t("subtitle")}</p>
+        <h2 className="font-display text-3xl text-primary mb-2">{t(isQuote ? "titleQuote" : "title")}</h2>
+        <p className="font-body text-body-md text-on-surface-variant">{t(isQuote ? "subtitleQuote" : "subtitle")}</p>
       </div>
 
       {/* Honeypot: invisible para personas, tentador para bots. Si llega con
@@ -237,7 +245,7 @@ export default function TourReservationForm({ tourName, minPeople }: Props) {
           {(status === "idle" || status === "error") && (
             <Send className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-0.5" aria-hidden="true" />
           )}
-          {status === "idle" && t("submitIdle")}
+          {status === "idle" && t(isQuote ? "submitIdleQuote" : "submitIdle")}
           {status === "submitting" && t("submitting")}
           {status === "success" && t("success")}
           {status === "error" && t("error")}
@@ -250,7 +258,7 @@ export default function TourReservationForm({ tourName, minPeople }: Props) {
           className="inline-flex items-center justify-center gap-2 h-11 px-7 rounded-md font-body font-semibold text-body-md border border-primary text-primary hover:bg-primary/5 transition-all duration-200"
         >
           <MessageCircle className="h-4 w-4" aria-hidden="true" />
-          {t("whatsapp")}
+          {t(isQuote ? "whatsappQuote" : "whatsapp")}
         </a>
       </div>
 

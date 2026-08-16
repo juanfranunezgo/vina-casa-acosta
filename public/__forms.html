@@ -31,10 +31,20 @@
       <input type="text" name="idioma" />
     </form>
 
-    <form name="reserva-tour" data-netlify="true" data-netlify-honeypot="bot-field" hidden>
-      <input type="hidden" name="form-name" value="reserva-tour" />
+    <!--
+      Se llamaba "reserva-tour" hasta que la sección dejó de ser solo tours.
+      Los envíos anteriores NO se pierden: quedan en el panel de Netlify bajo
+      el nombre viejo, en su propia lista.
+
+      `tipo` distingue una reserva (la actividad publica precio) de una
+      cotización (no lo publica). Es un solo formulario porque son los mismos
+      datos los que la viña necesita para responder cualquiera de las dos.
+    -->
+    <form name="reserva-actividad" data-netlify="true" data-netlify-honeypot="bot-field" hidden>
+      <input type="hidden" name="form-name" value="reserva-actividad" />
       <input type="text" name="bot-field" />
-      <input type="text" name="tour" />
+      <input type="text" name="actividad" />
+      <input type="text" name="tipo" />
       <input type="text" name="nombre" />
       <input type="email" name="email" />
       <input type="tel" name="telefono" />

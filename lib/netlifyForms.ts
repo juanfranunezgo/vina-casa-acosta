@@ -16,7 +16,7 @@
 
 const ENDPOINT = "/__forms.html";
 
-export type NetlifyFormName = "contacto" | "reserva-tour";
+export type NetlifyFormName = "contacto" | "reserva-actividad";
 
 export async function submitToNetlifyForms(
   formName: NetlifyFormName,

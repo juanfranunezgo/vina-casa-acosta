@@ -28,7 +28,7 @@ import Button from "@/components/ui/Button";
 import ActivityBreadcrumbs from "@/components/ActivityBreadcrumbs";
 import ActivityProgram from "@/components/ActivityProgram";
 import SeasonStrip from "@/components/SeasonStrip";
-import TourReservationForm from "@/components/TourReservationForm";
+import ActivityReservationForm from "@/components/ActivityReservationForm";
 import {
   activities,
   activitiesByCategory,
@@ -434,14 +434,29 @@ export default async function ActivityDetailPage({
                 <p className="font-body text-label-sm uppercase tracking-[0.2em] text-wine-accent mb-2">
                   {t("priceLabel")}
                 </p>
-                <div className="flex items-baseline gap-2">
-                  <span className="font-display text-4xl leading-none tabular-nums text-primary md:text-5xl">
-                    {priceFormatted}
-                  </span>
-                </div>
-                <p className="font-body text-body-md text-on-surface-variant mt-2">
-                  {t("perPerson")}
-                </p>
+                {/* Sin precio publicado la tarjeta lo dice y explica de qué
+                    depende, en vez de dejar el hueco donde iba la cifra. */}
+                {priceFormatted === undefined ? (
+                  <>
+                    <p className="font-display text-3xl leading-tight text-primary md:text-4xl">
+                      {t("priceOnRequest")}
+                    </p>
+                    <p className="font-body text-body-md text-on-surface-variant mt-2">
+                      {t("priceOnRequestNote")}
+                    </p>
+                  </>
+                ) : (
+                  <>
+                    <div className="flex items-baseline gap-2">
+                      <span className="font-display text-4xl leading-none tabular-nums text-primary md:text-5xl">
+                        {priceFormatted}
+                      </span>
+                    </div>
+                    <p className="font-body text-body-md text-on-surface-variant mt-2">
+                      {t("perPerson")}
+                    </p>
+                  </>
+                )}
                 <span className="block h-0.5 w-14 bg-primary/70 mt-5" />
 
                 <ul className="space-y-3.5 my-7">
@@ -516,7 +531,11 @@ export default async function ActivityDetailPage({
         <div className="max-w-(--container-max) mx-auto">
           <div className="grid grid-cols-1 lg:grid-cols-[1.1fr_0.9fr] overflow-hidden rounded-2xl bg-surface ambient-shadow-lg ring-1 ring-outline-variant/40">
             <div className="p-8 md:p-12">
-              <TourReservationForm tourName={name} minPeople={tour.minPeople} />
+              <ActivityReservationForm
+                activityName={name}
+                minPeople={tour.minPeople}
+                mode={tour.priceCLP === undefined ? "cotizacion" : "reserva"}
+              />
             </div>
             <div className="relative order-first min-h-[260px] lg:order-none">
               <Image
