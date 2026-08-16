@@ -491,134 +491,178 @@
       "imageAlt": "Mesa larga con vista al viñedo preparada para evento"
     }
   },
-  "tours": {
-    "tour-ombu": {
-      "name": "Tour Ombú",
-      "description": "Introducción al mundo del vino: recorre nuestros viñedos de Carménère, la bodega y la sala de barricas, junto a una degustación guiada.",
-      "highlights": ["3 vinos líneas Ombú y Lajau", "Recorrido por bodega y barricas", "Tabla de maridaje"]
+  "activities": {
+    "labels": {
+      "back": "Volver a actividades",
+      "breadcrumbHome": "Inicio",
+      "breadcrumbActivities": "Actividades",
+      "breadcrumbAria": "Ruta de navegación",
+      "premium": "Premium",
+      "introImageAlt": "Cartel tallado de Viña Casa Acosta entre las parras del viñedo",
+      "reserveImageAlt": "Pareja en un columpio entre las parras del viñedo",
+      "placeLabel": "Lugar",
+      "placeValue": "Viña Casa Acosta",
+      "durationLabel": "Duración",
+      "participantsLabel": "Participantes",
+      "reservationsLabel": "Reservas",
+      "seasonTitle": "¿Cuándo se hace?",
+      "seasonAllYear": "Todo el año",
+      "seasonAvailableIn": "Disponible en {months}.",
+      "seasonAria": "Meses en que se realiza la actividad",
+      "nav": {
+        "detail": "Detalle",
+        "gallery": "Galería",
+        "reserve": "Reserva",
+        "aria": "Secciones del tour"
+      },
+      "whatIncludes": "¿Qué incluye?",
+      "programTitle": "Programa de la jornada",
+      "duringExperience": "Durante la experiencia disfrutarás de:",
+      "ticketsNote": "Cada punto es un ticket que canjeas el día de tu visita.",
+      "tastingLabel": "Degustación",
+      "pairingLabel": "Maridaje",
+      "atCloseLabel": "Al cierre",
+      "priceLabel": "Precio",
+      "priceOnRequest": "Precio a consultar",
+      "priceOnRequestNote": "El valor depende del tamaño del grupo y de la fecha. Te lo confirmamos al responder.",
+      "perPerson": "por persona",
+      "conditionsTitle": "Condiciones",
+      "conditionMinors": "Degustación no apta para menores de 18 años · Ley N° 19.925",
+      "galleryTitle": "Galería",
+      "galleryComing": "Estamos preparando la galería de fotos de esta experiencia.",
+      "otherInCategory": "Otras experiencias que te pueden interesar",
+      "form": {
+        "title": "Reserva",
+        "titleQuote": "Solicitar cotización",
+        "subtitle": "Completa tus datos y coordinamos la fecha contigo, o escríbenos directo por WhatsApp.",
+        "subtitleQuote": "Cuéntanos cuántos son y qué fecha tienes en mente, y te enviamos el valor.",
+        "name": "Nombre",
+        "namePlaceholder": "Tu nombre",
+        "email": "Correo",
+        "emailPlaceholder": "tucorreo@ejemplo.com",
+        "phone": "Teléfono",
+        "phonePlaceholder": "+56 9 ...",
+        "people": "Personas",
+        "peopleHint": "Mínimo {min} personas por reserva.",
+        "date": "Fecha",
+        "datePlaceholder": "--/--/26",
+        "dateHint": "Elige el día de tu visita — puedes cambiarlo cuando quieras.",
+        "dateOpen": "Abrir calendario y elegir fecha",
+        "note": "Nota adicional",
+        "notePlaceholder": "¿Algo que debamos saber? (opcional)",
+        "submitIdle": "Solicitar reserva",
+        "submitIdleQuote": "Solicitar cotización",
+        "submitting": "Enviando…",
+        "success": "¡Solicitud enviada!",
+        "successMessage": "Gracias. Te contactaremos para confirmar tu reserva.",
+        "error": "No se pudo enviar",
+        "errorMessage": "No pudimos enviar tu solicitud. Reserva por WhatsApp con el botón de al lado.",
+        "whatsapp": "Reservar por WhatsApp",
+        "whatsappQuote": "Consultar por WhatsApp",
+        "waIntro": "Hola 👋 Me gustaría reservar el {activity}.",
+        "waIntroQuote": "Hola 👋 Me gustaría cotizar el {activity}."
+      }
     },
-    "tour-bera": {
-      "name": "Tour Berá",
-      "description": "Una experiencia más profunda y técnica: distintas expresiones del Carménère, desde la barrica hasta nuestras líneas más complejas.",
-      "highlights": ["Degustación técnica de 3 vinos", "Cata directa desde barrica", "Tabla de maridaje"]
+    "categories": {
+      "tours": {
+        "name": "Tours",
+        "singular": "Tour"
+      },
+      "talleres": {
+        "name": "Talleres",
+        "singular": "Taller"
+      },
+      "experiencias": {
+        "name": "Experiencias",
+        "singular": "Experiencia"
+      }
     },
-    "tour-carmenere": {
-      "name": "Tour Carménère",
-      "description": "Nuestra experiencia premium enfocada en la cepa emblema: su origen, ampelografía y expresión en distintas líneas de vino.",
-      "highlights": ["Degustación de 5 vinos", "Enfoque en ampelografía", "Cata directa desde barrica"]
-    }
-  },
-  "tourDetail": {
-    "backToActivities": "Volver a actividades",
-    "premium": "Premium",
-    "introImageAlt": "Cartel tallado de Viña Casa Acosta entre las parras del viñedo",
-    "reserveImageAlt": "Pareja en un columpio entre las parras del viñedo",
-    "placeLabel": "Lugar",
-    "placeValue": "Viña Casa Acosta",
-    "durationLabel": "Duración",
-    "participantsLabel": "Participantes",
-    "reservationsLabel": "Reservas",
-    "nav": { "detail": "Detalle", "gallery": "Galería", "reserve": "Reserva", "aria": "Secciones del tour" },
-    "whatIncludes": "¿Qué incluye?",
-    "duringExperience": "Durante la experiencia disfrutarás de:",
-    "ticketsNote": "Cada punto es un ticket que canjeas el día de tu visita.",
-    "tastingLabel": "Degustación",
-    "pairingLabel": "Maridaje",
-    "atCloseLabel": "Al cierre",
-    "priceLabel": "Precio",
-    "perPerson": "por persona",
-    "conditionsTitle": "Condiciones",
-    "conditionMinors": "Degustación no apta para menores de 18 años · Ley N° 19.925",
-    "galleryTitle": "Galería",
-    "galleryComing": "Estamos preparando la galería de fotos de esta experiencia.",
-    "otherTours": "Otras experiencias que te pueden interesar",
-    "form": {
-      "title": "Reserva",
-      "subtitle": "Completa tus datos y coordinamos la fecha contigo, o escríbenos directo por WhatsApp.",
-      "name": "Nombre",
-      "namePlaceholder": "Tu nombre",
-      "email": "Correo",
-      "emailPlaceholder": "tucorreo@ejemplo.com",
-      "phone": "Teléfono",
-      "phonePlaceholder": "+56 9 ...",
-      "people": "Personas",
-      "peopleHint": "Mínimo {min} personas por reserva.",
-      "date": "Fecha",
-      "datePlaceholder": "--/--/26",
-      "dateHint": "Elige el día de tu visita — puedes cambiarlo cuando quieras.",
-      "dateOpen": "Abrir calendario y elegir fecha",
-      "note": "Nota adicional",
-      "notePlaceholder": "¿Algo que debamos saber? (opcional)",
-      "submitIdle": "Solicitar reserva",
-      "submitting": "Enviando…",
-      "success": "¡Solicitud enviada!",
-      "successMessage": "Gracias. Te contactaremos para confirmar tu reserva.",
-      "error": "No se pudo enviar",
-      "errorMessage": "No pudimos enviar tu solicitud. Reserva por WhatsApp con el botón de al lado.",
-      "whatsapp": "Reservar por WhatsApp",
-      "waIntro": "Hola 👋 Me gustaría reservar el {tour}."
-    },
-    "tour-ombu": {
-      "tagline": "Introducción al mundo del vino en Casa Acosta",
-      "intro": "Una experiencia ideal para quienes desean conocer nuestra viña desde su origen, recorriendo nuestros viñedos de Carménère, bodega y sala de barricas, junto a una degustación guiada.",
-      "duration": "2 horas",
-      "groupFrom": "Grupos desde 2 personas",
-      "reservationNote": "Ideal 1 día antes o según disponibilidad",
-      "includes": [
-        "Recepción en el Jardín de Variedades con copa de bienvenida, Berá Rosé Carménère.",
-        "Caminata entre viñedos (opcional).",
-        "Recorrido por la bodega, sala de vinificación y sala de barricas, con explicación completa del proceso productivo del vino, desde la vid hasta la copa.",
-        "Cata de vinos."
-      ],
-      "includesHighlight": "Tabla de maridaje",
-      "wines": ["Degustación de 3 vinos de las líneas Ombú y/o Lajau."],
-      "pairing": "Tabla de maridaje incluida.",
-      "closing": "Podrás adquirir nuestros vinos directamente en la bodega."
-    },
-    "tour-bera": {
-      "tagline": "Degustación premium y vino directo desde la barrica",
-      "intro": "Una experiencia más profunda y técnica, ideal para quienes desean explorar distintas expresiones del Carménère, desde la barrica hasta nuestras líneas más complejas.",
-      "duration": "2 horas y 30 minutos",
-      "groupFrom": "Grupos desde 2 personas",
-      "reservationNote": "Ideal 1 día antes o según disponibilidad",
-      "includes": [
-        "Recepción en el Jardín de Variedades con copa de bienvenida, Berá Rosé Carménère.",
-        "Caminata entre viñedos (opcional).",
-        "Recorrido por la bodega, sala de vinificación y sala de barricas, con explicación completa del proceso productivo del vino, desde la vid hasta la copa.",
-        "Degustación directa desde barrica, para vivir el vino en su etapa de crianza.",
-        "Cata de vinos."
-      ],
-      "includesHighlight": "Tabla de maridaje",
-      "wines": [
-        "2 vinos de las líneas Lajau y/o Ombú.",
-        "1 vino Gran Reserva «Estación Francia»."
-      ],
-      "pairing": "Tabla de maridaje incluida.",
-      "closing": "Nuestros vinos estarán disponibles para la venta en la misma bodega."
-    },
-    "tour-carmenere": {
-      "tagline": "Profundiza en nuestra cepa emblema",
-      "intro": "Un recorrido enfocado en la historia y características del Carménère, donde recorrerás a fondo su origen, morfología (ampelografía) y expresión en distintas líneas de vino.",
-      "duration": "3 horas",
-      "groupFrom": "Grupos desde 4 personas",
-      "reservationNote": "Ideal 1 día antes o según disponibilidad",
-      "includes": [
-        "Recepción en el Jardín de Variedades con copa de bienvenida, Berá Rosa Carménère.",
-        "Paseo por el viñedo con enfoque en ampelografía: explicación técnica de la variedad Carménère y su historia en Casa Acosta.",
-        "Recorrido por la bodega, sala de vinificación y sala de barricas, con explicación completa del proceso productivo del vino, desde la vid hasta la copa.",
-        "Degustación directa desde barrica, para conocer el vino en su etapa de crianza.",
-        "Cata de vinos."
-      ],
-      "includesHighlight": "Tabla de maridaje",
-      "wines": [
-        "Carménère Reserva línea Ombú.",
-        "Ensamblaje Carménère línea Lajau.",
-        "Gran Reserva «Estación Francia».",
-        "Espumante Guidaí.",
-        "Yaráy Guá Late Harvest Carménère."
-      ],
-      "pairing": "Tabla de maridaje incluida.",
-      "closing": "Tendrás la opción de adquirir nuestros vinos directamente en la bodega."
+    "items": {
+      "tour-ombu": {
+        "name": "Tour Ombú",
+        "description": "Introducción al mundo del vino: recorre nuestros viñedos de Carménère, la bodega y la sala de barricas, junto a una degustación guiada.",
+        "highlights": [
+          "3 vinos líneas Ombú y Lajau",
+          "Recorrido por bodega y barricas",
+          "Tabla de maridaje"
+        ],
+        "tagline": "Introducción al mundo del vino en Casa Acosta",
+        "intro": "Una experiencia ideal para quienes desean conocer nuestra viña desde su origen, recorriendo nuestros viñedos de Carménère, bodega y sala de barricas, junto a una degustación guiada.",
+        "duration": "2 horas",
+        "groupFrom": "Grupos desde 2 personas",
+        "reservationNote": "Ideal 1 día antes o según disponibilidad",
+        "includes": [
+          "Recepción en el Jardín de Variedades con copa de bienvenida, Berá Rosé Carménère.",
+          "Caminata entre viñedos (opcional).",
+          "Recorrido por la bodega, sala de vinificación y sala de barricas, con explicación completa del proceso productivo del vino, desde la vid hasta la copa.",
+          "Cata de vinos."
+        ],
+        "includesHighlight": "Tabla de maridaje",
+        "wines": [
+          "Degustación de 3 vinos de las líneas Ombú y/o Lajau."
+        ],
+        "pairing": "Tabla de maridaje incluida.",
+        "closing": "Podrás adquirir nuestros vinos directamente en la bodega."
+      },
+      "tour-bera": {
+        "name": "Tour Berá",
+        "description": "Una experiencia más profunda y técnica: distintas expresiones del Carménère, desde la barrica hasta nuestras líneas más complejas.",
+        "highlights": [
+          "Degustación técnica de 3 vinos",
+          "Cata directa desde barrica",
+          "Tabla de maridaje"
+        ],
+        "tagline": "Degustación premium y vino directo desde la barrica",
+        "intro": "Una experiencia más profunda y técnica, ideal para quienes desean explorar distintas expresiones del Carménère, desde la barrica hasta nuestras líneas más complejas.",
+        "duration": "2 horas y 30 minutos",
+        "groupFrom": "Grupos desde 2 personas",
+        "reservationNote": "Ideal 1 día antes o según disponibilidad",
+        "includes": [
+          "Recepción en el Jardín de Variedades con copa de bienvenida, Berá Rosé Carménère.",
+          "Caminata entre viñedos (opcional).",
+          "Recorrido por la bodega, sala de vinificación y sala de barricas, con explicación completa del proceso productivo del vino, desde la vid hasta la copa.",
+          "Degustación directa desde barrica, para vivir el vino en su etapa de crianza.",
+          "Cata de vinos."
+        ],
+        "includesHighlight": "Tabla de maridaje",
+        "wines": [
+          "2 vinos de las líneas Lajau y/o Ombú.",
+          "1 vino Gran Reserva «Estación Francia»."
+        ],
+        "pairing": "Tabla de maridaje incluida.",
+        "closing": "Nuestros vinos estarán disponibles para la venta en la misma bodega."
+      },
+      "tour-carmenere": {
+        "name": "Tour Carménère",
+        "description": "Nuestra experiencia premium enfocada en la cepa emblema: su origen, ampelografía y expresión en distintas líneas de vino.",
+        "highlights": [
+          "Degustación de 5 vinos",
+          "Enfoque en ampelografía",
+          "Cata directa desde barrica"
+        ],
+        "tagline": "Profundiza en nuestra cepa emblema",
+        "intro": "Un recorrido enfocado en la historia y características del Carménère, donde recorrerás a fondo su origen, morfología (ampelografía) y expresión en distintas líneas de vino.",
+        "duration": "3 horas",
+        "groupFrom": "Grupos desde 4 personas",
+        "reservationNote": "Ideal 1 día antes o según disponibilidad",
+        "includes": [
+          "Recepción en el Jardín de Variedades con copa de bienvenida, Berá Rosa Carménère.",
+          "Paseo por el viñedo con enfoque en ampelografía: explicación técnica de la variedad Carménère y su historia en Casa Acosta.",
+          "Recorrido por la bodega, sala de vinificación y sala de barricas, con explicación completa del proceso productivo del vino, desde la vid hasta la copa.",
+          "Degustación directa desde barrica, para conocer el vino en su etapa de crianza.",
+          "Cata de vinos."
+        ],
+        "includesHighlight": "Tabla de maridaje",
+        "wines": [
+          "Carménère Reserva línea Ombú.",
+          "Ensamblaje Carménère línea Lajau.",
+          "Gran Reserva «Estación Francia».",
+          "Espumante Guidaí.",
+          "Yaráy Guá Late Harvest Carménère."
+        ],
+        "pairing": "Tabla de maridaje incluida.",
+        "closing": "Tendrás la opción de adquirir nuestros vinos directamente en la bodega."
+      }
     }
   },
   "experiences": {

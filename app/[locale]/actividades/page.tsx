@@ -8,6 +8,10 @@ import Reveal from "@/components/Reveal";
 import Button from "@/components/ui/Button";
 import ActivitiesTabs from "@/components/ActivitiesTabs";
 import { tours } from "@/data/activities";
+import { CONTACT_WHATSAPP_URL, CONTACT_PHONE_DISPLAY, INSTAGRAM_URL } from "@/lib/contact";
+import { alternatesFor } from "@/lib/alternates";
+import JsonLd from "@/components/JsonLd";
+import { buildActividadesJsonLd } from "@/lib/siteJsonLd";
 
 // Tarjetas de la sección D3. Viven acá y no en `data/activities.ts` porque no
 // son actividades del catálogo: son puertas de entrada. Las reemplaza
@@ -22,10 +26,6 @@ const experiences = [
     purchaseUrl: "https://pasajes.efe.cl/turistico/casa-acosta",
   },
 ];
-import { CONTACT_WHATSAPP_URL, CONTACT_PHONE_DISPLAY, INSTAGRAM_URL } from "@/lib/contact";
-import { alternatesFor } from "@/lib/alternates";
-import JsonLd from "@/components/JsonLd";
-import { buildActividadesJsonLd } from "@/lib/siteJsonLd";
 
 // El hero D1 va en <picture> y no en next/image, porque next/image no hace art
 // direction: elige a qué tamaño bajar una foto, no cuál de dos. El .webp sin
@@ -80,7 +80,7 @@ export default async function ActividadesPage({
   const { locale } = await params;
   setRequestLocale(locale);
   const t = await getTranslations("actividades");
-  const tTour = await getTranslations("tours");
+  const tTour = await getTranslations("activities.items");
   const tExp = await getTranslations("experiences");
   const tMeta = await getTranslations("metadata.actividades");
 

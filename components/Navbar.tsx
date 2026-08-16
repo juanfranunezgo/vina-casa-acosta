@@ -14,7 +14,7 @@ export default function Navbar() {
   const pathname = usePathname();
   const locale = useLocale();
   const t = useTranslations("nav");
-  const tTours = useTranslations("tours");
+  const tTours = useTranslations("activities.items");
   // El hero ya pasó por debajo del header (o, en páginas claras, hay scroll).
   const [pastHero, setPastHero] = useState(false);
   // El texto del hero está pasando por detrás del header transparente.

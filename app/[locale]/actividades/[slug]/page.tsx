@@ -58,11 +58,10 @@ export async function generateMetadata({
   const { locale, slug } = await params;
   const tour = getActivity("tours", slug);
   if (!tour) return { title: "—" };
-  const tTour = await getTranslations({ locale, namespace: "tours" });
-  const tDetail = await getTranslations({ locale, namespace: "tourDetail" });
+  const tTour = await getTranslations({ locale, namespace: "activities.items" });
   const tMeta = await getTranslations({ locale, namespace: "metadata" });
   const name = tTour(`${slug}.name`);
-  const description = tDetail(`${slug}.tagline`);
+  const description = tTour(`${slug}.tagline`);
   const path = `/actividades/${slug}`;
   // Ver la nota equivalente en vinos/[slug]: Open Graph no aplica la plantilla
   // de `title`, así que el título completo va escrito.
@@ -95,21 +94,21 @@ export default async function TourDetailPage({
   const tour = getActivity("tours", slug);
   if (!tour) notFound();
 
-  const t = await getTranslations("tourDetail");
-  const tTour = await getTranslations("tours");
+  const t = await getTranslations("activities.labels");
+  const tTour = await getTranslations("activities.items");
 
   const name = tTour(`${slug}.name`);
-  const tagline = t(`${slug}.tagline`);
-  const intro = t(`${slug}.intro`);
-  const duration = t(`${slug}.duration`);
-  const groupFrom = t(`${slug}.groupFrom`);
-  const reservationNote = t(`${slug}.reservationNote`);
-  const includes = t.raw(`${slug}.includes`) as string[];
+  const tagline = tTour(`${slug}.tagline`);
+  const intro = tTour(`${slug}.intro`);
+  const duration = tTour(`${slug}.duration`);
+  const groupFrom = tTour(`${slug}.groupFrom`);
+  const reservationNote = tTour(`${slug}.reservationNote`);
+  const includes = tTour.raw(`${slug}.includes`) as string[];
   // Último ítem de "¿Qué incluye?", destacado dentro de la misma lista.
-  const includesHighlight = t(`${slug}.includesHighlight`);
-  const wines = t.raw(`${slug}.wines`) as string[];
-  const pairing = t(`${slug}.pairing`);
-  const closing = t(`${slug}.closing`);
+  const includesHighlight = tTour(`${slug}.includesHighlight`);
+  const wines = tTour.raw(`${slug}.wines`) as string[];
+  const pairing = tTour(`${slug}.pairing`);
+  const closing = tTour(`${slug}.closing`);
 
   const priceLocale = locale === "pt" ? "pt-BR" : locale === "en" ? "en-US" : "es-CL";
   // Undefined cuando la actividad no publica precio. La tarjeta de reserva
@@ -162,7 +161,7 @@ export default async function TourDetailPage({
                 className="inline-flex items-center gap-2 font-body text-label-sm uppercase tracking-wider text-white/70 hover:text-white transition-colors"
               >
                 <ArrowLeft className="h-4 w-4" aria-hidden="true" />
-                {t("backToActivities")}
+                {t("back")}
               </Link>
             </div>
           </div>
@@ -469,7 +468,7 @@ export default async function TourDetailPage({
           <div className="max-w-(--container-max) mx-auto">
             <Reveal className="mb-10">
               <span className="block h-px w-12 bg-wine-accent/60 mb-5" />
-              <h2 className="font-display text-headline-h2 text-primary">{t("otherTours")}</h2>
+              <h2 className="font-display text-headline-h2 text-primary">{t("otherInCategory")}</h2>
             </Reveal>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-gutter">
               {otherTours.map((o, idx) => (

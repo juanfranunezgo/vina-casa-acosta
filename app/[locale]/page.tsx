@@ -11,6 +11,9 @@ import FeaturedLinesCarousel from "@/components/FeaturedLinesCarousel";
 import { featuredLineOrder, lineSlugs } from "@/data/wines";
 import { getCatalog, winesByLine } from "@/lib/afeleia/catalog";
 import { tours as tourData } from "@/data/activities";
+import { alternatesFor } from "@/lib/alternates";
+import JsonLd from "@/components/JsonLd";
+import { buildHomeJsonLd } from "@/lib/siteJsonLd";
 
 // Tarjetas de experiencia del mosaico A4. Viven acá y no en `data/activities.ts`
 // porque no son actividades del catálogo: son puertas de entrada. Las reemplaza
@@ -21,9 +24,6 @@ const experienceData = [
   { slug: "talleres", image: "/images/actividades/talleres.jpg" },
   { slug: "tren-efe", image: "/images/actividades/tren-efe.jpg" },
 ];
-import { alternatesFor } from "@/lib/alternates";
-import JsonLd from "@/components/JsonLd";
-import { buildHomeJsonLd } from "@/lib/siteJsonLd";
 
 // El título y la descripción de la home son los del layout; acá solo se declara
 // el canonical, que el layout dejó de proveer a propósito.
@@ -62,8 +62,7 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
   const { locale } = await params;
   setRequestLocale(locale);
   const t = await getTranslations("home");
-  const tTours = await getTranslations("tours");
-  const tTourDetail = await getTranslations("tourDetail");
+  const tActivity = await getTranslations("activities.items");
   const tExp = await getTranslations("experiences");
   const tActividades = await getTranslations("actividades");
   const tMeta = await getTranslations("metadata");
@@ -76,8 +75,8 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
 
   const showcaseTours = tourData.map((tr) => ({
     slug: tr.slug,
-    name: tTours(`${tr.slug}.name`),
-    duration: tTourDetail(`${tr.slug}.duration`),
+    name: tActivity(`${tr.slug}.name`),
+    duration: tActivity(`${tr.slug}.duration`),
     image: tr.image,
     premium: tr.premium,
   }));

@@ -21,7 +21,7 @@ const labelClass =
   "font-body text-label-sm text-on-surface-variant uppercase tracking-wider block mb-2";
 
 export default function TourReservationForm({ tourName, minPeople }: Props) {
-  const t = useTranslations("tourDetail.form");
+  const t = useTranslations("activities.labels.form");
   const locale = useLocale();
   const [status, setStatus] = useState<Status>("idle");
   const [name, setName] = useState("");
@@ -87,7 +87,7 @@ export default function TourReservationForm({ tourName, minPeople }: Props) {
 
   const whatsappUrl = () => {
     const lines = [
-      t("waIntro", { tour: tourName }),
+      t("waIntro", { activity: tourName }),
       name && `${t("name")}: ${name}`,
       people && `${t("people")}: ${people}`,
       date && `${t("date")}: ${date}`,
