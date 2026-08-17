@@ -1,5 +1,4 @@
 import Image from "next/image";
-import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
@@ -11,7 +10,7 @@ import {
   CalendarDays,
   Check,
   Wine,
-  UtensilsCrossed,
+  Utensils,
   Images,
   Grape,
   ListChecks,
@@ -27,6 +26,8 @@ import Reveal from "@/components/Reveal";
 import Button from "@/components/ui/Button";
 import ActivityBreadcrumbs from "@/components/ActivityBreadcrumbs";
 import ActivityProgram from "@/components/ActivityProgram";
+import ActivityRowCard from "@/components/ActivityRowCard";
+import GalleryPlaceholder from "@/components/GalleryPlaceholder";
 import SeasonStrip from "@/components/SeasonStrip";
 import ActivityReservationForm from "@/components/ActivityReservationForm";
 import {
@@ -255,18 +256,20 @@ export default async function ActivityDetailPage({
             {/* data-hero-text: el Navbar lo usa para encender su velo cuando el
                 título pasa por detrás (ver components/Navbar.tsx). */}
             <div data-hero-text className="max-w-(--container-max) mx-auto">
-              <div className="flex items-center gap-3 mb-4">
-                <span className="h-px w-10 bg-white/50" />
-                <span className="font-body text-label-sm uppercase tracking-[0.3em] text-white/75">
-                  {t("placeValue")}
-                </span>
-                {tour.premium && (
+              {/* El nombre de la viña salía acá en versalitas, encima del título
+                  de cada tour: la misma marca repetida en el hero de un sitio
+                  que ya es de la viña. El dato sigue disponible abajo, en la
+                  ficha rápida, como "Lugar". Queda el sello premium, que sí
+                  distingue un tour de otro — y con él la fila, para que sin
+                  sello no reste un margen vacío sobre el título. */}
+              {tour.premium && (
+                <div className="flex items-center gap-3 mb-4">
                   <span className="inline-flex items-center gap-1.5 rounded-full border border-white/30 px-2.5 py-0.5 font-body text-[10px] font-medium uppercase tracking-[0.16em] text-white/90">
                     <Star className="h-3 w-3 shrink-0" aria-hidden="true" />
                     {t("premium")}
                   </span>
-                )}
-              </div>
+                </div>
+              )}
               <h1
                 className="font-display text-white leading-[1.05] mb-3 drop-shadow-[0_2px_16px_rgba(0,0,0,0.35)]"
                 style={{ fontSize: "clamp(2.5rem, 6vw, 4.5rem)" }}
@@ -424,9 +427,16 @@ export default async function ActivityDetailPage({
                 {/* Cierre de la lista: la tabla de maridaje va destacada. Solo
                     los tours la tienen. */}
                 {isTour && (
-                  <li className="flex items-start gap-3.5 bg-wine-accent/8 border-l-[3px] border-wine-accent px-5 py-4 font-body text-body-md font-semibold text-on-surface">
-                    <span className="h-7 w-7 rounded-full bg-wine-accent flex items-center justify-center shrink-0 mt-0.5">
-                      <UtensilsCrossed className="h-4 w-4 text-on-primary" aria-hidden="true" />
+                  // El `pl` compensa los 3px del filete: con `px-5` a secas, el
+                  // icono de esta fila cae 3px a la derecha del de sus hermanas
+                  // y la columna de círculos se ve torcida.
+                  //
+                  // El círculo va tenue como los demás. La fila ya se distingue
+                  // por el fondo, el filete y la negrita; con el círculo en vino
+                  // sólido eran cuatro énfasis para un mismo renglón.
+                  <li className="flex items-start gap-3.5 bg-wine-accent/8 border-l-[3px] border-wine-accent pl-[17px] pr-5 py-4 font-body text-body-md font-semibold text-on-surface">
+                    <span className="h-7 w-7 rounded-full bg-wine-accent/10 flex items-center justify-center shrink-0 mt-0.5">
+                      <Utensils className="h-4 w-4 text-wine-accent" aria-hidden="true" />
                     </span>
                     {includesHighlight}
                   </li>
@@ -460,7 +470,7 @@ export default async function ActivityDetailPage({
               <div className="rounded-xl bg-primary/5 border border-primary/12 p-6 space-y-4">
                 {isTour && (
                   <p className="flex items-start gap-3 font-body text-body-md text-on-surface">
-                    <UtensilsCrossed className="h-5 w-5 text-wine-accent mt-0.5 shrink-0" aria-hidden="true" />
+                    <Utensils className="h-5 w-5 text-wine-accent mt-0.5 shrink-0" aria-hidden="true" />
                     <span>
                       <span className="font-semibold">{t("pairingLabel")}:</span> {pairing}
                     </span>
@@ -563,21 +573,7 @@ export default async function ActivityDetailPage({
       >
         <div className="max-w-(--container-max) mx-auto">
           <Reveal>
-            <span className="block h-px w-12 bg-wine-accent/60 mb-5" />
-            <h2 className="font-display text-headline-h2 text-primary mb-8">{t("galleryTitle")}</h2>
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-gutter">
-              {Array.from({ length: 6 }).map((_, i) => (
-                <div
-                  key={i}
-                  className="aspect-[4/3] rounded-xl bg-gradient-to-br from-surface-container-low to-surface-container border border-outline-variant/25 flex items-center justify-center"
-                >
-                  <Images className="h-8 w-8 text-primary-container/30" aria-hidden="true" />
-                </div>
-              ))}
-            </div>
-            <p className="font-body text-body-md text-on-surface-variant/80 mt-6 italic">
-              {t("galleryComing")}
-            </p>
+            <GalleryPlaceholder title={t("galleryTitle")} coming={t("galleryComing")} />
           </Reveal>
         </div>
       </section>
@@ -620,30 +616,13 @@ export default async function ActivityDetailPage({
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-gutter">
               {otherTours.map((o, idx) => (
                 <Reveal key={o.slug} delay={idx * 80}>
-                  <Link
+                  <ActivityRowCard
                     href={`/${locale}${activityPath(o)}`}
-                    className="group flex gap-5 bg-surface rounded-xl overflow-hidden border border-outline-variant/25 ambient-shadow hover:-translate-y-1 hover:ambient-shadow-lg transition-all duration-300"
-                  >
-                    <div className="relative w-32 sm:w-44 shrink-0 overflow-hidden">
-                      <Image
-                        src={o.image}
-                        alt={tTour(`${o.slug}.name`)}
-                        fill
-                        className="object-cover transition-transform duration-500 group-hover:scale-105"
-                        sizes="176px"
-                      />
-                    </div>
-                    <div className="py-5 pr-5 flex flex-col justify-center">
-                      <h3 className="font-display text-xl text-primary mb-1">{tTour(`${o.slug}.name`)}</h3>
-                      <p className="font-body text-body-md text-on-surface-variant line-clamp-2 mb-2">
-                        {tTour(`${o.slug}.description`)}
-                      </p>
-                      <span className="font-body text-label-sm uppercase tracking-wider font-semibold text-primary inline-flex items-center gap-1">
-                        {t("nav.detail")}
-                        <ArrowRight className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-0.5" aria-hidden="true" />
-                      </span>
-                    </div>
-                  </Link>
+                    image={o.image}
+                    name={tTour(`${o.slug}.name`)}
+                    description={tTour(`${o.slug}.description`)}
+                    cta={t("nav.detail")}
+                  />
                 </Reveal>
               ))}
             </div>

@@ -8,7 +8,7 @@ import Reveal from "@/components/Reveal";
 import Button from "@/components/ui/Button";
 import ActivitiesTabs from "@/components/ActivitiesTabs";
 import CategoryChooserCard from "@/components/CategoryChooserCard";
-import { tours, activityPath, activitiesByCategory } from "@/data/activities";
+import { tours, activityPath, activitiesByCategory, VENDIMIA_HUB } from "@/data/activities";
 import { CONTACT_WHATSAPP_URL, CONTACT_PHONE_DISPLAY, INSTAGRAM_URL } from "@/lib/contact";
 import { alternatesFor } from "@/lib/alternates";
 import JsonLd from "@/components/JsonLd";
@@ -19,11 +19,13 @@ import { buildActividadesJsonLd } from "@/lib/siteJsonLd";
 // lista de su categoría en vez de decorar — dos de las tres eran `<article>`
 // sin enlace, prometiendo algo que no llevaba a ninguna parte.
 //
-// La de Vendimia abre las experiencias: su hub todavía no existe (ver
-// VENDIMIA_HUB en data/activities.ts). Cuando exista, va destacado arriba.
+// La primera se llamaba "Vendimia 2026" y abría las ocho experiencias: decía
+// una categoría y entregaba otra. Ahora se llama por lo que despliega. La
+// vendimia vuelve cuando exista su hub (ver VENDIMIA_HUB en data/activities.ts),
+// como entrada propia y destacada arriba.
 const experiences = [
   {
-    slug: "vendimia-2026",
+    slug: "experiencias",
     image: "/images/actividades/vendimia-2026.jpg",
     category: "experiencias" as const,
   },
@@ -94,6 +96,7 @@ export default async function ActividadesPage({
   const t = await getTranslations("actividades");
   const tTour = await getTranslations("activities.items");
   const tExp = await getTranslations("experiences");
+  const tVendimia = await getTranslations("activities.vendimia");
   const tMeta = await getTranslations("metadata.actividades");
 
   // Solo los tours: son los que tienen ficha propia y precio a la vista. Las
@@ -270,10 +273,18 @@ export default async function ActividadesPage({
                           </span>
                         )}
                       </div>
-                      <p className="font-body text-body-md text-on-surface-variant mb-4 flex-grow">
+                      {/* El sobrante de altura va DEBAJO de los puntos, no en la
+                          descripción: las tres tarjetas miden lo mismo y la que
+                          menos puntos tiene es la que más sobrante reparte. Con
+                          `flex-grow` en la descripción, esa era la de Ombú y su
+                          lista arrancaba 80px más abajo que las vecinas. */}
+                      {/* Piso de cuatro líneas: la de Carménère ocupa tres y sin
+                          esto su lista arranca 24px más arriba que las vecinas.
+                          Es piso, no techo — si el texto crece, crece. */}
+                      <p className="font-body text-body-md text-on-surface-variant mb-4 md:min-h-24">
                         {tTour(`${tour.slug}.description`)}
                       </p>
-                      <ul className="space-y-2 mb-6">
+                      <ul className="space-y-2 mb-6 flex-grow">
                         {highlights.map((h) => (
                           <li
                             key={h}
@@ -300,7 +311,13 @@ export default async function ActividadesPage({
           </div>
 
           <Reveal className="text-center mb-8">
-            <p className="font-body text-label-sm font-bold uppercase tracking-[0.3em] text-primary">
+            {/* Mismo antetítulo que abre cada sección de esta página: itálica
+                serif, no versalitas espaciadas. Era el único rótulo que se
+                dibujaba con la otra voz. */}
+            <p
+              className="font-accent italic font-light text-primary"
+              style={{ fontSize: "clamp(1.15rem, 2.4vw, 1.6rem)" }}
+            >
               {t("tours.planTitle")}
             </p>
           </Reveal>
@@ -380,6 +397,47 @@ export default async function ActividadesPage({
               {t("experiences.subtitle")}
             </p>
           </Reveal>
+
+          {/* Banda de Vendimia. Es la única actividad del catálogo con página
+              propia de temporada, así que va destacada y no como una tarjeta
+              más: en marzo es lo que viene a buscar la mitad de las visitas.
+              Desaparece sola si `VENDIMIA_HUB` vuelve a `null`. */}
+          {VENDIMIA_HUB && (
+            <Reveal className="mb-10 md:mb-12">
+              <Link
+                href={`/${locale}${VENDIMIA_HUB}`}
+                className="group grid grid-cols-1 overflow-hidden rounded-2xl bg-surface ambient-shadow ring-1 ring-outline-variant/30 transition-shadow duration-300 hover:ambient-shadow-lg md:grid-cols-[0.9fr_1.1fr]"
+              >
+                <div className="relative min-h-[220px] overflow-hidden md:min-h-[280px]">
+                  <Image
+                    src="/images/actividades/hero-vendimia-1280.webp"
+                    alt={tVendimia("hero.imageAlt")}
+                    fill
+                    className="object-cover transition-transform duration-500 group-hover:scale-105"
+                    sizes="(max-width: 768px) 100vw, 45vw"
+                  />
+                </div>
+                <div className="flex flex-col justify-center p-7 md:p-10">
+                  <span className="mb-3 font-body text-label-sm uppercase tracking-[0.2em] text-wine-accent">
+                    {tVendimia("hero.eyebrow")}
+                  </span>
+                  <h3 className="mb-3 font-display text-3xl text-primary md:text-4xl">
+                    {tVendimia("hero.title")}
+                  </h3>
+                  <p className="mb-6 max-w-xl font-body text-body-md text-on-surface-variant">
+                    {tVendimia("hero.subtitle")}
+                  </p>
+                  <span className="inline-flex items-center gap-2 font-body text-label-sm font-semibold uppercase tracking-wider text-primary">
+                    {tVendimia("cta")}
+                    <ArrowRight
+                      className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-1"
+                      aria-hidden="true"
+                    />
+                  </span>
+                </div>
+              </Link>
+            </Reveal>
+          )}
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-gutter">
             {experiences.map((exp, idx) => (

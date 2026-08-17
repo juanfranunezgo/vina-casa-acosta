@@ -2,7 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
-import { ArrowLeft, ArrowRight, FileText, UtensilsCrossed } from "lucide-react";
+import { ArrowLeft, ArrowRight, FileText, Utensils } from "lucide-react";
 import CatalogOriginMeta from "@/components/CatalogOriginMeta";
 import Reveal from "@/components/Reveal";
 import Button from "@/components/ui/Button";
@@ -222,7 +222,7 @@ export default async function WinePage({
                           key={p}
                           className="flex items-center gap-3 bg-surface-container-low rounded-md px-3 py-2.5 border border-outline-variant/20"
                         >
-                          <UtensilsCrossed
+                          <Utensils
                             className="h-4 w-4 text-primary shrink-0"
                             aria-hidden="true"
                           />
