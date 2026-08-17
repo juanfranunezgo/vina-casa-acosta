@@ -12,11 +12,13 @@
     "catalogo:snapshot": "node scripts/catalogo-snapshot.mjs",
     "catalogo:sellar": "node scripts/catalogo-integridad.mjs",
     "fotos": "node scripts/optimize-fotos.mjs",
+    "fotos:botellas": "node scripts/optimize-botellas.mjs",
     "fotos:rendimiento": "node scripts/optimize-home-performance.mjs",
     "fotos:colecciones": "node scripts/optimize-collection-images.mjs",
     "foto:hero-vinos": "node scripts/optimize-vinos-hero.mjs",
     "fotos:contacto": "node scripts/optimize-contact-gallery.mjs",
-    "foto:heros": "node scripts/optimize-heros.mjs"
+    "foto:heros": "node scripts/optimize-heros.mjs",
+    "fotos:vendimia": "node scripts/optimize-vendimia.mjs"
   },
   "dependencies": {
     "lucide-react": "^1.14.0",
