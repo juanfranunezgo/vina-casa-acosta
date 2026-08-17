@@ -26,10 +26,21 @@ export default async function Footer() {
   const year = new Date().getFullYear();
   const lp = (path: string) => `/${locale}${path}`;
 
-  // Sin páginas legales todavía: van como texto. Enlazarlas a "#" saltaba al
-  // hero, que se leía como un link roto. Cuando existan las páginas, se les pone
-  // su href acá.
-  const legalLabels = [t("legal.privacy"), t("legal.terms"), t("legal.sitemap")];
+  // Privacidad y Mapa de Sitio siguen como texto: no existen todavía y
+  // enlazarlas a "#" saltaba al hero, que se leía como un link roto.
+  //
+  // Términos sí existe, como PDF, y sólo en español: en /en y /pt la etiqueta
+  // se queda en texto a propósito, porque enlazar a un documento que el
+  // visitante no puede leer promete algo que no se cumple. Cuando haya
+  // traducción, se agrega su archivo a este mapa.
+  const terminosPorLocale: Record<string, string | undefined> = {
+    es: "/documentos/terminos-y-condiciones.pdf",
+  };
+  const legalItems = [
+    { label: t("legal.privacy"), href: undefined },
+    { label: t("legal.terms"), href: terminosPorLocale[locale] },
+    { label: t("legal.sitemap"), href: undefined },
+  ];
 
   return (
     <footer className="w-full border-t border-outline-variant/40 bg-surface-container-low">
@@ -146,9 +157,21 @@ export default async function Footer() {
             </p>
           </div>
           <div className="flex gap-5">
-            {legalLabels.map((label) => (
-              <span key={label}>{label}</span>
-            ))}
+            {legalItems.map(({ label, href }) =>
+              href ? (
+                <a
+                  key={label}
+                  href={href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-inherit underline decoration-current/35 underline-offset-2 transition-colors hover:text-primary hover:decoration-current"
+                >
+                  {label}
+                </a>
+              ) : (
+                <span key={label}>{label}</span>
+              ),
+            )}
           </div>
         </div>
 
