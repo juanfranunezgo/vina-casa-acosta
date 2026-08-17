@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { X, Wine, Trash2, MessageCircle } from "lucide-react";
-import { useCart } from "@/lib/cart";
+import { MIN_BOTTLES, useCart } from "@/lib/cart";
 import { CONTACT_WHATSAPP_URL } from "@/lib/contact";
 import { catalogEndpoint, isValidCatalog } from "@/lib/afeleia/contract";
 
@@ -87,6 +87,11 @@ export default function CartDrawer() {
     0,
   );
   const allSoldOut = soldOutSlugs !== null && items.length > 0 && orderLines.length === 0;
+  // Las botellas que se cuentan son las que se van a vender: una línea agotada
+  // no suma al total y tampoco puede ayudar a alcanzar el mínimo.
+  const orderBottles = orderLines.reduce((total, { item }) => total + item.quantity, 0);
+  const belowMinimum = orderBottles > 0 && orderBottles < MIN_BOTTLES;
+  const checkoutBlocked = allSoldOut || belowMinimum;
   const checkoutClassName =
     "w-full bg-primary text-on-primary py-3 rounded-md font-body font-semibold flex items-center justify-center gap-2 hover:bg-primary-container transition-colors shadow-[0_8px_24px_-8px_rgba(42,0,2,0.45)]";
 
@@ -237,7 +242,7 @@ export default function CartDrawer() {
               <span>{t("totalLabel")}</span>
               <span className="font-semibold text-primary">{formatPrice(orderTotalCLP)}</span>
             </div>
-            {allSoldOut ? (
+            {checkoutBlocked ? (
               <button
                 type="button"
                 disabled
@@ -261,6 +266,22 @@ export default function CartDrawer() {
             {allSoldOut && (
               <p className="text-center text-sm text-on-surface-variant font-body">
                 {t("allSoldOut")}
+              </p>
+            )}
+            {/* `aria-live`: el aviso cambia solo, al sumar o quitar botellas con
+                los botones de al lado, sin que nadie navegue hasta él. */}
+            {!allSoldOut && belowMinimum && (
+              <p
+                aria-live="polite"
+                className="flex items-start gap-2.5 rounded-md border-l-[3px] border-wine-accent bg-wine-accent/8 px-4 py-3 font-body text-sm text-on-surface"
+              >
+                <Wine className="mt-0.5 h-4 w-4 shrink-0 text-wine-accent" aria-hidden="true" />
+                <span>
+                  {t("minimumNotice", {
+                    min: MIN_BOTTLES,
+                    missing: MIN_BOTTLES - orderBottles,
+                  })}
+                </span>
               </p>
             )}
             <p className="text-center text-xs text-on-surface-variant/80 font-body">

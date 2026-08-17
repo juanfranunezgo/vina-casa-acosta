@@ -3,6 +3,16 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
+/**
+ * Compra mínima de la tienda, en botellas y sumando todo el carrito (no por
+ * vino: seis botellas de seis etiquetas distintas cumplen).
+ *
+ * Vive acá porque es una regla del negocio, no del componente que la dibuja:
+ * el cajón la usa para bloquear el cierre y cualquier otra superficie que la
+ * anuncie tiene que leer este mismo número.
+ */
+export const MIN_BOTTLES = 6;
+
 export type CartItem = {
   slug: string;
   name: string;
