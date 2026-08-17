@@ -544,6 +544,7 @@
         "phonePlaceholder": "+56 9 ...",
         "people": "Personas",
         "peopleHint": "Mínimo {min} personas por reserva.",
+        "peopleBelowMin": "Son menos de {min} personas. Escríbelo en la nota adicional y lo coordinamos por WhatsApp para sumarte a otro grupo. La fecha que elijas queda como preferencia: la definitiva depende de completar el grupo.",
         "date": "Fecha",
         "datePlaceholder": "--/--/26",
         "dateHint": "Elige el día de tu visita — puedes cambiarlo cuando quieras.",
@@ -560,7 +561,12 @@
         "whatsapp": "Reservar por WhatsApp",
         "whatsappQuote": "Consultar por WhatsApp",
         "waIntro": "Hola 👋 Me gustaría reservar el {activity}.",
-        "waIntroQuote": "Hola 👋 Me gustaría cotizar el {activity}."
+        "waIntroQuote": "Hola 👋 Me gustaría cotizar el {activity}.",
+        "titleSeason": "Guarda tu lugar para la próxima fecha",
+        "subtitleSeason": "Déjanos tus datos y te avisamos apenas se confirmen las fechas de la temporada. Sin compromiso.",
+        "submitIdleSeason": "Avísenme cuándo es",
+        "whatsappSeason": "Preguntar por WhatsApp",
+        "waIntroSeason": "Hola 👋 Quiero que me avisen cuándo es la próxima {activity}."
       }
     },
     "categories": {
@@ -575,6 +581,105 @@
       "experiencias": {
         "name": "Experiencias",
         "singular": "Experiencia"
+      }
+    },
+    "vendimia": {
+      "meta": {
+        "title": "Vendimia: corta, pisa y celebra",
+        "description": "Vive la vendimia en el Valle del Cachapoal: corta la uva, despalilla y pisa como se hizo siempre, y cierra la jornada con un asado campestre entre viñedos."
+      },
+      "breadcrumb": "Vendimia",
+      "cta": "Conocer la vendimia",
+      "facts": {
+        "seasonLabel": "Temporada",
+        "seasonValue": "Marzo · Abril · Mayo",
+        "durationLabel": "Duración",
+        "durationValue": "Jornada completa",
+        "audienceLabel": "Para quién",
+        "audienceValue": "Niños y adultos"
+      },
+      "photos": {
+        "grupo": "El grupo de la vendimia con los brazos en alto, entre las hileras del viñedo",
+        "gamelas": "Gamela con la uva recién cortada, lista para ir a la bodega",
+        "hileras": "Hileras cargadas de racimos, vistas desde arriba",
+        "tractor": "El tractor y la carpa de la viña montados en el callejón, durante la jornada",
+        "asado": "Asado campestre humeando junto al viñedo",
+        "mesa": "Mesa larga puesta con flores y copas, lista para el almuerzo",
+        "caption": "La uva que se corta en la mañana entra a bodega el mismo día."
+      },
+      "gallery": {
+        "title": "La jornada en imágenes",
+        "note": "Fotos de la viña y de la última vendimia. Las de la próxima las sumamos apenas termine la jornada."
+      },
+      "hero": {
+        "eyebrow": "Marzo · Abril · Mayo",
+        "title": "Vendimia en Casa Acosta",
+        "subtitle": "La jornada en que el viñedo se llena de gente: se corta, se pisa y se celebra.",
+        "imageAlt": "Vista aérea del grupo de participantes de la vendimia, con los brazos en alto entre las hileras del viñedo de Casa Acosta"
+      },
+      "about": {
+        "title": "¿Qué es la vendimia?",
+        "lead": "La vendimia es la cosecha de la uva: el momento en que un año entero de trabajo en el viñedo se convierte en vino. Ocurre entre marzo y mayo, cuando la fruta alcanza su punto justo de madurez.",
+        "body": "En Casa Acosta no se mira desde la vereda. Se entra al viñedo con tijera en mano, se corta, se despalilla y se pisa la uva como se hizo siempre, acompañado por el equipo agrícola y enológico que hace este trabajo todo el año. Es una jornada de campo, familiar y participativa, que termina como terminan las cosas importantes acá: en una mesa larga, con un asado y una copa."
+      },
+      "cycle": {
+        "title": "El ciclo de la vid, temporada a temporada",
+        "lead": "La vendimia es el final de una historia que empieza en invierno. Estas son las etapas que la viña recorre cada año.",
+        "steps": [
+          {
+            "season": "Invierno",
+            "name": "Poda y amarra",
+            "description": "Se define la carga de cada planta: cuántos brotes va a llevar y hacia dónde. De esa decisión depende la cosecha entera."
+          },
+          {
+            "season": "Primavera",
+            "name": "Desbrote",
+            "description": "Se sacan los brotes que sobran para que la planta reparta su fuerza entre los que van a dar fruta."
+          },
+          {
+            "season": "Verano",
+            "name": "Deshoje",
+            "description": "Se abren las hojas alrededor del racimo para que entren luz y aire, y la uva madure pareja y sana."
+          },
+          {
+            "season": "Fin del verano",
+            "name": "Vendimia",
+            "description": "Se cosecha. Es el trabajo que esta jornada te invita a hacer con tus propias manos."
+          },
+          {
+            "season": "Otoño",
+            "name": "De la uva al vino",
+            "description": "Fermentación, mezclas y embotellado: lo que se cortó en marzo se termina de escribir en la bodega."
+          }
+        ]
+      },
+      "program": {
+        "title": "La jornada: corta, pisa y celebra",
+        "lead": "Un día completo en la viña, del desayuno al brindis final, acompañado por nuestro equipo agrícola y enológico.",
+        "stepsTitle": "Cómo transcurre el día",
+        "steps": [
+          "Desayuno campestre de bienvenida, con una charla sobre la vendimia y lo que vamos a vivir",
+          "Corte de uva en el viñedo, junto al equipo agrícola",
+          "Despalillado: separar el grano del escobajo",
+          "Pisoneo tradicional, con los pies, como se hizo siempre",
+          "Almuerzo: asado campestre con buffet de ensaladas y vino incluido",
+          "Concursos y sorteos para toda la familia",
+          "Brindis de cierre entre las parras"
+        ],
+        "includesTitle": "La jornada incluye",
+        "includes": [
+          "Pechera y copa de regalo para llevarte a casa",
+          "Almuerzo campestre con vino incluido",
+          "Acompañamiento del equipo agrícola y enológico",
+          "Actividad pensada para niños y adultos"
+        ]
+      },
+      "season": {
+        "note": "La fecha exacta la decide la uva: se vendimia cuando alcanza su madurez, así que cada jornada se confirma en la temporada. Déjanos tus datos y te avisamos apenas se definan."
+      },
+      "others": {
+        "title": "Otras formas de vivir el ciclo de la viña",
+        "lead": "La vendimia es una etapa del año. Estas dos experiencias acompañan las demás."
       }
     },
     "items": {
@@ -639,8 +744,10 @@
         "name": "Tour Ombú",
         "description": "Introducción al mundo del vino: recorre nuestros viñedos de Carménère, la bodega y la sala de barricas, junto a una degustación guiada.",
         "highlights": [
-          "3 vinos líneas Ombú y Lajau",
+          "Copa de bienvenida Berá Rosé",
+          "Caminata entre viñedos (opcional)",
           "Recorrido por bodega y barricas",
+          "3 vinos: reserva y ensamblaje",
           "Tabla de maridaje"
         ],
         "tagline": "Introducción al mundo del vino en Casa Acosta",
@@ -665,7 +772,10 @@
         "name": "Tour Berá",
         "description": "Una experiencia más profunda y técnica: distintas expresiones del Carménère, desde la barrica hasta nuestras líneas más complejas.",
         "highlights": [
-          "Degustación técnica de 3 vinos",
+          "Copa de bienvenida Berá Rosé",
+          "Caminata entre viñedos (opcional)",
+          "Recorrido por bodega y barricas",
+          "3 vinos: reserva, ensamblaje y gran reserva",
           "Cata directa desde barrica",
           "Tabla de maridaje"
         ],
@@ -693,9 +803,13 @@
         "name": "Tour Carménère",
         "description": "Nuestra experiencia premium enfocada en la cepa emblema: su origen, ampelografía y expresión en distintas líneas de vino.",
         "highlights": [
-          "Degustación de 5 vinos",
-          "Enfoque en ampelografía",
-          "Cata directa desde barrica"
+          "Copa de bienvenida Berá Rosé",
+          "Caminata entre viñedos (opcional)",
+          "Recorrido por bodega y barricas",
+          "Degustación de toda la colección",
+          "Cata directa desde barrica",
+          "Tabla de maridaje",
+          "Enfoque en ampelografía"
         ],
         "tagline": "Profundiza en nuestra cepa emblema",
         "intro": "Un recorrido enfocado en la historia y características del Carménère, donde recorrerás a fondo su origen, morfología (ampelografía) y expresión en distintas líneas de vino.",
@@ -855,8 +969,8 @@
     }
   },
   "experiences": {
-    "vendimia-2026": {
-      "name": "Vendimia 2026",
+    "experiencias": {
+      "name": "Experiencias",
       "badge": "Próximamente"
     },
     "talleres": {
@@ -979,6 +1093,7 @@
     "soldOut": "Agotado",
     "soldOutNotice": "Sin stock por ahora. No se incluye en el pedido.",
     "allSoldOut": "Todos los vinos de tu carrito están agotados.",
+    "minimumNotice": "Compra mínima: {min} botellas. Te {missing, plural, one {falta # botella} other {faltan # botellas}}.",
     "addedLabel": "Agregado",
     "quantityLabel": "Cantidad",
     "addAriaLabel": "Añadir {name} al carrito",

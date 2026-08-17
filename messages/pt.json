@@ -544,6 +544,7 @@
         "phonePlaceholder": "+56 9 ...",
         "people": "Pessoas",
         "peopleHint": "Mínimo de {min} pessoas por reserva.",
+        "peopleBelowMin": "São menos de {min} pessoas. Escreva isso na nota adicional e coordenamos pelo WhatsApp para juntar você a outro grupo. A data que escolher fica como preferência: a definitiva depende de completar o grupo.",
         "date": "Data",
         "datePlaceholder": "--/--/26",
         "dateHint": "Escolha o dia da sua visita — pode mudar quando quiser.",
@@ -560,7 +561,12 @@
         "whatsapp": "Reservar pelo WhatsApp",
         "whatsappQuote": "Perguntar no WhatsApp",
         "waIntro": "Olá 👋 Gostaria de reservar o {activity}.",
-        "waIntroQuote": "Olá 👋 Gostaria de um orçamento para o {activity}."
+        "waIntroQuote": "Olá 👋 Gostaria de um orçamento para o {activity}.",
+        "titleSeason": "Garanta o seu lugar na próxima data",
+        "subtitleSeason": "Deixe os seus dados e avisamos assim que as datas da temporada forem confirmadas. Sem compromisso.",
+        "submitIdleSeason": "Avisem-me quando for",
+        "whatsappSeason": "Perguntar pelo WhatsApp",
+        "waIntroSeason": "Olá 👋 Quero saber quando será a próxima {activity}."
       }
     },
     "categories": {
@@ -575,6 +581,105 @@
       "experiencias": {
         "name": "Experiências",
         "singular": "Experiência"
+      }
+    },
+    "vendimia": {
+      "meta": {
+        "title": "Vindima: colher, pisar e celebrar",
+        "description": "Viva a vindima no Vale do Cachapoal: colha a uva, desengace e pise como sempre se fez, e encerre o dia com um assado campestre entre as parreiras."
+      },
+      "breadcrumb": "Vindima",
+      "cta": "Conhecer a vindima",
+      "facts": {
+        "seasonLabel": "Temporada",
+        "seasonValue": "Março · Abril · Maio",
+        "durationLabel": "Duração",
+        "durationValue": "Dia inteiro",
+        "audienceLabel": "Para quem",
+        "audienceValue": "Crianças e adultos"
+      },
+      "photos": {
+        "grupo": "O grupo da vindima de braços erguidos, entre as fileiras da vinha",
+        "gamelas": "Caixa com a uva recém-colhida, a caminho da adega",
+        "hileras": "Fileiras carregadas de cachos, vistas de cima",
+        "tractor": "O trator e a tenda da vinícola montados na alameda, durante a jornada",
+        "asado": "Assado campestre fumegando ao lado da vinha",
+        "mesa": "Mesa comprida posta com flores e taças, pronta para o almoço",
+        "caption": "A uva colhida de manhã entra na adega no mesmo dia."
+      },
+      "gallery": {
+        "title": "A jornada em imagens",
+        "note": "Fotos da vinha e da última vindima. As da próxima entram assim que a jornada terminar."
+      },
+      "hero": {
+        "eyebrow": "Março · Abril · Maio",
+        "title": "Vindima na Casa Acosta",
+        "subtitle": "O dia em que a vinha se enche de gente: colhe-se, pisa-se e celebra-se.",
+        "imageAlt": "Vista aérea do grupo de participantes da vindima, de braços erguidos entre as fileiras da vinha da Casa Acosta"
+      },
+      "about": {
+        "title": "O que é a vindima?",
+        "lead": "A vindima é a colheita da uva: o momento em que um ano inteiro de trabalho na vinha se transforma em vinho. Acontece entre março e maio, quando a fruta atinge o ponto certo de maturação.",
+        "body": "Na Casa Acosta não se assiste de fora. Entra-se na vinha com a tesoura na mão, colhe-se, desengaça-se e pisa-se a uva como sempre se fez, acompanhado pela equipe agrícola e enológica que faz este trabalho o ano todo. É um dia de campo, participativo e familiar, que termina como terminam as coisas importantes por aqui: numa mesa comprida, com um assado e uma taça."
+      },
+      "cycle": {
+        "title": "O ciclo da videira, estação a estação",
+        "lead": "A vindima é o fim de uma história que começa no inverno. Estas são as etapas que a vinha percorre todos os anos.",
+        "steps": [
+          {
+            "season": "Inverno",
+            "name": "Poda e amarra",
+            "description": "Define-se a carga de cada planta: quantos ramos vai levar e para onde. Dessa decisão depende a colheita inteira."
+          },
+          {
+            "season": "Primavera",
+            "name": "Desbrota",
+            "description": "Retiram-se os ramos que sobram para que a planta reparta a sua força entre os que vão dar fruto."
+          },
+          {
+            "season": "Verão",
+            "name": "Desfolha",
+            "description": "Abrem-se as folhas ao redor do cacho para que entrem luz e ar, e a uva amadureça de forma uniforme e sadia."
+          },
+          {
+            "season": "Fim do verão",
+            "name": "Vindima",
+            "description": "Colhe-se. É o trabalho que esta jornada convida você a fazer com as próprias mãos."
+          },
+          {
+            "season": "Outono",
+            "name": "Da uva ao vinho",
+            "description": "Fermentação, misturas e engarrafamento: o que se colheu em março termina de se escrever na adega."
+          }
+        ]
+      },
+      "program": {
+        "title": "A jornada: colher, pisar e celebrar",
+        "lead": "Um dia completo na vinha, do café da manhã ao brinde final, acompanhado pela nossa equipe agrícola e enológica.",
+        "stepsTitle": "Como transcorre o dia",
+        "steps": [
+          "Café da manhã campestre de boas-vindas, com uma conversa sobre a vindima e o que vamos viver",
+          "Colheita da uva na vinha, junto à equipe agrícola",
+          "Desengace: separar o bago do engaço",
+          "Pisa tradicional, com os pés, como sempre se fez",
+          "Almoço: assado campestre com buffet de saladas e vinho incluído",
+          "Concursos e sorteios para toda a família",
+          "Brinde de encerramento entre as parreiras"
+        ],
+        "includesTitle": "A jornada inclui",
+        "includes": [
+          "Avental e taça de presente para levar para casa",
+          "Almoço campestre com vinho incluído",
+          "Acompanhamento da equipe agrícola e enológica",
+          "Atividade pensada para crianças e adultos"
+        ]
+      },
+      "season": {
+        "note": "A data exata quem decide é a uva: colhe-se quando atinge a maturação, então cada jornada é confirmada na temporada. Deixe os seus dados e avisamos assim que forem definidas."
+      },
+      "others": {
+        "title": "Outras formas de viver o ciclo da vinha",
+        "lead": "A vindima é uma etapa do ano. Estas duas experiências acompanham as demais."
       }
     },
     "items": {
@@ -639,8 +744,10 @@
         "name": "Tour Ombú",
         "description": "Uma introdução ao mundo do vinho: percorra nossos vinhedos de Carménère, a adega e a sala de barricas, com uma degustação guiada.",
         "highlights": [
-          "3 vinhos das linhas Ombú e Lajau",
+          "Taça de boas-vindas Berá Rosé",
+          "Caminhada entre os vinhedos (opcional)",
           "Percurso pela adega e barricas",
+          "3 vinhos: reserva e assemblage",
           "Tábua de harmonização"
         ],
         "tagline": "Introdução ao mundo do vinho na Casa Acosta",
@@ -665,7 +772,10 @@
         "name": "Tour Berá",
         "description": "Uma experiência mais profunda e técnica: diferentes expressões do Carménère, da barrica às nossas linhas mais complexas.",
         "highlights": [
-          "Degustação técnica de 3 vinhos",
+          "Taça de boas-vindas Berá Rosé",
+          "Caminhada entre os vinhedos (opcional)",
+          "Percurso pela adega e barricas",
+          "3 vinhos: reserva, assemblage e gran reserva",
           "Degustação direto da barrica",
           "Tábua de harmonização"
         ],
@@ -693,9 +803,13 @@
         "name": "Tour Carménère",
         "description": "Nossa experiência premium focada na cepa insígnia: sua origem, ampelografia e expressão em diferentes linhas de vinho.",
         "highlights": [
-          "Degustação de 5 vinhos",
-          "Foco em ampelografia",
-          "Degustação direto da barrica"
+          "Taça de boas-vindas Berá Rosé",
+          "Caminhada entre os vinhedos (opcional)",
+          "Percurso pela adega e barricas",
+          "Degustação de toda a coleção",
+          "Degustação direto da barrica",
+          "Tábua de harmonização",
+          "Foco em ampelografia"
         ],
         "tagline": "Aprofunde-se na nossa cepa insígnia",
         "intro": "Um percurso focado na história e nas características do Carménère, no qual você explorará a fundo sua origem, morfologia (ampelografia) e expressão em diferentes linhas de vinho.",
@@ -855,8 +969,8 @@
     }
   },
   "experiences": {
-    "vendimia-2026": {
-      "name": "Vindima 2026",
+    "experiencias": {
+      "name": "Experiências",
       "badge": "Em breve"
     },
     "talleres": {
@@ -979,6 +1093,7 @@
     "soldOut": "Esgotado",
     "soldOutNotice": "Sem estoque por enquanto. Não entra no pedido.",
     "allSoldOut": "Todos os vinhos do seu carrinho estão esgotados.",
+    "minimumNotice": "Compra mínima: {min} garrafas. {missing, plural, one {Falta # garrafa} other {Faltam # garrafas}}.",
     "addedLabel": "Adicionado",
     "quantityLabel": "Quantidade",
     "addAriaLabel": "Adicionar {name} ao carrinho",

@@ -544,6 +544,7 @@
         "phonePlaceholder": "+56 9 ...",
         "people": "Guests",
         "peopleHint": "Minimum {min} guests per booking.",
+        "peopleBelowMin": "That's fewer than {min} guests. Write it in the additional note and we'll coordinate on WhatsApp to join you with another group. The date you choose stays as a preference: the final one depends on completing the group.",
         "date": "Date",
         "datePlaceholder": "--/--/26",
         "dateHint": "Pick the day of your visit — you can change it anytime.",
@@ -560,7 +561,12 @@
         "whatsapp": "Book via WhatsApp",
         "whatsappQuote": "Ask on WhatsApp",
         "waIntro": "Hi 👋 I'd like to book the {activity}.",
-        "waIntroQuote": "Hi 👋 I'd like a quote for the {activity}."
+        "waIntroQuote": "Hi 👋 I'd like a quote for the {activity}.",
+        "titleSeason": "Save your spot for the next date",
+        "subtitleSeason": "Leave us your details and we'll let you know as soon as the season's dates are confirmed. No commitment.",
+        "submitIdleSeason": "Let me know when it is",
+        "whatsappSeason": "Ask on WhatsApp",
+        "waIntroSeason": "Hi 👋 I'd like to know when the next {activity} is."
       }
     },
     "categories": {
@@ -575,6 +581,105 @@
       "experiencias": {
         "name": "Experiences",
         "singular": "Experience"
+      }
+    },
+    "vendimia": {
+      "meta": {
+        "title": "Harvest: pick, stomp and celebrate",
+        "description": "Live the grape harvest in Chile's Cachapoal Valley: pick, destem and stomp the grapes the way it has always been done, then close the day with a country asado."
+      },
+      "breadcrumb": "Harvest",
+      "cta": "Discover the harvest",
+      "facts": {
+        "seasonLabel": "Season",
+        "seasonValue": "March · April · May",
+        "durationLabel": "Length",
+        "durationValue": "A full day",
+        "audienceLabel": "Who it's for",
+        "audienceValue": "Children and adults"
+      },
+      "photos": {
+        "grupo": "The harvest group with their arms raised, between the vineyard rows",
+        "gamelas": "A bin of freshly picked grapes, on its way to the cellar",
+        "hileras": "Rows heavy with bunches, seen from above",
+        "tractor": "The tractor and the winery's canopy set up along the row during the day",
+        "asado": "A country asado smoking beside the vineyard",
+        "mesa": "A long table set with flowers and glasses, ready for lunch",
+        "caption": "Grapes picked in the morning reach the cellar the same day."
+      },
+      "gallery": {
+        "title": "The day in pictures",
+        "note": "Photos of the vineyard and of the last harvest. We'll add the next one's as soon as the day is over."
+      },
+      "hero": {
+        "eyebrow": "March · April · May",
+        "title": "Harvest at Casa Acosta",
+        "subtitle": "The day the vineyard fills with people: we pick, we stomp, we celebrate.",
+        "imageAlt": "Aerial view of the harvest group with their arms raised between the rows of the Casa Acosta vineyard"
+      },
+      "about": {
+        "title": "What is the grape harvest?",
+        "lead": "The harvest —vendimia— is the grape picking: the moment a whole year of work in the vineyard turns into wine. It happens between March and May, when the fruit reaches full ripeness.",
+        "body": "At Casa Acosta you don't watch from the sidelines. You step into the vineyard with shears in hand, pick, destem and stomp the grapes the way it has always been done, alongside the field and winemaking team that does this work all year round. It's a country day, hands-on and family-friendly, and it ends the way important things end here: at a long table, with an asado and a glass of wine."
+      },
+      "cycle": {
+        "title": "The vine's year, season by season",
+        "lead": "The harvest is the end of a story that begins in winter. These are the stages the vineyard goes through every year.",
+        "steps": [
+          {
+            "season": "Winter",
+            "name": "Pruning and tying",
+            "description": "Each plant's load is decided: how many shoots it will carry and where they will grow. The entire harvest rests on that call."
+          },
+          {
+            "season": "Spring",
+            "name": "Shoot thinning",
+            "description": "The spare shoots come off so the plant spends its strength on the ones that will bear fruit."
+          },
+          {
+            "season": "Summer",
+            "name": "Leaf thinning",
+            "description": "Leaves around the bunch are opened up to let light and air in, so the grapes ripen evenly and healthy."
+          },
+          {
+            "season": "Late summer",
+            "name": "Harvest",
+            "description": "Picking time. This is the work the day invites you to do with your own hands."
+          },
+          {
+            "season": "Autumn",
+            "name": "From grape to wine",
+            "description": "Fermentation, blending and bottling: what was picked in March is finished in the cellar."
+          }
+        ]
+      },
+      "program": {
+        "title": "The day: pick, stomp and celebrate",
+        "lead": "A full day in the vineyard, from breakfast to the closing toast, alongside our field and winemaking team.",
+        "stepsTitle": "How the day unfolds",
+        "steps": [
+          "A country breakfast to start, with a talk about the harvest and the day ahead",
+          "Grape picking in the vineyard, alongside the field team",
+          "Destemming: separating the berries from the stalks",
+          "Traditional stomping, with your feet, the way it has always been done",
+          "Lunch: country asado with a salad buffet and wine included",
+          "Games and raffles for the whole family",
+          "A closing toast among the vines"
+        ],
+        "includesTitle": "The day includes",
+        "includes": [
+          "An apron and a wine glass to take home",
+          "Country lunch with wine included",
+          "Our field and winemaking team with you throughout",
+          "An activity designed for children and adults alike"
+        ]
+      },
+      "season": {
+        "note": "The exact date is set by the grapes: we harvest when they reach ripeness, so each day is confirmed within the season. Leave us your details and we'll let you know as soon as they're set."
+      },
+      "others": {
+        "title": "Other ways to live the vineyard's year",
+        "lead": "The harvest is one stage of the year. These two experiences follow the others."
       }
     },
     "items": {
@@ -639,8 +744,10 @@
         "name": "Ombú Tour",
         "description": "An introduction to the world of wine: walk our Carménère vineyards, the cellar and the barrel room, with a guided tasting.",
         "highlights": [
-          "3 wines from the Ombú and Lajau lines",
+          "Welcome glass of Berá Rosé",
+          "Walk among the vineyards (optional)",
           "Cellar and barrel-room walk",
+          "3 wines: reserva and blend",
           "Pairing board"
         ],
         "tagline": "An introduction to the world of wine at Casa Acosta",
@@ -665,7 +772,10 @@
         "name": "Berá Tour",
         "description": "A deeper, more technical experience: different expressions of Carménère, from the barrel to our most complex lines.",
         "highlights": [
-          "Technical tasting of 3 wines",
+          "Welcome glass of Berá Rosé",
+          "Walk among the vineyards (optional)",
+          "Cellar and barrel-room walk",
+          "3 wines: reserva, blend and gran reserva",
           "Tasting straight from the barrel",
           "Pairing board"
         ],
@@ -693,9 +803,13 @@
         "name": "Carménère Tour",
         "description": "Our premium experience focused on our signature varietal: its origin, ampelography and expression across different wine lines.",
         "highlights": [
-          "Tasting of 5 wines",
-          "Focus on ampelography",
-          "Tasting straight from the barrel"
+          "Welcome glass of Berá Rosé",
+          "Walk among the vineyards (optional)",
+          "Cellar and barrel-room walk",
+          "Tasting of the full collection",
+          "Tasting straight from the barrel",
+          "Pairing board",
+          "Focus on ampelography"
         ],
         "tagline": "Go deep into our signature varietal",
         "intro": "A tour focused on the history and characteristics of Carménère, exploring in depth its origin, morphology (ampelography) and expression across different wine lines.",
@@ -855,8 +969,8 @@
     }
   },
   "experiences": {
-    "vendimia-2026": {
-      "name": "Harvest 2026",
+    "experiencias": {
+      "name": "Experiences",
       "badge": "Coming soon"
     },
     "talleres": {
@@ -979,6 +1093,7 @@
     "soldOut": "Sold out",
     "soldOutNotice": "Out of stock for now. Not included in the order.",
     "allSoldOut": "Every wine in your cart is sold out.",
+    "minimumNotice": "Minimum order: {min} bottles. You need {missing, plural, one {# more bottle} other {# more bottles}}.",
     "addedLabel": "Added",
     "quantityLabel": "Quantity",
     "addAriaLabel": "Add {name} to cart",
