@@ -71,9 +71,9 @@ un build verde— y por eso existen `tests/actividades-i18n-parity.test.mjs` y
 `tests/alias-hook.mjs` enseña a `node --test` el alias `@/` de tsconfig. Sin él, todo
 módulo que use el alias solo se puede cubrir con un guard que lee su propio texto.
 
-**Medición tras el plan 2:** build limpio **≈9,9 s**, **109 páginas estáticas** (Turbopack
-las genera en 731 ms con 15 workers). El sitemap emite **102 URLs**, 42 de ellas fichas de
-actividad. El costo por página resultó marginal, como se había estimado: el trabajo real
+**Medición tras el hub de Vendimia:** build limpio, **112 páginas estáticas** (Turbopack las
+genera en 805 ms con 15 workers). El sitemap emite **105 URLs**, 42 de ellas fichas de
+actividad y 3 el hub. El costo por página resultó marginal, como se había estimado: el trabajo real
 fue el copy en tres idiomas.
 
 El catálogo son **14 actividades**: 3 tours, 3 talleres y 8 experiencias. Ninguna de las 11
@@ -129,14 +129,60 @@ pone rojo hasta que la lista las reconozca.
   ciclo completo de poda a embotellado. Se transcribió tal cual; probablemente sean las
   horas de cada jornada.
 
-**Pendiente tras el plan 3:**
+## Hub de Vendimia (`/actividades/vendimia`)
 
-- **Hub de Vendimia.** Necesita contenido que el catálogo **no tiene** (qué es la vendimia en
-  Casa Acosta, el ciclo de la vid a lo largo del año): es material a pedirle al cliente, no a
-  redactar por nuestra cuenta. Mientras no exista, `VENDIMIA_HUB` en `data/activities.ts` vale
-  `null` y ni el mega-menú ni las tarjetas lo ofrecen — enlazar a un 404 desde el navbar de
-  todo el sitio sería peor que no ofrecerlo. **Es el único lugar que cambia** cuando llegue: la
-  entrada destacada arriba del menú y del panel de la tarjeta ya están previstas.
+Existe desde el 2026-08-16. Es una **página informativa**, no una ficha: cuenta qué es la
+vendimia, dibuja el ciclo de la vid —las cinco etapas salen del propio catálogo, de las
+inclusiones de *Cosecha tu historia*— y recién después ofrece la jornada *corta, pisa y
+celebra*, que por eso **no tiene ficha propia**: dos páginas nuestras compitiendo por la
+misma búsqueda es peor que una.
+
+**No publica fechas, precio ni mínimo de personas, y es una decisión, no un pendiente.** La
+cosecha depende de la maduración de la uva y la viña confirma cada jornada por temporada; el
+material que había (una publicación de Instagram) era de la temporada pasada, con fechas y
+preventa ya vencidas. El único dato de calendario es la franja de meses, que sale de
+`VENDIMIA_MONTHS`. Lo afirman doce tests en `tests/vendimia-hub.test.mjs`, incluido uno que
+falla si aparece un `$` o un día concreto en el copy de cualquiera de los tres idiomas.
+
+Por lo mismo el structured data va como `WebPage` + `BreadcrumbList` y no como `Event` ni
+`Product`: el primero exige `startDate` y el segundo un precio.
+
+`VENDIMIA_HUB` sigue siendo el interruptor: si vuelve a `null`, la página desaparece del
+mega-menú, de la banda del índice y del sitemap a la vez. Antes esa constante existía pero
+**ninguna superficie la leía** — el handoff afirmaba lo contrario.
+
+El formulario estrena un **tercer modo, `temporada`**, y no es cosmético: nadie pide una
+cotización de una jornada que se repite todos los años. En ese modo el formulario dice
+"guarda tu lugar para la próxima fecha", **no muestra el campo de fecha** —no hay día que
+elegir todavía— y manda `tipo=temporada` a Netlify, así la viña distingue ese lead del que
+pide precio. Los otros dos modos (`reserva`, `cotizacion`) quedaron igual.
+
+Va además **sin `minPeople`**, que pasó a ser opcional en `ActivityReservationForm`: el campo
+arranca vacío y no muestra la ayuda "desde N personas". Poner 1 para rellenar el hueco habría
+afirmado un mínimo que el cliente no dio.
+
+Su hero es la única foto propia de una actividad que no es tour: aérea del grupo en el
+viñedo, servida en tres anchos WebP. Sin encuadre vertical a propósito y con el `sizes` en
+`vh` — el detalle y las mediciones están en [`FOTOS.md`](FOTOS.md).
+
+**Las nueve fotos de la página salen de material real**: cuatro son encuadres de esa misma
+aérea (`npm run fotos:vendimia`) y el resto son fotos de la viña que ya estaban en el repo.
+No hay stock ni fotos de otras actividades haciéndose pasar por vendimia; los `alt`
+describen lo que se ve y no afirman que el asado o la mesa puesta sean de una vendimia. Por
+eso **el hub no usa `GalleryPlaceholder`**: su galería tiene fotos de verdad, y el
+placeholder de marcos vacíos se quedó solo en las 14 fichas.
+
+**Ritmo visual:** el resto del sitio es claro y parejo, y esta página alterna — las dos
+secciones de contexto (qué es la vendimia, el ciclo de la vid) van en penumbra sobre
+`--color-primary`, con las fotos grandes encima, y vuelve a la luz para la jornada, la
+galería y el formulario. Son los mismos tokens del sistema con otra intensidad, no una
+paleta nueva.
+
+**Lo que le falta:** fechas y precio de la próxima temporada, fotos de la jornada para la
+galería (hoy son marcos vacíos) y la validación del copy, que en ES es nuestro salvo el
+programa y el ciclo, y en EN/PT no lo vio una persona.
+
+**Pendiente tras el plan 3:**
 - **Las tarjetas del mosaico `A4` (home) siguen sin selector.** Las de `D3` (índice) sí lo
   tienen. Convertir las de la home exige que `HomeActivitiesShowcase` ramifique sus dos rutas
   de render, y ese componente ya está en 328 líneas mezclando filtros, mosaico y banner — el
@@ -216,19 +262,47 @@ a mano y `npm run catalogo:snapshot` lo sobrescribe con lo que diga el panel. La
 mapeo a cada producto están en
 [`../CONTENT_BRIEF.md`](../CONTENT_BRIEF.md#2-texto-de-cada-vino).
 
-**Legal:** no existen Privacidad, Términos ni Mapa de Sitio (en el footer son texto sin
-enlace, a propósito). Tampoco hay verificación de edad ni aviso de consumo moderado: para
-vender alcohol en Chile hay que revisarlo contra la Ley 19.925.
+**Tienda — compra mínima:** desde el 2026-08-17 el pedido no se puede cerrar con menos de
+**6 botellas**, sumando todo el carrito (seis etiquetas distintas cumplen). El número es
+`MIN_BOTTLES` en `lib/cart.ts` — está ahí, y no en el cajón, porque es una regla del
+negocio y cualquier superficie que la anuncie tiene que leer el mismo valor. Las líneas
+agotadas no cuentan, igual que no suman al total estimado. **Pendiente:** hoy la regla
+sólo se descubre al abrir el carrito; falta anunciarla en la tienda y en la ficha de cada
+vino (una cadena nueva en tres idiomas) para que nadie llegue al cierre con la sorpresa.
+
+**Legal:** Términos y Condiciones **sí existe** desde el 2026-08-17:
+`public/documentos/terminos-y-condiciones.pdf` (v1.0, vigencia 16-08-2026), enlazado desde
+el footer **sólo en español** — en `/en` y `/pt` la etiqueta sigue siendo texto, porque
+enlazar un documento que el visitante no puede leer promete algo que no se cumple; el mapa
+de idiomas está en `Footer.tsx`. El nombre del archivo es estable a propósito: una v1.1 lo
+reemplaza sin tocar el enlace. **Pendiente:** el propio documento dice que esta edición es
+"para publicación y adaptación web", y un PDF enlazado desde el pie es ilegible para Google
+y para los buscadores de IA — falta la página `/terminos` con el texto. Privacidad y Mapa de
+Sitio siguen sin existir (texto sin enlace, a propósito). Tampoco hay verificación de edad
+ni aviso de consumo moderado: para vender alcohol en Chile hay que revisarlo contra la Ley
+19.925.
 
 **Medición:** cero analítica instalada.
 
-**Assets:** las botellas de `public/vinos/` son 500×500 y se ven blandas en la ficha. Los
+**Assets:** las botellas de `public/vinos/` son 500×500 y se ven blandas en la ficha, salvo
+**Lajau Betúm Yú y Estación Francia Tannat**, reemplazadas el 2026-08-17 por masters HD de
+1000×1000 que pesan lo mismo que las viejas (84 y 96 KB). Sus fuentes sí están en el disco
+(`_fuentes-fotos/`, fuera del repo) y las procesa `npm run fotos:botellas`: recorta la
+transparencia, escala por la botella real y la centra en un cuadrado con el 94% del alto,
+que es la proporción medida sobre las botellas ya publicadas. Para las once restantes
+alcanza con poner su fuente en esa carpeta y sumar dos líneas a la lista del script. Los
 originales de las fotos ya optimizadas **no están en el disco** (los tiene el cliente en su
 respaldo en la nube): hasta que se repongan no se puede regenerar nada salvo el hero de la
 home, cuyo master de desktop sí está versionado. Los `.webp` están todos versionados, así
 que el sitio funciona. Qué archivo espera cada script está en [`FOTOS.md`](FOTOS.md).
 
-**i18n:** el copy EN/PT lo tradujo un agente y **nunca lo validó una persona**.
+**i18n:** el copy EN/PT lo tradujo un agente y **nunca lo validó una persona**. Lo agregado
+el 2026-08-17 entra en la misma deuda, con una distinción útil para quien revise: los puntos
+nuevos de las tarjetas de tour son **recortes** de oraciones ya traducidas en el mismo
+archivo (`includes` → "Copa de bienvenida Berá Rosé"), mientras que las tres líneas de
+degustación (`3 wines: reserva and blend`, `Degustação de toda a coleção`…), el aviso de
+grupo bajo el mínimo y el de compra mínima son **redacción nueva**. Ese segundo grupo es el
+que hay que leer con ojo.
 
 ---
 
@@ -237,6 +311,15 @@ que el sitio funciona. Qué archivo espera cada script está en [`FOTOS.md`](FOT
 - **Caché de imágenes**: si se reemplaza una foto manteniendo el nombre, el navegador y el
   optimizador de Next siguen sirviendo la vieja. Convención: sufijo `-vN` en el archivo
   (ver el encabezado de `scripts/optimize-fotos.mjs`).
+  - **Las botellas son la excepción y hay que saberlo antes de desplegar.** No pueden
+    versionar el nombre: el catálogo apunta a `/vinos/<slug>.png` y esa ruta llega por la
+    red desde el panel de Afeleia, así que renombrar acá deja la ficha sin foto en
+    producción. Las dos reemplazadas el 2026-08-17 (Betúm Yú y Estación Francia Tannat)
+    **necesitan purgado de caché en Netlify** en el primer deploy que las lleve.
+- **Tailwind v4 gira con la propiedad `rotate`, no con `transform`**: `rotate-180` compila
+  a `rotate: 180deg`. Al depurar, `getComputedStyle(el).transform` dice `"none"` aunque el
+  icono esté dado vuelta — cuesta una hora dar por rota una utilidad que funciona. Medir
+  `.rotate`. (Y no medir nunca durante el recambio de CSS del HMR: recargar y medir en frío.)
 - **Tailwind v4 descarta la opacidad sobre `currentColor`**: `bg-current/15` compila a
   `background-color: currentColor`, sin el 15%. Para tintes que heredan color, usar tokens
   explícitos por estado.

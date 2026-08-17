@@ -169,9 +169,9 @@ sugieren los nombres de Tailwind.
 
 | ID | Componente | Notas |
 |---|---|---|
-| NV | Navbar | Header con logo + nav + LanguageSwitcher + CartButton. Bajo "Actividades" cuelga el **mega-menú**: panel ancho con una columna por categoría (Tours · Talleres · Experiencias) más un pie con Eventos y Ver todo. En móvil, acordeón de dos niveles dentro del drawer. Se deriva de `data/activities.ts` y su contenido vive en `components/ActivitiesMenu.tsx`, compartido por las dos formas. |
-| FT | Footer | Pie de página |
-| CD | CartDrawer | Carrito lateral overlay (z-index alto) |
+| NV | Navbar | Header con logo + nav + LanguageSwitcher + CartButton. Bajo "Actividades" cuelga un **acordeón de una columna** (panel de 22rem): seis filas en orden fijo — Vendimia · Tours · Talleres · Experiencias · Eventos · Ver todo. Las tres categorías despliegan sus fichas con `<details>` de `name` compartido (una abierta a la vez, sin JavaScript); las otras tres navegan directo. Reemplazó al mega-menú de cuatro columnas, donde la lista larga de Experiencias se partía y su segunda mitad quedaba bajo una columna sin encabezado. Se deriva de `data/activities.ts` y su contenido vive en `components/ActivitiesMenu.tsx`, compartido por escritorio y drawer móvil. **Los 14 enlaces están siempre en el HTML servido**, ocultos por CSS: ver `tests/navegacion-enlaces-source.test.mjs`. |
+| FT | Footer | Pie de página. "Términos" enlaza al PDF (`/documentos/terminos-y-condiciones.pdf`) **sólo en español**; Privacidad y Mapa de Sitio siguen siendo texto sin enlace porque esas páginas no existen. |
+| CD | CartDrawer | Carrito lateral overlay (z-index alto). Bloquea el cierre del pedido por debajo de la compra mínima (`MIN_BOTTLES` en `lib/cart.ts`, hoy 6 botellas) y también si todo el carrito está agotado. |
 
 ---
 
