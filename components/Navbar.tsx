@@ -213,7 +213,7 @@ export default function Navbar() {
                       hidden={!activitiesMenuOpen}
                       className="absolute left-1/2 top-full z-50 -translate-x-1/2 pt-3"
                     >
-                      <div className="w-[min(92vw,52rem)] rounded-xl border border-outline-variant/40 bg-surface p-5 ambient-shadow">
+                      <div className="w-[min(92vw,22rem)] rounded-xl border border-outline-variant/40 bg-surface p-3 ambient-shadow">
                         <ActivitiesMenu locale={locale} variant="desktop" />
                       </div>
                     </div>
