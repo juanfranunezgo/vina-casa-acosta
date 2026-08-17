@@ -57,6 +57,20 @@ const HEROS = [
     desktop: { source: src("public/images/actividades/hero-grupal.webp"), out: "public/images/actividades/hero-grupal", widths: [1280, 1920], full: 2880 },
     movil: { source: fuentes("hero-actividades-movil.jpg"), out: "public/images/actividades/hero-grupal-movil", widths: [828, 1200, 1600] },
   },
+  {
+    // Hub de Vendimia. Único hero SIN encuadre móvil, y no por falta de fuente:
+    // la foto es una aérea donde el grupo ocupa el 55% del ancho, así que
+    // cualquier recorte vertical (9:16 se lleva el 32% del ancho) corta gente en
+    // los dos extremos. En pantalla vertical se ve la franja central —el grueso
+    // del grupo y el tractor— y la nitidez la cuida el `sizes` de la página, que
+    // pide un candidato más grande que el ancho del viewport porque `cover`
+    // pinta la foto más ancha que su contenedor. Ver Dv1.
+    id: "vendimia",
+    // q72 medido contra la curva: de 78 a 72 son 90 KB menos a 1920px y el
+    // recorte 1:1 sobre las caras no cambia; de 72 para abajo se ahorran 20 KB
+    // por escalón, ya no vale la pena.
+    desktop: { source: fuentes("hero-vendimia.jpg"), out: "public/images/actividades/hero-vendimia", widths: [1280, 1920, 2560], quality: 72 },
+  },
 ];
 
 const exists = async (p) => access(p).then(() => true, () => false);
@@ -77,7 +91,11 @@ for (const hero of HEROS) {
         .clone()
         .toBuffer({ resolveWithObject: true })
         .then((r) => r.info);
-      const quality = qualityFor(w * h);
+      // `cfg.quality` pisa la curva por megapíxeles. Existe para las fotos de
+      // textura fina —follaje visto desde arriba, por ejemplo—, donde la curva
+      // se corre: el codo cae unos puntos más abajo y q75 paga detalle que a
+      // tamaño de pantalla nadie ve. Se usa con una medición al lado, no a ojo.
+      const quality = cfg.quality ?? qualityFor(w * h);
       await resized.webp({ quality, effort: 6, smartSubsample: true }).toFile(output);
       const { size } = await stat(output);
       console.log(`  ✓ ${cfg.out.split("/").pop()}-${width}.webp  ${w}x${h}  q${quality}  ${Math.round(size / 1024)} KB`);

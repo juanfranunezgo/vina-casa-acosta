@@ -1,5 +1,10 @@
 import { SITE_URL } from "@/lib/siteUrl";
-import { type Activity, activityPath, categoryIndexHref } from "@/data/activities";
+import {
+  type Activity,
+  activityPath,
+  categoryIndexHref,
+  VENDIMIA_HUB,
+} from "@/data/activities";
 
 /**
  * Structured data de una ficha de actividad.
@@ -19,6 +24,7 @@ import { type Activity, activityPath, categoryIndexHref } from "@/data/activitie
  */
 
 const WINERY_ID = `${SITE_URL}/#winery`;
+const WEBSITE_ID = `${SITE_URL}/#website`;
 
 const absolute = (url: string) => (url.startsWith("http") ? url : `${SITE_URL}${url}`);
 
@@ -74,6 +80,60 @@ export function buildActivityJsonLd(
     "@context": "https://schema.org",
     "@graph": [
       product,
+      {
+        "@type": "BreadcrumbList",
+        "@id": `${url}#breadcrumb`,
+        itemListElement: crumbs.map((crumb, index) => ({
+          "@type": "ListItem",
+          position: index + 1,
+          name: crumb.name,
+          item: crumb.item,
+        })),
+      },
+    ],
+  };
+}
+
+/**
+ * Structured data del hub de Vendimia.
+ *
+ * Va como `WebPage` y no como `Event` ni `Product`, y las dos ausencias son la
+ * misma decisión: `Event` exige `startDate` y `Product` pide un precio, y esta
+ * página no publica ninguno de los dos porque la viña todavía no los definió.
+ * Marcar una fecha o una cifra inventada para ganar un rich result es
+ * exactamente el marcado que Google penaliza — y además le mentiría al visitante
+ * que llega desde el resultado.
+ *
+ * Cuando la viña confirme fechas y precio de una temporada, el nodo pasa a
+ * `Event` con `startDate`, `location` y `offers`, y este comentario sobra.
+ */
+export function buildVendimiaJsonLd(
+  locale: string,
+  copy: Copy,
+  crumbLabels: { home: string; activities: string; vendimia: string },
+) {
+  const url = `${SITE_URL}/${locale}${VENDIMIA_HUB ?? "/actividades/vendimia"}`;
+
+  const crumbs = [
+    { name: crumbLabels.home, item: `${SITE_URL}/${locale}` },
+    { name: crumbLabels.activities, item: `${SITE_URL}/${locale}/actividades` },
+    { name: crumbLabels.vendimia, item: url },
+  ];
+
+  return {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "WebPage",
+        "@id": `${url}#page`,
+        url,
+        name: copy.name,
+        description: copy.description,
+        inLanguage: locale,
+        isPartOf: { "@id": WEBSITE_ID },
+        about: { "@id": WINERY_ID },
+        primaryImageOfPage: absolute(copy.image),
+      },
       {
         "@type": "BreadcrumbList",
         "@id": `${url}#breadcrumb`,

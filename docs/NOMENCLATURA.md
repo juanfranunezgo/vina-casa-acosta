@@ -85,12 +85,48 @@ La ruta lleva la categoría: `/actividades/tours/ombu`, `/actividades/talleres/p
 | ID | Sección |
 |---|---|
 | Dv1 | Hero + breadcrumbs |
-| Dv2 | Qué es la vendimia en Casa Acosta |
-| Dv3 | El ciclo de la vid a lo largo del año |
-| Dv4 | El programa: corta, pisa y celebra |
-| Dv5 | Otras actividades de temporada |
-| Dv6 | Galería |
-| Dv7 | Reserva / cotización |
+| Dv2 | Qué es la vendimia en Casa Acosta + los tres datos ciertos (temporada · duración · para quién) |
+| Dv3 | El año de la viña — banda de 12 meses con las 5 etapas del ciclo y la ventana de cosecha (`components/VineyardYear.tsx`) |
+| Dv4 | La jornada: corta, pisa y celebra — programa en `<ol>` con un ícono por paso + qué incluye |
+| Dv5 | Otras formas de vivir el ciclo (Cosecha tu historia · Lágrimas de invierno) |
+| Dv6 | Galería (apertura ancha + tres de apoyo) |
+| Dv7 | Consulta (formulario en modo temporada, sin mínimo de personas) |
+
+**El orden en pantalla es Dv1 · Dv2 · Dv3 · Dv4 · Dv6 · Dv7 · Dv5**, no el de la
+numeración: mandar a otra página justo antes del formulario es perder la visita.
+Es el mismo orden que la ficha `Dd`, donde "otras actividades" también cierra.
+
+La página **no publica fechas exactas, precio ni mínimo de personas** — ver
+`docs/HANDOFF.md` y `tests/vendimia-hub.test.mjs`.
+
+**Dv3 absorbió la franja de meses**, que antes era una sección aparte entre Dv2 y
+Dv3. Separadas decían lo mismo dos veces: cinco etapas por un lado y doce
+casillas por el otro. `VineyardYear` las dibuja como una sola línea del año que
+arranca en junio —el copy dice que la historia empieza en invierno, y en el
+hemisferio sur eso es junio— con el tramo del visitante teñido al final. Dv3 es
+la única sección del hub que no usa `SeasonStrip`: ese componente sigue siendo de
+las fichas (`Dd3`), donde la franja responde "¿lo puedo hacer en julio?" y nada
+más.
+
+**Registro visual del hub: almanaque, no landing.** Toda la página va en papel
+—no hay bandas en penumbra— y el contenido no va en cajas: lo que separa un
+bloque de otro es un filete de un píxel. Por eso Dv4 no monta `ActivityProgram` y
+Dv5 no monta `ActivityRowCard`, aunque las fichas sí: los dos componentes dibujan
+el vocabulario que este hub abandona (número en círculo con anillo, tarjeta
+redondeada con sombra y salto al hover). Siguen intactos para `Dd`. Si una
+sección nueva de Dv necesita una caja para leerse, lo que le falta es jerarquía
+tipográfica.
+
+Dos excepciones deliberadas a esa regla: **las fotos van con esquina redondeada**
+(`rounded-xl`; `rounded-lg` las miniaturas de Dv5) porque una foto no encierra
+contenido sino que lo es, y **Dv7 sí es una tarjeta**, copiando exactamente la de
+`Dd6` — el formulario no es contenido editorial sino el mismo trámite que el
+visitante ya hizo en otra actividad, y que se vea igual es lo que lo hace
+reconocible. Si cambia el de la ficha, cambia este.
+
+⚠️ Tokens de radio: `globals.css` redefine `--radius-xl` en 1,5rem, así que
+`rounded-xl` son **24px** y `rounded-2xl` son **16px** — al revés de lo que
+sugieren los nombres de Tailwind.
 
 ## Dc, De — Reservados (aún no existen)
 

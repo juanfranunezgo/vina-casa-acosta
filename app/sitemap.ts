@@ -1,6 +1,6 @@
 import type { MetadataRoute } from "next";
 import { wines } from "@/data/wines";
-import { activities, activityPath } from "@/data/activities";
+import { activities, activityPath, VENDIMIA_HUB } from "@/data/activities";
 import { routing } from "@/i18n/routing";
 import { SITE_URL } from "@/lib/siteUrl";
 
@@ -43,6 +43,9 @@ export default function sitemap(): MetadataRoute.Sitemap {
     ...STATIC_PATHS,
     ...wines.map((wine) => `/vinos/${wine.slug}`),
     ...activities.map(activityPath),
+    // El hub de temporada no es una actividad del catálogo: entra por su propia
+    // constante, y si vuelve a `null` desaparece del sitemap con la página.
+    ...(VENDIMIA_HUB ? [VENDIMIA_HUB] : []),
   ];
 
   return paths.flatMap((path) =>

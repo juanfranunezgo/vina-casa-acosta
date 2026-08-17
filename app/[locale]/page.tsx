@@ -24,7 +24,7 @@ import { buildHomeJsonLd } from "@/lib/siteJsonLd";
 // `CategoryChooserCard` en el plan 3 —ver el spec de subpáginas de actividades—,
 // donde pasan a desplegar un menú con las fichas de su categoría.
 const experienceData = [
-  { slug: "vendimia-2026", image: "/images/actividades/vendimia-2026.jpg" },
+  { slug: "experiencias", image: "/images/actividades/vendimia-2026.jpg" },
   { slug: "talleres", image: "/images/actividades/talleres.jpg" },
   { slug: "tren-efe", image: "/images/actividades/tren-efe.jpg" },
 ];

@@ -36,9 +36,12 @@
       Los envíos anteriores NO se pierden: quedan en el panel de Netlify bajo
       el nombre viejo, en su propia lista.
 
-      `tipo` distingue una reserva (la actividad publica precio) de una
-      cotización (no lo publica). Es un solo formulario porque son los mismos
-      datos los que la viña necesita para responder cualquiera de las dos.
+      `tipo` distingue una reserva (la actividad publica precio), una cotización
+      (no lo publica y se arma a pedido) y una temporada (la actividad se repite
+      cada año y sus fechas todavía no están confirmadas — el hub de Vendimia;
+      ese envío es "avísenme cuándo es" y llega sin `fecha`). Es un solo
+      formulario porque son los mismos datos los que la viña necesita para
+      responder los tres.
     -->
     <form name="reserva-actividad" data-netlify="true" data-netlify-honeypot="bot-field" hidden>
       <input type="hidden" name="form-name" value="reserva-actividad" />

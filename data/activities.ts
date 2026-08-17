@@ -271,19 +271,40 @@ export function activityPath(activity: Activity): string {
 }
 
 /**
- * Ruta del hub de Vendimia, sin prefijo de idioma. `null` mientras no exista.
+ * Ruta del hub de Vendimia, sin prefijo de idioma. `null` la apaga en todas las
+ * superficies a la vez —navbar, índice y sitemap preguntan por ella— para no
+ * enlazar a un 404 desde el sitio entero mientras la página no exista.
  *
- * El spec le da entrada propia en el mega-menú y el primer lugar en el menú de
- * la tarjeta selectora. La página quedó fuera del plan 2 porque sus dos
- * secciones centrales —qué es la vendimia en Casa Acosta y el ciclo de la vid a
- * lo largo del año— piden contenido que el catálogo del cliente no trae, y eso
- * se le pide a la viña, no se redacta.
- *
- * Enlazar igual sería mandar al visitante y al crawler a un 404 desde el navbar
- * de todo el sitio. Cuando el hub exista, esta constante es el único lugar que
- * cambia: las dos superficies ya preguntan por ella.
+ * `vendimia` es segmento reservado (ver RESERVED_ACTIVITY_SEGMENTS): la carpeta
+ * estática gana sobre `[categoria]`, así que el hub y las fichas conviven.
  */
-export const VENDIMIA_HUB: string | null = null;
+export const VENDIMIA_HUB: string | null = "/actividades/vendimia";
+
+/**
+ * Meses de vendimia. Es la única fecha que el hub publica, y a propósito: la
+ * cosecha depende de la maduración de la uva, así que la viña confirma cada
+ * jornada por temporada. Publicar un día concreto sería anunciar algo que
+ * todavía no está decidido — y el material que teníamos era de la temporada
+ * pasada.
+ */
+export const VENDIMIA_MONTHS: number[] = [3, 4, 5];
+
+/**
+ * Actividades que el hub ofrece como "otras formas de vivir el ciclo": las dos
+ * que siguen a la vid fuera de la cosecha. Es una lista explícita y no un filtro
+ * por meses porque la relación es de contenido, no de calendario.
+ */
+export const VENDIMIA_RELATED_SLUGS: readonly string[] = [
+  "cosecha-tu-historia",
+  "lagrimas-de-invierno",
+];
+
+/** Las fichas que el hub enlaza, en el orden declarado arriba. */
+export function vendimiaRelatedActivities(): Activity[] {
+  return VENDIMIA_RELATED_SLUGS.map((slug) =>
+    activities.find((activity) => activity.slug === slug),
+  ).filter((activity): activity is Activity => activity !== undefined);
+}
 
 export type MenuColumn = { category: ActivityCategory; items: Activity[] };
 

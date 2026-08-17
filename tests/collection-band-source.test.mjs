@@ -304,13 +304,15 @@ test("cork hero is optimized as a responsive WebP master", async () => {
 });
 
 test("activities keeps mobile navigation clear and sends EFE visitors to ticket sales", async () => {
-  const [activitiesSource, tabsSource, navbarSource, detailSource, dataSource] = await Promise.all([
-    readFile(new URL("../app/[locale]/actividades/page.tsx", import.meta.url), "utf8"),
-    readFile(new URL("../components/ActivitiesTabs.tsx", import.meta.url), "utf8"),
-    readFile(new URL("../components/Navbar.tsx", import.meta.url), "utf8"),
-    readFile(new URL("../app/[locale]/actividades/[categoria]/[slug]/page.tsx", import.meta.url), "utf8"),
-    readFile(new URL("../data/activities.ts", import.meta.url), "utf8"),
-  ]);
+  const [activitiesSource, tabsSource, navbarSource, detailSource, dataSource, gallerySource] =
+    await Promise.all([
+      readFile(new URL("../app/[locale]/actividades/page.tsx", import.meta.url), "utf8"),
+      readFile(new URL("../components/ActivitiesTabs.tsx", import.meta.url), "utf8"),
+      readFile(new URL("../components/Navbar.tsx", import.meta.url), "utf8"),
+      readFile(new URL("../app/[locale]/actividades/[categoria]/[slug]/page.tsx", import.meta.url), "utf8"),
+      readFile(new URL("../data/activities.ts", import.meta.url), "utf8"),
+      readFile(new URL("../components/GalleryPlaceholder.tsx", import.meta.url), "utf8"),
+    ]);
 
   assert.match(activitiesSource, /fontSize: "clamp\(2\.25rem, 6\.4vw, 4\.5rem\)"/);
   assert.match(activitiesSource, /target="_blank"/);
@@ -323,7 +325,12 @@ test("activities keeps mobile navigation clear and sends EFE visitors to ticket 
   assert.match(navbarSource, /activitiesMenuOpen/);
   assert.match(dataSource, /https:\/\/pasajes\.efe\.cl\/turistico\/casa-acosta/);
   assert.match(detailSource, /order-first lg:order-none/);
-  assert.match(detailSource, /Array\.from\(\{ length: 6 \}\)/);
+  // Los seis marcos de la galería salieron de la ficha a `GalleryPlaceholder`,
+  // que también dibuja el hub de Vendimia. Se sigue afirmando lo mismo —que la
+  // ficha muestra la galería y que son seis— en los dos lugares donde ahora
+  // vive: quién la monta y quién la dibuja.
+  assert.match(detailSource, /<GalleryPlaceholder/);
+  assert.match(gallerySource, /Array\.from\(\{ length: 6 \}\)/);
 });
 
 test("contact page keeps the exact address and submits to Netlify Forms", async () => {
