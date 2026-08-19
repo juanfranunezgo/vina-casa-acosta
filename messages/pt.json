@@ -18,6 +18,10 @@
       "title": "Nossos vinhos",
       "description": "Coleção completa de vinhos da Viña Casa Acosta: Ombú, Lajau, Estación Francia, Berá, Guidaí e Yaráy Guá."
     },
+    "tienda": {
+      "title": "Comprar vinhos online",
+      "description": "Compre os vinhos da Viña Casa Acosta: Carmenere, Tannat, blends, rosé e espumante do Vale do Cachapoal, no Chile. Monte seu pedido e combinamos a entrega."
+    },
     "actividades": {
       "title": "Experiências",
       "description": "Tours guiados pelos vinhedos, experiências sazonais e eventos privados na Viña Casa Acosta, Cachapoal."
@@ -65,7 +69,7 @@
     "legal": {
       "privacy": "Privacidade",
       "terms": "Termos",
-      "sitemap": "Mapa do site"
+      "cookies": "Cookies"
     },
     "social": {
       "instagram": "Instagram",
@@ -73,6 +77,20 @@
       "google": "Google Reviews"
     },
     "disclaimer": "Beba com moderação. Proibida a venda de bebida alcoólica a menores de 18 anos · Lei chilena N° 19.925."
+  },
+  "ageGate": {
+    "title": "Você tem 18 anos ou mais?",
+    "body": "Este site mostra e vende vinho. No Chile, a venda de bebida alcoólica a menores de 18 anos é proibida, por isso precisamos que você confirme sua idade antes de entrar.",
+    "confirm": "Sim, tenho 18 anos ou mais",
+    "deny": "Não",
+    "byeTitle": "Esperamos você mais adiante",
+    "byeBody": "Obrigado por responder com honestidade. Este site só pode ser exibido a pessoas maiores de 18 anos.",
+    "back": "Cliquei sem querer, voltar",
+    "legal": "Beba com moderação · Proibida a venda de bebida alcoólica a menores de 18 anos · Lei chilena N° 19.925"
+  },
+  "privacyConsent": {
+    "label": "Li e aceito a <policy>Política de Privacidade</policy>.",
+    "inSpanish": "(documento em espanhol)"
   },
   "common": {
     "viewDetails": "Ver detalhes",
@@ -355,6 +373,7 @@
   "wineDetail": {
     "backToCatalog": "Voltar para a coleção",
     "vintageLabel": "Safra {year}",
+    "vintageProperty": "Safra",
     "noVintage": "Sem safra (não-safra)",
     "tastingNotes": "Notas de degustação",
     "pairing": "Harmonização",
@@ -600,11 +619,17 @@
       },
       "photos": {
         "grupo": "O grupo da vindima de braços erguidos, entre as fileiras da vinha",
-        "gamelas": "Caixa com a uva recém-colhida, a caminho da adega",
-        "hileras": "Fileiras carregadas de cachos, vistas de cima",
-        "tractor": "O trator e a tenda da vinícola montados na alameda, durante a jornada",
         "asado": "Assado campestre fumegando ao lado da vinha",
-        "mesa": "Mesa comprida posta com flores e taças, pronta para o almoço",
+        "mosto": "O mosto escorre da torneira da barrica para um balde de aço",
+        "manoUva": "Uma mão segura um cacho de uva tinta ainda preso à videira",
+        "pisoneo": "Pés descalços pisando a uva dentro do lagar de madeira",
+        "desayuno": "Mesa comprida posta para o café da manhã sob o guarda-sol, diante das videiras no outono",
+        "personas": "Três participantes ao lado das caixas com a marca Viña Casa Acosta, cheias de uva recém-colhida",
+        "bin": "Uma participante despeja sua caixa de uva no bin, entre as fileiras",
+        "charla": "A equipe da vinícola explica o trabalho ao lado do bin de uva, com a cordilheira ao fundo",
+        "prev": "Foto anterior da jornada",
+        "next": "Próxima foto da jornada",
+        "goTo": "Ver foto {index} de {total} da jornada",
         "caption": "A uva colhida de manhã entra na adega no mesmo dia."
       },
       "gallery": {

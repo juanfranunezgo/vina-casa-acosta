@@ -18,6 +18,10 @@
       "title": "Nuestros Vinos",
       "description": "Colección completa de vinos de Viña Casa Acosta: Ombú, Lajau, Estación Francia, Berá, Guidaí y Yaráy Guá."
     },
+    "tienda": {
+      "title": "Comprar vinos online",
+      "description": "Compra los vinos de Viña Casa Acosta: Carmenere, Tannat, ensamblajes, rosé y espumante del Valle del Cachapoal. Arma tu pedido y coordinamos el despacho."
+    },
     "actividades": {
       "title": "Actividades",
       "description": "Tours guiados por nuestros viñedos, experiencias estacionales y eventos privados en Viña Casa Acosta, Cachapoal."
@@ -65,7 +69,7 @@
     "legal": {
       "privacy": "Privacidad",
       "terms": "Términos",
-      "sitemap": "Mapa de Sitio"
+      "cookies": "Cookies"
     },
     "social": {
       "instagram": "Instagram",
@@ -73,6 +77,20 @@
       "google": "Google Reviews"
     },
     "disclaimer": "Beber con moderación. Prohibida la venta de alcohol a menores de 18 años · Ley N° 19.925."
+  },
+  "ageGate": {
+    "title": "¿Eres mayor de 18 años?",
+    "body": "Este sitio muestra y vende vino. En Chile la venta de alcohol a menores de 18 años está prohibida, así que necesitamos que confirmes tu edad antes de entrar.",
+    "confirm": "Sí, soy mayor de 18",
+    "deny": "No",
+    "byeTitle": "Te esperamos más adelante",
+    "byeBody": "Gracias por responder con honestidad. Este sitio sólo puede mostrarse a personas mayores de 18 años.",
+    "back": "Me equivoqué, volver",
+    "legal": "Bebe con moderación · Prohibida la venta de alcohol a menores de 18 años · Ley N° 19.925"
+  },
+  "privacyConsent": {
+    "label": "He leído y acepto la <policy>Política de Privacidad</policy>.",
+    "inSpanish": "(documento en español)"
   },
   "common": {
     "viewDetails": "Ver detalles",
@@ -355,6 +373,7 @@
   "wineDetail": {
     "backToCatalog": "Toda la colección",
     "vintageLabel": "Cosecha {year}",
+    "vintageProperty": "Cosecha",
     "noVintage": "Sin cosecha (no-vintage)",
     "tastingNotes": "Notas de cata",
     "pairing": "Maridaje",
@@ -600,11 +619,17 @@
       },
       "photos": {
         "grupo": "El grupo de la vendimia con los brazos en alto, entre las hileras del viñedo",
-        "gamelas": "Gamela con la uva recién cortada, lista para ir a la bodega",
-        "hileras": "Hileras cargadas de racimos, vistas desde arriba",
-        "tractor": "El tractor y la carpa de la viña montados en el callejón, durante la jornada",
         "asado": "Asado campestre humeando junto al viñedo",
-        "mesa": "Mesa larga puesta con flores y copas, lista para el almuerzo",
+        "mosto": "El mosto corre desde la canilla de la barrica hasta un balde de acero",
+        "manoUva": "Una mano sostiene un racimo de uva tinta todavía colgado de la parra",
+        "pisoneo": "Pies descalzos pisando la uva dentro del lagar de madera",
+        "desayuno": "Mesa larga puesta para el desayuno bajo el quitasol, frente a las parras en otoño",
+        "personas": "Tres participantes junto a las gamelas rotuladas Viña Casa Acosta, llenas de uva recién cortada",
+        "bin": "Una participante vacía su gamela de uva en el bin, entre las hileras",
+        "charla": "El equipo de la viña explica el trabajo junto al bin de uva, con la cordillera al fondo",
+        "prev": "Foto anterior de la jornada",
+        "next": "Foto siguiente de la jornada",
+        "goTo": "Ver foto {index} de {total} de la jornada",
         "caption": "La uva que se corta en la mañana entra a bodega el mismo día."
       },
       "gallery": {

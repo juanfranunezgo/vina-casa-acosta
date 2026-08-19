@@ -18,6 +18,10 @@
       "title": "Our wines",
       "description": "The complete Viña Casa Acosta collection: Ombú, Lajau, Estación Francia, Berá, Guidaí and Yaráy Guá."
     },
+    "tienda": {
+      "title": "Buy wine online",
+      "description": "Shop the wines of Viña Casa Acosta: Carmenere, Tannat, blends, rosé and sparkling from Chile's Cachapoal Valley. Build your order and we arrange delivery."
+    },
     "actividades": {
       "title": "Experiences",
       "description": "Guided vineyard tours, seasonal experiences and private events at Viña Casa Acosta in the Cachapoal Valley."
@@ -65,7 +69,7 @@
     "legal": {
       "privacy": "Privacy",
       "terms": "Terms",
-      "sitemap": "Sitemap"
+      "cookies": "Cookies"
     },
     "social": {
       "instagram": "Instagram",
@@ -73,6 +77,20 @@
       "google": "Google Reviews"
     },
     "disclaimer": "Please drink responsibly. Sale of alcohol to anyone under 18 is prohibited · Chilean Law N° 19.925."
+  },
+  "ageGate": {
+    "title": "Are you 18 or older?",
+    "body": "This site shows and sells wine. In Chile the sale of alcohol to anyone under 18 is prohibited, so we need you to confirm your age before entering.",
+    "confirm": "Yes, I'm 18 or older",
+    "deny": "No",
+    "byeTitle": "We'll be here later on",
+    "byeBody": "Thank you for answering honestly. This site can only be shown to people aged 18 and over.",
+    "back": "I tapped by mistake, go back",
+    "legal": "Please drink responsibly · Sale of alcohol to anyone under 18 is prohibited · Chilean Law N° 19.925"
+  },
+  "privacyConsent": {
+    "label": "I have read and accept the <policy>Privacy Policy</policy>.",
+    "inSpanish": "(document in Spanish)"
   },
   "common": {
     "viewDetails": "View details",
@@ -355,6 +373,7 @@
   "wineDetail": {
     "backToCatalog": "Back to the collection",
     "vintageLabel": "Vintage {year}",
+    "vintageProperty": "Vintage",
     "noVintage": "Non-vintage",
     "tastingNotes": "Tasting notes",
     "pairing": "Food pairing",
@@ -600,11 +619,17 @@
       },
       "photos": {
         "grupo": "The harvest group with their arms raised, between the vineyard rows",
-        "gamelas": "A bin of freshly picked grapes, on its way to the cellar",
-        "hileras": "Rows heavy with bunches, seen from above",
-        "tractor": "The tractor and the winery's canopy set up along the row during the day",
         "asado": "A country asado smoking beside the vineyard",
-        "mesa": "A long table set with flowers and glasses, ready for lunch",
+        "mosto": "Must running from the barrel's tap into a steel bucket",
+        "manoUva": "A hand holding a bunch of red grapes still on the vine",
+        "pisoneo": "Bare feet treading grapes inside the wooden vat",
+        "desayuno": "A long table set for breakfast under the canopy, facing the autumn vines",
+        "personas": "Three guests beside crates marked Viña Casa Acosta, full of freshly picked grapes",
+        "bin": "A guest tipping her crate of grapes into the bin, between the rows",
+        "charla": "The winery team explaining the work beside the grape bin, with the mountains behind",
+        "prev": "Previous photo of the day",
+        "next": "Next photo of the day",
+        "goTo": "View photo {index} of {total} of the day",
         "caption": "Grapes picked in the morning reach the cellar the same day."
       },
       "gallery": {
