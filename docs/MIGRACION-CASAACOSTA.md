@@ -4,6 +4,32 @@
 **Qué se pide:** redirección 301 permanente, URL por URL, del sitio antiguo al nuevo
 **Fecha del inventario:** 9 de agosto de 2026 (97 URLs, tomadas de `https://casaacosta.cl/wp-sitemap.xml`)
 
+> ## Estado al 18 de agosto de 2026: el dominio ya redirige, pero mal
+>
+> Comprobado con `curl`: `casaacosta.cl` responde **301 a la home** en todas sus
+> URLs, no el mapeo de este documento.
+>
+> ```
+> https://casaacosta.cl/                    301 -> https://vinacasaacosta.cl
+> https://casaacosta.cl/tour-ombu/          301 -> https://vinacasaacosta.cl
+> https://casaacosta.cl/product/ombu/       301 -> https://vinacasaacosta.cl
+> https://casaacosta.cl/how-to-choose-wine/ 301 -> https://vinacasaacosta.cl   (debia ser 410)
+> ```
+>
+> Es un *domain forwarding* del hosting, no las reglas de aca. Tres problemas,
+> en orden de gravedad:
+>
+> 1. **Google trata la redireccion masiva a la home como soft 404** y no
+>    traspasa autoridad. Las 13 fichas `/product/*` -las URLs con mas historial
+>    de la vina- no le estan pasando nada a sus equivalentes.
+> 2. El destino no lleva `/es`, asi que cada URL antigua encadena
+>    **301 -> 307 -> 200**. El salto del medio es temporal: la peor senal
+>    posible en una cadena de migracion.
+> 3. El contenido de demostracion no da 410 y sigue en el indice.
+>
+> Reemplazar ese reenvio por el mapeo de este documento es la tarea pendiente de
+> mayor impacto SEO del proyecto.
+
 ---
 
 ## 1. Por qué
@@ -86,23 +112,51 @@ Estas son las más valiosas del traspaso: cada producto viejo tiene su equivalen
 
 | URL antigua | Destino |
 |---|---|
-| `/tour-ombu/` | `/es/actividades/tour-ombu` |
-| `/tour-bera/` | `/es/actividades/tour-bera` |
-| `/tour-carmenere/` | `/es/actividades/tour-carmenere` |
+| `/tour-ombu/` | `/es/actividades/tours/ombu` |
+| `/tour-bera/` | `/es/actividades/tours/bera` |
+| `/tour-carmenere/` | `/es/actividades/tours/carmenere` |
 
-### 3.5 Experiencias sin página propia en el sitio nuevo
+Los destinos son los de la estructura por categoria. Apuntar a la URL plana
+(`/es/actividades/tour-ombu`) todavia funciona, pero hoy es un **308**: la
+migracion estrenaria cadenas de dos saltos sin ninguna necesidad.
 
-Van todas a la sección de experiencias, que es donde está su contenido hoy:
+### 3.5 Experiencias y talleres
 
-`/apicultura/` · `/cena-sensorial/` · `/clases-de-gnocchis/` · `/clases-de-pasta/` · `/clases-de-pizza/` · `/cosecha-tu-historia/` · `/enologo-por-un-dia/` · `/hilado-y-trasquilado/` · `/lagrimas-de-invierno/` · `/mimbre/` · `/vendimia/` · `/yoga/`
+Cuando se escribio este documento ninguna de estas doce tenia pagina propia y
+todas caian al indice. Ya no: cada una tiene su ficha, asi que cada URL antigua
+va a su equivalente exacto. Es la diferencia entre traspasarle la autoridad a la
+pagina que habla del mismo tema y diluirla en un indice.
 
-→ `https://vinacasaacosta.cl/es/actividades#experiencias`
+| URL antigua | Destino |
+|---|---|
+| `/apicultura/` | `/es/actividades/experiencias/apicultura` |
+| `/cena-sensorial/` | `/es/actividades/experiencias/cena-sensorial` |
+| `/cosecha-tu-historia/` | `/es/actividades/experiencias/cosecha-tu-historia` |
+| `/enologo-por-un-dia/` | `/es/actividades/experiencias/enologo-por-un-dia` |
+| `/hilado-y-trasquilado/` | `/es/actividades/experiencias/alpacas` |
+| `/lagrimas-de-invierno/` | `/es/actividades/experiencias/lagrimas-de-invierno` |
+| `/mimbre/` | `/es/actividades/experiencias/mimbre` |
+| `/yoga/` | `/es/actividades/experiencias/yoga` |
+| `/clases-de-pizza/` | `/es/actividades/talleres/pizzas` |
+| `/clases-de-pasta/` | `/es/actividades/talleres/pastas` |
+| `/clases-de-gnocchis/` | `/es/actividades/talleres/noquis` |
+| `/vendimia/` | `/es/actividades/vendimia` |
+
+`/hilado-y-trasquilado/` va a la ficha de alpacas porque es la misma actividad
+con otro nombre: el trasquilado es lo que esa ficha describe.
 
 ### 3.6 Eventos
 
-`/eventos/` · `/proximos-eventos/` · `/events/evento-sorpresa/` · `/events/feria-de-emprendedores/` · `/events/vendimia-2/` · `/events/vendimia-abril/` · `/event-location/vina-casa-acosta/`
+Las dos entradas de vendimia del calendario viejo tienen hub propio:
 
-→ `https://vinacasaacosta.cl/es/actividades#eventos`
+| URL antigua | Destino |
+|---|---|
+| `/events/vendimia-2/` · `/events/vendimia-abril/` | `/es/actividades/vendimia` |
+| `/eventos/` · `/proximos-eventos/` · `/events/evento-sorpresa/` · `/events/feria-de-emprendedores/` · `/event-location/vina-casa-acosta/` | `/es/actividades` |
+
+Sin el ancla `#eventos`: el indice se reorganizo y ya no la publica. Redirigir a
+un ancla que no existe no rompe nada, pero deja al visitante arriba de la pagina
+sin la seccion que le prometieron.
 
 ### 3.7 Contenido de demostración → 410 Gone
 
@@ -144,9 +198,9 @@ RewriteRule ^product/yaray-gua-tinto/?$        https://vinacasaacosta.cl/es/vino
 RewriteRule ^product/crea-tu-caja/?$           https://vinacasaacosta.cl/es/tienda [R=301,L]
 
 # --- Tours ---
-RewriteRule ^tour-ombu/?$      https://vinacasaacosta.cl/es/actividades/tour-ombu [R=301,L]
-RewriteRule ^tour-bera/?$      https://vinacasaacosta.cl/es/actividades/tour-bera [R=301,L]
-RewriteRule ^tour-carmenere/?$ https://vinacasaacosta.cl/es/actividades/tour-carmenere [R=301,L]
+RewriteRule ^tour-ombu/?$      https://vinacasaacosta.cl/es/actividades/tours/ombu [R=301,L]
+RewriteRule ^tour-bera/?$      https://vinacasaacosta.cl/es/actividades/tours/bera [R=301,L]
+RewriteRule ^tour-carmenere/?$ https://vinacasaacosta.cl/es/actividades/tours/carmenere [R=301,L]
 
 # --- Tienda ---
 RewriteRule ^(tienda|comprar|carrito|finalizar-compra|my-account)/?$ https://vinacasaacosta.cl/es/tienda [R=301,L]
@@ -162,13 +216,25 @@ RewriteRule ^actividades/?$   https://vinacasaacosta.cl/es/actividades [R=301,L]
 RewriteRule ^premios-[23]/?$  https://vinacasaacosta.cl/es/historia [R=301,L]
 RewriteRule ^blog/?$          https://vinacasaacosta.cl/es [R=301,L]
 
-# --- Experiencias ---
-RewriteRule ^(apicultura|cena-sensorial|clases-de-gnocchis|clases-de-pasta|clases-de-pizza|cosecha-tu-historia|enologo-por-un-dia|hilado-y-trasquilado|lagrimas-de-invierno|mimbre|vendimia|yoga)/?$ https://vinacasaacosta.cl/es/actividades#experiencias [R=301,L]
+# --- Experiencias y talleres (cada una a su ficha) ---
+RewriteRule ^apicultura/?$           https://vinacasaacosta.cl/es/actividades/experiencias/apicultura [R=301,L]
+RewriteRule ^cena-sensorial/?$       https://vinacasaacosta.cl/es/actividades/experiencias/cena-sensorial [R=301,L]
+RewriteRule ^cosecha-tu-historia/?$  https://vinacasaacosta.cl/es/actividades/experiencias/cosecha-tu-historia [R=301,L]
+RewriteRule ^enologo-por-un-dia/?$   https://vinacasaacosta.cl/es/actividades/experiencias/enologo-por-un-dia [R=301,L]
+RewriteRule ^hilado-y-trasquilado/?$ https://vinacasaacosta.cl/es/actividades/experiencias/alpacas [R=301,L]
+RewriteRule ^lagrimas-de-invierno/?$ https://vinacasaacosta.cl/es/actividades/experiencias/lagrimas-de-invierno [R=301,L]
+RewriteRule ^mimbre/?$               https://vinacasaacosta.cl/es/actividades/experiencias/mimbre [R=301,L]
+RewriteRule ^yoga/?$                 https://vinacasaacosta.cl/es/actividades/experiencias/yoga [R=301,L]
+RewriteRule ^clases-de-pizza/?$      https://vinacasaacosta.cl/es/actividades/talleres/pizzas [R=301,L]
+RewriteRule ^clases-de-pasta/?$      https://vinacasaacosta.cl/es/actividades/talleres/pastas [R=301,L]
+RewriteRule ^clases-de-gnocchis/?$   https://vinacasaacosta.cl/es/actividades/talleres/noquis [R=301,L]
+RewriteRule ^vendimia/?$             https://vinacasaacosta.cl/es/actividades/vendimia [R=301,L]
 
 # --- Eventos ---
-RewriteRule ^(eventos|proximos-eventos)/?$   https://vinacasaacosta.cl/es/actividades#eventos [R=301,L]
-RewriteRule ^events/.*$                      https://vinacasaacosta.cl/es/actividades#eventos [R=301,L]
-RewriteRule ^event-location/.*$              https://vinacasaacosta.cl/es/actividades#eventos [R=301,L]
+RewriteRule ^events/vendimia-(2|abril)/?$  https://vinacasaacosta.cl/es/actividades/vendimia [R=301,L]
+RewriteRule ^(eventos|proximos-eventos)/?$ https://vinacasaacosta.cl/es/actividades [R=301,L]
+RewriteRule ^events/.*$                    https://vinacasaacosta.cl/es/actividades [R=301,L]
+RewriteRule ^event-location/.*$            https://vinacasaacosta.cl/es/actividades [R=301,L]
 
 # --- Contenido de demostración: 410 Gone ---
 RewriteRule ^(annual-dinner-delayed-due-to-covid-19|annual-wine-awards-2020|diy-winemaking-pt-1|diy-winemaking-pt-2|health-benefits-of-white-wine|how-to-choose-wine|how-to-combine-good-wine-with-good-cheese|the-art-of-winemaking|the-new-vineyard)(-[234])?/?$ - [G,L]
@@ -191,7 +257,13 @@ RewriteRule ^$ https://vinacasaacosta.cl/es [R=301,L]
 
 ### Opción B — plugin Redirection
 
-Si se prefiere administrar desde el panel: plugin **Redirection** → *Import/Export* → importar el archivo adjunto [`migracion-casaacosta-redirects.csv`](migracion-casaacosta-redirects.csv) (dos columnas: origen, destino; el importador acepta ese formato). Después, revisar que el código de cada regla quede en **301**, no en 302.
+Si se prefiere administrar desde el panel: plugin **Redirection** → *Import/Export* → importar el archivo adjunto [`migracion-casaacosta-redirects.csv`](migracion-casaacosta-redirects.csv) (dos columnas: origen, destino; el importador acepta ese formato).
+
+Ese CSV es la **fuente de verdad** del mapeo: `casaacosta-redirect/_redirects` se
+genera desde el con `node scripts/migracion-redirects.mjs`, y
+`tests/migracion-redirects.test.mjs` falla si algun destino deja de ser una ruta
+que el sitio sirve. Es lo que evita que la tabla vuelva a envejecer sin aviso
+cuando el sitio se reorganice. Después, revisar que el código de cada regla quede en **301**, no en 302.
 
 Es más lento que el `.htaccess` —cada redirección carga WordPress entero— y deja de funcionar si algún día se apaga el WordPress, pero para este volumen es perfectamente válido.
 
