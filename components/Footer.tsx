@@ -4,6 +4,7 @@ import { getLocale, getTranslations } from "next-intl/server";
 import { MapPin, Clock, Mail, Phone, Star } from "lucide-react";
 import FacebookIcon from "@/components/icons/FacebookIcon";
 import InstagramIcon from "@/components/icons/InstagramIcon";
+import { DOCUMENTOS_LEGALES } from "@/lib/legal";
 import {
   CONTACT_EMAIL,
   CONTACT_MAILTO_URL,
@@ -26,20 +27,20 @@ export default async function Footer() {
   const year = new Date().getFullYear();
   const lp = (path: string) => `/${locale}${path}`;
 
-  // Privacidad y Mapa de Sitio siguen como texto: no existen todavía y
-  // enlazarlas a "#" saltaba al hero, que se leía como un link roto.
+  // Los tres documentos legales existen sólo en español, y en /en y /pt la
+  // etiqueta se queda en texto a propósito: enlazar un PDF que el visitante no
+  // puede leer promete algo que no se cumple. Cuando haya traducción, se agrega
+  // su archivo a `DOCUMENTOS_LEGALES` bajo el idioma que corresponda y el enlace
+  // aparece solo.
   //
-  // Términos sí existe, como PDF, y sólo en español: en /en y /pt la etiqueta
-  // se queda en texto a propósito, porque enlazar a un documento que el
-  // visitante no puede leer promete algo que no se cumple. Cuando haya
-  // traducción, se agrega su archivo a este mapa.
-  const terminosPorLocale: Record<string, string | undefined> = {
-    es: "/documentos/terminos-y-condiciones.pdf",
-  };
+  // "Mapa de Sitio" se quitó el 2026-08-18: era la única etiqueta que no
+  // llevaba a ninguna parte. El sitemap que importa —el que leen los buscadores—
+  // lo emite `app/sitemap.ts` y no necesita un enlace en el pie.
+  const docs: Partial<Record<string, string>> = DOCUMENTOS_LEGALES[locale] ?? {};
   const legalItems = [
-    { label: t("legal.privacy"), href: undefined },
-    { label: t("legal.terms"), href: terminosPorLocale[locale] },
-    { label: t("legal.sitemap"), href: undefined },
+    { label: t("legal.privacy"), href: docs.privacy },
+    { label: t("legal.terms"), href: docs.terms },
+    { label: t("legal.cookies"), href: docs.cookies },
   ];
 
   return (
