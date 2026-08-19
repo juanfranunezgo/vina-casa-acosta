@@ -15,8 +15,21 @@ import {
   CONTACT_WHATSAPP_URL,
 } from "@/lib/contact";
 
-const mapsUrl =
-  "https://www.google.com/maps/search/?api=1&query=Fundo+El+Llano+lote+6,+San+Vicente+de+Tagua+Tagua,+O%27Higgins,+Chile";
+/**
+ * Enlace corto de la ficha de Google de la viña: abre el lugar con su nombre,
+ * sus fotos y sus reseñas. Antes era una búsqueda por texto de la dirección, que
+ * depende de que el buscador acierte con el fundo.
+ */
+const mapsUrl = "https://maps.app.goo.gl/2EAjVCjMTFMhj5A59";
+
+/**
+ * El embed va por coordenadas y no por la dirección escrita, por lo mismo: son
+ * las de la ficha —`@-34.4651334,-71.0096746`, las mismas que declara el
+ * `LocalBusiness` de `lib/siteJsonLd.ts`— y no dependen de cómo se escriba
+ * "Fundo El Llano lote 6".
+ */
+const mapEmbedSrc =
+  "https://maps.google.com/maps?q=-34.4651334,-71.0096746&z=16&output=embed";
 
 export async function generateMetadata({
   params,
@@ -78,10 +91,7 @@ export default async function ContactoPage({
           <div className="p-7 md:p-12 lg:p-16">
             <ContactForm />
           </div>
-          <MapEmbed
-            title={t("mapTitle")}
-            src="https://www.google.com/maps?q=Fundo+El+Llano+lote+6,+San+Vicente+de+Tagua+Tagua,+O%27Higgins,+Chile&output=embed"
-          />
+          <MapEmbed title={t("mapTitle")} src={mapEmbedSrc} />
         </div>
 
         <div className="mt-14 grid items-start gap-10 lg:grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)] lg:gap-16">

@@ -341,7 +341,14 @@ test("contact page keeps the exact address and submits to Netlify Forms", async 
   ]);
 
   assert.match(pageSource, /font-accent text-xl font-light italic text-primary md:text-2xl/);
-  assert.match(pageSource, /Fundo\+El\+Llano\+lote\+6/);
+  // Antes esto afirmaba `Fundo+El+Llano+lote+6` dentro de la URL del mapa. El
+  // embed dejó de buscar la dirección escrita y pide las coordenadas de la ficha
+  // de Google, que no dependen de cómo se escriba el fundo; el enlace de salida
+  // es el enlace corto de esa misma ficha. Lo que el test cuida sigue siendo lo
+  // mismo: que la página apunte al lugar correcto. La dirección visible se
+  // afirma más abajo, contra `messages`.
+  assert.match(pageSource, /maps\.google\.com\/maps\?q=-34\.465\d*,-71\.009\d*/);
+  assert.match(pageSource, /https:\/\/maps\.app\.goo\.gl\//);
   assert.match(pageSource, /rounded-2xl/);
   // El formulario dejó de derivar a WhatsApp: ahora llega a Netlify Forms, que
   // guarda el envío aunque falle la notificación por correo. El handoff a
