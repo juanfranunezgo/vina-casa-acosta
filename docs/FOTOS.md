@@ -108,6 +108,46 @@ fina (follaje desde arriba) y ahí el codo cae más abajo. Medido a 1920px: q78 
 abajo se ahorran ~20 KB por escalón. El campo `quality` de `scripts/optimize-heros.mjs`
 existe para eso y se usa con la medición al lado.
 
+### Fotos propias de la jornada (2026-08-18)
+
+El mismo `npm run fotos:vendimia` procesa además ocho fotos sueltas de una vendimia real,
+que reemplazaron recortes de la aérea y fotos prestadas de otras actividades. Van a
+`quality: 80` —no 72— porque se ven a tamaño de tarjeta y tienen caras y piel, donde el
+bandeo se nota.
+
+| Fuente en `_fuentes-fotos/` | Sale como | Ranura | Recorte |
+|---|---|---|---|
+| `vendimia-mosto.jpg` | `vendimia-mosto.webp` 800×1200 | Dv2, tríptico | ninguno (ya es 2:3) |
+| `vendimia-mano-uva.jpg` | `vendimia-mano-uva.webp` 800×1200 | Dv2, tríptico | ninguno |
+| `vendimia-pisoneo.jpg` | `vendimia-pisoneo.webp` 800×1200 | Dv2, tríptico | ninguno |
+| `vendimia-mesa-desayuno.jpg` | `vendimia-desayuno.webp` 1100×1375 | Dv4, carrusel | 4:5, `anchorY 0.45` |
+| `vendimia-personas.jpg` | `vendimia-personas.webp` 1000×1250 | Dv6, galería | 4:5, `anchorY 0.55` |
+| `vendimia-bin.jpg` | `vendimia-bin.webp` 1000×1250 | Dv6, galería | 4:5, `anchorY 0.6` |
+| `vendimia-charla.jpg` | `vendimia-charla.webp` 1000×1250 | Dv6, galería | 4:5, `anchorY 0.45` |
+| `vendimia-formulario.jpg` | `vendimia-formulario.webp` 1600×1067 | Dv7, junto al formulario | ninguno |
+
+**`anchorY` es la fracción del sobrante que se saca por arriba** (0 conserva el borde
+superior, 1 el inferior). No es un valor por defecto que se pueda dejar en 0.5 y olvidar:
+se eligió mirando cada foto, y con `personas` centrado la fila de gamelas rotuladas queda
+cortada. Al cambiar una fuente hay que **abrir el `.webp` generado**, no sólo mirar sus
+dimensiones.
+
+**Dos trampas ya pagadas:**
+
+- `personas`, `bin` y `charla` salieron de un teléfono en vertical: el archivo mide
+  4000×2252 con `orientation: 6` en el EXIF. Sin `.rotate()` se procesan acostadas y el
+  recorte cae en cualquier parte. El script calcula la caja sobre las medidas **ya
+  rotadas**.
+- La de `Dv7` no se recorta en el script y se ancla con `object-[16%_center]` en la
+  página. La gamela roja ocupa del 11% al 57% del ancho y la ranura del formulario sólo
+  muestra el 53%: pegada al borde izquierdo (`object-left`) la ventana termina en 53% y le
+  corta el canto. Con 16% va de 7% a 60% y entra entera.
+
+Dos nombres no coinciden con los del cliente, a propósito: `pisoneo-vendimia3` **no es un
+pisoneo** —es el mosto cayendo de la canilla de la barrica— y se guarda como
+`vendimia-mosto`; `pisoneo-vendimia2` sí lo es y quedó como `vendimia-pisoneo`. Un archivo
+que miente sobre su contenido termina en un `alt` que miente sobre la foto.
+
 ## Otros pipelines (no usan `_fuentes-fotos/`)
 
 - `npm run fotos` lee de `sitio-web/_fotos-input/<Letra>/` con nombres por slot

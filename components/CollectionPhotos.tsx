@@ -10,7 +10,14 @@ const AUTOPLAY_MS = 3000;
 type Props = {
   /** Fotos 4:5 de la colección, en orden. La primera es la portada. */
   photos: string[];
-  alt: string;
+  /**
+   * Texto alternativo. Una sola cadena cuando las fotos son variaciones de lo
+   * mismo —las bandas de colección, donde todas muestran la misma línea de
+   * vinos— o una por foto cuando son escenas distintas, como en el hub de
+   * vendimia: un `alt` prestado le describe a quien no ve una imagen que no es
+   * la que está en pantalla.
+   */
+  alt: string | string[];
   /** Etiquetas accesibles de los controles. */
   prevLabel: string;
   nextLabel: string;
@@ -47,6 +54,9 @@ export default function CollectionPhotos({
   const [userTookOver, setUserTookOver] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
   const total = photos.length;
+
+  /** El `alt` de la foto `index`: por foto si vino un arreglo, si no el común. */
+  const altOf = (index: number) => (Array.isArray(alt) ? (alt[index] ?? "") : alt);
 
   const go = (index: number) => {
     const next = (index + total) % total;
@@ -118,7 +128,7 @@ export default function CollectionPhotos({
             <Image
               key={photo}
               src={photo}
-              alt={index === active ? alt : ""}
+              alt={index === active ? altOf(index) : ""}
               aria-hidden={index !== active}
               fill
               priority={priority && index === 0}

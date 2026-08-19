@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import Reveal from "@/components/Reveal";
 import Button from "@/components/ui/Button";
+import CollectionPhotos from "@/components/CollectionPhotos";
 import ActivityBreadcrumbs from "@/components/ActivityBreadcrumbs";
 import ActivityReservationForm from "@/components/ActivityReservationForm";
 import VineyardYear from "@/components/VineyardYear";
@@ -114,12 +115,19 @@ const HERO_SIZES = "(max-width: 768px) 78vh, (max-aspect-ratio: 5/4) 125vh, 100v
  */
 const FOTO = {
   grupo: "/images/actividades/vendimia-grupo.webp",
-  gamelas: "/images/actividades/vendimia-gamelas.webp",
-  hileras: "/images/actividades/vendimia-hileras.webp",
-  tractor: "/images/actividades/vendimia-tractor.webp",
   asado: "/images/contacto/asado.webp",
-  mesa: "/images/contacto/cena.webp",
-  parras: "/images/home/cta-parras.jpg",
+  // Fotos propias de la jornada (2026-08-18). Las cinco primeras reemplazaron
+  // recortes de la aérea y fotos prestadas de otras actividades; son de una
+  // vendimia de verdad, así que sus `alt` describen lo que efectivamente pasa
+  // en cada una. Salen de `npm run fotos:vendimia` — ver docs/FOTOS.md.
+  mosto: "/images/actividades/vendimia-mosto.webp",
+  manoUva: "/images/actividades/vendimia-mano-uva.webp",
+  pisoneo: "/images/actividades/vendimia-pisoneo.webp",
+  desayuno: "/images/actividades/vendimia-desayuno.webp",
+  personas: "/images/actividades/vendimia-personas.webp",
+  bin: "/images/actividades/vendimia-bin.webp",
+  charla: "/images/actividades/vendimia-charla.webp",
+  formulario: "/images/actividades/vendimia-formulario.webp",
 } as const;
 
 /** Una etapa del ciclo de la vid, tal como viene de `messages`. */
@@ -376,18 +384,38 @@ export default async function VendimiaPage({
               </p>
             </Reveal>
 
-            {/* Ranura apaisada 3:2, desplazada hacia abajo: la asimetría sale del
+            {/* Tríptico vertical, desplazado hacia abajo: la asimetría sale del
                 desfase y del ancho desigual de las columnas, no de superponer
-                dos fotos. */}
+                dos fotos.
+
+                Tres ranuras 2:3 iguales y sin escalonar. Escalonarlas era la
+                tentación —y es justo lo que traía el collage que se sacó de acá,
+                afinado a mano y descuadrado en todo ancho intermedio—. La
+                verticalidad ya la da la proporción.
+
+                En móvil van en fila de tres: a 2:3 y un tercio del ancho siguen
+                siendo legibles, y apilarlas mandaba el resto de la sección
+                debajo del pliegue. */}
             <Reveal delay={140} className="lg:col-span-6 lg:mt-20 xl:col-span-7">
-              <div className="relative aspect-[3/2] overflow-hidden rounded-xl">
-                <Image
-                  src={FOTO.gamelas}
-                  alt={t("photos.gamelas")}
-                  fill
-                  className="object-cover"
-                  sizes="(max-width: 1024px) 100vw, 50vw"
-                />
+              <div className="grid grid-cols-3 gap-3 md:gap-4">
+                {[
+                  { src: FOTO.mosto, alt: t("photos.mosto") },
+                  { src: FOTO.manoUva, alt: t("photos.manoUva") },
+                  { src: FOTO.pisoneo, alt: t("photos.pisoneo") },
+                ].map(({ src, alt }) => (
+                  <div
+                    key={src}
+                    className="relative aspect-[2/3] overflow-hidden rounded-xl"
+                  >
+                    <Image
+                      src={src}
+                      alt={alt}
+                      fill
+                      className="object-cover"
+                      sizes="(max-width: 1024px) 30vw, 20vw"
+                    />
+                  </div>
+                ))}
               </div>
             </Reveal>
           </div>
@@ -552,13 +580,27 @@ export default async function VendimiaPage({
 
           <div className="lg:col-span-5">
             <Reveal delay={80}>
-              <div className="relative aspect-[4/5] overflow-hidden rounded-xl lg:sticky lg:top-28">
-                <Image
-                  src={FOTO.asado}
-                  alt={t("photos.asado")}
-                  fill
-                  className="object-cover"
-                  sizes="(max-width: 1024px) 100vw, 40vw"
+              {/* El mismo carrusel de las bandas de colección de /vinos: marco
+                  4:5, crossfade, flechas, puntos y swipe. Se reusa entero en vez
+                  de escribir otro — es la ranura de la misma proporción.
+
+                  Las dos fotos son escenas distintas (el desayuno y el asado),
+                  así que el `alt` va por foto: prestarle a una el texto de la
+                  otra le describe a quien no ve algo que no está en pantalla.
+                  Esa es la razón de que `CollectionPhotos` acepte un arreglo.
+
+                  Abre el desayuno, que es de una vendimia de verdad y además el
+                  primer hito del día; el asado —que viene de la galería de
+                  contacto— queda segundo. */}
+              <div className="lg:sticky lg:top-28">
+                <CollectionPhotos
+                  photos={[FOTO.desayuno, FOTO.asado]}
+                  alt={[t("photos.desayuno"), t("photos.asado")]}
+                  prevLabel={t("photos.prev")}
+                  nextLabel={t("photos.next")}
+                  goToLabels={[1, 2].map((index) =>
+                    t("photos.goTo", { index, total: 2 }),
+                  )}
                 />
               </div>
             </Reveal>
@@ -601,9 +643,9 @@ export default async function VendimiaPage({
           <Reveal delay={100}>
             <div className="mt-gutter grid grid-cols-2 gap-gutter md:grid-cols-3">
               {[
-                { src: FOTO.hileras, alt: t("photos.hileras") },
-                { src: FOTO.mesa, alt: t("photos.mesa") },
-                { src: FOTO.tractor, alt: t("photos.tractor") },
+                { src: FOTO.personas, alt: t("photos.personas") },
+                { src: FOTO.bin, alt: t("photos.bin") },
+                { src: FOTO.charla, alt: t("photos.charla") },
               ].map(({ src, alt }) => (
                 <div
                   key={src}
@@ -649,17 +691,27 @@ export default async function VendimiaPage({
               <ActivityReservationForm activityName={t("hero.title")} mode="temporada" />
             </div>
             {/* Decorativa: acompaña al formulario y no aporta información que el
-                formulario no diga. Va con `alt=""` en vez de reusar el texto de
-                otra foto — `messages` no tiene una descripción para el viñedo en
-                reposo, y prestarle la de `hileras` sería describirle a quien no
-                ve una imagen que no es la que está. */}
+                formulario no diga, así que va con `alt=""` y no con el texto de
+                otra foto prestado.
+
+                El tema —la gamela roja con la uva cortada— ocupa del 11% al 57%
+                del ancho del cuadro. Centrada, la ranura angosta del formulario
+                la parte al medio y deja el callejón vacío de la derecha.
+
+                El anclaje es 16% y no `object-left`: en escritorio la ranura sólo
+                muestra el 53% del ancho de la foto, así que pegada al borde
+                izquierdo la ventana termina en 53% y le corta el canto derecho a
+                la gamela. Con 16% la ventana va de 7% a 60% y la deja entera, sin
+                dejar de estar corrida hacia la izquierda. En móvil la ranura es
+                más ancha que alta, entra el 83% del cuadro y la gamela cae
+                cómoda igual. */}
             <div className="relative order-first min-h-[300px] lg:order-none">
               <Image
-                src={FOTO.parras}
+                src={FOTO.formulario}
                 alt=""
                 aria-hidden="true"
                 fill
-                className="object-cover"
+                className="object-cover object-[16%_center]"
                 sizes="(max-width: 1024px) 100vw, 45vw"
               />
             </div>
