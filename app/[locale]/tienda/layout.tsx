@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
 import { alternatesFor } from "@/lib/alternates";
 
 /**
@@ -6,16 +7,22 @@ import { alternatesFor } from "@/lib/alternates";
  * client component (usa el store del carrito y los filtros), y un client
  * component no puede exportar `generateMetadata`.
  *
- * PENDIENTE: `messages/*.json` no tiene un namespace `metadata.tienda`, así que
- * la tienda hereda el title y la description genéricos del sitio. Redactar ese
- * copy en es/en/pt es trabajo de contenido y necesita validación del cliente
- * (ver el blocker de copy EN/PT en docs/HANDOFF.md), por eso no se inventa acá.
+ * El copy EN/PT es borrador optimizado, no traducción validada por el cliente
+ * (ver el blocker de copy en docs/HANDOFF.md). Se escribió igual porque la
+ * alternativa era peor: sin `metadata.tienda`, las tres URLs de la tienda
+ * heredaban el título y la descripción de la portada, y competían con ella por
+ * el mismo resultado en Google en vez de responder a la intención de compra.
  */
 export async function generateMetadata({
   params,
 }: LayoutProps<"/[locale]/tienda">): Promise<Metadata> {
   const { locale } = await params;
-  return { alternates: alternatesFor(locale, "/tienda") };
+  const t = await getTranslations({ locale, namespace: "metadata.tienda" });
+  return {
+    title: t("title"),
+    description: t("description"),
+    alternates: alternatesFor(locale, "/tienda"),
+  };
 }
 
 export default function TiendaLayout({
