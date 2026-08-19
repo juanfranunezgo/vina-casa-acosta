@@ -5,6 +5,8 @@ import { useLocale, useTranslations } from "next-intl";
 import { Check, Loader2, Mail } from "lucide-react";
 import { CONTACT_EMAIL } from "@/lib/contact";
 import { submitToNetlifyForms } from "@/lib/netlifyForms";
+import PrivacyConsent from "@/components/PrivacyConsent";
+import { PRIVACIDAD_VERSION } from "@/lib/legal";
 
 type Status = "idle" | "submitting" | "success" | "error";
 
@@ -20,6 +22,7 @@ export default function ContactForm() {
   const [subject, setSubject] = useState("");
   const [message, setMessage] = useState("");
   const [botField, setBotField] = useState("");
+  const [consent, setConsent] = useState(false);
 
   /**
    * Los envíos van a Netlify Forms y quedan en el panel del proyecto, además
@@ -38,12 +41,17 @@ export default function ContactForm() {
         asunto: t(`subjects.${subject || "other"}`),
         mensaje: message,
         idioma: locale,
+        // Qué edición de la política se aceptó, no sólo que se aceptó: cuando
+        // salga una v1.2, los consentimientos ya guardados siguen diciendo la
+        // verdad sobre lo que esta persona leyó.
+        privacidad: PRIVACIDAD_VERSION,
         "bot-field": botField,
       });
       setName("");
       setEmail("");
       setSubject("");
       setMessage("");
+      setConsent(false);
       setStatus("success");
       window.setTimeout(() => setStatus("idle"), 6000);
     } catch {
@@ -131,6 +139,8 @@ export default function ContactForm() {
           className="w-full resize-none border-0 border-b border-outline bg-transparent px-0 py-2 font-body text-body-md transition-colors focus:border-primary focus:outline-none"
         />
       </div>
+
+      <PrivacyConsent id="contacto-privacidad" checked={consent} onChange={setConsent} />
 
       <button
         type="submit"

@@ -5,6 +5,8 @@ import { useLocale, useTranslations } from "next-intl";
 import { Loader2, Check, Send, MessageCircle, CalendarDays, Users } from "lucide-react";
 import { CONTACT_WHATSAPP_URL } from "@/lib/contact";
 import { submitToNetlifyForms } from "@/lib/netlifyForms";
+import PrivacyConsent from "@/components/PrivacyConsent";
+import { PRIVACIDAD_VERSION } from "@/lib/legal";
 
 type Status = "idle" | "submitting" | "success" | "error";
 
@@ -54,6 +56,7 @@ export default function ActivityReservationForm({ activityName, minPeople, mode 
   const [date, setDate] = useState("");
   const [note, setNote] = useState("");
   const [botField, setBotField] = useState("");
+  const [consent, setConsent] = useState(false);
   const dateRef = useRef<HTMLInputElement>(null);
 
   // Grupo por debajo del mínimo publicado. El campo dejó de corregir el número
@@ -103,6 +106,10 @@ export default function ActivityReservationForm({ activityName, minPeople, mode 
         fecha: date,
         nota: note,
         idioma: locale,
+        // Qué edición de la política se aceptó, no sólo que se aceptó: cuando
+        // salga una v1.2, los consentimientos ya guardados siguen diciendo la
+        // verdad sobre lo que esta persona leyó.
+        privacidad: PRIVACIDAD_VERSION,
         "bot-field": botField,
       });
       setStatus("success");
@@ -113,6 +120,7 @@ export default function ActivityReservationForm({ activityName, minPeople, mode 
         setPeople(minPeople === undefined ? "" : String(minPeople));
         setDate("");
         setNote("");
+        setConsent(false);
         setStatus("idle");
       }, 5000);
     } catch {
@@ -295,6 +303,12 @@ export default function ActivityReservationForm({ activityName, minPeople, mode 
           />
         </div>
       </div>
+
+      <PrivacyConsent
+        id={`reserva-privacidad-${mode}`}
+        checked={consent}
+        onChange={setConsent}
+      />
 
       <div className="flex flex-col sm:flex-row gap-3 pt-2">
         <button
