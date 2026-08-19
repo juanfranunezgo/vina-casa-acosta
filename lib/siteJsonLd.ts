@@ -24,12 +24,14 @@ import {
  * sitio) y `aggregateRating` (no hay reseñas propias publicadas; inventarlas o
  * copiarlas de Google sería marcado falso y motivo de penalización).
  *
- * El nodo se emite completo en las cinco páginas principales. Es lo que hace
- * cualquier sitio con LocalBusiness y lo que Google espera: así ninguna página
- * depende de que el crawler haya visitado otra para resolver la entidad.
+ * El nodo se emite completo en las cinco páginas principales y en cada ficha de
+ * vino (`lib/wineJsonLd.ts` lo reusa desde acá). Es lo que hace cualquier sitio
+ * con LocalBusiness y lo que Google espera: así ninguna página depende de que el
+ * crawler haya visitado otra para resolver la entidad — que es justo el caso
+ * cuando la visita llega desde un buscador o desde un motor de IA.
  */
 
-const WINERY_ID = `${SITE_URL}/#winery`;
+export const WINERY_ID = `${SITE_URL}/#winery`;
 const WEBSITE_ID = `${SITE_URL}/#website`;
 
 /** Perfil oficial en Google Maps — el mismo link del footer. */
@@ -65,7 +67,7 @@ const OPENING_HOURS = [
  * Declarar los dos es JSON-LD válido, no cuesta nada y hace que lo reconozca
  * todo el mundo sin perder la precisión de decir que es una viña.
  */
-function wineryNode(locale: string, description: string) {
+export function wineryNode(locale: string, description: string) {
   return {
     "@type": ["Winery", "LocalBusiness"],
     "@id": WINERY_ID,
@@ -151,6 +153,83 @@ export function buildVinosJsonLd(locale: string, copy: PageCopy) {
       "@type": "CollectionPage",
       "@id": `${SITE_URL}/${locale}/vinos#page`,
       url: `${SITE_URL}/${locale}/vinos`,
+      name: copy.name,
+      description: copy.description,
+      inLanguage: locale,
+      isPartOf: { "@id": WEBSITE_ID },
+      about: { "@id": WINERY_ID },
+    },
+  ]);
+}
+
+/**
+ * Una persona del equipo, con los textos ya traducidos por la pagina.
+ *
+ * `key` no es decorativo: es el fragmento del `@id` de su nodo, y por eso tiene
+ * que ser el mismo identificador que usa `staffMembers` en la pagina. Si un dia
+ * se renombra alli, el `@id` de esa persona cambia y Google lo lee como otra
+ * entidad — no como la misma con otro nombre.
+ */
+type StaffMember = {
+  key: string;
+  name: string;
+  /** Cargo tal como se lee sobre el nombre, ej. "Agronomo". */
+  role: string;
+  /** Resena de la persona, el mismo parrafo que muestra la pagina. */
+  bio: string;
+  /** Retrato, ruta de `public/`. */
+  image: string;
+};
+
+/**
+ * Staff: las personas del equipo como entidades, no como texto suelto.
+ *
+ * Por que vale la pena: es la pagina donde el sitio demuestra que detras de la
+ * vina hay gente con nombre, cargo y trayectoria — exactamente la senal de
+ * experiencia y autoria que Google evalua bajo E-E-A-T, y lo primero que un
+ * motor de IA busca cuando alguien pregunta "quien hace este vino". Hasta ahora
+ * esa informacion estaba solo en el HTML de la pagina, legible para una persona
+ * y opaca para un parser.
+ *
+ * Cada `Person` declara unicamente lo que la ficha muestra: nombre, cargo,
+ * resena y retrato. No hay `sameAs` porque el sitio no publica perfiles
+ * personales de nadie, y no hay `email` ni `telephone` porque los datos de
+ * contacto son los de la vina, no los de cada persona. Inventar un perfil o
+ * repartir el telefono del negocio entre cuatro personas serian dos formas
+ * distintas de decir algo que la pagina no dice.
+ *
+ * `worksFor` y `employee` son el mismo vinculo declarado desde los dos lados.
+ * Es redundante a proposito: los consumidores de structured data no recorren el
+ * grafo igual, y con la relacion en ambas direcciones ninguno tiene que
+ * inferirla.
+ */
+export function buildStaffJsonLd(
+  locale: string,
+  copy: PageCopy,
+  members: StaffMember[],
+) {
+  const url = `${SITE_URL}/${locale}/staff`;
+
+  const personas = members.map((member) => ({
+    "@type": "Person",
+    "@id": `${url}#${member.key}`,
+    name: member.name,
+    jobTitle: member.role,
+    description: member.bio,
+    image: `${SITE_URL}${member.image}`,
+    worksFor: { "@id": WINERY_ID },
+  }));
+
+  return graph([
+    {
+      ...wineryNode(locale, copy.description),
+      employee: personas.map((persona) => ({ "@id": persona["@id"] })),
+    },
+    ...personas,
+    {
+      "@type": "AboutPage",
+      "@id": `${url}#page`,
+      url,
       name: copy.name,
       description: copy.description,
       inLanguage: locale,

@@ -4,6 +4,7 @@ import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { ArrowLeft, ArrowRight, FileText, Utensils } from "lucide-react";
 import CatalogOriginMeta from "@/components/CatalogOriginMeta";
+import JsonLd from "@/components/JsonLd";
 import Reveal from "@/components/Reveal";
 import Button from "@/components/ui/Button";
 import ProductPurchase from "@/components/ProductPurchase";
@@ -13,6 +14,7 @@ import { getCatalog, getWineBySlug } from "@/lib/afeleia/catalog";
 import { joinLabels, labelOr, translatedListOr, translatedOr } from "@/lib/afeleia/copy";
 import { routing } from "@/i18n/routing";
 import { alternatesFor } from "@/lib/alternates";
+import { buildWineDetailJsonLd } from "@/lib/wineJsonLd";
 
 // El catálogo lo publica Afeleia: la ficha se reconstruye cada minuto en vez de
 // quedar congelada en el build. Un vino nuevo que no estaba al compilar se
@@ -115,9 +117,24 @@ export default async function WinePage({
     maximumFractionDigits: 0,
   }).format(wine.priceCLP);
 
+  // Structured data de la ficha. Se arma acá abajo, con los mismos valores que
+  // la página acaba de resolver para mostrarlos, y no con una segunda lectura
+  // del catálogo: así lo marcado y lo visible no pueden separarse.
+  const tMeta = await getTranslations("metadata");
+  const jsonLd = buildWineDetailJsonLd(wine, locale, {
+    description: translatedOr(tWine, `${slug}.description`, wine.description),
+    category: joinLabels(
+      labelOr(tVinos, "types", wine.type),
+      labelOr(tVinos, "varieties", wine.variety),
+    ),
+    vintageProperty: t("vintageProperty"),
+    siteDescription: tMeta("description"),
+  });
+
   return (
     <>
       <CatalogOriginMeta />
+      <JsonLd data={jsonLd} />
       <section className="pt-32 pb-section-gap px-margin-mobile md:px-margin-desktop max-w-(--container-max) mx-auto">
         <Button
           href={`/${locale}/vinos`}
