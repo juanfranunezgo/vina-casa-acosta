@@ -374,3 +374,23 @@ body {
     scroll-behavior: auto;
   }
 }
+
+/* Verificación de edad (+18) — ver components/AgeGate.tsx.
+
+   La capa se sirve en el HTML de todas las páginas y arranca oculta. El script
+   de AgeGate marca <html data-age-gate="pendiente"> antes del primer pintado
+   cuando este navegador no tiene una confirmación vigente, y recién ahí estas
+   dos reglas la muestran y bloquean el scroll del fondo.
+
+   El orden importa: si el estado por defecto fuera "visible", un visitante sin
+   JavaScript quedaría encerrado —los botones necesitan JS— y quien ya confirmó
+   vería la capa parpadear en cada carga. */
+#age-gate {
+  display: none;
+}
+html[data-age-gate="pendiente"] #age-gate {
+  display: flex;
+}
+html[data-age-gate="pendiente"] body {
+  overflow: hidden;
+}

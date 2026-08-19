@@ -5,6 +5,7 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Libre_Caslon_Text, Work_Sans, Crimson_Pro } from "next/font/google";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import AgeGate, { AGE_GATE_SCRIPT } from "@/components/AgeGate";
 import CartDrawer from "@/components/CartDrawer";
 import CartButton from "@/components/CartButton";
 import ScrollReset from "@/components/ScrollReset";
@@ -112,6 +113,12 @@ export default async function LocaleLayout({
       className={`${libreCaslon.variable} ${workSans.variable} ${crimsonPro.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col bg-background text-on-background">
+        {/* Decide si la capa de +18 se ve, antes del primer pintado. Va inline y
+            no como componente porque tiene que correr antes de que React
+            despierte: montarla al hidratar le mostraría la página entera a quien
+            todavía no confirma su edad. `beforeInteractive` de next/script no
+            sirve acá — se inyecta después del HTML del layout. */}
+        <script dangerouslySetInnerHTML={{ __html: AGE_GATE_SCRIPT }} />
         <NextIntlClientProvider>
           <ScrollReset />
           <Navbar />
@@ -119,6 +126,7 @@ export default async function LocaleLayout({
           <Footer />
           <CartButton />
           <CartDrawer />
+          <AgeGate />
         </NextIntlClientProvider>
       </body>
     </html>
