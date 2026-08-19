@@ -165,12 +165,12 @@ Su hero es la única foto propia de una actividad que no es tour: aérea del gru
 viñedo, servida en tres anchos WebP. Sin encuadre vertical a propósito y con el `sizes` en
 `vh` — el detalle y las mediciones están en [`FOTOS.md`](FOTOS.md).
 
-**Las nueve fotos de la página salen de material real**: cuatro son encuadres de esa misma
-aérea (`npm run fotos:vendimia`) y el resto son fotos de la viña que ya estaban en el repo.
-No hay stock ni fotos de otras actividades haciéndose pasar por vendimia; los `alt`
-describen lo que se ve y no afirman que el asado o la mesa puesta sean de una vendimia. Por
-eso **el hub no usa `GalleryPlaceholder`**: su galería tiene fotos de verdad, y el
-placeholder de marcos vacíos se quedó solo en las 14 fichas.
+**Todas las fotos de la página salen de material real** (ocho de ellas, de una vendimia de
+verdad, desde el 2026-08-18 — ver más abajo). No hay stock ni fotos de otras actividades
+haciéndose pasar por vendimia; los `alt` describen lo que se ve y el del asado —la única
+prestada que queda, de la galería de contacto— no afirma que sea de una vendimia. Por eso
+**el hub no usa `GalleryPlaceholder`**: su galería tiene fotos de verdad, y el placeholder
+de marcos vacíos se quedó solo en las 14 fichas.
 
 **Ritmo visual:** el resto del sitio es claro y parejo, y esta página alterna — las dos
 secciones de contexto (qué es la vendimia, el ciclo de la vid) van en penumbra sobre
@@ -178,9 +178,22 @@ secciones de contexto (qué es la vendimia, el ciclo de la vid) van en penumbra 
 galería y el formulario. Son los mismos tokens del sistema con otra intensidad, no una
 paleta nueva.
 
-**Lo que le falta:** fechas y precio de la próxima temporada, fotos de la jornada para la
-galería (hoy son marcos vacíos) y la validación del copy, que en ES es nuestro salvo el
-programa y el ciclo, y en EN/PT no lo vio una persona.
+**Fotos propias desde el 2026-08-18.** Llegaron ocho de una vendimia real y desplazaron a
+casi todas las prestadas: el tríptico vertical de Dv2 (mosto, racimo en la mano, pisoneo)
+reemplazó la única foto apaisada, Dv4 pasó a ser un carrusel —el mismo `CollectionPhotos`
+de las bandas de /vinos, con el desayuno primero y el asado segundo—, la galería de Dv6
+cambió sus tres verticales por gente cosechando, y Dv7 estrena la gamela roja al pie de la
+parra. De la aérea sólo queda en pie `vendimia-grupo`, la apertura de la galería.
+
+`CollectionPhotos` acepta ahora `alt` como arreglo, una por foto. En /vinos todas las fotos
+de una banda son la misma colección y un `alt` común alcanza; acá son dos escenas distintas
+y prestarle a una el texto de la otra le describiría a quien no ve algo que no está en
+pantalla. Las medidas, los anclajes de recorte y las dos trampas (orientación EXIF y el
+`object-position` de Dv7) están en [`FOTOS.md`](FOTOS.md).
+
+**Lo que le falta:** fechas y precio de la próxima temporada, y la validación del copy, que
+en ES es nuestro salvo el programa y el ciclo, y en EN/PT no lo vio una persona — los ocho
+`alt` nuevos entran en esa misma deuda.
 
 **Pendiente tras el plan 3:**
 - **Las tarjetas del mosaico `A4` (home) siguen sin selector.** Las de `D3` (índice) sí lo
@@ -270,6 +283,61 @@ agotadas no cuentan, igual que no suman al total estimado. **Pendiente:** hoy la
 sólo se descubre al abrir el carrito; falta anunciarla en la tienda y en la ficha de cada
 vino (una cadena nueva en tres idiomas) para que nadie llegue al cierre con la sorpresa.
 
+**Legal (actualizado 2026-08-18):** el footer enlaza **tres documentos**, todos en
+`public/documentos/` y **sólo en español**: `politica-de-privacidad.pdf` (v1.1),
+`politica-de-cookies.pdf` (v1.2) y `terminos-y-condiciones.pdf` (v1.0), los tres con
+vigencia 16-08-2026. El mapa `documentosLegales` de `Footer.tsx` es la única fuente: un
+idioma sin archivo propio deja su etiqueta como texto, y `tests/legal-docs-source.test.mjs`
+falla si un enlace apunta a un PDF que no está en `public/` — el modo de falla real, porque
+un renombre no se ve en pantalla y devuelve un 404 donde debía estar la política.
+
+Tres cosas que los documentos afirman y el sitio todavía no hace, anotadas para no
+descubrirlas en una fiscalización:
+
+- La política de cookies describe el **flujo de pago con Checkout Pro de Mercado Pago**
+  (cookie de "pedido en curso" incluida) como configuración vigente. Hoy el carrito deriva
+  a WhatsApp y no existe ese flujo.
+- Declara una **cookie propia de idioma**. next-intl lleva el locale en la URL
+  (`localePrefix: "always"`) y el sitio no escribe esa cookie.
+- Su tabla de tecnologías es una **lista cerrada** (idioma · pedido · carrito · Mercado
+  Pago). Cualquier cosa nueva que se guarde en el navegador —la marca del gate de +18, por
+  ejemplo— pide una fila más en una v1.3.
+
+El aviso de consumo moderado **sí existe** en los tres idiomas: es `footer.disclaimer`
+("Beber con moderación. Prohibida la venta de alcohol a menores de 18 años · Ley N° 19.925").
+
+**Verificación de edad (+18) desde el 2026-08-18** — `components/AgeGate.tsx`, montada en el
+layout, sobre todas las páginas y recordada 30 días en `localStorage`. Lo que hay que saber
+antes de tocarla:
+
+- **Es una capa encima del HTML servido, no un reemplazo.** El contenido de las 112 páginas
+  sigue completo en el DOM y no existe ninguna ruta `/edad`. Si alguien la convierte en un
+  redirect o en un `display:none` sobre `<main>`, el sitio deja de ser indexable.
+- **Quién decide que se vea.** El servidor no sabe si este visitante ya confirmó, así que la
+  capa se sirve siempre y arranca oculta por CSS; un script inline del layout marca
+  `<html data-age-gate="pendiente">` antes del primer pintado cuando no hay confirmación
+  vigente. Montarla al hidratar mostraría la página entera primero, y ocultarla al hidratar
+  la haría parpadear a quien ya confirmó.
+- **El componente lee ese atributo con `useSyncExternalStore`**, no con un `setState` en un
+  efecto: el dato vive fuera de React y el render del servidor tiene que decir "pendiente"
+  para que el marcado exista. La regla `react-hooks/set-state-in-effect` rechaza lo otro.
+- **Sin JavaScript no aparece**, a propósito: sus botones lo necesitan y mostrarla dejaría el
+  sitio bloqueado sin salida.
+
+**Consentimiento de privacidad en los formularios**, misma fecha: `components/PrivacyConsent.tsx`
+es una casilla `required` —no un botón deshabilitado, que no explica qué falta— y viaja como
+campo `privacidad` con la **edición aceptada** (`PRIVACIDAD_VERSION` de `lib/legal.ts`, hoy
+"v1.1 (16-08-2026)"), para que el registro diga qué se aceptó y no sólo que se aceptó. En
+`en` y `pt` enlaza el PDF en español y la etiqueta lo advierte: es lo contrario de la regla
+del footer, y la diferencia es que ahí se *ofrece* un documento y acá se *pide aceptarlo*.
+
+⚠️ **El campo nuevo hay que declararlo en `public/__forms.html`** o Netlify lo descarta en
+silencio. Eso ya no depende de que alguien se acuerde: `tests/netlify-forms-paridad.test.mjs`
+compara campo por campo lo que envía cada componente contra lo declarado, en los dos
+sentidos.
+
+Historia previa:
+
 **Legal:** Términos y Condiciones **sí existe** desde el 2026-08-17:
 `public/documentos/terminos-y-condiciones.pdf` (v1.0, vigencia 16-08-2026), enlazado desde
 el footer **sólo en español** — en `/en` y `/pt` la etiqueta sigue siendo texto, porque
@@ -277,10 +345,10 @@ enlazar un documento que el visitante no puede leer promete algo que no se cumpl
 de idiomas está en `Footer.tsx`. El nombre del archivo es estable a propósito: una v1.1 lo
 reemplaza sin tocar el enlace. **Pendiente:** el propio documento dice que esta edición es
 "para publicación y adaptación web", y un PDF enlazado desde el pie es ilegible para Google
-y para los buscadores de IA — falta la página `/terminos` con el texto. Privacidad y Mapa de
-Sitio siguen sin existir (texto sin enlace, a propósito). Tampoco hay verificación de edad
-ni aviso de consumo moderado: para vender alcohol en Chile hay que revisarlo contra la Ley
-19.925.
+y para los buscadores de IA — falta la página `/terminos` con el texto, y lo mismo vale hoy
+para privacidad y cookies. **Mapa de Sitio** sigue sin existir (texto sin enlace, a
+propósito). La **verificación de edad** tampoco existe todavía: es lo que falta para cerrar
+la Ley 19.925, que el aviso del footer ya cubre en su otra mitad.
 
 **Medición:** cero analítica instalada.
 
