@@ -400,7 +400,7 @@ export default async function ActividadesPage({
 
           {/* Banda de Vendimia. Es la única actividad del catálogo con página
               propia de temporada, así que va destacada y no como una tarjeta
-              más: en marzo es lo que viene a buscar la mitad de las visitas.
+              más: en la temporada es lo que viene a buscar la mitad de las visitas.
               Desaparece sola si `VENDIMIA_HUB` vuelve a `null`. */}
           {VENDIMIA_HUB && (
             <Reveal className="mb-10 md:mb-12">

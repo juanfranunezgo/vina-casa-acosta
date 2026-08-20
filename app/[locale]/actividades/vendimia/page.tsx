@@ -134,7 +134,7 @@ const FOTO = {
 type CycleStep = { season: string; name: string; description: string };
 
 /** La etapa que esta página vende, resaltada dentro del ciclo. */
-const HIGHLIGHTED_CYCLE_STEP = 3;
+const HIGHLIGHTED_CYCLE_STEP = 4;
 
 /**
  * Un ícono por paso de la jornada, en el MISMO orden que `program.steps` de
@@ -175,17 +175,18 @@ const PROGRAM_ICONS = [
  * en el campo tampoco es una fecha.
  *
  * El tramo teñido de la línea NO sale de acá sino de `VENDIMIA_MONTHS`: son dos
- * cosas distintas y a propósito no coinciden. Las etapas son el trabajo de la
- * viña; el tramo en vino es cuándo puede venir el visitante (marzo, abril y
- * mayo), y que arranque dentro de "vendimia" y siga durante "de la uva al vino"
- * es exacto — se cosecha al principio de esa ventana y el resto ya es bodega.
+ * cosas distintas —las etapas son el trabajo de la viña; el tramo en vino es
+ * cuándo puede venir el visitante— aunque desde que la cosecha es de abril y
+ * mayo las dos coincidan. Que coincidan es un hecho de este año, no una regla:
+ * si la viña abre una jornada fuera de la cosecha, se mueve `VENDIMIA_MONTHS`
+ * sin tocar el ciclo.
  */
 const CYCLE_SPANS = [
   { start: 1, span: 3 }, // Poda y amarra — invierno: junio, julio, agosto
   { start: 4, span: 3 }, // Desbrote — primavera: septiembre, octubre, noviembre
   { start: 7, span: 2 }, // Deshoje — verano: diciembre, enero
-  { start: 9, span: 2 }, // Vendimia — fin del verano: febrero, marzo
-  { start: 11, span: 2 }, // De la uva al vino — otoño: abril, mayo
+  { start: 9, span: 2 }, // Maduración — fin del verano: febrero, marzo
+  { start: 11, span: 2 }, // Vendimia — otoño: abril, mayo
 ];
 
 export async function generateMetadata({
@@ -417,6 +418,20 @@ export default async function VendimiaPage({
                   </div>
                 ))}
               </div>
+
+              {/* El botón de temporada vivía al pie del ciclo (Dv3), a media
+                  página de acá. Cuelga del tríptico porque este es el punto en
+                  que el visitante ya sabe qué es la vendimia y todavía no bajó:
+                  es donde la pregunta "¿cuándo puedo ir?" aparece sola. */}
+              <div className="mt-8">
+                <Button
+                  href="#consulta"
+                  variant="primary"
+                  iconRight={<ArrowRight className="h-4 w-4" />}
+                >
+                  {tLabels("form.titleSeason")}
+                </Button>
+              </div>
             </Reveal>
           </div>
 
@@ -427,9 +442,13 @@ export default async function VendimiaPage({
               {facts.map(({ label, value }) => (
                 <div key={label} className="border-t border-outline-variant pt-4">
                   {/* 12px y no 11: es el piso del token `label-sm` y el mínimo
-                      legible en móvil. El tono tampoco baja de /70 — /60 sobre
-                      papel no llega al 4,5:1. */}
-                  <dt className="font-body text-[12px] font-semibold uppercase tracking-[0.16em] text-on-surface-variant/70">
+                      legible en móvil. El rótulo va en vino y no en gris: es el
+                      color con que el resto de la página marca los rótulos
+                      (`Cómo transcurre el día`, `La jornada incluye`, la etapa
+                      destacada del ciclo), y acá quedaban como el único gris.
+                      Contraste 9,4:1 sobre papel — el gris /70 que había daba
+                      4,7:1, así que el cambio también sube. */}
+                  <dt className="font-body text-[12px] font-semibold uppercase tracking-[0.16em] text-wine-accent">
                     {label}
                   </dt>
                   <dd className="mt-2 font-display text-xl leading-snug text-primary">
@@ -442,10 +461,142 @@ export default async function VendimiaPage({
         </div>
       </section>
 
+      {/* Dv4 — La jornada. Numerada, porque el orden ES la información: se
+          desayuna, se corta, se pisa y recién ahí se celebra.
+
+          No usa `ActivityProgram`: ese componente pinta cada paso con un número
+          dentro de un círculo con tinte y anillo, unidos por un hilo vertical, y
+          es justo el vocabulario que esta página abandona. Sigue intacto para
+          las fichas (Dd4), que son las que lo estrenaron.
+
+          Acá cada paso lleva un ícono que dice qué pasa en ese momento —tijera,
+          racimo, pies, fuego, copa— y lo que separa los pasos es un filete. El
+          orden **no** se perdió al sacar los numerales: sigue siendo un `<ol>`,
+          que es lo que un lector de pantalla anuncia como secuencia. Los íconos
+          van `aria-hidden` porque el texto de al lado ya nombra el paso. */}
+      <section
+        id="jornada"
+        className="scroll-mt-24 bg-surface-container-low py-section-gap px-margin-mobile md:px-margin-desktop"
+      >
+        <div className="mx-auto max-w-(--container-max)">
+          {/* El encabezado va a todo el ancho y no dentro de la columna de 7:
+              la foto arrancaba a la altura del título y se lo comía. Ahora el
+              título abre la sección solo y la grilla —con ella, la foto—
+              empieza en "Cómo transcurre el día". */}
+          <Reveal>
+            <h2 className="font-display text-[2rem] leading-[1.12] text-primary md:text-[2.6rem]">
+              {t("program.title")}
+            </h2>
+            <p className="mt-5 max-w-[58ch] font-body text-[17px] leading-[1.7] text-on-surface-variant">
+              {t("program.lead")}
+            </p>
+          </Reveal>
+
+          <div className="mt-14 grid grid-cols-1 gap-x-16 gap-y-12 lg:grid-cols-12">
+            <div className="lg:col-span-7">
+              <Reveal delay={80}>
+                <h3 className="font-accent text-lg font-light italic text-wine-accent">
+                  {t("program.stepsTitle")}
+                </h3>
+                <ol className="mt-5">
+                  {programSteps.map((step, index) => {
+                    // Si algún día `messages` suma un paso, el que sobre cae en la
+                    // uva: es el ícono más neutro del set sin ser un tick genérico.
+                    const Icon = PROGRAM_ICONS[index] ?? Grape;
+                    return (
+                      <li
+                        key={step}
+                        className="grid grid-cols-[1.75rem_1fr] items-start gap-x-5 border-t border-outline-variant py-5"
+                      >
+                        {/* Decorativo: el ícono ilustra el paso, no lo nombra —
+                            eso lo hace el texto de al lado. Y el orden lo sigue
+                            comunicando el <ol>, que es lo que importaba cuando los
+                            pasos iban numerados a la vista. */}
+                        <Icon
+                          aria-hidden="true"
+                          strokeWidth={1.5}
+                          className="mt-0.5 h-7 w-7 text-wine-accent"
+                        />
+                        <p className="font-body text-[17px] leading-[1.65] text-on-surface">
+                          {step}
+                        </p>
+                      </li>
+                    );
+                  })}
+                </ol>
+              </Reveal>
+
+              <Reveal delay={120}>
+                <h3 className="mt-14 font-accent text-lg font-light italic text-wine-accent">
+                  {t("program.includesTitle")}
+                </h3>
+                {/* Sin check dentro de un círculo: el filete de arriba ya separa un
+                    ítem del siguiente. */}
+                <ul className="mt-5 grid gap-x-12 sm:grid-cols-2">
+                  {includes.map((item) => (
+                    <li
+                      key={item}
+                      className="border-t border-outline-variant py-4 font-body text-[17px] leading-[1.6] text-on-surface"
+                    >
+                      {item}
+                    </li>
+                  ))}
+                </ul>
+                {/* Sin tarjeta de precio ni de mínimo de personas: la ficha de una
+                    actividad las trae porque el catálogo las declara, y para la
+                    vendimia todavía no existen. Un "desde $X" o un "grupos desde
+                    N" inventado acá sería el dato que el visitante recuerda. */}
+
+                {/* La invitación cierra la jornada, no la abre: recién acá el
+                    visitante sabe qué está reservando. Apunta al mismo #consulta
+                    que el botón de Dv2 — ese es el que ve quien no baja hasta acá. */}
+                <div className="mt-10">
+                  <Button
+                    href="#consulta"
+                    variant="primary"
+                    iconRight={<ArrowRight className="h-4 w-4" />}
+                  >
+                    {t("program.cta")}
+                  </Button>
+                </div>
+              </Reveal>
+            </div>
+
+            <div className="lg:col-span-5">
+              <Reveal delay={80}>
+                {/* El mismo carrusel de las bandas de colección de /vinos: marco
+                    4:5, crossfade, flechas, puntos y swipe. Se reusa entero en vez
+                    de escribir otro — es la ranura de la misma proporción.
+
+                    Las dos fotos son escenas distintas (el desayuno y el asado),
+                    así que el `alt` va por foto: prestarle a una el texto de la
+                    otra le describe a quien no ve algo que no está en pantalla.
+                    Esa es la razón de que `CollectionPhotos` acepte un arreglo.
+
+                    Abre el desayuno, que es de una vendimia de verdad y además el
+                    primer hito del día; el asado —que viene de la galería de
+                    contacto— queda segundo. */}
+                <div className="lg:sticky lg:top-28">
+                  <CollectionPhotos
+                    photos={[FOTO.desayuno, FOTO.asado]}
+                    alt={[t("photos.desayuno"), t("photos.asado")]}
+                    prevLabel={t("photos.prev")}
+                    nextLabel={t("photos.next")}
+                    goToLabels={[1, 2].map((index) =>
+                      t("photos.goTo", { index, total: 2 }),
+                    )}
+                  />
+                </div>
+              </Reveal>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Dv3 — El año de la viña. Una sola pieza donde antes había dos secciones
           (la grilla de cinco etapas y la franja de doce meses). El detalle del
           dibujo está en components/VineyardYear.tsx. */}
-      <section className="bg-surface-container-low py-section-gap px-margin-mobile md:px-margin-desktop">
+      <section className="bg-surface py-section-gap px-margin-mobile md:px-margin-desktop">
         <div className="mx-auto max-w-(--container-max)">
           <Reveal className="mb-14 max-w-2xl md:mb-16">
             <p className="mb-3 font-accent text-xl font-light italic text-wine-accent">
@@ -478,133 +629,10 @@ export default async function VendimiaPage({
           </Reveal>
 
           <Reveal delay={140}>
-            <div className="mt-12 flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
-              <p className="max-w-2xl font-body text-[17px] leading-[1.7] text-on-surface-variant">
-                {t("season.note")}
-              </p>
-              <Button
-                href="#consulta"
-                variant="primary"
-                className="shrink-0"
-                iconRight={<ArrowRight className="h-4 w-4" />}
-              >
-                {tLabels("form.titleSeason")}
-              </Button>
-            </div>
+            <p className="mt-12 max-w-2xl font-body text-[17px] leading-[1.7] text-on-surface-variant">
+              {t("season.note")}
+            </p>
           </Reveal>
-        </div>
-      </section>
-
-      {/* Dv4 — La jornada. Numerada, porque el orden ES la información: se
-          desayuna, se corta, se pisa y recién ahí se celebra.
-
-          No usa `ActivityProgram`: ese componente pinta cada paso con un número
-          dentro de un círculo con tinte y anillo, unidos por un hilo vertical, y
-          es justo el vocabulario que esta página abandona. Sigue intacto para
-          las fichas (Dd4), que son las que lo estrenaron.
-
-          Acá cada paso lleva un ícono que dice qué pasa en ese momento —tijera,
-          racimo, pies, fuego, copa— y lo que separa los pasos es un filete. El
-          orden **no** se perdió al sacar los numerales: sigue siendo un `<ol>`,
-          que es lo que un lector de pantalla anuncia como secuencia. Los íconos
-          van `aria-hidden` porque el texto de al lado ya nombra el paso. */}
-      <section
-        id="jornada"
-        className="scroll-mt-24 bg-surface py-section-gap px-margin-mobile md:px-margin-desktop"
-      >
-        <div className="mx-auto grid max-w-(--container-max) grid-cols-1 gap-x-16 gap-y-12 lg:grid-cols-12">
-          <div className="lg:col-span-7">
-            <Reveal>
-              <h2 className="font-display text-[2rem] leading-[1.12] text-primary md:text-[2.6rem]">
-                {t("program.title")}
-              </h2>
-              <p className="mt-5 max-w-[58ch] font-body text-[17px] leading-[1.7] text-on-surface-variant">
-                {t("program.lead")}
-              </p>
-            </Reveal>
-
-            <Reveal delay={80}>
-              <h3 className="mt-12 font-accent text-lg font-light italic text-wine-accent">
-                {t("program.stepsTitle")}
-              </h3>
-              <ol className="mt-5">
-                {programSteps.map((step, index) => {
-                  // Si algún día `messages` suma un paso, el que sobre cae en la
-                  // uva: es el ícono más neutro del set sin ser un tick genérico.
-                  const Icon = PROGRAM_ICONS[index] ?? Grape;
-                  return (
-                    <li
-                      key={step}
-                      className="grid grid-cols-[1.75rem_1fr] items-start gap-x-5 border-t border-outline-variant py-5"
-                    >
-                      {/* Decorativo: el ícono ilustra el paso, no lo nombra —
-                          eso lo hace el texto de al lado. Y el orden lo sigue
-                          comunicando el <ol>, que es lo que importaba cuando los
-                          pasos iban numerados a la vista. */}
-                      <Icon
-                        aria-hidden="true"
-                        strokeWidth={1.5}
-                        className="mt-0.5 h-7 w-7 text-wine-accent"
-                      />
-                      <p className="font-body text-[17px] leading-[1.65] text-on-surface">
-                        {step}
-                      </p>
-                    </li>
-                  );
-                })}
-              </ol>
-            </Reveal>
-
-            <Reveal delay={120}>
-              <h3 className="mt-14 font-accent text-lg font-light italic text-wine-accent">
-                {t("program.includesTitle")}
-              </h3>
-              {/* Sin check dentro de un círculo: el filete de arriba ya separa un
-                  ítem del siguiente. */}
-              <ul className="mt-5 grid gap-x-12 sm:grid-cols-2">
-                {includes.map((item) => (
-                  <li
-                    key={item}
-                    className="border-t border-outline-variant py-4 font-body text-[17px] leading-[1.6] text-on-surface"
-                  >
-                    {item}
-                  </li>
-                ))}
-              </ul>
-              {/* Sin tarjeta de precio ni de mínimo de personas: la ficha de una
-                  actividad las trae porque el catálogo las declara, y para la
-                  vendimia todavía no existen. Un "desde $X" o un "grupos desde
-                  N" inventado acá sería el dato que el visitante recuerda. */}
-            </Reveal>
-          </div>
-
-          <div className="lg:col-span-5">
-            <Reveal delay={80}>
-              {/* El mismo carrusel de las bandas de colección de /vinos: marco
-                  4:5, crossfade, flechas, puntos y swipe. Se reusa entero en vez
-                  de escribir otro — es la ranura de la misma proporción.
-
-                  Las dos fotos son escenas distintas (el desayuno y el asado),
-                  así que el `alt` va por foto: prestarle a una el texto de la
-                  otra le describe a quien no ve algo que no está en pantalla.
-                  Esa es la razón de que `CollectionPhotos` acepte un arreglo.
-
-                  Abre el desayuno, que es de una vendimia de verdad y además el
-                  primer hito del día; el asado —que viene de la galería de
-                  contacto— queda segundo. */}
-              <div className="lg:sticky lg:top-28">
-                <CollectionPhotos
-                  photos={[FOTO.desayuno, FOTO.asado]}
-                  alt={[t("photos.desayuno"), t("photos.asado")]}
-                  prevLabel={t("photos.prev")}
-                  nextLabel={t("photos.next")}
-                  goToLabels={[1, 2].map((index) =>
-                    t("photos.goTo", { index, total: 2 }),
-                  )}
-                />
-              </div>
-            </Reveal>
-          </div>
         </div>
       </section>
 

@@ -82,7 +82,7 @@ Datos verificables del negocio:
 
 - Ubicación: Fundo El Llano, lote 6, San Vicente de Tagua Tagua, Región de O'Higgins, Chile.
 - Valle: Cachapoal, en el valle del Rapel.
-- Horario: lunes a sábado de 10:00 a 18:00; jueves hasta las 20:00.
+- Horario: lunes a viernes de 08:00 a 16:30; sábados de 08:00 a 12:00 y de 13:00 a 17:00 (el sábado conviene confirmarlo por teléfono).
 - Contacto: ${CONTACT_PHONE_DISPLAY} · ${CONTACT_EMAIL}
 - Cepas de la casa: Carmenere, Tannat, Cabernet Sauvignon, Petit Verdot, y ensamblajes de esas variedades.
 - Líneas: Ombú, Lajau, Estación Francia, Berá, Guidaí y Yaráy Guá.
@@ -95,7 +95,7 @@ ${vinos.join("\n")}
 ## Visitas y experiencias
 
 ${experiencias.join("\n")}
-${VENDIMIA_HUB ? `${entrada("Vendimia", `${es}${VENDIMIA_HUB}`, "temporada de cosecha, entre marzo y mayo")}\n` : ""}
+${VENDIMIA_HUB ? `${entrada("Vendimia", `${es}${VENDIMIA_HUB}`, "temporada de cosecha, en abril y mayo")}\n` : ""}
 ## Páginas principales
 
 ${entrada("Inicio", es, "presentación de la viña")}

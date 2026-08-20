@@ -65,7 +65,7 @@ test("el sitemap deja de declararlo si el hub se apaga", async () => {
 });
 
 test("la vendimia se publica por meses, nunca por fecha exacta", () => {
-  assert.deepEqual(VENDIMIA_MONTHS, [3, 4, 5]);
+  assert.deepEqual(VENDIMIA_MONTHS, [4, 5]);
 
   for (const locale of LOCALES) {
     const bloque = JSON.stringify(messages[locale].activities.vendimia);
