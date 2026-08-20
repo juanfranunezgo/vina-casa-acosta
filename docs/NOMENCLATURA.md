@@ -92,9 +92,11 @@ La ruta lleva la categoría: `/actividades/tours/ombu`, `/actividades/talleres/p
 | Dv6 | Galería (apertura ancha + tres de apoyo) |
 | Dv7 | Consulta (formulario en modo temporada, sin mínimo de personas) |
 
-**El orden en pantalla es Dv1 · Dv2 · Dv3 · Dv4 · Dv6 · Dv7 · Dv5**, no el de la
+**El orden en pantalla es Dv1 · Dv2 · Dv4 · Dv3 · Dv6 · Dv7 · Dv5**, no el de la
 numeración: mandar a otra página justo antes del formulario es perder la visita.
 Es el mismo orden que la ficha `Dd`, donde "otras actividades" también cierra.
+
+**Dv4 va antes que Dv3** desde el 2026-08-19: la jornada es lo que el visitante viene a buscar, y el ciclo de la vid es el contexto que la explica. Contarle el año de la viña antes de decirle qué se hace ese día le pedía leer un calendario para llegar al programa.
 
 La página **no publica fechas exactas, precio ni mínimo de personas** — ver
 `docs/HANDOFF.md` y `tests/vendimia-hub.test.mjs`.
@@ -170,7 +172,7 @@ sugieren los nombres de Tailwind.
 | ID | Componente | Notas |
 |---|---|---|
 | NV | Navbar | Header con logo + nav + LanguageSwitcher + CartButton. Bajo "Actividades" cuelga un **acordeón de una columna** (panel de 22rem): seis filas en orden fijo — Vendimia · Tours · Talleres · Experiencias · Eventos · Ver todo. Las tres categorías despliegan sus fichas con `<details>` de `name` compartido (una abierta a la vez, sin JavaScript); las otras tres navegan directo. Reemplazó al mega-menú de cuatro columnas, donde la lista larga de Experiencias se partía y su segunda mitad quedaba bajo una columna sin encabezado. Se deriva de `data/activities.ts` y su contenido vive en `components/ActivitiesMenu.tsx`, compartido por escritorio y drawer móvil. **Los 14 enlaces están siempre en el HTML servido**, ocultos por CSS: ver `tests/navegacion-enlaces-source.test.mjs`. |
-| FT | Footer | Pie de página. Privacidad, Términos y Cookies enlazan a sus PDF **sólo en español** — el mapa vive en `lib/legal.ts` y un idioma sin archivo propio deja la etiqueta como texto. Mapa de Sitio sigue sin enlace porque esa página no existe. `tests/legal-docs-source.test.mjs` falla si un enlace apunta a un PDF que no está en `public/`. |
+| FT | Footer | Pie de página, **oscuro (`bg-primary`) y en tres bandas** desde el 2026-08-19: identidad y contacto directo · el índice del sitio en tres columnas · el cierre legal. La banda del medio baja a Vendimia, Tours, Experiencias y Eventos privados; **Talleres no está** porque el índice de actividades no tiene esa sección y un rótulo que no aterriza es lo mismo que se sacó con Mapa de Sitio. Privacidad, Términos y Cookies enlazan a sus PDF **sólo en español** — el mapa vive en `lib/legal.ts` y un idioma sin archivo propio deja la etiqueta como texto. Mapa de Sitio sigue sin enlace porque esa página no existe. `tests/legal-docs-source.test.mjs` falla si un enlace apunta a un PDF que no está en `public/`. |
 | CD | CartDrawer | Carrito lateral overlay (z-index alto). Bloquea el cierre del pedido por debajo de la compra mínima (`MIN_BOTTLES` en `lib/cart.ts`, hoy 6 botellas) y también si todo el carrito está agotado. |
 | AG | AgeGate | Verificación de +18 (Ley 19.925), sobre todo el sitio y recordada 30 días. **Es una capa sobre el HTML ya servido**: la página se renderiza entera y esto va encima, así que no hay contenido escondido de Google ni ruta `/edad` que indexar. Quién la ve lo decide un script inline del layout que marca `<html data-age-gate="pendiente">` antes del primer pintado; el CSS de `globals.css` hace el resto. Sin JavaScript no aparece, a propósito: sus botones lo necesitan y dejaría el sitio bloqueado sin salida. |
 

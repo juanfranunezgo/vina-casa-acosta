@@ -4,7 +4,7 @@ Estado real del proyecto para quien lo retome (persona o agente). `CLAUDE.md` ex
 stack y las convenciones; este archivo explica **en qué punto está**, qué no funciona
 todavía y qué trampas ya se pagaron.
 
-Última actualización: 2026-08-16.
+Última actualización: 2026-08-20.
 
 ---
 
@@ -105,11 +105,19 @@ catálogo no los trae. EN y PT, además, sin validación humana como el resto de
 otras once serían 90 strings en tres idiomas que nada renderiza. Se escriben cuando las
 tarjetas del plan 3 los necesiten. Los de `pizzas` quedaron de antes y tampoco se muestran.
 
-**Fotos:** las 11 fichas nuevas comparten dos imágenes de categoría (`talleres.jpg` y
+**Fotos:** el **Taller de mimbre** ya tiene material propio (2026-08-19): ocho fotos de un
+taller real, una por ranura de la ficha —hero, bajada, tarjeta de reserva, galería de
+cuatro y panel del formulario— y ninguna repetida. Entran por `photos` en
+`data/activities.ts`, con los `alt` en los tres bundles bajo
+`activities.items.mimbre.photos`; el pipeline es `npm run fotos:mimbre` (ver
+[`FOTOS.md`](FOTOS.md)) y `tests/actividades-fotos.test.mjs` cruza archivo, `alt` y
+proporción. La ficha aprendió a usarlas sola: sin `photos` sigue exactamente como estaba.
+
+Las otras 10 fichas nuevas siguen compartiendo dos imágenes de categoría (`talleres.jpg` y
 `pareja-columpio.webp`), que son hero, tarjeta de reserva y `og:image` a la vez; en las
 experiencias esa foto aparece además tres veces en la misma página. **Aceptado por el
-cliente**, que va a entregar fotos por actividad. Cuando lleguen es una línea `image` por
-actividad, sin tocar componentes.
+cliente**, que va a entregar fotos por actividad. Cuando lleguen, cada una es un bloque
+`photos` como el de mimbre, sin tocar componentes.
 
 **Anclas de categoría:** solo `tours` tiene en el índice una sección que lista su categoría,
 así que es la única cuya miga lleva fragmento. Talleres no tiene sección y la que se llama
@@ -261,10 +269,15 @@ encabezados antes del contenido —"¿Qué incluye?" → "Durante la experiencia
   `application/ld+json` a mano: `tests/json-ld-source.test.mjs` falla si aparece en
   cualquier archivo que no sea `JsonLd.tsx`.
 - ~~Deriva de NAP entre el footer y `/contacto`~~ → resuelto: el footer dice "O'Higgins" y
-  suma la excepción del jueves en los tres idiomas, igual que `/contacto` y que el
-  `OpeningHoursSpecification` del schema.
-- `app/[locale]/vinos/page.tsx` pide `quality={84}` y `next.config.ts` solo permite
-  `[65, 70, 75, 85, 95]` → warning en cada build. Cambiar a 85.
+  trae el horario vigente en los tres idiomas, igual que `/contacto` y que el
+  `OpeningHoursSpecification` del schema. **Horario vigente desde el 2026-08-19:**
+  lunes a viernes de 08:00 a 16:30, sábados de 08:00 a 12:00 y de 13:00 a 17:00 (el
+  sábado se confirma por teléfono). Se fue la excepción del jueves. El sábado va en
+  **dos** bloques de schema y no en uno corrido de 08:00 a 17:00: el corte de mediodía
+  existe, y declararlo seguido promete una hora en que no hay nadie.
+- ~~`app/[locale]/vinos/page.tsx` pide `quality={84}`~~ → ya no: la página no declara
+  `quality` en ninguna imagen y el build del 2026-08-20 no emite el warning. La lista de
+  `next.config.ts` sigue siendo `[65, 70, 75, 85, 95]`.
 
 **Catálogo:** los 13 precios reales llegaron el 2026-08-03 y están aplicados en el repo
 (`data/wines.ts` y `data/catalogo-fallback.json`), pero **falta cargarlos en el panel de
@@ -303,8 +316,12 @@ descubrirlas en una fiscalización:
   Pago). Cualquier cosa nueva que se guarde en el navegador —la marca del gate de +18, por
   ejemplo— pide una fila más en una v1.3.
 
-El aviso de consumo moderado **sí existe** en los tres idiomas: es `footer.disclaimer`
-("Beber con moderación. Prohibida la venta de alcohol a menores de 18 años · Ley N° 19.925").
+El aviso de consumo moderado **sí existe** en los tres idiomas: es `ageGate.legal` ("Bebe con
+moderación · Prohibida la venta de alcohol a menores de 18 años · Ley N° 19.925"), al pie de la
+tarjeta de +18, y la tienda repite el suyo en `tienda.disclaimer`. Vivía además en el pie como
+`footer.disclaimer`, que **se quitó el 2026-08-19** junto con el rework del pie: hoy el aviso no
+está permanente en pantalla, y quien ya confirmó su edad no lo vuelve a ver en 30 días.
+**Pendiente de confirmar con el cliente** si vuelve a la línea de cierre del pie.
 
 **Verificación de edad (+18) desde el 2026-08-18** — `components/AgeGate.tsx`, montada en el
 layout, sobre todas las páginas y recordada 30 días en `localStorage`. Lo que hay que saber
@@ -323,6 +340,21 @@ antes de tocarla:
   para que el marcado exista. La regla `react-hooks/set-state-in-effect` rechaza lo otro.
 - **Sin JavaScript no aparece**, a propósito: sus botones lo necesitan y mostrarla dejaría el
   sitio bloqueado sin salida.
+- **Es una foto a sangre, no una tarjeta (2026-08-20).** Pasó por las dos formas el mismo
+  día: la tarjeta dejaba la foto como miniatura de 320px y ponía tres líneas de texto al
+  lado, y al comparar con Montes y Viña Santa Cruz —donde la foto es la pantalla— se vio
+  que sobraba texto y faltaba imagen. Hoy la capa es la foto de los racimos con hojas
+  moradas (`public/images/edad/uvas-*`, entra por `npm run foto:heros`), con el mismo
+  `<picture>` de dirección de arte que los heros, dos velos medidos para que la foto se
+  siga viendo, y encima sólo el logo, el idioma, la pregunta y dos botones. **Se eliminó
+  `ageGate.body`** —el párrafo que explicaba la ley— en los tres bundles: lo dice la línea
+  legal en una frase.
+- **El selector de idioma vive dentro de la capa desde el 2026-08-20.** La pregunta llega
+  antes que el sitio, así que el selector del navbar todavía no se puede tocar: quien entraba
+  por `/en` tenía que confirmar su edad en español. Usa la variante `gate` de
+  `LanguageSwitcher` —la `mobile` son tres botones también, pero pintados para el panel oscuro
+  del menú— y el foco inicial apunta a `[data-age-gate-principal]`, para que el teclado
+  empiece contestando la pregunta y no eligiendo idioma.
 
 **Consentimiento de privacidad en los formularios**, misma fecha: `components/PrivacyConsent.tsx`
 es una casilla `required` —no un botón deshabilitado, que no explica qué falta— y viaja como
@@ -384,6 +416,23 @@ que hay que leer con ojo.
     red desde el panel de Afeleia, así que renombrar acá deja la ficha sin foto en
     producción. Las dos reemplazadas el 2026-08-17 (Betúm Yú y Estación Francia Tannat)
     **necesitan purgado de caché en Netlify** en el primer deploy que las lleve.
+- **Un color nuevo en `@theme` no aparece hasta reiniciar el dev server.** Agregar un
+  `--color-*` a `app/globals.css` y usar su utilidad (`bg-*`) en un componente compila sin
+  error, la clase queda en el DOM y el elemento sale **transparente**: Turbopack no rehace
+  el CSS de Tailwind ante un cambio de `@theme`, así que ni la variable ni la utilidad
+  existen en la hoja servida. No es un error de nombre ni de sintaxis — se diagnostica
+  pidiendo el `.css` del build y buscando el token ahí. Se arregla reiniciando
+  `npm run dev`. Editar un color que ya existe sí se recarga solo; el que no aparece es el
+  token nuevo. Verificado el 2026-08-19.
+- **Un atributo puesto a mano en `<html>` no es estado durable: React lo borra al
+  re-renderizar el layout.** Cambiar de idioma con `router.replace` vuelve a pintar
+  `<html lang>` y se lleva por delante el `data-age-gate="pendiente"` que había dejado el
+  script inline — y el script no vuelve a correr, porque la navegación es del cliente. Medido
+  el 2026-08-20 al poner el selector de idioma dentro de la capa de +18: la capa desaparecía y
+  el sitio quedaba entero a la vista con `localStorage` vacío, o sea un bypass silencioso de
+  la verificación de edad. `AgeGate` repone el atributo en un efecto mientras la capa deba
+  verse, y `hayQuePreguntar()` dejó de creerle sólo a él: relee `localStorage`, que es el dato
+  duro. `tests/age-gate-source.test.mjs` cuida las dos mitades.
 - **Tailwind v4 gira con la propiedad `rotate`, no con `transform`**: `rotate-180` compila
   a `rotate: 180deg`. Al depurar, `getComputedStyle(el).transform` dice `"none"` aunque el
   icono esté dado vuelta — cuesta una hora dar por rota una utilidad que funciona. Medir

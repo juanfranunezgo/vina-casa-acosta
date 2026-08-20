@@ -14,8 +14,9 @@ cd sitio-web
 npm run fotos:colecciones   # bandas de colección de /vinos (C2)
 npm run fotos:contacto      # galería de /contacto
 npm run foto:hero-vinos     # master horizontal del hero de /vinos
-npm run foto:heros          # los 4 heros full-bleed, desktop + móvil
+npm run foto:heros          # los heros full-bleed y la capa de +18, desktop + móvil
 npm run fotos:vendimia      # los 4 encuadres del hub de Vendimia (Dv)
+npm run fotos:mimbre        # las 8 fotos del Taller de mimbre (Dd)
 ```
 
 Si falta un archivo fuente, el script lo salta con un aviso y procesa el resto.
@@ -48,7 +49,7 @@ Recorte 4:5 centrado, 1200×1500, webp q82.
 ### `npm run foto:hero-vinos` → `public/images/vinos/hero-corchos.webp`
 `corchos.jpg`
 
-### `npm run foto:heros` → los 4 heros full-bleed
+### `npm run foto:heros` → los heros full-bleed y la capa de +18
 
 Cada hero se sirve en **dos encuadres**: el horizontal 3:2 de siempre para
 desktop y un 9:16 para pantallas verticales. Sin el vertical, `object-cover`
@@ -63,6 +64,15 @@ contra 1,11 con el recorte).
 | `/historia` (B1) | `images/historia/vinos-retro.webp` 2400×1600 | `hero-historia-movil.jpg` |
 | `/actividades` (D1) | `images/actividades/hero-grupal.webp` 2880×1920 | `hero-actividades-movil.jpg` |
 | `/actividades/vendimia` (Dv1) | `hero-vendimia.jpg` 8064×4536 (`_fuentes-fotos/`) | **no lleva** — ver abajo |
+| Capa de +18 (sobre todas las páginas) | `gate-uvas.jpg` 3000×2000 (`_fuentes-fotos/`) | `gate-uvas-movil.jpg` 1125×2000 |
+
+La vertical de la capa de +18 **no es una toma aparte**: es un recorte 9:16 del
+mismo master, corrido a la izquierda del centro para que entren los dos racimos.
+Por eso su candidato más grande es de 1125px de ancho y no de 1600 — los 2000px
+de alto del master por 9/16 dan 1125, y `withoutEnlargement` no inventa píxeles.
+Queda por debajo del ideal de ≥1440px que pide un celular a DPR 3: si alguna vez
+llega una toma vertical propia, entra como `gate-uvas-movil.jpg` y el srcset del
+componente vuelve a [828, 1200, 1600].
 
 Los masters horizontales están versionados, así que **la mitad de desktop se
 regenera sin bajar nada**. Los verticales hay que reponerlos desde el respaldo;
@@ -148,6 +158,50 @@ pisoneo** —es el mosto cayendo de la canilla de la barrica— y se guarda como
 `vendimia-mosto`; `pisoneo-vendimia2` sí lo es y quedó como `vendimia-pisoneo`. Un archivo
 que miente sobre su contenido termina en un `alt` que miente sobre la foto.
 
+## Fotos del Taller de mimbre (2026-08-19)
+
+`npm run fotos:mimbre` procesa las ocho fotos de un taller real y es el primer
+material propio de una ficha de actividad. Hasta acá **todas** las fichas mostraban
+las mismas dos fotos de la viña —el letrero entre las parras y la pareja en el
+columpio— más la foto de su categoría repetida en el hero, en la tarjeta de reserva
+y en el `og:image`. Son fotos de la viña, pero no del taller: le dicen al visitante
+que así se ve la actividad, y no es cierto.
+
+Cada foto entra en UNA ranura y ninguna se repite. Van a `quality: 80` —el hero a 76,
+que es el único que se sirve a ancho completo— porque el mimbre es textura fina y
+repetitiva, donde el bandeo se ve antes que en follaje.
+
+| Fuente en `_fuentes-fotos/` | Sale como | Ranura | Recorte |
+|---|---|---|---|
+| `mimbre-hero.jpg` | `mimbre-hero.webp` 2400×1600 | Dd1, hero (y `og:image`) | ninguno |
+| `mimbre-tejido.jpg` | `mimbre-tejido.webp` 1200×900 | Dd1, junto a la bajada | 4:3 centrado |
+| `mimbre-manos.jpg` | `mimbre-manos.webp` 1200×750 | Dd5, tarjeta de reserva | 16:10, `anchorY 0.75` |
+| `mimbre-canastos.jpg` | `mimbre-canastos.webp` 1600×900 | Dd6, apertura de galería | 16:9, `anchorY 0.6` |
+| `mimbre-artesana.jpg` | `mimbre-artesana.webp` 1000×1500 | Dd6, mosaico | ninguno (ya es 2:3) |
+| `mimbre-maestro.jpg` | `mimbre-maestro.webp` 1000×1500 | Dd6, mosaico | ninguno |
+| `mimbre-piezas.jpg` | `mimbre-piezas.webp` 1000×1500 | Dd6, mosaico | ninguno |
+| `mimbre-desayuno.jpg` | `mimbre-desayuno.webp` 1600×1067 | Dd7, junto al formulario | ninguno |
+
+**El mosaico es 2:3 y no 4:5 como el de Vendimia (Dv6)**, y no es una preferencia:
+las tres verticales salieron de cámara en 3168×4752, que ya es 2:3 exacto. Forzarlas
+al 4:5 obliga a sacar el 17% del alto, y en la artesana eso es la cabeza (empieza al
+3% del cuadro) o el bol (termina al 97%). La ranura se diseñó alrededor del material,
+no al revés. Van en fila de tres también en móvil, igual que el tríptico de Dv2.
+
+Las tres verticales traen `orientation: 6` en el EXIF —el archivo mide 4752×3168
+acostado— así que el script las endereza con `.rotate()` y calcula la caja sobre las
+medidas ya rotadas. Sin eso el recorte cae en cualquier parte.
+
+Las dos que no se recortan y sí cambian de proporción en pantalla son el hero (Dd1) y
+el panel del formulario (Dd7): ahí el encuadre lo resuelve `object-cover` desde el
+centro. Medido en escritorio a 1280px: el hero muestra la banda central del 3:2 (los
+canastos, sin el camino de arriba) y el panel muestra el 43% central del desayuno
+(la mesa servida y los estantes), que es lo que la foto tiene al medio.
+
+El cableado está en `data/activities.ts` (`photos` de la actividad) y los `alt` en los
+tres bundles, bajo `activities.items.mimbre.photos`. `tests/actividades-fotos.test.mjs`
+cruza las tres cosas: que el archivo exista, que el `alt` esté en es/en/pt y que la
+proporción del `.webp` sea la de la ranura.
 ## Otros pipelines (no usan `_fuentes-fotos/`)
 
 - `npm run fotos` lee de `sitio-web/_fotos-input/<Letra>/` con nombres por slot
