@@ -8,8 +8,10 @@ const { buildActivityJsonLd } = await import("@/lib/activityJsonLd");
  * La regla que este test cuida: no se declara lo que la pagina no dice.
  *
  * Un Offer sin price no produce rich result y afirma una oferta que la pagina
- * no hace. Un availability "InStock" afirma disponibilidad que nadie confirmo:
- * las actividades se reservan y tienen minimo de personas.
+ * no hace. El availability "InStock" si se declara, y solo dentro del Offer:
+ * dice que el tour se vende hoy —lo que la pagina ya muestra con su precio y su
+ * formulario— y no que haya cupo en una fecha. Donde no hay precio no hay
+ * oferta, y ahi no puede quedar ningun availability suelto.
  *
  * Y el BreadcrumbList tiene que decir los MISMOS textos que la miga visible, o
  * es una jerarquia inventada para el crawler.
@@ -57,8 +59,17 @@ test("sin precio NO se emite offers", () => {
   assert.equal(product.offers, undefined);
 });
 
-test("nunca se declara availability", () => {
+test("el Offer declara availability InStock", () => {
   const graph = buildActivityJsonLd("es", CON_PRECIO, COPY, CRUMBS);
+  const [product] = nodes(graph, "Product");
+  assert.equal(product.offers.availability, "https://schema.org/InStock");
+});
+
+test("sin oferta no queda ningun availability suelto", () => {
+  const graph = buildActivityJsonLd("es", SIN_PRECIO, COPY, {
+    ...CRUMBS,
+    category: "Talleres",
+  });
   assert.doesNotMatch(JSON.stringify(graph), /availability/);
 });
 

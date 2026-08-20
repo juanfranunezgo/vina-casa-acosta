@@ -242,7 +242,79 @@ conjunto entero: Descubierta (34), Duplicada (1) y Alternativa con canónica (2)
    ningún 301, las 13 fichas del WordPress no traspasan nada y el **Cambio de
    dirección del paso 4 va a fallar**. El shell con las 113 reglas está listo en
    `casaacosta-redirect/`.
-2. **Confirmar `NEXT_PUBLIC_SITE_URL = https://vinacasaacosta.cl`** en Netlify →
-   Project configuration → Environment variables. Con el guard nuevo, si falta y
-   Netlify inyecta el subdominio, el próximo deploy falla con el motivo escrito.
+2. ~~Confirmar `NEXT_PUBLIC_SITE_URL` en Netlify.~~ **Hecho el 20/8**: la
+   variable ya estaba definida. El guard queda de red de seguridad por si
+   alguien la borra.
 3. **Esperar.** Las validaciones tardan días y la canónica de la portada, semanas.
+
+---
+
+## 11. Los avisos de datos estructurados del 20 de agosto de 2026
+
+Dos correos el mismo día —*Fragmentos de productos* y *Fichas de comerciantes*—,
+los dos con **problemas no críticos**: en los dos informes, `No válidas: 0` y
+`Válidas: 4`.
+
+Antes que nada, lo que el informe también dice: el error **crítico**
+`Debe especificarse "offers", "review" o "aggregateRating"` —13 elementos a
+principios de agosto— está en **0**. Lo cerró el trabajo del 18.
+
+Los 4 elementos válidos son los tres tours del índice de actividades y una ficha
+de vino. De ahí salen los números:
+
+| Aviso | Elementos | Dónde |
+|---|---|---|
+| Falta `aggregateRating` | 4 | los 3 tours + el vino |
+| Falta `review` | 4 | los 3 tours + el vino |
+| Falta `availability` (en `offers`) | 3 | los 3 tours, todos en `/es/actividades` |
+| Falta `shippingDetails` (en `offers`) | 4 | los 3 tours + el vino |
+| Falta `hasMerchantReturnPolicy` (en `offers`) | 4 | los 3 tours + el vino |
+
+El drilldown de `availability` nombra los tres elementos —Tour Berá, Tour
+Carménère, Tour Ombú— y los tres cuelgan de la misma URL: el `ItemList` que
+emite `buildActividadesJsonLd` en `lib/siteJsonLd.ts`. Las 14 fichas todavía no
+estaban rastreadas, pero tenían el mismo hueco.
+
+### Qué se decidió con cada aviso
+
+**`review` y `aggregateRating`: no se marcan.** La viña no publica reseñas.
+Inventarlas es marcado engañoso, y Google además no admite las que escribe el
+propio vendedor sobre su producto. El costo es no tener estrellas en el
+resultado, y es el costo correcto. Esta decisión ya estaba anotada en §6.
+
+**`availability`: se marca `InStock`.** El campo describe la *oferta* —el tour
+se vende hoy, con su precio y su formulario a la vista—, no el cupo de una fecha
+concreta. La reserva y el mínimo de personas se acuerdan después, y ninguna de
+las dos es lo que `availability` declara. El cliente confirmó el 20/8 que los
+tres tours tienen cupo. Hasta ese día el código decía lo contrario, con su
+motivo escrito; queda registrado el cambio de criterio.
+
+**`shippingDetails` y `hasMerchantReturnPolicy`: no se marcan todavía.** En los
+tres tours son campos sin sentido: un tour no se despacha ni se devuelve, y
+Google los pide solo porque están marcados como `Product`. En el vino sí
+tendrían valor, pero hoy el sitio dice del despacho una sola cosa —"coordinamos
+el despacho contigo"—, sin costo, plazo ni cobertura, y de devoluciones no dice
+nada. El orden es publicar la política y después marcarla: declarar plazos que
+la página no dice es marcado engañoso, y encima compromete a la viña con algo
+que no acordó.
+
+### Qué se cambió
+
+`lib/activityJsonLd.ts` — la ficha de actividad emite `availability: InStock`
+dentro de su `Offer`, que sigue apareciendo solo cuando el precio se ve en la
+página. Dos pruebas nuevas en `tests/actividades-jsonld.test.mjs`: que el Offer
+lo declara, y que donde no hay oferta no queda ningún `availability` suelto.
+
+### Qué queda pendiente de esto
+
+1. **El `ItemList` del índice** (`lib/siteJsonLd.ts`, el `Offer` de cada tour).
+   Es el que Google ya está viendo y el que dispara el aviso de los 3 elementos.
+   No se tocó el 20/8 porque el archivo estaba modificado por otra sesión en
+   paralelo.
+2. **Precio de los talleres**: el cliente lo fijó en **$39.900 por persona** el
+   20/8. Hoy los talleres no tienen `priceCLP` en `data/activities.ts`, así que
+   no emiten `Offer`. Cuando lo tengan, emitirán oferta con disponibilidad como
+   los tours. El archivo también lo tenía tomado la otra sesión.
+3. **Validar la corrección** en Search Console recién *después* del deploy:
+   Fragmentos de productos → "Falta el campo availability" → **Validar
+   corrección**. Validar antes de que el sitio sirva el cambio quema el intento.

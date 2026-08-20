@@ -15,9 +15,13 @@ import {
  * lo que `lib/siteJsonLd.ts` ya emite para los tours en el índice, así que la
  * misma actividad no se describe de dos formas distintas según la página.
  *
- * `offers` solo aparece cuando el precio SE VE en la página. `availability`
- * nunca: las actividades se reservan y tienen mínimo de personas, así que
- * afirmar "InStock" sería decir algo que el sitio no dice.
+ * `offers` solo aparece cuando el precio SE VE en la página, y lleva
+ * `availability: InStock` porque el campo describe la OFERTA —el tour se vende
+ * hoy, con su precio y su formulario a la vista—, no el cupo de una fecha
+ * concreta. La reserva y el mínimo de personas se acuerdan después; ninguna de
+ * las dos es lo que `availability` declara. Este archivo decía lo contrario
+ * hasta el aviso de Search Console del 20-08-2026: de los cinco que llegaron,
+ * era el único con un arreglo honesto.
  *
  * La entidad de la viña no se repite acá: la emite `buildActividadesJsonLd` y
  * el resto de las páginas principales. Este bloque la referencia por `@id`.
@@ -61,6 +65,7 @@ export function buildActivityJsonLd(
       "@type": "Offer",
       price: activity.priceCLP,
       priceCurrency: "CLP",
+      availability: "https://schema.org/InStock",
       url,
       seller: { "@id": WINERY_ID },
     };
