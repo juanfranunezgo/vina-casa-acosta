@@ -3,6 +3,7 @@ import {
   CONTACT_EMAIL,
   CONTACT_PHONE_E164,
   FACEBOOK_URL,
+  GOOGLE_MAPS_URL,
   INSTAGRAM_URL,
 } from "@/lib/contact";
 
@@ -34,25 +35,32 @@ import {
 export const WINERY_ID = `${SITE_URL}/#winery`;
 const WEBSITE_ID = `${SITE_URL}/#website`;
 
-/** Perfil oficial en Google Maps — el mismo link del footer. */
-const GOOGLE_MAPS_URL = "https://maps.app.goo.gl/oWWNuFKGuqojD86B9";
 
 /**
- * Horario tal como se lee en `/contacto`: "Lun a Sáb · 10:00 – 18:00" con
- * "Jueves hasta las 20:00". Por eso el jueves va en su propio bloque.
+ * Horario tal como se lee en `/contacto` y en el pie: "Lun a Vie · 08:00 –
+ * 16:30" y "Sáb · 08:00 – 12:00 y 13:00 – 17:00". El sábado va en DOS bloques y
+ * no en uno de 08:00 a 17:00: el corte de mediodía existe, y declararlo corrido
+ * le promete a Google —y a quien lea la ficha del negocio— una hora en que no
+ * hay nadie.
  */
 const OPENING_HOURS = [
   {
     "@type": "OpeningHoursSpecification",
-    dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Friday", "Saturday"],
-    opens: "10:00",
-    closes: "18:00",
+    dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+    opens: "08:00",
+    closes: "16:30",
   },
   {
     "@type": "OpeningHoursSpecification",
-    dayOfWeek: ["Thursday"],
-    opens: "10:00",
-    closes: "20:00",
+    dayOfWeek: ["Saturday"],
+    opens: "08:00",
+    closes: "12:00",
+  },
+  {
+    "@type": "OpeningHoursSpecification",
+    dayOfWeek: ["Saturday"],
+    opens: "13:00",
+    closes: "17:00",
   },
 ];
 

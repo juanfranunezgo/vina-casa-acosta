@@ -31,5 +31,13 @@ export const CONTACT_MAILTO_URL = `mailto:${CONTACT_EMAIL}`;
 /** Perfil oficial de Instagram — canal donde se anuncian fechas y eventos. */
 export const INSTAGRAM_URL = "https://www.instagram.com/vinacasaacosta/";
 
+/**
+ * Ficha del negocio en Google Maps. Es el "cómo llegar" del pie y, a la vez, de
+ * donde salen las coordenadas del `LocalBusiness` (`lib/siteJsonLd.ts`): el link
+ * resuelve a `@-34.465133,-71.009675`. Vivía escrito dos veces —una en cada
+ * archivo—, que es como una empieza a apuntar a otro lugar sin que se note.
+ */
+export const GOOGLE_MAPS_URL = "https://maps.app.goo.gl/oWWNuFKGuqojD86B9";
+
 /** Página oficial de Facebook de Viña Casa Acosta. */
 export const FACEBOOK_URL = "https://www.facebook.com/vinacasaacosta/";
