@@ -51,7 +51,7 @@
     "openTours": "Show activities",
     "closeTours": "Hide activities",
     "activitiesExperiences": "Experiences",
-    "activitiesEvents": "Events",
+    "activitiesEvents": "Private events",
     "activitiesAll": "See all",
     "logoAlt": "Viña Casa Acosta — Home",
     "language": "Language",
@@ -61,9 +61,14 @@
   "footer": {
     "tagline": "Where life has borne fruit with deep roots, growing dreams generation after generation. San Vicente de Tagua Tagua, Cachapoal Valley.",
     "navigation": "Navigation",
-    "contact": "Contact",
-    "location": "San Vicente de Tagua Tagua, O'Higgins, Chile",
-    "hours": "Mon – Sat · 10:00 AM – 6:00 PM\nThursdays until 8:00 PM",
+    "directions": "Get directions",
+    "columns": {
+      "visit": "Visit us",
+      "activities": "Activities",
+      "winery": "The winery"
+    },
+    "location": "Fundo El Llano, lote 6, San Vicente de Tagua Tagua, O'Higgins",
+    "hours": "Mon – Fri · 8:00 AM – 4:30 PM\nSat · 8:00 AM – 12:00 PM and 1:00 – 5:00 PM (confirm by phone)",
     "copyright": "© {year} Viña Casa Acosta. Heritage and winemaking craft.",
     "developedBy": "Site developed by",
     "legal": {
@@ -75,12 +80,10 @@
       "instagram": "Instagram",
       "facebook": "Facebook",
       "google": "Google Reviews"
-    },
-    "disclaimer": "Please drink responsibly. Sale of alcohol to anyone under 18 is prohibited · Chilean Law N° 19.925."
+    }
   },
   "ageGate": {
     "title": "Are you 18 or older?",
-    "body": "This site shows and sells wine. In Chile the sale of alcohol to anyone under 18 is prohibited, so we need you to confirm your age before entering.",
     "confirm": "Yes, I'm 18 or older",
     "deny": "No",
     "byeTitle": "We'll be here later on",
@@ -611,7 +614,7 @@
       "cta": "Discover the harvest",
       "facts": {
         "seasonLabel": "Season",
-        "seasonValue": "March · April · May",
+        "seasonValue": "April · May",
         "durationLabel": "Length",
         "durationValue": "A full day",
         "audienceLabel": "Who it's for",
@@ -637,14 +640,14 @@
         "note": "Photos of the vineyard and of the last harvest. We'll add the next one's as soon as the day is over."
       },
       "hero": {
-        "eyebrow": "March · April · May",
+        "eyebrow": "April · May",
         "title": "Harvest at Casa Acosta",
         "subtitle": "The day the vineyard fills with people: we pick, we stomp, we celebrate.",
         "imageAlt": "Aerial view of the harvest group with their arms raised between the rows of the Casa Acosta vineyard"
       },
       "about": {
         "title": "What is the grape harvest?",
-        "lead": "The harvest —vendimia— is the grape picking: the moment a whole year of work in the vineyard turns into wine. It happens between March and May, when the fruit reaches full ripeness.",
+        "lead": "The harvest —vendimia— is the grape picking: the moment a whole year of work in the vineyard turns into wine. It happens in April and May, when the fruit reaches full ripeness.",
         "body": "At Casa Acosta you don't watch from the sidelines. You step into the vineyard with shears in hand, pick, destem and stomp the grapes the way it has always been done, alongside the field and winemaking team that does this work all year round. It's a country day, hands-on and family-friendly, and it ends the way important things end here: at a long table, with an asado and a glass of wine."
       },
       "cycle": {
@@ -668,13 +671,13 @@
           },
           {
             "season": "Late summer",
-            "name": "Harvest",
-            "description": "Picking time. This is the work the day invites you to do with your own hands."
+            "name": "Ripening",
+            "description": "The grapes finish ripening on the vine. Sugar and acidity are measured every few days, and that is what sets the picking date."
           },
           {
             "season": "Autumn",
-            "name": "From grape to wine",
-            "description": "Fermentation, blending and bottling: what was picked in March is finished in the cellar."
+            "name": "Harvest",
+            "description": "Picking time. This is the work the day invites you to do with your own hands."
           }
         ]
       },
@@ -685,7 +688,7 @@
         "steps": [
           "A country breakfast to start, with a talk about the harvest and the day ahead",
           "Grape picking in the vineyard, alongside the field team",
-          "Destemming: separating the berries from the stalks",
+          "Destemming, by hand and by machine: separating the berries from the stalks",
           "Traditional stomping, with your feet, the way it has always been done",
           "Lunch: country asado with a salad buffet and wine included",
           "Games and raffles for the whole family",
@@ -693,11 +696,13 @@
         ],
         "includesTitle": "The day includes",
         "includes": [
-          "An apron and a wine glass to take home",
+          "An apron to take home as a gift",
+          "A wine glass to take home as a gift",
           "Country lunch with wine included",
           "Our field and winemaking team with you throughout",
           "An activity designed for children and adults alike"
-        ]
+        ],
+        "cta": "Sign up and come live the harvest at Casa Acosta"
       },
       "season": {
         "note": "The exact date is set by the grapes: we harvest when they reach ripeness, so each day is confirmed within the season. Leave us your details and we'll let you know as soon as they're set."
@@ -913,7 +918,16 @@
           "Guided weaving",
           "Closing"
         ],
-        "closing": "You leave with the piece you wove and the craft seen up close."
+        "closing": "You leave with the piece you wove and the craft seen up close.",
+        "photos": {
+          "tejido": "Hands weaving the base of a wicker piece over a mould on the workshop table",
+          "manos": "Two people hammer the base of a piece closed while the wicker rods fan out around it",
+          "canastos": "Dozens of finished wicker baskets, bowls and boxes on the workshop table",
+          "artesana": "A craftswoman sets the wicker rods over a mould to start a piece",
+          "maestro": "The master craftsman shows a participant how to start the weave",
+          "piezas": "Finished wicker pieces — bowls, lidded baskets and mugs — stacked on the table",
+          "desayuno": "Long table set for the country breakfast, with bread, glasses and wild flowers"
+        }
       },
       "alpacas": {
         "name": "Alpaca Shearing",
@@ -1051,7 +1065,7 @@
       },
       "hours": {
         "title": "Hours",
-        "body": "Mon – Sat · 10:00 AM – 6:00 PM\nThursdays until 8:00 PM"
+        "body": "Mon – Fri · 8:00 AM – 4:30 PM\nSat · 8:00 AM – 12:00 PM and 1:00 – 5:00 PM (confirm by phone)"
       },
       "phone": {
         "title": "Phone / WhatsApp",

@@ -51,7 +51,7 @@
     "openTours": "Ver actividades",
     "closeTours": "Ocultar actividades",
     "activitiesExperiences": "Experiencias",
-    "activitiesEvents": "Eventos",
+    "activitiesEvents": "Eventos privados",
     "activitiesAll": "Ver todo",
     "logoAlt": "Viña Casa Acosta — Inicio",
     "language": "Idioma",
@@ -61,9 +61,14 @@
   "footer": {
     "tagline": "Donde la vida ha ido dando sus frutos con raíces firmes, para hacer crecer los sueños. San Vicente de Tagua Tagua, Valle del Cachapoal.",
     "navigation": "Navegación",
-    "contact": "Contacto",
-    "location": "San Vicente de Tagua Tagua, O'Higgins, Chile",
-    "hours": "Lun a Sáb · 10:00 – 18:00\nJueves hasta las 20:00",
+    "directions": "Cómo llegar",
+    "columns": {
+      "visit": "Visítanos",
+      "activities": "Actividades",
+      "winery": "La viña"
+    },
+    "location": "Fundo El Llano, lote 6, San Vicente de Tagua Tagua, O'Higgins",
+    "hours": "Lun a Vie · 08:00 – 16:30\nSáb · 08:00 – 12:00 y 13:00 – 17:00 (confirmar al celular)",
     "copyright": "© {year} Viña Casa Acosta. Patrimonio y excelencia vitivinícola.",
     "developedBy": "Sitio desarrollado por",
     "legal": {
@@ -75,12 +80,10 @@
       "instagram": "Instagram",
       "facebook": "Facebook",
       "google": "Google Reviews"
-    },
-    "disclaimer": "Beber con moderación. Prohibida la venta de alcohol a menores de 18 años · Ley N° 19.925."
+    }
   },
   "ageGate": {
     "title": "¿Eres mayor de 18 años?",
-    "body": "Este sitio muestra y vende vino. En Chile la venta de alcohol a menores de 18 años está prohibida, así que necesitamos que confirmes tu edad antes de entrar.",
     "confirm": "Sí, soy mayor de 18",
     "deny": "No",
     "byeTitle": "Te esperamos más adelante",
@@ -611,7 +614,7 @@
       "cta": "Conocer la vendimia",
       "facts": {
         "seasonLabel": "Temporada",
-        "seasonValue": "Marzo · Abril · Mayo",
+        "seasonValue": "Abril · Mayo",
         "durationLabel": "Duración",
         "durationValue": "Jornada completa",
         "audienceLabel": "Para quién",
@@ -637,14 +640,14 @@
         "note": "Fotos de la viña y de la última vendimia. Las de la próxima las sumamos apenas termine la jornada."
       },
       "hero": {
-        "eyebrow": "Marzo · Abril · Mayo",
+        "eyebrow": "Abril · Mayo",
         "title": "Vendimia en Casa Acosta",
         "subtitle": "La jornada en que el viñedo se llena de gente: se corta, se pisa y se celebra.",
         "imageAlt": "Vista aérea del grupo de participantes de la vendimia, con los brazos en alto entre las hileras del viñedo de Casa Acosta"
       },
       "about": {
         "title": "¿Qué es la vendimia?",
-        "lead": "La vendimia es la cosecha de la uva: el momento en que un año entero de trabajo en el viñedo se convierte en vino. Ocurre entre marzo y mayo, cuando la fruta alcanza su punto justo de madurez.",
+        "lead": "La vendimia es la cosecha de la uva: el momento en que un año entero de trabajo en el viñedo se convierte en vino. Ocurre en abril y mayo, cuando la fruta alcanza su punto justo de madurez.",
         "body": "En Casa Acosta no se mira desde la vereda. Se entra al viñedo con tijera en mano, se corta, se despalilla y se pisa la uva como se hizo siempre, acompañado por el equipo agrícola y enológico que hace este trabajo todo el año. Es una jornada de campo, familiar y participativa, que termina como terminan las cosas importantes acá: en una mesa larga, con un asado y una copa."
       },
       "cycle": {
@@ -668,13 +671,13 @@
           },
           {
             "season": "Fin del verano",
-            "name": "Vendimia",
-            "description": "Se cosecha. Es el trabajo que esta jornada te invita a hacer con tus propias manos."
+            "name": "Maduración",
+            "description": "La uva termina de madurar en la planta. Se mide su azúcar y su acidez cada pocos días, y de ahí sale la fecha del corte."
           },
           {
             "season": "Otoño",
-            "name": "De la uva al vino",
-            "description": "Fermentación, mezclas y embotellado: lo que se cortó en marzo se termina de escribir en la bodega."
+            "name": "Vendimia",
+            "description": "Se cosecha. Es el trabajo que esta jornada te invita a hacer con tus propias manos."
           }
         ]
       },
@@ -685,7 +688,7 @@
         "steps": [
           "Desayuno campestre de bienvenida, con una charla sobre la vendimia y lo que vamos a vivir",
           "Corte de uva en el viñedo, junto al equipo agrícola",
-          "Despalillado: separar el grano del escobajo",
+          "Despalillado manual y mecánico: separar el grano del escobajo",
           "Pisoneo tradicional, con los pies, como se hizo siempre",
           "Almuerzo: asado campestre con buffet de ensaladas y vino incluido",
           "Concursos y sorteos para toda la familia",
@@ -693,11 +696,13 @@
         ],
         "includesTitle": "La jornada incluye",
         "includes": [
-          "Pechera y copa de regalo para llevarte a casa",
+          "Pechera de regalo para llevarte a casa",
+          "Copa de regalo para llevarte a casa",
           "Almuerzo campestre con vino incluido",
           "Acompañamiento del equipo agrícola y enológico",
           "Actividad pensada para niños y adultos"
-        ]
+        ],
+        "cta": "Inscríbete, ven a vivir la vendimia en Casa Acosta"
       },
       "season": {
         "note": "La fecha exacta la decide la uva: se vendimia cuando alcanza su madurez, así que cada jornada se confirma en la temporada. Déjanos tus datos y te avisamos apenas se definan."
@@ -913,7 +918,16 @@
           "Tejido guiado",
           "Cierre"
         ],
-        "closing": "Te vas con la pieza que tejiste y con el oficio visto de cerca."
+        "closing": "Te vas con la pieza que tejiste y con el oficio visto de cerca.",
+        "photos": {
+          "tejido": "Manos tejiendo la base de una pieza de mimbre sobre un molde, en la mesa del taller",
+          "manos": "Dos personas cierran a martillo el fondo de una pieza mientras las varillas de mimbre se abren en abanico",
+          "canastos": "Decenas de canastos, fuentes y cajas de mimbre terminados sobre la mesa del taller",
+          "artesana": "Una artesana afirma las varillas de mimbre sobre un molde para empezar una pieza",
+          "maestro": "El maestro artesano le muestra a una participante cómo arrancar el tejido",
+          "piezas": "Piezas de mimbre terminadas —fuentes, canastos con tapa y jarros— apiladas sobre la mesa",
+          "desayuno": "Mesa larga puesta para el desayuno campesino, con panes, copas y flores del campo"
+        }
       },
       "alpacas": {
         "name": "Trasquilado de alpacas",
@@ -1051,7 +1065,7 @@
       },
       "hours": {
         "title": "Horarios",
-        "body": "Lun a Sáb · 10:00 – 18:00\nJueves hasta las 20:00"
+        "body": "Lun a Vie · 08:00 – 16:30\nSáb · 08:00 – 12:00 y 13:00 – 17:00 (confirmar al celular)"
       },
       "phone": {
         "title": "Teléfono / WhatsApp",

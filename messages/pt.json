@@ -51,7 +51,7 @@
     "openTours": "Ver atividades",
     "closeTours": "Ocultar atividades",
     "activitiesExperiences": "Experiências",
-    "activitiesEvents": "Eventos",
+    "activitiesEvents": "Eventos privados",
     "activitiesAll": "Ver tudo",
     "logoAlt": "Viña Casa Acosta — Início",
     "language": "Idioma",
@@ -61,9 +61,14 @@
   "footer": {
     "tagline": "Onde a vida tem dado seus frutos com raízes firmes, fazendo crescer os sonhos. San Vicente de Tagua Tagua, Vale do Cachapoal.",
     "navigation": "Navegação",
-    "contact": "Contato",
-    "location": "San Vicente de Tagua Tagua, O'Higgins, Chile",
-    "hours": "Seg a Sáb · 10h – 18h\nQuinta até as 20h",
+    "directions": "Como chegar",
+    "columns": {
+      "visit": "Visite-nos",
+      "activities": "Atividades",
+      "winery": "A vinícola"
+    },
+    "location": "Fundo El Llano, lote 6, San Vicente de Tagua Tagua, O'Higgins",
+    "hours": "Seg a Sex · 08h – 16h30\nSáb · 08h – 12h e 13h – 17h (confirmar por telefone)",
     "copyright": "© {year} Viña Casa Acosta. Patrimônio e excelência vinícola.",
     "developedBy": "Site desenvolvido por",
     "legal": {
@@ -75,12 +80,10 @@
       "instagram": "Instagram",
       "facebook": "Facebook",
       "google": "Google Reviews"
-    },
-    "disclaimer": "Beba com moderação. Proibida a venda de bebida alcoólica a menores de 18 anos · Lei chilena N° 19.925."
+    }
   },
   "ageGate": {
     "title": "Você tem 18 anos ou mais?",
-    "body": "Este site mostra e vende vinho. No Chile, a venda de bebida alcoólica a menores de 18 anos é proibida, por isso precisamos que você confirme sua idade antes de entrar.",
     "confirm": "Sim, tenho 18 anos ou mais",
     "deny": "Não",
     "byeTitle": "Esperamos você mais adiante",
@@ -611,7 +614,7 @@
       "cta": "Conhecer a vindima",
       "facts": {
         "seasonLabel": "Temporada",
-        "seasonValue": "Março · Abril · Maio",
+        "seasonValue": "Abril · Maio",
         "durationLabel": "Duração",
         "durationValue": "Dia inteiro",
         "audienceLabel": "Para quem",
@@ -637,14 +640,14 @@
         "note": "Fotos da vinha e da última vindima. As da próxima entram assim que a jornada terminar."
       },
       "hero": {
-        "eyebrow": "Março · Abril · Maio",
+        "eyebrow": "Abril · Maio",
         "title": "Vindima na Casa Acosta",
         "subtitle": "O dia em que a vinha se enche de gente: colhe-se, pisa-se e celebra-se.",
         "imageAlt": "Vista aérea do grupo de participantes da vindima, de braços erguidos entre as fileiras da vinha da Casa Acosta"
       },
       "about": {
         "title": "O que é a vindima?",
-        "lead": "A vindima é a colheita da uva: o momento em que um ano inteiro de trabalho na vinha se transforma em vinho. Acontece entre março e maio, quando a fruta atinge o ponto certo de maturação.",
+        "lead": "A vindima é a colheita da uva: o momento em que um ano inteiro de trabalho na vinha se transforma em vinho. Acontece em abril e maio, quando a fruta atinge o ponto certo de maturação.",
         "body": "Na Casa Acosta não se assiste de fora. Entra-se na vinha com a tesoura na mão, colhe-se, desengaça-se e pisa-se a uva como sempre se fez, acompanhado pela equipe agrícola e enológica que faz este trabalho o ano todo. É um dia de campo, participativo e familiar, que termina como terminam as coisas importantes por aqui: numa mesa comprida, com um assado e uma taça."
       },
       "cycle": {
@@ -668,13 +671,13 @@
           },
           {
             "season": "Fim do verão",
-            "name": "Vindima",
-            "description": "Colhe-se. É o trabalho que esta jornada convida você a fazer com as próprias mãos."
+            "name": "Maturação",
+            "description": "A uva termina de amadurecer na planta. Mede-se o seu açúcar e a sua acidez a cada poucos dias, e daí sai a data da colheita."
           },
           {
             "season": "Outono",
-            "name": "Da uva ao vinho",
-            "description": "Fermentação, misturas e engarrafamento: o que se colheu em março termina de se escrever na adega."
+            "name": "Vindima",
+            "description": "Colhe-se. É o trabalho que esta jornada convida você a fazer com as próprias mãos."
           }
         ]
       },
@@ -685,7 +688,7 @@
         "steps": [
           "Café da manhã campestre de boas-vindas, com uma conversa sobre a vindima e o que vamos viver",
           "Colheita da uva na vinha, junto à equipe agrícola",
-          "Desengace: separar o bago do engaço",
+          "Desengace manual e mecânico: separar o bago do engaço",
           "Pisa tradicional, com os pés, como sempre se fez",
           "Almoço: assado campestre com buffet de saladas e vinho incluído",
           "Concursos e sorteios para toda a família",
@@ -693,11 +696,13 @@
         ],
         "includesTitle": "A jornada inclui",
         "includes": [
-          "Avental e taça de presente para levar para casa",
+          "Avental de presente para levar para casa",
+          "Taça de presente para levar para casa",
           "Almoço campestre com vinho incluído",
           "Acompanhamento da equipe agrícola e enológica",
           "Atividade pensada para crianças e adultos"
-        ]
+        ],
+        "cta": "Inscreva-se, venha viver a vindima na Casa Acosta"
       },
       "season": {
         "note": "A data exata quem decide é a uva: colhe-se quando atinge a maturação, então cada jornada é confirmada na temporada. Deixe os seus dados e avisamos assim que forem definidas."
@@ -913,7 +918,16 @@
           "Tecelagem guiada",
           "Encerramento"
         ],
-        "closing": "Você leva a peça que teceu e o ofício visto de perto."
+        "closing": "Você leva a peça que teceu e o ofício visto de perto.",
+        "photos": {
+          "tejido": "Mãos tecendo a base de uma peça de vime sobre um molde, na mesa da oficina",
+          "manos": "Duas pessoas fecham a martelo o fundo de uma peça enquanto as varas de vime se abrem em leque",
+          "canastos": "Dezenas de cestos, fruteiras e caixas de vime prontos sobre a mesa da oficina",
+          "artesana": "Uma artesã fixa as varas de vime sobre um molde para começar uma peça",
+          "maestro": "O mestre artesão mostra a uma participante como começar o trançado",
+          "piezas": "Peças de vime prontas — fruteiras, cestos com tampa e canecas — empilhadas sobre a mesa",
+          "desayuno": "Mesa comprida posta para o café da manhã campestre, com pães, taças e flores do campo"
+        }
       },
       "alpacas": {
         "name": "Tosquia de alpacas",
@@ -1051,7 +1065,7 @@
       },
       "hours": {
         "title": "Horários",
-        "body": "Seg a Sáb · 10h – 18h\nQuinta até as 20h"
+        "body": "Seg a Sex · 08h – 16h30\nSáb · 08h – 12h e 13h – 17h (confirmar por telefone)"
       },
       "phone": {
         "title": "Telefone / WhatsApp",
