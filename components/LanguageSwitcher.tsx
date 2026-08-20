@@ -9,7 +9,7 @@ type Locale = string;
 type Props = {
   locales: readonly Locale[];
   currentLocale: Locale;
-  variant?: "desktop" | "mobile";
+  variant?: "desktop" | "mobile" | "gate";
   /** true cuando el navbar está transparente sobre un hero oscuro. */
   onDark?: boolean;
 };
@@ -65,6 +65,44 @@ export default function LanguageSwitcher({
       document.removeEventListener("keydown", onKeyDown);
     };
   }, [open]);
+
+  // Variante para la capa de +18: la pregunta llega antes que el sitio, asi que
+  // el idioma tiene que poder elegirse ahi mismo y de un toque, sin desplegar
+  // nada. Va sobre la foto a sangre de la capa, de ahi el vidrio: el actual es
+  // una pastilla blanca y los otros dos, texto claro sobre la foto. La `mobile`
+  // tambien son tres botones, pero rellenos y pensados para el panel del menu.
+  if (variant === "gate") {
+    return (
+      <div className="flex items-center gap-2" role="group" aria-label="Language" translate="no">
+        {/* El globo dice de que se trata la fila sin gastar una palabra que
+            habria que traducir tres veces. Es `aria-hidden` porque el grupo ya
+            se anuncia como "Language". */}
+        <Globe
+          className="h-[18px] w-[18px] shrink-0 text-on-primary/85 drop-shadow-[0_2px_8px_rgba(0,0,0,0.6)]"
+          aria-hidden="true"
+        />
+        {locales.map((loc) => {
+          const isCurrent = loc === currentLocale;
+          return (
+            <button
+              key={loc}
+              type="button"
+              onClick={() => switchTo(loc)}
+              disabled={isPending}
+              aria-current={isCurrent ? "true" : undefined}
+              className={`h-9 rounded-full px-4 font-body text-[11px] font-semibold uppercase tracking-[0.12em] transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-on-primary/60 ${
+                isCurrent
+                  ? "bg-on-primary text-primary"
+                  : "border border-white/25 text-on-primary/75 backdrop-blur-sm hover:bg-white/15 hover:text-on-primary"
+              }`}
+            >
+              {localeLabels[loc] ?? loc.toUpperCase()}
+            </button>
+          );
+        })}
+      </div>
+    );
+  }
 
   if (variant === "mobile") {
     return (

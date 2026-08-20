@@ -2,7 +2,10 @@
 
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import Image from "next/image";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
+import { routing } from "@/i18n/routing";
+import LanguageSwitcher from "@/components/LanguageSwitcher";
+import Button from "@/components/ui/Button";
 
 /**
  * Verificación de edad (+18) — Ley N° 19.925.
@@ -26,10 +29,27 @@ import { useTranslations } from "next-intl";
  *
  * 3. **Sin JavaScript la capa no aparece.** Es deliberado: sus botones necesitan
  *    JS, así que mostrarla sería dejar el sitio bloqueado sin salida. El aviso
- *    legal del pie sigue estando en las tres traducciones.
+ *    legal sigue estando en las tres traducciones.
  *
  * `Escape` no cierra —no es un modal de marketing— y el foco queda atrapado
  * adentro mientras la pregunta esté en pantalla.
+ *
+ * **Por qué es una foto a sangre y no una tarjeta.** Pasó por las dos formas el
+ * 2026-08-20. La tarjeta —foto en una columna de 320px y tres líneas de texto al
+ * lado— dejaba la imagen como una miniatura y la pantalla como un formulario.
+ * Esta es la forma en que la resuelven las viñas grandes: la foto es la pantalla,
+ * y encima va lo mínimo —logo, idioma, la pregunta y dos botones—. El párrafo que
+ * explicaba la ley se fue: lo dice la línea legal de abajo en una sola frase.
+ *
+ * La foto usa el mismo `<picture>` con dirección de arte que los heros del sitio
+ * (ver `scripts/optimize-heros.mjs`): encuadre 3:2 para pantallas horizontales y
+ * 9:16 para verticales, porque `object-cover` sobre un master horizontal estira
+ * la foto hasta cubrir el alto y deja ver una franja del centro.
+ *
+ * **Por qué el selector de idioma vive acá.** La pregunta llega antes que el
+ * sitio, así que el navbar —donde está el otro selector— todavía no se puede
+ * tocar. Quien entra en inglés o portugués tenía que confirmar su edad en
+ * español para recién después poder cambiar de idioma.
  */
 
 /** Cuánto dura la confirmación. */
@@ -37,6 +57,22 @@ const DIAS = 30;
 const CLAVE = "vca:mayor-edad";
 
 type Estado = "oculto" | "preguntando" | "despedida";
+
+/**
+ * Los dos encuadres de la foto. El master vertical sale de 1125px de ancho —los
+ * 2000 de alto del master por 9/16— y no hay candidato mayor: prometer 1600w
+ * sería declarar un ancho que el archivo no tiene.
+ */
+const fotoSources = {
+  desktop: [
+    "/images/edad/uvas-1280.webp 1280w",
+    "/images/edad/uvas-1920.webp 1920w",
+    "/images/edad/uvas-2560.webp 2560w",
+  ].join(", "),
+  movil: ["/images/edad/uvas-movil-828.webp 828w", "/images/edad/uvas-movil-1125.webp 1125w"].join(
+    ", ",
+  ),
+};
 
 /** Script que corre antes del primer pintado. Se inyecta desde el layout. */
 export const AGE_GATE_SCRIPT = `try{var v=localStorage.getItem(${JSON.stringify(
@@ -53,12 +89,24 @@ export const AGE_GATE_SCRIPT = `try{var v=localStorage.getItem(${JSON.stringify(
  * la suscripción no tiene a qué escuchar.
  */
 const suscribir = () => () => {};
-const hayQuePreguntar = () =>
-  document.documentElement.getAttribute("data-age-gate") === "pendiente";
+const hayQuePreguntar = () => {
+  if (document.documentElement.getAttribute("data-age-gate") === "pendiente") return true;
+  // El atributo no sobrevive a una navegacion del cliente —ver el efecto de
+  // abajo—, asi que la respuesta de verdad es la de siempre: lo que guardo el
+  // navegador. Sin esta segunda lectura, cambiar de idioma desde la capa dejaba
+  // entrar al sitio sin confirmar la edad.
+  try {
+    const vence = localStorage.getItem(CLAVE);
+    return !vence || Date.now() > Number(vence);
+  } catch {
+    return true;
+  }
+};
 const enElServidor = () => true;
 
 export default function AgeGate() {
   const t = useTranslations("ageGate");
+  const locale = useLocale();
   const pendiente = useSyncExternalStore(suscribir, hayQuePreguntar, enElServidor);
   const [respuesta, setRespuesta] = useState<"ninguna" | "menor" | "mayor">("ninguna");
   const panelRef = useRef<HTMLDivElement>(null);
@@ -80,7 +128,13 @@ export default function AgeGate() {
   // página a quien ya confirmó su edad.
   useEffect(() => {
     if (estado === "oculto") return;
-    if (document.documentElement.getAttribute("data-age-gate") !== "pendiente") return;
+    // Repone el atributo que puso `AGE_GATE_SCRIPT`. Al cambiar de idioma, el
+    // `router.replace` re-renderiza `<html>` con las props del layout y React se
+    // lleva por delante lo que no es suyo; el script no vuelve a correr, porque
+    // la navegacion es del cliente. Sin el atributo, el CSS deja la capa en
+    // `display:none` y el visitante entra al sitio sin haber contestado.
+    // Tambien es lo que vuelve a bloquear el scroll del fondo.
+    document.documentElement.setAttribute("data-age-gate", "pendiente");
     const panel = panelRef.current;
     if (!panel) return;
 
@@ -88,7 +142,11 @@ export default function AgeGate() {
       panel.querySelectorAll<HTMLElement>(
         'button, [href], input, [tabindex]:not([tabindex="-1"])',
       );
-    foco()[0]?.focus();
+    // El foco entra por el botón que responde la pregunta, no por el primer
+    // elemento del panel: desde que el selector de idioma vive acá, el primero
+    // es "ES" y el teclado empezaría eligiendo idioma en vez de contestando.
+    const principal = panel.querySelector<HTMLElement>("[data-age-gate-principal]");
+    (principal ?? foco()[0])?.focus();
 
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key !== "Tab") return;
@@ -131,67 +189,99 @@ export default function AgeGate() {
       role="dialog"
       aria-modal="true"
       aria-labelledby="age-gate-title"
-      aria-describedby="age-gate-body"
-      className="fixed inset-0 z-[100] items-center justify-center bg-primary/95 px-margin-mobile py-10 backdrop-blur-sm"
+      aria-describedby="age-gate-legal"
+      className="fixed inset-0 z-[100] items-center justify-center overflow-hidden px-margin-mobile py-10"
     >
-      <div
-        ref={panelRef}
-        className="w-full max-w-lg rounded-2xl bg-surface p-8 text-center ambient-shadow-lg md:p-10"
-      >
+      {/* Los umbrales de cada `media` son la proporción de su encuadre, y el
+          `sizes` lleva el alto del viewport: con `object-cover` en vertical la
+          foto se estira hasta cubrir el alto, y ese ancho estirado —no el del
+          contenedor— es el que hay que descargar. Mismo criterio que los heros. */}
+      <picture className="absolute inset-0">
+        <source
+          media="(min-aspect-ratio: 3/4)"
+          srcSet={fotoSources.desktop}
+          sizes="(max-aspect-ratio: 3/2) 150vh, 100vw"
+        />
+        <source srcSet={fotoSources.movil} sizes="(max-aspect-ratio: 9/16) 56.25vh, 100vw" />
+        <img
+          src="/images/edad/uvas-1920.webp"
+          alt=""
+          fetchPriority="high"
+          decoding="async"
+          className="h-full w-full object-cover object-center"
+        />
+      </picture>
+      {/* Dos velos, medidos para que la foto se siga viendo: uno parejo en el
+          granate de la marca, que la unifica sin apagarla, y otro vertical que
+          carga arriba y abajo —donde cae el texto— y deja el centro casi limpio.
+          Con el primero al 45% y el vertical al 65/35/70 la foto se volvia un
+          fondo oscuro cualquiera: el detalle de los racimos desaparecia. */}
+      <div className="absolute inset-0 bg-primary/25" />
+      <div className="absolute inset-0 bg-gradient-to-b from-black/55 via-black/15 to-black/60" />
+
+      <div ref={panelRef} className="relative z-10 w-full max-w-4xl text-center">
         <Image
-          src="/brand/logo-negro.webp"
+          src="/brand/logo-blanco-v2.webp"
           alt=""
           width={200}
           height={200}
-          className="mx-auto h-16 w-auto"
-          sizes="64px"
+          className="mx-auto h-24 w-auto md:h-28"
+          sizes="112px"
           priority
         />
 
+        <div className="mt-6 flex justify-center">
+          <LanguageSwitcher locales={routing.locales} currentLocale={locale} variant="gate" />
+        </div>
+
+        {/* `clamp()` y no media queries, como el resto de los títulos grandes del
+            sitio: una sola declaración cubre de 375px a 1920px. */}
         <h2
           id="age-gate-title"
-          className="mt-6 font-display text-[1.75rem] leading-[1.15] text-primary md:text-[2rem]"
+          className="mt-8 font-display text-on-primary drop-shadow-[0_4px_24px_rgba(0,0,0,0.6)]"
+          style={{ fontSize: "clamp(2.25rem, 6.4vw, 4.5rem)", lineHeight: 1.08, letterSpacing: "-0.015em" }}
         >
           {despedida ? t("byeTitle") : t("title")}
         </h2>
 
-        <p
-          id="age-gate-body"
-          className="mt-4 font-body text-[17px] leading-[1.7] text-on-surface-variant"
-        >
-          {despedida ? t("byeBody") : t("body")}
-        </p>
+        {despedida && (
+          <p className="mx-auto mt-5 max-w-lg font-body text-[16px] leading-[1.65] text-on-primary/85">
+            {t("byeBody")}
+          </p>
+        )}
 
-        <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:justify-center">
+        <div className="mx-auto mt-10 grid max-w-lg gap-3 sm:grid-cols-2 sm:gap-4">
           {despedida ? (
-            <button
-              type="button"
+            <Button
+              variant="glass"
+              size="lg"
+              fullWidth
               onClick={() => setRespuesta("ninguna")}
-              className="inline-flex h-11 items-center justify-center rounded-md border border-outline px-7 font-body text-body-md font-semibold text-primary transition-colors duration-200 hover:bg-surface-container-low"
+              data-age-gate-principal=""
             >
               {t("back")}
-            </button>
+            </Button>
           ) : (
             <>
-              <button
-                type="button"
-                onClick={confirmar}
-                className="inline-flex h-11 items-center justify-center rounded-md bg-primary px-7 font-body text-body-md font-semibold text-on-primary shadow-[0_8px_24px_-8px_rgba(42,0,2,0.45)] transition-all duration-200 hover:-translate-y-0.5 hover:bg-primary-container active:translate-y-0"
-              >
+              <Button size="lg" fullWidth onClick={confirmar} data-age-gate-principal="">
                 {t("confirm")}
-              </button>
-              <button
-                type="button"
+              </Button>
+              <Button
+                variant="glass"
+                size="lg"
+                fullWidth
                 onClick={() => setRespuesta("menor")}
-                className="inline-flex h-11 items-center justify-center rounded-md border border-outline px-7 font-body text-body-md font-semibold text-primary transition-colors duration-200 hover:bg-surface-container-low"
               >
                 {t("deny")}
-              </button>
+              </Button>
             </>
           )}
         </div>
 
-        <p className="mt-8 border-t border-outline-variant/60 pt-5 font-body text-[12px] leading-relaxed text-on-surface-variant">
+        <p
+          id="age-gate-legal"
+          className="mx-auto mt-10 max-w-xl font-accent text-sm italic leading-relaxed text-on-primary/85 md:text-base"
+        >
           {t("legal")}
         </p>
       </div>

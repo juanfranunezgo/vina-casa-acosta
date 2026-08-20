@@ -58,6 +58,20 @@ const HEROS = [
     movil: { source: fuentes("hero-actividades-movil.jpg"), out: "public/images/actividades/hero-grupal-movil", widths: [828, 1200, 1600] },
   },
   {
+    // Capa de verificacion de edad. No es el hero de una pagina —va sobre todas—,
+    // pero usa el mismo mecanismo: es una foto a sangre con texto encima, y en
+    // pantalla vertical sufre lo mismo que sufrian los heros. El recorte 9:16 se
+    // saco del master corrido a la izquierda del centro, que es donde caen los
+    // dos racimos; centrado se llevaba uno.
+    id: "edad",
+    desktop: { source: fuentes("gate-uvas.jpg"), out: "public/images/edad/uvas", widths: [1280, 1920, 2560] },
+    // 1125 y no 1600: el recorte vertical sale de los 2000px de alto del master
+    // (2000 x 9/16 = 1125) y `withoutEnlargement` no inventa pixeles. Pedir 1600
+    // devolvia el mismo archivo de 1125 con otro nombre, y el srcset habria
+    // prometido un ancho que la foto no tiene.
+    movil: { source: fuentes("gate-uvas-movil.jpg"), out: "public/images/edad/uvas-movil", widths: [828, 1125] },
+  },
+  {
     // Hub de Vendimia. Único hero SIN encuadre móvil, y no por falta de fuente:
     // la foto es una aérea donde el grupo ocupa el 55% del ancho, así que
     // cualquier recorte vertical (9:16 se lleva el 32% del ancho) corta gente en
