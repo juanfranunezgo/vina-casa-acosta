@@ -17,15 +17,36 @@ test("footer links its Facebook icon to the official profile", async () => {
   assert.match(contactSource, /FACEBOOK_URL\s*=\s*"https:\/\/www\.facebook\.com\/vinacasaacosta\/"/);
   assert.match(footerSource, /FACEBOOK_URL/);
   assert.match(footerSource, /key:\s*"facebook"/);
-  assert.match(footerSource, /https:\/\/maps\.app\.goo\.gl\/oWWNuFKGuqojD86B9/);
+  // La ficha de Google Maps se escribe UNA vez, en lib/contact.ts: el pie la usa
+  // como "como llegar" y lib/siteJsonLd.ts saca de ahi las coordenadas del
+  // LocalBusiness. Estaba escrita en los dos archivos, que es como una empieza a
+  // apuntar a otro lugar sin que se note.
+  assert.match(contactSource, /GOOGLE_MAPS_URL\s*=\s*"https:\/\/maps\.app\.goo\.gl\/oWWNuFKGuqojD86B9"/);
+  assert.match(footerSource, /GOOGLE_MAPS_URL/);
+  assert.doesNotMatch(footerSource, /"https:\/\/maps\.app\.goo\.gl/);
   assert.match(footerSource, /https:\/\/ligts\.cl/);
   assert.match(footerSource, /developedBy/);
-  assert.match(footerSource, /mt-1 text-\[0\.9375rem\] font-body text-on-surface/);
+  // El pie cierra la pagina con el papel de A3 y un filete, no con un bloque de
+  // color: sobre `primary` entraba a sangre debajo de la tarjeta oscura del CTA
+  // de la home y se leia como un telon. Si vuelve a oscurecerse alguna vez, que
+  // sea una decision tomada y no un arrastre.
+  assert.match(
+    footerSource,
+    /<footer className="w-full border-t border-outline-variant\/40 bg-surface-container-low"/,
+  );
+  // Talleres no tiene seccion propia en el indice de actividades. Enlazarlo
+  // seria una etiqueta que no aterriza donde dice.
+  assert.doesNotMatch(footerSource, /#talleres/);
   assert.doesNotMatch(footerSource, /font-medium text-primary transition-colors hover:text-wine-accent/);
   assert.doesNotMatch(footerSource, /key:\s*"tripadvisor"/);
   for (const messageSource of messages) {
     assert.match(messageSource, /"facebook": "Facebook"/);
     assert.match(messageSource, /"developedBy":/);
+    // El horario y el como llegar viven bajo un solo rotulo, "Visitanos":
+    // "Horarios" y "Contacto" eran dos columnas de la misma pregunta.
+    assert.match(messageSource, /"visit":/);
+    assert.match(messageSource, /"hours":/);
+    assert.match(messageSource, /"directions":/);
   }
 });
 
