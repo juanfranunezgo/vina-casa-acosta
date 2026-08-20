@@ -10,7 +10,20 @@ trámite.
 
 ---
 
-## 0. Estado verificado el 18 de agosto de 2026
+## 0. Estado verificado el 19 de agosto de 2026
+
+Lo que cambió respecto del 18, y que este documento daba por otra cosa:
+
+| Punto | Estado |
+|---|---|
+| Portada `/es` en Google | ❌ **no indexada.** Google eligió `https://vinacasaacosta.netlify.app/es` como su canónica — ver §10 |
+| `casaacosta.cl` | ❌ **peor que un reenvío a la home**: contesta **200** con una pantalla anti-bot de BanaHosting (Imunify360, "Espere mientras se verifica su solicitud…") a todas sus URLs, Googlebot incluido. Se probó 50 s en un navegador real sin llegar nunca a destino |
+| `*.netlify.app` → dominio propio | ✅ 301 confirmado hoy (`/es` y `/es/vinos`) |
+| Sitemap enviado | ✅ 18 ago, leído el 18 ago, **105 URLs**, estado "Correcto" |
+| Indexación | 37 indexadas · 48 sin indexar, en 5 motivos — ver §10 |
+| Fragmentos de productos | 0 no válidas (el error de "offers" del 8 ago quedó resuelto) y 0 válidas: falta que Google vuelva a rastrear las fichas |
+
+## 0.b Estado verificado el 18 de agosto de 2026
 
 Lo comprobado con `curl` contra producción, para no repetir trabajo:
 
@@ -157,3 +170,79 @@ El traspaso no es inmediato: Google necesita volver a rastrear las URLs viejas
 para ver los 301, y eso toma **entre 2 y 8 semanas**. En ese período es normal
 ver las dos versiones alternándose en los resultados. La señal de que funcionó
 es que las impresiones suban en la propiedad nueva mientras la vieja las pierde.
+
+---
+
+## 10. Lo que pasó el 19 de agosto de 2026
+
+Llegaron dos correos de Search Console fechados hoy —"Nuevos motivos que impiden
+que se indexen páginas"— y los dos apuntan al mismo motivo: **"Duplicada: Google
+ha elegido una versión canónica diferente a la del usuario"**.
+
+### El diagnóstico
+
+La inspección de `https://vinacasaacosta.cl/es` dice, textual:
+
+| Campo | Valor |
+|---|---|
+| Veredicto | **La URL no está en Google** |
+| Declarada por el usuario como canónica | `https://vinacasaacosta.cl/es` |
+| **Seleccionada por Google como canónica** | **`https://vinacasaacosta.netlify.app/es`** |
+| Último rastreo | 16 ago 2026 |
+
+Una búsqueda `site:vinacasaacosta.netlify.app` devuelve la portada de la viña
+indexada bajo el subdominio del proveedor.
+
+**El origen** está en [`HANDOFF.md`](HANDOFF.md): entre el 2 y el 6 de agosto el
+sitio se construyó sin `NEXT_PUBLIC_SITE_URL`, así que los canonical salieron con
+el dominio `*.netlify.app`. Google los leyó al pie de la letra. El 301 de
+[`netlify.toml`](../netlify.toml) (6 ago) corrige el síntoma, pero soltar una
+canónica ya elegida exige que Google vuelva a rastrear el subdominio, y eso tarda.
+
+**Lo que se agregó para que no se repita:** `lib/siteUrl.ts` ahora **rompe el
+build de producción** si el dominio resuelto es `*.netlify.app` o `localhost`
+(solo en `CONTEXT=production`; los deploy previews siguen construyéndose).
+Cubierto por `tests/site-url-guard.test.mjs`. Un canonical equivocado no se ve en
+la página: por eso el que tiene que fallar es el build.
+
+### Los 5 motivos del informe, y qué es cada uno
+
+Los datos del informe son del **16 de agosto** — anteriores al deploy del 18 y al
+envío del sitemap. Buena parte de lo que lista ya está arreglado en el sitio.
+
+| Motivo | Págs | Qué es |
+|---|---|---|
+| Duplicada: otra canónica | 1 | La portada `/es`. Es el problema real |
+| Descubierta: sin indexar | 34 | 29 son `/en` y `/pt`, nunca rastreadas. Presupuesto de rastreo de un dominio nuevo |
+| Página con redirección | 10 | `http://`, `www` y URLs sin locale (`/vinos`, `/contacto`). Esperado |
+| Alternativa con canónica | 2 | `/es/tienda` (hoy **ya indexada**) y `/en/vinos/ombu-sauvignon` |
+| Rastreada: sin indexar | 1 | Una página |
+
+Se descartaron las tres causas que habrían sido culpa del sitio: las URLs del
+sitemap responden 200, las viejas (`/en/actividades/tour-bera`) dan 308 a su
+equivalente, y `/en` y `/pt` están realmente traducidas.
+
+### Lo que se hizo en Search Console
+
+**Indexación solicitada** (cola de rastreo prioritaria) para las 6 que no estaban
+en Google: `/es` · `/es/actividades` · `/es/historia` · `/es/vinos/guidai` ·
+`/es/vinos/estacion-francia-tannat` · `/es/vinos/yaray-gua-blanco`.
+
+Se comprobó antes de gastar cuota que `/es/tienda`, `/en` y `/pt` **ya están
+indexadas** — el informe las daba por problemáticas con datos viejos.
+
+**Validación iniciada** el 19/8 en tres motivos, que fuerza el re-rastreo del
+conjunto entero: Descubierta (34), Duplicada (1) y Alternativa con canónica (2).
+"Página con redirección" ya estaba iniciada.
+
+### Lo que queda pendiente, por orden de impacto
+
+1. **Levantar el escudo anti-bot de `casaacosta.cl`** o sacar el dominio de
+   BanaHosting. Mientras conteste 200 con la pantalla de espera, Google no ve
+   ningún 301, las 13 fichas del WordPress no traspasan nada y el **Cambio de
+   dirección del paso 4 va a fallar**. El shell con las 113 reglas está listo en
+   `casaacosta-redirect/`.
+2. **Confirmar `NEXT_PUBLIC_SITE_URL = https://vinacasaacosta.cl`** en Netlify →
+   Project configuration → Environment variables. Con el guard nuevo, si falta y
+   Netlify inyecta el subdominio, el próximo deploy falla con el motivo escrito.
+3. **Esperar.** Las validaciones tardan días y la canónica de la portada, semanas.
