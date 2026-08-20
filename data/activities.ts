@@ -16,6 +16,40 @@ export const ACTIVITY_CATEGORIES = ["tours", "talleres", "experiencias"] as cons
 
 export type ActivityCategory = (typeof ACTIVITY_CATEGORIES)[number];
 
+/**
+ * Una foto propia de la actividad. `alt` NO es el texto alternativo: es la
+ * clave bajo `activities.items.{slug}.photos` de donde sale, traducido, en los
+ * tres idiomas. El texto de una foto describe lo que pasa en ella y eso se lee
+ * en pantalla —lo lee un lector de pantalla— así que vive en messages como
+ * cualquier otro copy, no acá.
+ */
+export type ActivityPhoto = { src: string; alt: string };
+
+/**
+ * Fotos propias de la actividad, una por ranura de la ficha. Ausente = la ficha
+ * usa lo que ya tenía: la foto de la categoría en las ranuras de foto y el
+ * marco vacío en la galería.
+ *
+ * Existe porque hasta acá TODAS las fichas mostraban las mismas dos fotos —el
+ * letrero de la viña y la pareja en el columpio—, que son de la viña pero no de
+ * la actividad. Una foto de otra actividad le dice al visitante que así se ve
+ * esta, y no es cierto. El día que llegue el material de otra experiencia, es
+ * un bloque más acá abajo y ninguna línea de página.
+ */
+export type ActivityPhotos = {
+  /** Dd1 — junto a la bajada, ranura 4:3. */
+  intro?: ActivityPhoto;
+  /** Dd5 — cabecera de la tarjeta de reserva, 16:10. */
+  card?: ActivityPhoto;
+  /** Dd7 — panel junto al formulario; la ranura cambia de proporción. */
+  reserve?: ActivityPhoto;
+  /**
+   * Dd6 — mosaico: una apertura 16:9 y hasta tres verticales 2:3. Si falta,
+   * la ficha dibuja `GalleryPlaceholder` como siempre.
+   */
+  gallery?: { wide: ActivityPhoto; portraits: ActivityPhoto[] };
+};
+
 export type Activity = {
   /** Único en todo el catálogo. Es la clave en messages y el segmento de URL. */
   slug: string;
@@ -36,7 +70,9 @@ export type Activity = {
    * La duración que se LEE en pantalla vive en messages, no acá.
    */
   durationISO?: string;
+  /** Dd1 — hero de la ficha, y la miniatura en toda grilla que la liste. */
   image: string;
+  photos?: ActivityPhotos;
   premium?: boolean;
 };
 
@@ -188,7 +224,23 @@ export const activities: Activity[] = [
     minPeople: 8,
     months: TODO_EL_ANO,
     durationISO: "PT4H",
-    image: CATEGORY_IMAGE.experiencias,
+    // Primera actividad con material propio (taller de 2026-08-19). Las ocho
+    // fotos salen de `npm run fotos:mimbre` — cada una recortada a la ranura
+    // que ocupa, ver scripts/optimize-mimbre.mjs y docs/FOTOS.md.
+    image: "/images/actividades/mimbre-hero.webp",
+    photos: {
+      intro: { src: "/images/actividades/mimbre-tejido.webp", alt: "tejido" },
+      card: { src: "/images/actividades/mimbre-manos.webp", alt: "manos" },
+      reserve: { src: "/images/actividades/mimbre-desayuno.webp", alt: "desayuno" },
+      gallery: {
+        wide: { src: "/images/actividades/mimbre-canastos.webp", alt: "canastos" },
+        portraits: [
+          { src: "/images/actividades/mimbre-artesana.webp", alt: "artesana" },
+          { src: "/images/actividades/mimbre-maestro.webp", alt: "maestro" },
+          { src: "/images/actividades/mimbre-piezas.webp", alt: "piezas" },
+        ],
+      },
+    },
   },
   {
     slug: "alpacas",
@@ -287,7 +339,7 @@ export const VENDIMIA_HUB: string | null = "/actividades/vendimia";
  * todavía no está decidido — y el material que teníamos era de la temporada
  * pasada.
  */
-export const VENDIMIA_MONTHS: number[] = [3, 4, 5];
+export const VENDIMIA_MONTHS: number[] = [4, 5];
 
 /**
  * Actividades que el hub ofrece como "otras formas de vivir el ciclo": las dos

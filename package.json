@@ -18,7 +18,8 @@
     "foto:hero-vinos": "node scripts/optimize-vinos-hero.mjs",
     "fotos:contacto": "node scripts/optimize-contact-gallery.mjs",
     "foto:heros": "node scripts/optimize-heros.mjs",
-    "fotos:vendimia": "node scripts/optimize-vendimia.mjs"
+    "fotos:vendimia": "node scripts/optimize-vendimia.mjs",
+    "fotos:mimbre": "node scripts/optimize-mimbre.mjs"
   },
   "dependencies": {
     "lucide-react": "^1.14.0",

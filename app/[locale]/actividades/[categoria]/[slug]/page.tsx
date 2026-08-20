@@ -28,6 +28,7 @@ import ActivityBreadcrumbs from "@/components/ActivityBreadcrumbs";
 import ActivityProgram from "@/components/ActivityProgram";
 import ActivityRowCard from "@/components/ActivityRowCard";
 import GalleryPlaceholder from "@/components/GalleryPlaceholder";
+import ActivityGallery from "@/components/ActivityGallery";
 import SeasonStrip from "@/components/SeasonStrip";
 import ActivityReservationForm from "@/components/ActivityReservationForm";
 import {
@@ -36,6 +37,7 @@ import {
   activityPath,
   categoryIndexHref,
   getActivity,
+  type ActivityPhoto,
 } from "@/data/activities";
 import { routing } from "@/i18n/routing";
 import { alternatesFor } from "@/lib/alternates";
@@ -166,6 +168,44 @@ export default async function ActivityDetailPage({
    */
   const hasDetail = includes.length > 0 || program.length > 0;
 
+  /**
+   * Las fotos de las tres ranuras fijas, ya resueltas: la propia de la
+   * actividad si la hay, y si no la de siempre —el letrero de la viña y la
+   * pareja en el columpio—, que son de la viña pero no de la actividad.
+   *
+   * El `alt` de una foto propia sale de `activities.items.{slug}.photos.{clave}`
+   * y por eso se lee acá y no en `data/`: describe lo que pasa en la foto y
+   * tiene que estar en los tres idiomas. Se pide SOLO cuando la foto existe —
+   * una clave ausente no lanza, pero deja un MISSING_MESSAGE por página en el
+   * build (ver `asList` arriba). Foto y `alt` entran juntos o no entra ninguno.
+   */
+  const photoAlt = (photo: ActivityPhoto) => tTour(`${slug}.photos.${photo.alt}`);
+  const photos = {
+    intro: tour.photos?.intro
+      ? { src: tour.photos.intro.src, alt: photoAlt(tour.photos.intro) }
+      : { src: "/images/actividades/letrero-vina.webp", alt: t("introImageAlt") },
+    card: tour.photos?.card
+      ? { src: tour.photos.card.src, alt: photoAlt(tour.photos.card) }
+      : { src: tour.image, alt: name },
+    reserve: tour.photos?.reserve
+      ? { src: tour.photos.reserve.src, alt: photoAlt(tour.photos.reserve) }
+      : { src: "/images/actividades/pareja-columpio.webp", alt: t("reserveImageAlt") },
+  };
+
+  /** Galería: mosaico si la actividad trae fotos; si no, los marcos vacíos. */
+  const gallery = tour.photos?.gallery
+    ? {
+        wide: {
+          src: tour.photos.gallery.wide.src,
+          alt: photoAlt(tour.photos.gallery.wide),
+        },
+        portraits: tour.photos.gallery.portraits.map((photo) => ({
+          src: photo.src,
+          alt: photoAlt(photo),
+        })),
+      }
+    : undefined;
+
   const priceLocale = locale === "pt" ? "pt-BR" : locale === "en" ? "en-US" : "es-CL";
   // Undefined cuando la actividad no publica precio. La tarjeta de reserva
   // decide qué mostrar en ese caso.
@@ -233,25 +273,6 @@ export default async function ActivityDetailPage({
           {/* Vignette vino oscuro para profundidad y legibilidad */}
           <div className="absolute inset-0 bg-gradient-to-t from-[#1a0203]/85 via-[#1a0203]/40 to-[#1a0203]/15" />
 
-          {/* La miga reemplaza al "Volver a actividades": su segundo nivel hace
-              lo mismo y además dice en qué categoría estás. */}
-          <div className="absolute top-24 left-0 right-0 px-margin-mobile md:px-margin-desktop">
-            <div className="max-w-(--container-max) mx-auto">
-              <ActivityBreadcrumbs
-                aria={t("breadcrumbAria")}
-                items={[
-                  { href: `/${locale}`, label: crumbLabels.home },
-                  { href: `/${locale}/actividades`, label: crumbLabels.activities },
-                  {
-                    href: categoryIndexHref(locale, tour.category),
-                    label: crumbLabels.category,
-                  },
-                  { href: `/${locale}${activityPath(tour)}`, label: name },
-                ]}
-              />
-            </div>
-          </div>
-
           <div className="absolute inset-x-0 bottom-0 px-margin-mobile md:px-margin-desktop pb-16 md:pb-24">
             {/* data-hero-text: el Navbar lo usa para encender su velo cuando el
                 título pasa por detrás (ver components/Navbar.tsx). */}
@@ -303,6 +324,29 @@ export default async function ActivityDetailPage({
             </div>
           </div>
 
+          {/* La miga, sobre papel y no sobre la foto. Arriba eran cuatro
+              niveles en blanco que en 375px se partían en dos líneas, con el
+              nombre de la actividad colgando solo sobre una foto cualquiera.
+              Va debajo de la ficha rápida y no pegada al hero porque la tarjeta
+              se monta sobre la foto (-mt-14) y ahí no hay aire donde ponerla.
+              Sigue siendo la vuelta a la categoría y lo que hace honesto el
+              `BreadcrumbList` del JSON-LD. */}
+          <div className="mt-8 md:mt-12">
+            <ActivityBreadcrumbs
+              tone="papel"
+              aria={t("breadcrumbAria")}
+              items={[
+                { href: `/${locale}`, label: crumbLabels.home },
+                { href: `/${locale}/actividades`, label: crumbLabels.activities },
+                {
+                  href: categoryIndexHref(locale, tour.category),
+                  label: crumbLabels.category,
+                },
+                { href: `/${locale}${activityPath(tour)}`, label: name },
+              ]}
+            />
+          </div>
+
           <div className="py-10 md:py-16">
             <div className="grid grid-cols-1 items-center gap-8 lg:grid-cols-2 lg:gap-16">
               <div className="relative pl-6 border-l-2 border-primary/25">
@@ -317,8 +361,8 @@ export default async function ActivityDetailPage({
               <Reveal delay={120}>
                 <div className="relative aspect-[4/3] rounded-2xl overflow-hidden ambient-shadow-lg ring-1 ring-outline-variant/30">
                   <Image
-                    src="/images/actividades/letrero-vina.webp"
-                    alt={t("introImageAlt")}
+                    src={photos.intro.src}
+                    alt={photos.intro.alt}
                     fill
                     className="object-cover"
                     sizes="(max-width: 1024px) 100vw, 50vw"
@@ -491,8 +535,8 @@ export default async function ActivityDetailPage({
             <div className="overflow-hidden rounded-2xl bg-surface ambient-shadow-lg ring-1 ring-outline-variant/40 lg:sticky lg:top-28">
               <div className="relative aspect-[16/8] md:aspect-[16/10]">
                 <Image
-                  src={tour.image}
-                  alt={name}
+                  src={photos.card.src}
+                  alt={photos.card.alt}
                   fill
                   className="object-cover"
                   sizes="(max-width: 1024px) 100vw, 33vw"
@@ -566,14 +610,23 @@ export default async function ActivityDetailPage({
         </div>
       </section>
 
-      {/* Dd5 — Galería (placeholder) */}
+      {/* Dd5 — Galería. Con fotos propias es un mosaico; sin ellas, los marcos
+          de diseño y el aviso de que están por llegar. Ver ActivityGallery. */}
       <section
         id="galeria"
         className="bg-surface py-section-gap px-margin-mobile md:px-margin-desktop scroll-mt-24"
       >
         <div className="max-w-(--container-max) mx-auto">
           <Reveal>
-            <GalleryPlaceholder title={t("galleryTitle")} coming={t("galleryComing")} />
+            {gallery ? (
+              <ActivityGallery
+                title={t("galleryTitle")}
+                wide={gallery.wide}
+                portraits={gallery.portraits}
+              />
+            ) : (
+              <GalleryPlaceholder title={t("galleryTitle")} coming={t("galleryComing")} />
+            )}
           </Reveal>
         </div>
       </section>
@@ -594,8 +647,8 @@ export default async function ActivityDetailPage({
             </div>
             <div className="relative order-first min-h-[260px] lg:order-none">
               <Image
-                src="/images/actividades/pareja-columpio.webp"
-                alt={t("reserveImageAlt")}
+                src={photos.reserve.src}
+                alt={photos.reserve.alt}
                 fill
                 className="object-cover"
                 sizes="(max-width: 1024px) 100vw, 45vw"
