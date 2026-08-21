@@ -58,9 +58,17 @@ export default function ActivitiesMenu({ locale, variant, onNavigate }: Props) {
   // redondeadas, se leía como un contorno. Por eso el redondeo de la fila queda
   // sólo a la derecha — un borde de un solo lado con las cuatro esquinas curvas
   // se ve como un borde a medio dibujar.
+  //
+  // Y va como pseudo-elemento y no como `border-l-2`, que es de borde a borde:
+  // apiladas, las filas dibujaban una única recta continua de arriba abajo del
+  // desplegable, dura en las dos puntas. Metido dos unidades por arriba y por
+  // abajo, y con las puntas redondeadas, cada fila vuelve a tener su propia
+  // marca y entre una y otra queda aire.
+  const filaBase =
+    "relative flex min-h-11 items-center justify-between gap-3 pl-3.5 pr-3 py-2 font-body text-body-md font-medium transition-colors before:absolute before:left-0 before:top-2 before:bottom-2 before:w-0.5 before:rounded-full before:transition-colors before:content-['']";
   const filaClass = esMovil
-    ? "flex min-h-11 items-center justify-between gap-3 rounded-r-md border-l-2 border-l-on-primary/25 pl-3.5 pr-3 py-2 font-body text-body-md font-medium text-on-primary/85 transition-colors hover:border-l-on-primary/70 hover:bg-on-primary/10 hover:text-on-primary"
-    : "flex min-h-11 items-center justify-between gap-3 rounded-r-lg border-l-2 border-l-wine-accent/30 pl-3.5 pr-3 py-2 font-body text-body-md font-medium text-on-surface transition-colors hover:border-l-wine-accent hover:bg-primary/5 hover:text-primary";
+    ? `${filaBase} rounded-r-md text-on-primary/85 before:bg-on-primary/25 hover:bg-on-primary/10 hover:text-on-primary hover:before:bg-on-primary/70`
+    : `${filaBase} rounded-r-lg text-on-surface before:bg-wine-accent/30 hover:bg-primary/5 hover:text-primary hover:before:bg-wine-accent`;
 
   // `list-none` mata el triangulito en Firefox y Chrome; el pseudo-elemento
   // hace lo propio en Safari. Sin los dos, el marcador nativo convive con el
@@ -73,9 +81,16 @@ export default function ActivitiesMenu({ locale, variant, onNavigate }: Props) {
 
   // La lista sangrada y con filete a la izquierda es lo que ata cada ficha a su
   // categoría: es la separación que el mega-menú no lograba dibujar.
+  //
+  // El filete se desvanece en las dos puntas en vez de cortarse en seco. Con un
+  // `border-l` la guía arrancaba y terminaba con un canto duro a la altura del
+  // primer y del último enlace, y junto a las marcas de las filas madre daban
+  // dos rectas paralelas y perfectas: más un diagrama de árbol que un menú.
+  const listaBase =
+    "relative mb-1 ml-6 pl-3 before:absolute before:left-0 before:top-1 before:bottom-1 before:w-px before:content-['']";
   const listaClass = esMovil
-    ? "mb-1 ml-6 border-l border-on-primary/20 pl-2"
-    : "mb-1 ml-6 border-l border-outline-variant/60 pl-2";
+    ? `${listaBase} before:bg-gradient-to-b before:from-transparent before:via-on-primary/25 before:to-transparent`
+    : `${listaBase} before:bg-gradient-to-b before:from-transparent before:via-outline-variant before:to-transparent`;
 
   // Vendimia es una fila más, sin tarjeta, sin icono y sin bajada: el menú no
   // jerarquiza destinos, sólo los ordena. Usa `breadcrumb` y no `hero.title`

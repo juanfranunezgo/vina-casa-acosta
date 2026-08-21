@@ -3,10 +3,11 @@
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { useLocale, useTranslations } from "next-intl";
-import { Menu, X, ArrowRight, ChevronDown } from "lucide-react";
+import { Menu, X, ArrowRight, ChevronDown, ShoppingBag } from "lucide-react";
 import { routing } from "@/i18n/routing";
+import { useCart } from "@/lib/cart";
 import ActivitiesMenu from "./ActivitiesMenu";
 import LanguageSwitcher from "./LanguageSwitcher";
 
@@ -14,6 +15,7 @@ export default function Navbar() {
   const pathname = usePathname();
   const locale = useLocale();
   const t = useTranslations("nav");
+  const tCart = useTranslations("cart");
   // El hero ya pasó por debajo del header (o, en páginas claras, hay scroll).
   const [pastHero, setPastHero] = useState(false);
   // El texto del hero está pasando por detrás del header transparente.
@@ -26,6 +28,19 @@ export default function Navbar() {
     setOpen(false);
     setMobileActivitiesOpen(false);
   }, []);
+
+  // El carrito del panel móvil. La cuenta vive en `localStorage`, así que no
+  // existe en el render del servidor: pintarla sin esperar a montar es un
+  // desajuste de hidratación. Mismo guard que usa `CartButton`, que es el botón
+  // flotante con el que este comparte destino.
+  const totalCarrito = useCart((s) => s.totalItems());
+  const abrirCarrito = useCart((s) => s.toggle);
+  const montado = useSyncExternalStore(
+    () => () => {},
+    () => true,
+    () => false,
+  );
+  const enElCarrito = montado ? totalCarrito : 0;
 
   const links = [
     { href: "", label: t("home") },
@@ -326,9 +341,19 @@ export default function Navbar() {
             }`}
             style={{ transitionDelay: open ? "140ms" : "0ms" }}
           >
-            <p className="font-body text-[11px] uppercase tracking-[0.3em] text-on-primary/55 mb-5">
-              {t("sectionNav")}
-            </p>
+            {/* Acá vivía el rótulo "NAVEGACIÓN", que nombraba lo único que el
+                panel podía ser. En su lugar sube el idioma, que estaba al final
+                de todo: en un teléfono de 667px quedaba 167px bajo el pliegue,
+                o sea que para cambiar de idioma había que descubrir que el menú
+                se desplazaba. La fila mide lo mismo que el rótulo que reemplaza,
+                así que el cambio no cuesta un píxel. */}
+            <div className="mb-5">
+              <LanguageSwitcher
+                locales={routing.locales}
+                currentLocale={locale}
+                variant="gate"
+              />
+            </div>
           </div>
 
           <ul className="flex flex-col">
@@ -354,7 +379,7 @@ export default function Navbar() {
                         <Link
                           href={localePath(link.href)}
                           onClick={closeMobileMenu}
-                          className={`flex-1 py-3 ${linkClass}`}
+                          className={`flex-1 py-2.5 ${linkClass}`}
                         >
                           {link.label}
                         </Link>
@@ -392,7 +417,7 @@ export default function Navbar() {
                     <Link
                       href={localePath(link.href)}
                       onClick={closeMobileMenu}
-                      className={`block py-3 ${linkClass}`}
+                      className={`block py-2.5 ${linkClass}`}
                     >
                       {link.label}
                     </Link>
@@ -402,9 +427,11 @@ export default function Navbar() {
             })}
           </ul>
 
-          {/* Divisor + Sección 2 — Comprar */}
+          {/* Divisor + Sección 2 — Comprar.
+              El aire era `mt-10 pt-8`: 72px para separar dos bloques que ya
+              separa un filete. A la mitad sigue leyéndose como otra sección. */}
           <div
-            className={`mt-10 pt-8 border-t border-on-primary/15 transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] ${
+            className={`mt-6 pt-6 border-t border-on-primary/15 transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] ${
               open ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
             }`}
             style={{ transitionDelay: open ? `${links.length * 60 + 260}ms` : "0ms" }}
@@ -412,31 +439,39 @@ export default function Navbar() {
             <p className="font-body text-[11px] uppercase tracking-[0.3em] text-on-primary/55 mb-4">
               {t("sectionShop")}
             </p>
-            <Link
-              href={localePath("/tienda")}
-              onClick={closeMobileMenu}
-              className="group flex items-center justify-between bg-on-primary text-primary px-5 py-4 rounded-md font-body font-semibold text-body-md shadow-[0_12px_30px_-8px_rgba(0,0,0,0.4)] active:scale-[0.98] transition-transform"
-            >
-              <span>{t("tienda")}</span>
-              <ArrowRight className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-0.5" aria-hidden="true" />
-            </Link>
-          </div>
-
-          {/* Divisor + Sección 3 — Idioma */}
-          <div
-            className={`mt-10 pt-8 border-t border-on-primary/15 transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] ${
-              open ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
-            }`}
-            style={{ transitionDelay: open ? `${links.length * 60 + 340}ms` : "0ms" }}
-          >
-            <p className="font-body text-[11px] uppercase tracking-[0.3em] text-on-primary/55 mb-4">
-              {t("language")}
-            </p>
-            <LanguageSwitcher
-              locales={routing.locales}
-              currentLocale={locale}
-              variant="mobile"
-            />
+            {/* Tienda y carrito en la misma fila: el carrito no tenía puerta en
+                el menú —sólo el botón flotante, que el propio panel tapa— y en
+                dos filas costaba los 56px que acabamos de ganar. */}
+            <div className="grid grid-cols-[1fr_auto] gap-3">
+              <Link
+                href={localePath("/tienda")}
+                onClick={closeMobileMenu}
+                className="group flex items-center justify-between bg-on-primary text-primary px-5 py-4 rounded-md font-body font-semibold text-body-md shadow-[0_12px_30px_-8px_rgba(0,0,0,0.4)] active:scale-[0.98] transition-transform"
+              >
+                <span>{t("tienda")}</span>
+                <ArrowRight className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-0.5" aria-hidden="true" />
+              </Link>
+              <button
+                type="button"
+                onClick={() => {
+                  closeMobileMenu();
+                  abrirCarrito(true);
+                }}
+                aria-label={
+                  enElCarrito > 0
+                    ? tCart("openLabelWithCount", { count: enElCarrito })
+                    : tCart("openLabel")
+                }
+                className="relative flex items-center gap-2 rounded-md border border-on-primary/30 px-4 py-4 font-body font-semibold text-body-md text-on-primary transition-colors hover:bg-on-primary/10 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-on-primary/60"
+              >
+                <ShoppingBag className="h-5 w-5" aria-hidden="true" />
+                {enElCarrito > 0 && (
+                  <span className="min-w-[22px] rounded-full bg-tertiary-fixed px-1 py-0.5 text-center font-body text-xs font-bold tabular-nums text-primary">
+                    {enElCarrito}
+                  </span>
+                )}
+              </button>
+            </div>
           </div>
         </div>
       </div>
