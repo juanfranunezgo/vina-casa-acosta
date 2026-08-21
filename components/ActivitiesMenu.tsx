@@ -61,14 +61,19 @@ export default function ActivitiesMenu({ locale, variant, onNavigate }: Props) {
   //
   // Y va como pseudo-elemento y no como `border-l-2`, que es de borde a borde:
   // apiladas, las filas dibujaban una única recta continua de arriba abajo del
-  // desplegable, dura en las dos puntas. Metido dos unidades por arriba y por
-  // abajo, y con las puntas redondeadas, cada fila vuelve a tener su propia
-  // marca y entre una y otra queda aire.
+  // desplegable, dura en las dos puntas. Metido por arriba y por abajo, cada
+  // fila vuelve a tener su marca y entre una y otra queda aire.
+  //
+  // Y la marca no es una barra plana sino un trazo que se afina en las puntas
+  // —de transparente al color y de vuelta a transparente—: seis rectangulitos
+  // idénticos y perfectamente rectos, uno sobre otro, se leían como los ticks
+  // de una regla. Es el mismo degradado que la guía de la lista anidada, así
+  // que los dos niveles hablan el mismo idioma.
   const filaBase =
-    "relative flex min-h-11 items-center justify-between gap-3 pl-3.5 pr-3 py-2 font-body text-body-md font-medium transition-colors before:absolute before:left-0 before:top-2 before:bottom-2 before:w-0.5 before:rounded-full before:transition-colors before:content-['']";
+    "relative flex min-h-11 items-center justify-between gap-3 pl-3.5 pr-3 py-2 font-body text-body-md font-medium transition-colors before:absolute before:left-0 before:top-1.5 before:bottom-1.5 before:w-0.5 before:rounded-full before:bg-gradient-to-b before:content-['']";
   const filaClass = esMovil
-    ? `${filaBase} rounded-r-md text-on-primary/85 before:bg-on-primary/25 hover:bg-on-primary/10 hover:text-on-primary hover:before:bg-on-primary/70`
-    : `${filaBase} rounded-r-lg text-on-surface before:bg-wine-accent/30 hover:bg-primary/5 hover:text-primary hover:before:bg-wine-accent`;
+    ? `${filaBase} rounded-r-md text-on-primary/85 before:from-transparent before:via-on-primary/45 before:to-transparent hover:bg-on-primary/10 hover:text-on-primary hover:before:via-on-primary/90`
+    : `${filaBase} rounded-r-lg text-on-surface before:from-transparent before:via-wine-accent/45 before:to-transparent hover:bg-primary/5 hover:text-primary hover:before:via-wine-accent`;
 
   // `list-none` mata el triangulito en Firefox y Chrome; el pseudo-elemento
   // hace lo propio en Safari. Sin los dos, el marcador nativo convive con el

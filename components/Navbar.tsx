@@ -304,34 +304,50 @@ export default function Navbar() {
               <Link
                 href={homePath}
                 onClick={closeMobileMenu}
-                className="inline-flex items-center gap-3 leading-none"
+                className="inline-flex items-center gap-2.5 leading-none"
                 aria-label={t("logoAlt")}
               >
+                {/* 56px y no 64: con el desplegable de idioma en la misma fila,
+                    a 375px el nombre se partía en dos líneas. El nombre lleva
+                    `whitespace-nowrap` para que si algún día vuelve a no caber
+                    se note en el acto y no en un salto de línea silencioso. */}
                 <Image
                   src="/brand/logo-blanco-v2.webp"
                   alt=""
                   width={200}
                   height={200}
-                  className="h-16 w-auto"
-                  sizes="64px"
+                  className="h-14 w-auto"
+                  sizes="56px"
                 />
                 <span
                   aria-hidden="true"
-                  className="font-display text-on-primary text-base leading-tight tracking-tight"
+                  className="font-display text-on-primary text-base leading-tight tracking-tight whitespace-nowrap"
                 >
                   Viña Casa Acosta
                 </span>
               </Link>
             </div>
 
-            <button
-              type="button"
-              onClick={closeMobileMenu}
-              aria-label={t("closeMenu")}
-              className="shrink-0 h-11 w-11 flex items-center justify-center text-on-primary rounded-full border border-on-primary/30 bg-on-primary/5 hover:bg-on-primary/15 active:bg-on-primary/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-on-primary/60 transition-colors"
-            >
-              <X className="h-5 w-5" aria-hidden="true" />
-            </button>
+            {/* El idioma vive acá: es lo que menos se usa del panel y la fila
+                del encabezado ya existía, así que no cuesta alto. Y va como el
+                desplegable del escritorio —globo, idioma actual, chevron— en
+                vez de tres pastillas: es el mismo control en las dos pantallas,
+                y cerrado ocupa un tercio de lo que ocupaban las pastillas. */}
+            <div className="ml-auto flex items-center gap-1">
+              <LanguageSwitcher
+                locales={routing.locales}
+                currentLocale={locale}
+                onDark
+              />
+              <button
+                type="button"
+                onClick={closeMobileMenu}
+                aria-label={t("closeMenu")}
+                className="shrink-0 h-11 w-11 flex items-center justify-center text-on-primary rounded-full border border-on-primary/30 bg-on-primary/5 hover:bg-on-primary/15 active:bg-on-primary/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-on-primary/60 transition-colors"
+              >
+                <X className="h-5 w-5" aria-hidden="true" />
+              </button>
+            </div>
           </div>
 
           {/* Sección 1 — Navegación */}
@@ -342,18 +358,9 @@ export default function Navbar() {
             style={{ transitionDelay: open ? "140ms" : "0ms" }}
           >
             {/* Acá vivía el rótulo "NAVEGACIÓN", que nombraba lo único que el
-                panel podía ser. En su lugar sube el idioma, que estaba al final
-                de todo: en un teléfono de 667px quedaba 167px bajo el pliegue,
-                o sea que para cambiar de idioma había que descubrir que el menú
-                se desplazaba. La fila mide lo mismo que el rótulo que reemplaza,
-                así que el cambio no cuesta un píxel. */}
-            <div className="mb-5">
-              <LanguageSwitcher
-                locales={routing.locales}
-                currentLocale={locale}
-                variant="gate"
-              />
-            </div>
+                panel podía ser. No lo reemplaza nada: el idioma —que antes
+                cerraba el panel, 167px bajo el pliegue en un teléfono de 667px—
+                se fue al encabezado, y la lista arranca directamente. */}
           </div>
 
           <ul className="flex flex-col">
