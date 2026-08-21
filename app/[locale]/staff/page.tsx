@@ -117,9 +117,21 @@ export default async function StaffPage({
             >
               {t("hero.title")}
             </h1>
+            {/* La bajada reserva dos líneas aunque escriba una.
+                El bloque va centrado en el alto de la pantalla, así que su
+                altura decide dónde cae el título: con una bajada de una línea
+                —"El equipo humano detrás de cada botella."— el bloque medía 32px
+                menos que el de Historia o Vinos y el título aparecía 16px más
+                abajo, que al cambiar de página se nota. Reservando la segunda
+                línea los tres heros dejan el título a la misma altura, en
+                cualquier alto de pantalla. */}
             <p
               className="mx-auto max-w-xl font-body text-on-primary/90 drop-shadow-md md:mx-0"
-              style={{ fontSize: "clamp(1rem, 1.5vw, 1.25rem)", lineHeight: 1.6 }}
+              style={{
+                fontSize: "clamp(1rem, 1.5vw, 1.25rem)",
+                lineHeight: 1.6,
+                minHeight: "3.2em",
+              }}
             >
               {t("hero.subtitle")}
             </p>

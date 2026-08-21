@@ -60,15 +60,22 @@ export default function Navbar() {
   };
 
   // El navbar va transparente con logo/texto claros sobre los heros oscuros
-  // full-bleed (Inicio, Historia, Actividades —incluidas las fichas de tour— y
-  // Vinos). Al pasar el hero —o en páginas de fondo claro— toma el tratamiento
-  // oscuro para no perder legibilidad. /vinos va con match exacto porque la
-  // ficha de vino (/vinos/[slug]) sí abre con fondo claro.
+  // full-bleed (Inicio, Historia, Actividades —incluidas las fichas de tour—,
+  // Vinos y Staff). Al pasar el hero —o en páginas de fondo claro— toma el
+  // tratamiento oscuro para no perder legibilidad. /vinos va con match exacto
+  // porque la ficha de vino (/vinos/[slug]) sí abre con fondo claro.
+  //
+  // **Esta lista es el precio de que la decisión no la tome la página.** Staff
+  // estrenó hero el 2026-08-20 y no se agregó acá: el navbar siguió pintándose
+  // para fondo claro y quedó texto oscuro sobre una foto oscura, o sea invisible.
+  // Cuando una página estrene o pierda su hero a sangre, esta lista se toca en
+  // el mismo commit.
   const hasDarkHero =
     pathname === homePath ||
     pathname === `${homePath}/historia` ||
     pathname.startsWith(`${homePath}/actividades`) ||
-    pathname === `${homePath}/vinos`;
+    pathname === `${homePath}/vinos` ||
+    pathname === `${homePath}/staff`;
 
   useEffect(() => {
     // Fondo claro: el header se vuelve opaco apenas se scrollea.
