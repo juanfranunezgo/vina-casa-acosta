@@ -222,6 +222,16 @@ encabezados antes del contenido —"¿Qué incluye?" → "Durante la experiencia
 
 ## Lo que falta para producción
 
+**Decisiones abiertas del cliente (2026-08-20):**
+
+- El aviso de consumo moderado dejó de estar permanente en pantalla cuando se rehizo el pie
+  (ver más arriba). Falta confirmar si vuelve a la línea de cierre.
+- La foto de la capa de +18 usa un recorte vertical de 1125px de ancho, bajo el ideal de
+  ≥1440 para un teléfono a DPR 3, porque sale del master horizontal. Se resuelve con una
+  toma vertical propia, si llega.
+- `/contacto` y `/tienda` siguen con encabezado de sólo texto: son las dos páginas que
+  quedan sin hero de foto.
+
 **Infraestructura de SEO:**
 - ~~No hay `app/sitemap.ts` ni `app/robots.ts`~~ → hechos. El sitemap emite 69 URLs
   (23 rutas × 3 locales) con el set completo de hreflang + `x-default`, y sale de `data/`,
@@ -407,6 +417,22 @@ que hay que leer con ojo.
 ---
 
 ## Trampas técnicas ya pagadas (no repetirlas)
+
+- **El navbar decide su color con una lista de rutas escrita a mano.** `hasDarkHero` en
+  `components/Navbar.tsx` enumera las páginas que abren con foto a sangre; sobre ellas el
+  header va transparente con texto claro. Staff estrenó hero el 2026-08-20 y no se agregó a
+  la lista: quedó texto oscuro sobre una foto oscura, invisible hasta que el scroll volvía
+  opaco el header. **Cuando una página estrena o pierde su hero full-bleed, esa lista se
+  toca en el mismo commit.**
+- **El texto de los heros va centrado en el alto de la pantalla, así que la longitud de la
+  bajada mueve el título.** Una bajada de una línea deja el bloque 32px más corto que una de
+  dos, y el título 16px más abajo — se nota al cambiar de página. Staff reserva la segunda
+  línea (`minHeight: "3.2em"`) para calzar con Historia y Vinos. Si alguna de esas dos pasa
+  a una sola línea, el desalineado vuelve al revés; la solución de fondo es anclar el texto
+  por arriba en los tres, y está pendiente.
+- **`npx prettier` no es seguro en este repo**: no hay configuración, así que corre a 80
+  columnas y el código está escrito a ~100. Formatear un archivo al pasar reescribe decenas
+  de líneas ajenas al cambio. Se formatea a mano.
 
 - **Caché de imágenes**: si se reemplaza una foto manteniendo el nombre, el navegador y el
   optimizador de Next siguen sirviendo la vieja. Convención: sufijo `-vN` en el archivo
