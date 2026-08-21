@@ -293,10 +293,16 @@ export default function Navbar() {
             open ? "translate-y-0" : "translate-y-4"
           }`}
         >
-          {/* Top row: logo + cerrar X — alineados horizontalmente */}
+          {/* Top row: logo, nombre, idioma y la X, todos sobre el mismo eje.
+              El envoltorio lleva `flex`: sin él era un bloque con un `inline-flex`
+              adentro, y un elemento en línea reserva debajo el hueco de los
+              descendentes de su tipografía. Eso hacía la caja 6,7px más alta que
+              el logo, lo empujaba contra el borde de arriba y dejaba su centro
+              3,3px por encima del de la X — poco para nombrarlo y suficiente
+              para verlo. */}
           <div className="mb-12 flex items-center justify-between gap-4">
             <div
-              className={`transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] ${
+              className={`flex items-center transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] ${
                 open ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
               }`}
               style={{ transitionDelay: open ? "60ms" : "0ms" }}
@@ -304,7 +310,7 @@ export default function Navbar() {
               <Link
                 href={homePath}
                 onClick={closeMobileMenu}
-                className="inline-flex items-center gap-2.5 leading-none"
+                className="flex items-center gap-2.5 leading-none"
                 aria-label={t("logoAlt")}
               >
                 {/* 56px y no 64: con el desplegable de idioma en la misma fila,
