@@ -294,6 +294,50 @@ export const alliances: Alliance[] = [
   },
 ];
 
+/**
+ * Puerta de categoría: la tarjeta que despliega las fichas de su categoría en
+ * vez de llevar a una sola. Las de alianza no despliegan nada — enlazan al
+ * sitio del socio.
+ */
+export type CategoryDoor = {
+  slug: string;
+  image: string;
+  /** Categoría que despliega. Ausente en las de alianza. */
+  category?: ActivityCategory;
+  /** Sitio del socio. Ausente en las que despliegan. */
+  purchaseUrl?: string;
+};
+
+/**
+ * Las tres puertas, en orden. Son las MISMAS tarjetas en el mosaico del Inicio
+ * (A4) y en el índice de Actividades (D3), y hasta el 2026-08-21 vivían
+ * duplicadas: una lista en cada página, sólo una de las dos abría menú y la del
+ * Inicio mandaba al índice —o sea, a la página donde están estas tarjetas—.
+ * Acá arriba no pueden divergir.
+ *
+ * El nombre visible sale de `messages → experiences.<slug>.name`, y no de este
+ * archivo, porque cambia con el idioma.
+ */
+export const categoryDoors: CategoryDoor[] = [
+  {
+    slug: "experiencias",
+    image: "/images/actividades/vendimia-2026.jpg",
+    category: "experiencias",
+  },
+  {
+    slug: "talleres",
+    image: "/images/actividades/talleres.jpg",
+    category: "talleres",
+  },
+  // Las alianzas entran solas: agregar una a `alliances` le da su puerta en las
+  // dos páginas, sin repetir la URL en ninguna de las dos.
+  ...alliances.map((alianza) => ({
+    slug: alianza.slug,
+    image: alianza.image,
+    purchaseUrl: alianza.purchaseUrl,
+  })),
+];
+
 export function activitiesByCategory(category: ActivityCategory): Activity[] {
   return activities.filter((activity) => activity.category === category);
 }

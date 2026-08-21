@@ -25,15 +25,29 @@ async function leer(ruta) {
 /**
  * Toda fuente que monte un panel de navegacion entra aca. La lista se amplia
  * cuando aparece una superficie nueva: el guard no descubre archivos solo.
+ *
+ * `CategoryChooserCard` (D3) y `HomeActivitiesShowcase` (A4) ya no dibujan el
+ * panel: lo montan desde `CategoryMenu`. Siguen en la lista porque montarlo
+ * bajo un `&&` volveria a dejar los enlaces fuera del HTML, que es lo unico que
+ * este guard mira.
  */
 const FUENTES = [
   "../components/Navbar.tsx",
+  "../components/CategoryMenu.tsx",
   "../components/CategoryChooserCard.tsx",
+  "../components/HomeActivitiesShowcase.tsx",
+];
+
+/** Las que ademas escriben el panel: solo ellas pueden afirmar el `hidden`. */
+const FUENTES_CON_PANEL = [
+  "../components/Navbar.tsx",
+  "../components/CategoryMenu.tsx",
 ];
 
 for (const ruta of FUENTES) {
   const nombre = ruta.split("/").pop();
   const fuente = await leer(ruta);
+  const dibujaPanel = FUENTES_CON_PANEL.includes(ruta);
 
   test(`${nombre}: ningun panel se monta solo cuando su estado es true`, () => {
     for (const estado of ESTADOS) {
@@ -49,6 +63,8 @@ for (const ruta of FUENTES) {
       );
     }
   });
+
+  if (!dibujaPanel) continue;
 
   test(`${nombre}: los paneles se ocultan con el atributo hidden`, () => {
     assert.match(fuente, /hidden=\{!/);

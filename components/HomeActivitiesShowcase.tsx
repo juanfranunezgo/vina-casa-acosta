@@ -1,9 +1,24 @@
 "use client";
 
-import { useState } from "react";
+import { useCallback, useId, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight, ChevronRight, LayoutGrid, Map, Wine, CalendarDays, Clock } from "lucide-react";
+import {
+  ArrowRight,
+  ArrowUpRight,
+  ChevronDown,
+  ChevronRight,
+  LayoutGrid,
+  Map,
+  Wine,
+  CalendarDays,
+  Clock,
+} from "lucide-react";
+import {
+  CategoryMenuPanel,
+  useCerrarAlSalir,
+  type CategoryMenuItem,
+} from "@/components/CategoryMenu";
 
 type TourItem = {
   slug: string;
@@ -16,10 +31,20 @@ type TourItem = {
   premium?: boolean;
 };
 
+/**
+ * Las tres puertas de categoría del mosaico: son las MISMAS tarjetas que la
+ * sección D3 del índice de Actividades, así que se comportan igual —despliegan
+ * el menú de su categoría (`items`) o salen al sitio de la alianza
+ * (`externalUrl`)—. Antes las tres llevaban al índice: al mismo lugar donde
+ * están las tarjetas que sí desplegaban, o sea que pedían dos clics para
+ * mostrar lo que ahora se ve en uno.
+ */
 type ExperienceItem = {
   slug: string;
   name: string;
   image: string;
+  items?: CategoryMenuItem[];
+  externalUrl?: string;
 };
 
 type EventsBlock = {
@@ -39,6 +64,10 @@ type Labels = {
   catExperience: string;
   book: string;
   more: string;
+  /** Píldora de la tarjeta que despliega su categoría: "Ver cuáles". */
+  choose: string;
+  /** Píldora de la tarjeta externa (tren EFE): "Comprar pasajes". */
+  external: string;
 };
 
 type Props = {
@@ -46,32 +75,48 @@ type Props = {
   tours: TourItem[];
   experiences: ExperienceItem[];
   events: EventsBlock;
-  experiencesHref: string;
 };
 
 type Filter = "all" | "tours" | "experiences" | "events";
 
-type Card = {
-  slug: string;
-  name: string;
-  image: string;
+type CardBase = { slug: string; name: string; image: string; badge: string };
+
+/** Tour: tiene ficha propia, y la tarjeta lleva a ella. */
+type FichaCard = CardBase & {
+  kind: "ficha";
   href: string;
-  reserveHref?: string;
-  badge: string;
+  reserveHref: string;
   premium?: boolean;
-  duration?: string;
+  duration: string;
 };
+
+/**
+ * Puerta de categoría: no hay una ficha detrás sino varias, así que la tarjeta
+ * despliega el menú en vez de navegar. La del tren EFE no tiene menú: sale al
+ * sitio de la alianza.
+ *
+ * Que sean dos tipos y no uno con todo opcional es lo que deja que el
+ * `card.kind === "puerta"` del mosaico le pruebe a TypeScript que abajo sólo
+ * quedan tours — y que `href` está, sin afirmarlo a mano.
+ */
+type PuertaCard = CardBase & {
+  kind: "puerta";
+  items?: CategoryMenuItem[];
+  externalUrl?: string;
+};
+
+type Card = FichaCard | PuertaCard;
 
 export default function HomeActivitiesShowcase({
   labels,
   tours,
   experiences,
   events,
-  experiencesHref,
 }: Props) {
   const [filter, setFilter] = useState<Filter>("all");
 
-  const tourCards: Card[] = tours.map((tr) => ({
+  const tourCards: FichaCard[] = tours.map((tr) => ({
+    kind: "ficha",
     slug: tr.slug,
     name: tr.name,
     image: tr.image,
@@ -82,12 +127,14 @@ export default function HomeActivitiesShowcase({
     duration: tr.duration,
   }));
 
-  const experienceCards: Card[] = experiences.map((ex) => ({
+  const experienceCards: PuertaCard[] = experiences.map((ex) => ({
+    kind: "puerta",
     slug: ex.slug,
     name: ex.name,
     image: ex.image,
-    href: experiencesHref,
     badge: labels.catExperience,
+    items: ex.items,
+    externalUrl: ex.externalUrl,
   }));
 
   // Carménère (premium) primero → queda como la card destacada del mosaico.
@@ -95,7 +142,7 @@ export default function HomeActivitiesShowcase({
     (a, b) => Number(b.premium ?? false) - Number(a.premium ?? false),
   );
 
-  const cards =
+  const cards: Card[] =
     filter === "tours"
       ? orderedTours
       : filter === "experiences"
@@ -151,7 +198,20 @@ export default function HomeActivitiesShowcase({
         >
           {cards.map((card, i) => {
             const featured = i === 0;
-            const isTour = Boolean(card.duration);
+
+            // Puerta de categoría: no navega a ninguna ficha, despliega el
+            // menú de su categoría —el mismo de D3— o sale a la alianza.
+            if (card.kind === "puerta") {
+              return (
+                <ExperienceCard
+                  key={`${card.slug}-${card.badge}`}
+                  card={card}
+                  labels={labels}
+                  featured={featured}
+                  className={i === experiencesStartAt ? "max-sm:mt-6" : ""}
+                />
+              );
+            }
 
             // Destacada: foto full-bleed + CTAs sobre la imagen.
             if (featured) {
@@ -214,9 +274,9 @@ export default function HomeActivitiesShowcase({
             return (
               <article
                 key={`${card.slug}-${card.badge}`}
-                className={`group flex flex-col overflow-hidden rounded-2xl bg-surface ambient-shadow transition-all duration-300 hover:ambient-shadow-lg ${
-                  isTour ? "min-h-[320px]" : "min-h-[300px]"
-                } ${card.premium ? "ring-1 ring-primary/25" : ""} ${
+                className={`group flex min-h-[320px] flex-col overflow-hidden rounded-2xl bg-surface ambient-shadow transition-all duration-300 hover:ambient-shadow-lg ${
+                  card.premium ? "ring-1 ring-primary/25" : ""
+                } ${
                   i === experiencesStartAt ? "max-sm:mt-6" : ""
                 }`}
               >
@@ -323,6 +383,157 @@ export default function HomeActivitiesShowcase({
           </div>
         </Link>
       )}
+    </div>
+  );
+}
+
+/**
+ * Tarjeta-puerta del mosaico. Es la misma puerta que `CategoryChooserCard`
+ * dibuja en D3 —abre el mismo menú, con las mismas fichas— pero vestida con el
+ * lenguaje del mosaico: la destacada va a sangre y las otras son paneles de
+ * papel. Lo que se comparte es el menú, no la caja.
+ *
+ * El menú cuelga del contenedor y no del `<article>`, que lleva
+ * `overflow-hidden` para recortar el zoom de la foto y recortaría también el
+ * panel.
+ */
+function ExperienceCard({
+  card,
+  labels,
+  featured,
+  className = "",
+}: {
+  card: PuertaCard;
+  labels: Labels;
+  featured: boolean;
+  className?: string;
+}) {
+  const [abierto, setAbierto] = useState(false);
+  const panelId = useId();
+  const contenedor = useRef<HTMLDivElement>(null);
+  const cerrar = useCallback(() => setAbierto(false), []);
+  useCerrarAlSalir(abierto, contenedor, cerrar);
+
+  const alternar = () => setAbierto((v) => !v);
+  const externa = Boolean(card.externalUrl);
+
+  // La foto va con `alt=""`: el nombre lo dice el título de la tarjeta, y el
+  // botón que la envuelve ya se llama igual.
+  const foto = (
+    <Image
+      src={card.image}
+      alt=""
+      fill
+      className="object-cover transition-transform duration-700 group-hover:scale-105"
+      sizes={
+        featured ? "(max-width: 1024px) 100vw, 66vw" : "(max-width: 1024px) 100vw, 33vw"
+      }
+    />
+  );
+
+  const disparadorFoto = (clase: string) =>
+    externa ? (
+      <a
+        href={card.externalUrl}
+        target="_blank"
+        rel="noopener noreferrer"
+        className={clase}
+        aria-label={card.name}
+      >
+        {foto}
+      </a>
+    ) : (
+      <button
+        type="button"
+        onClick={alternar}
+        aria-expanded={abierto}
+        aria-controls={panelId}
+        className={clase}
+        aria-label={card.name}
+      >
+        {foto}
+      </button>
+    );
+
+  const cta = (clase: string) =>
+    externa ? (
+      <a
+        href={card.externalUrl}
+        target="_blank"
+        rel="noopener noreferrer"
+        className={clase}
+      >
+        {labels.external}
+        <ArrowUpRight className="h-4 w-4" aria-hidden="true" />
+      </a>
+    ) : (
+      <button
+        type="button"
+        onClick={alternar}
+        aria-expanded={abierto}
+        aria-controls={panelId}
+        className={clase}
+      >
+        {labels.choose}
+        <ChevronDown
+          className={`h-4 w-4 transition-transform duration-200 ${abierto ? "rotate-180" : ""}`}
+          aria-hidden="true"
+        />
+      </button>
+    );
+
+  if (featured) {
+    return (
+      <div ref={contenedor} className={`relative sm:col-span-2 sm:row-span-2 ${className}`}>
+        <article className="group relative flex h-full min-h-[380px] flex-col justify-end overflow-hidden rounded-2xl ambient-shadow transition-all duration-300 hover:ambient-shadow-lg sm:min-h-[560px]">
+          {disparadorFoto("absolute inset-0 z-0")}
+          <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-black/5" />
+
+          <span className="absolute left-4 top-4 z-10 rounded-full bg-primary/90 px-3 py-1 text-label-sm font-semibold uppercase tracking-wider text-on-primary backdrop-blur-sm">
+            {card.badge}
+          </span>
+
+          <div className="relative z-10 p-6 md:p-8">
+            <h3 className="mb-5 font-display text-3xl leading-tight text-on-primary md:text-4xl">
+              {card.name}
+            </h3>
+            {cta(
+              "inline-flex min-h-11 items-center gap-2 rounded-full border border-on-primary/45 bg-on-primary/10 px-4 font-body text-label-sm font-semibold uppercase tracking-wider text-on-primary backdrop-blur-sm transition-colors hover:bg-on-primary hover:text-primary",
+            )}
+          </div>
+        </article>
+        <CategoryMenuPanel
+          id={panelId}
+          items={card.items ?? []}
+          abierto={abierto}
+          alElegir={cerrar}
+        />
+      </div>
+    );
+  }
+
+  return (
+    <div ref={contenedor} className={`relative ${className}`}>
+      <article className="group flex h-full min-h-[300px] flex-col overflow-hidden rounded-2xl bg-surface ambient-shadow transition-all duration-300 hover:ambient-shadow-lg">
+        {disparadorFoto("relative block min-h-[150px] w-full grow overflow-hidden")}
+        <div className="flex flex-col gap-2 p-5">
+          <span className="font-body text-label-sm font-semibold uppercase tracking-wider text-primary">
+            {card.badge}
+          </span>
+          <h3 className="font-display text-xl leading-tight text-primary">{card.name}</h3>
+          <div className="mt-1">
+            {cta(
+              "inline-flex min-h-11 items-center gap-1 font-body text-body-md font-semibold text-on-surface-variant transition-colors hover:text-primary",
+            )}
+          </div>
+        </div>
+      </article>
+      <CategoryMenuPanel
+        id={panelId}
+        items={card.items ?? []}
+        abierto={abierto}
+        alElegir={cerrar}
+      />
     </div>
   );
 }

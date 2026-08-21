@@ -8,38 +8,26 @@ import Reveal from "@/components/Reveal";
 import Button from "@/components/ui/Button";
 import ActivitiesTabs from "@/components/ActivitiesTabs";
 import CategoryChooserCard from "@/components/CategoryChooserCard";
-import { tours, activityPath, activitiesByCategory, VENDIMIA_HUB } from "@/data/activities";
+import {
+  tours,
+  activityPath,
+  activitiesByCategory,
+  categoryDoors,
+  VENDIMIA_HUB,
+} from "@/data/activities";
 import { CONTACT_WHATSAPP_URL, CONTACT_PHONE_DISPLAY, INSTAGRAM_URL } from "@/lib/contact";
 import { alternatesFor } from "@/lib/alternates";
 import JsonLd from "@/components/JsonLd";
 import { buildActividadesJsonLd } from "@/lib/siteJsonLd";
 
-// Tarjetas de la sección D3. Viven acá y no en `data/activities.ts` porque no
-// son actividades del catálogo: son puertas de entrada. Ahora despliegan la
-// lista de su categoría en vez de decorar — dos de las tres eran `<article>`
-// sin enlace, prometiendo algo que no llevaba a ninguna parte.
+// Las tarjetas de la sección D3 son `categoryDoors` (ver data/activities.ts):
+// las mismas tres que abre el mosaico A4 del Inicio, y con el mismo menú. La
+// lista vivía duplicada acá hasta el 2026-08-21.
 //
 // La primera se llamaba "Vendimia 2026" y abría las ocho experiencias: decía
 // una categoría y entregaba otra. Ahora se llama por lo que despliega. La
 // vendimia vuelve cuando exista su hub (ver VENDIMIA_HUB en data/activities.ts),
 // como entrada propia y destacada arriba.
-const experiences = [
-  {
-    slug: "experiencias",
-    image: "/images/actividades/vendimia-2026.jpg",
-    category: "experiencias" as const,
-  },
-  {
-    slug: "talleres",
-    image: "/images/actividades/talleres.jpg",
-    category: "talleres" as const,
-  },
-  {
-    slug: "tren-efe",
-    image: "/images/actividades/tren-efe.jpg",
-    purchaseUrl: "https://pasajes.efe.cl/turistico/casa-acosta",
-  },
-];
 
 // El hero D1 va en <picture> y no en next/image, porque next/image no hace art
 // direction: elige a qué tamaño bajar una foto, no cuál de dos. El .webp sin
@@ -447,7 +435,7 @@ export default async function ActividadesPage({
           )}
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-gutter">
-            {experiences.map((exp, idx) => (
+            {categoryDoors.map((exp, idx) => (
               <Reveal key={exp.slug} delay={idx * 100}>
                 <CategoryChooserCard
                   name={tExp(`${exp.slug}.name`)}

@@ -13,21 +13,13 @@ import { getCatalog, winesByLine } from "@/lib/afeleia/catalog";
 import {
   tours as tourData,
   activityPath,
-  categoryIndexHref,
+  activitiesByCategory,
+  categoryDoors,
 } from "@/data/activities";
 import { alternatesFor } from "@/lib/alternates";
 import JsonLd from "@/components/JsonLd";
 import { buildHomeJsonLd } from "@/lib/siteJsonLd";
 
-// Tarjetas de experiencia del mosaico A4. Viven acá y no en `data/activities.ts`
-// porque no son actividades del catálogo: son puertas de entrada. Las reemplaza
-// `CategoryChooserCard` en el plan 3 —ver el spec de subpáginas de actividades—,
-// donde pasan a desplegar un menú con las fichas de su categoría.
-const experienceData = [
-  { slug: "experiencias", image: "/images/actividades/vendimia-2026.jpg" },
-  { slug: "talleres", image: "/images/actividades/talleres.jpg" },
-  { slug: "tren-efe", image: "/images/actividades/tren-efe.jpg" },
-];
 
 // El título y la descripción de la home son los del layout; acá solo se declara
 // el canonical, que el layout dejó de proveer a propósito.
@@ -86,10 +78,22 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
     premium: tr.premium,
   }));
 
-  const showcaseExperiences = experienceData.map((ex) => ({
-    slug: ex.slug,
-    name: tExp(`${ex.slug}.name`),
-    image: ex.image,
+  // Las tres puertas del mosaico A4, con las fichas que despliega cada una. La
+  // lista sale del catálogo, así que una actividad nueva aparece en su menú sin
+  // tocar esta página. Los rótulos del desplegable son los de D3: es el mismo
+  // menú y decir "Ver cuáles" de dos maneras distintas sólo agrega traducciones
+  // que mantener.
+  const showcaseExperiences = categoryDoors.map((door) => ({
+    slug: door.slug,
+    name: tExp(`${door.slug}.name`),
+    image: door.image,
+    externalUrl: door.purchaseUrl,
+    items: door.category
+      ? activitiesByCategory(door.category).map((activity) => ({
+          href: lp(activityPath(activity)),
+          label: tActivity(`${activity.slug}.name`),
+        }))
+      : undefined,
   }));
 
   const catalog = await getCatalog();
@@ -305,14 +309,12 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
               catExperience: t("activities.cat.experience"),
               book: t("activities.book"),
               more: t("activities.more"),
+              choose: tActividades("experiences.chooseCta"),
+              external: tActividades("experiences.efeCta"),
             }}
             tours={showcaseTours}
             experiences={showcaseExperiences}
             events={eventsBlock}
-            // Sin fragmento: la sección #experiencias del índice muestra tres
-            // tarjetas-puerta y ninguna de las ocho experiencias del catálogo.
-            // La regla vive en categoryIndexHref — ver data/activities.ts.
-            experiencesHref={categoryIndexHref(locale, "experiencias")}
           />
 
           <div className="text-center mt-12 md:mt-16">
