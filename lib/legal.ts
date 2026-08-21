@@ -35,9 +35,23 @@ export const DOCUMENTOS_LEGALES: Record<
 export const PRIVACIDAD_PDF = DOCUMENTOS_LEGALES.es.privacy;
 
 /**
+ * Términos y Condiciones, el otro documento que la casilla pide aceptar desde
+ * el 2026-08-21. Vale la misma regla que arriba: se enlaza el de español en los
+ * tres idiomas, porque es el único que existe.
+ */
+export const TERMINOS_PDF = DOCUMENTOS_LEGALES.es.terms;
+
+/**
  * Edición vigente de la Política de Privacidad, tal como la declara el propio
  * documento. Viaja en cada envío para que el registro diga **qué** se aceptó y
  * no sólo que se aceptó: cuando salga una v1.2, los consentimientos viejos
  * siguen diciendo la verdad.
  */
 export const PRIVACIDAD_VERSION = "v1.1 (16-08-2026)";
+
+/**
+ * Edición vigente de los Términos y Condiciones, por el mismo motivo: la
+ * casilla dice que se aceptan, así que el registro tiene que decir cuáles. Sale
+ * del propio documento — ver la sección legal de `docs/HANDOFF.md`.
+ */
+export const TERMINOS_VERSION = "v1.0 (16-08-2026)";

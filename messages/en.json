@@ -90,8 +90,8 @@
     "legal": "Please drink responsibly · Sale of alcohol to anyone under 18 is prohibited · Chilean Law N° 19.925"
   },
   "privacyConsent": {
-    "label": "I have read and accept the <policy>Privacy Policy</policy>.",
-    "inSpanish": "(document in Spanish)"
+    "label": "I accept the <terms>terms and conditions</terms> and I agree with the <policy>privacy policies</policy>.",
+    "inSpanish": "(documents in Spanish)"
   },
   "common": {
     "viewDetails": "View details",

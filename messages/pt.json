@@ -90,8 +90,8 @@
     "legal": "Beba com moderação · Proibida a venda de bebida alcoólica a menores de 18 anos · Lei chilena N° 19.925"
   },
   "privacyConsent": {
-    "label": "Li e aceito a <policy>Política de Privacidade</policy>.",
-    "inSpanish": "(documento em espanhol)"
+    "label": "Aceito os <terms>termos e condições</terms> e concordo com as <policy>políticas de privacidade</policy>.",
+    "inSpanish": "(documentos em espanhol)"
   },
   "common": {
     "viewDetails": "Ver detalhes",

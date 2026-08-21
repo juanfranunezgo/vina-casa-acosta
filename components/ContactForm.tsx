@@ -6,7 +6,7 @@ import { Check, Loader2, Mail } from "lucide-react";
 import { CONTACT_EMAIL } from "@/lib/contact";
 import { submitToNetlifyForms } from "@/lib/netlifyForms";
 import PrivacyConsent from "@/components/PrivacyConsent";
-import { PRIVACIDAD_VERSION } from "@/lib/legal";
+import { PRIVACIDAD_VERSION, TERMINOS_VERSION } from "@/lib/legal";
 
 type Status = "idle" | "submitting" | "success" | "error";
 
@@ -41,9 +41,11 @@ export default function ContactForm() {
         asunto: t(`subjects.${subject || "other"}`),
         mensaje: message,
         idioma: locale,
-        // Qué edición de la política se aceptó, no sólo que se aceptó: cuando
-        // salga una v1.2, los consentimientos ya guardados siguen diciendo la
-        // verdad sobre lo que esta persona leyó.
+        // Qué ediciones se aceptaron, no sólo que se aceptaron: cuando salga
+        // una v1.2, los consentimientos ya guardados siguen diciendo la verdad
+        // sobre lo que esta persona leyó. Son dos campos porque los dos
+        // documentos se versionan por separado.
+        terminos: TERMINOS_VERSION,
         privacidad: PRIVACIDAD_VERSION,
         "bot-field": botField,
       });

@@ -90,8 +90,8 @@
     "legal": "Bebe con moderación · Prohibida la venta de alcohol a menores de 18 años · Ley N° 19.925"
   },
   "privacyConsent": {
-    "label": "He leído y acepto la <policy>Política de Privacidad</policy>.",
-    "inSpanish": "(documento en español)"
+    "label": "Acepto los <terms>términos y condiciones</terms> y estoy de acuerdo con las <policy>políticas de privacidad</policy>.",
+    "inSpanish": "(documentos en español)"
   },
   "common": {
     "viewDetails": "Ver detalles",

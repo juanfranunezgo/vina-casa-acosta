@@ -87,18 +87,44 @@ test("un idioma sin documentos propios deja la etiqueta como texto", () => {
   );
 });
 
-test("el consentimiento apunta a una politica que existe y declara su version", async () => {
-  // Un consentimiento sirve como registro sólo si dice qué se aceptó. Si el PDF
-  // cambia de nombre, esto se pone rojo antes de que alguien acepte un enlace roto.
-  const pdf = legal.match(/PRIVACIDAD_PDF\s*=\s*DOCUMENTOS_LEGALES\.(\w+)\.privacy/);
-  assert.ok(pdf, "PRIVACIDAD_PDF deberia salir del mapa, no de una ruta escrita a mano");
-  await assert.doesNotReject(
-    access(new URL(`public${documentos[pdf[1]].privacy}`, raiz)),
-    "la politica que se ofrece al consentir no existe en public/",
-  );
-  assert.match(
-    legal,
-    /PRIVACIDAD_VERSION\s*=\s*"v\d+\.\d+ \(\d{2}-\d{2}-\d{4}\)"/,
-    "PRIVACIDAD_VERSION deberia declarar version y fecha de vigencia",
-  );
-});
+/**
+ * La casilla nombra dos documentos —Terminos y Condiciones y Politica de
+ * Privacidad—, asi que los dos tienen que existir, estar enlazados y viajar
+ * versionados en el envio. Se recorre la lista: si manana la etiqueta suma un
+ * tercero, se agrega aca su par de constantes y el test lo cubre igual.
+ */
+const DOCUMENTOS_DEL_CONSENTIMIENTO = [
+  { constante: "PRIVACIDAD_PDF", version: "PRIVACIDAD_VERSION", clave: "privacy" },
+  { constante: "TERMINOS_PDF", version: "TERMINOS_VERSION", clave: "terms" },
+];
+
+for (const { constante, version, clave } of DOCUMENTOS_DEL_CONSENTIMIENTO) {
+  test(`el consentimiento apunta a ${clave}, que existe y declara su version`, async () => {
+    // Un consentimiento sirve como registro sólo si dice qué se aceptó. Si el
+    // PDF cambia de nombre, esto se pone rojo antes de que alguien acepte un
+    // enlace roto.
+    const pdf = legal.match(
+      new RegExp(`${constante}\\s*=\\s*DOCUMENTOS_LEGALES\\.(\\w+)\\.${clave}`),
+    );
+    assert.ok(pdf, `${constante} deberia salir del mapa, no de una ruta escrita a mano`);
+    await assert.doesNotReject(
+      access(new URL(`public${documentos[pdf[1]][clave]}`, raiz)),
+      `el documento que se ofrece al consentir (${clave}) no existe en public/`,
+    );
+    assert.match(
+      legal,
+      new RegExp(`${version}\\s*=\\s*"v\\d+\\.\\d+ \\(\\d{2}-\\d{2}-\\d{4}\\)"`),
+      `${version} deberia declarar version y fecha de vigencia`,
+    );
+
+    const consent = await readFile(
+      new URL("components/PrivacyConsent.tsx", raiz),
+      "utf8",
+    );
+    assert.match(
+      consent,
+      new RegExp(constante),
+      `la casilla nombra ${clave} y no lo enlaza: pedir que acepten un documento que no pueden abrir`,
+    );
+  });
+}
