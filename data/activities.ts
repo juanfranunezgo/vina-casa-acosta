@@ -56,8 +56,9 @@ export type Activity = {
   category: ActivityCategory;
   /**
    * CLP por persona. Ausente = la ficha muestra "precio a consultar" y el
-   * formulario pasa a modo cotización. No se inventan cifras: el catálogo del
-   * cliente solo trae precio para los tours.
+   * formulario pasa a modo cotización. No se inventan cifras: hoy sólo los
+   * tours y los talleres tienen precio confirmado por el cliente; las
+   * experiencias siguen a pedido.
    */
   priceCLP?: number;
   /** Piso de personas por reserva. */
@@ -146,8 +147,12 @@ export const activities: Activity[] = [
   {
     slug: "pizzas",
     category: "talleres",
-    // Sin precio: el catálogo del cliente no publica ninguno para los talleres.
-    // La ficha pasa sola a "precio a consultar" y el formulario, a cotización.
+    // El cliente confirmó el precio de los tres talleres el 2026-08-21: 39.900
+    // por persona, el mismo para los tres. Hasta entonces salían sin cifra, y
+    // la ficha caía sola en "precio a consultar" con el formulario en modo
+    // cotización. Con precio, las tres pasan a modo reserva y su ficha publica
+    // un Offer — ver lib/activityJsonLd.ts.
+    priceCLP: 39900,
     minPeople: 8,
     months: TODO_EL_ANO,
     durationISO: "PT3H",
@@ -156,6 +161,7 @@ export const activities: Activity[] = [
   {
     slug: "pastas",
     category: "talleres",
+    priceCLP: 39900,
     minPeople: 8,
     months: TODO_EL_ANO,
     durationISO: "PT3H",
@@ -164,6 +170,7 @@ export const activities: Activity[] = [
   {
     slug: "noquis",
     category: "talleres",
+    priceCLP: 39900,
     minPeople: 8,
     months: TODO_EL_ANO,
     durationISO: "PT3H",
