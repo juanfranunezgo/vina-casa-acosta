@@ -89,7 +89,20 @@ function contentSecurityPolicy(): string {
     "form-action": ["'self'"],
     "base-uri": ["'self'"],
     "object-src": ["'none'"],
-    "frame-src": ["'none'"],
+    // El único iframe del sitio es el mapa de /contacto. Con `'none'` la página
+    // se veía entera menos el mapa: el navegador bloqueaba el frame y dejaba a
+    // la vista el esqueleto de `MapEmbed`, sin más rastro que una línea en la
+    // consola («Framing 'https://maps.google.com/' violates … frame-src»).
+    //
+    // Van los tres orígenes porque la CSP se evalúa también en cada salto de la
+    // cadena de redirecciones, y el embed hace dos: `maps.google.com/maps?q=…`
+    // → `google.com/maps/embed` → `www.google.com/maps/embed`. Con solo el
+    // primero, el bloqueo se corre al segundo y el síntoma es idéntico.
+    "frame-src": [
+      "https://maps.google.com",
+      "https://google.com",
+      "https://www.google.com",
+    ],
   };
 
   if (afeleia) {

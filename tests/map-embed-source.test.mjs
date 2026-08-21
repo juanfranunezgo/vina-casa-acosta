@@ -61,6 +61,26 @@ test("el embed apunta a las coordenadas de la ficha, no a una búsqueda por text
   assert.match(src[1], /output=embed/, "al embed le falta `output=embed`");
 });
 
+test("la CSP deja pasar el frame del mapa", async () => {
+  // El componente puede estar impecable y el mapa no verse igual: con
+  // `frame-src 'none'` el navegador bloquea el marco y la página se queda con
+  // el esqueleto puesto. Pasó —el mapa estuvo caído en producción por esto— y
+  // la única señal era una línea en la consola del visitante.
+  const config = await readFile(new URL("next.config.ts", raiz), "utf8");
+  const frameSrc = config.match(/"frame-src":\s*\[([\s\S]*?)\]/);
+  assert.ok(frameSrc, "no se encontró la directiva `frame-src` en next.config.ts");
+
+  const { origin } = new URL(contacto.match(/mapEmbedSrc\s*=\s*\n?\s*"([^"]+)"/)[1]);
+  // Los dos saltos de la redirección del embed: la CSP se evalúa en cada uno,
+  // así que permitir sólo el origen del `src` corre el bloqueo al siguiente.
+  for (const permitido of [origin, "https://google.com", "https://www.google.com"]) {
+    assert.ok(
+      frameSrc[1].includes(`"${permitido}"`),
+      `frame-src no permite ${permitido}: el mapa queda bloqueado`,
+    );
+  }
+});
+
 test("las coordenadas del mapa y las del structured data son las mismas", async () => {
   // Si divergen, el mapa muestra un punto y Google lee otro.
   const jsonLd = await readFile(new URL("lib/siteJsonLd.ts", raiz), "utf8");
