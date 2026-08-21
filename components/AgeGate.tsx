@@ -88,20 +88,28 @@ export const AGE_GATE_SCRIPT = `try{var v=localStorage.getItem(${JSON.stringify(
  * mostrar la capa antes del primer pintado. El atributo no cambia solo, así que
  * la suscripción no tiene a qué escuchar.
  */
-const suscribir = () => () => {};
-const hayQuePreguntar = () => {
-  if (document.documentElement.getAttribute("data-age-gate") === "pendiente") return true;
-  // El atributo no sobrevive a una navegacion del cliente —ver el efecto de
-  // abajo—, asi que la respuesta de verdad es la de siempre: lo que guardo el
-  // navegador. Sin esta segunda lectura, cambiar de idioma desde la capa dejaba
-  // entrar al sitio sin confirmar la edad.
+/**
+ * Si este navegador NO tiene una confirmacion vigente. Es el dato duro, y la
+ * unica fuente que se consulta despues del primer pintado.
+ *
+ * El atributo del `<html>` no sirve como respuesta: no sobrevive a una
+ * navegacion del cliente (React lo borra al re-renderizar el layout) y, peor,
+ * leerlo como "hay que preguntar" lo vuelve circular — la capa se sostiene sola
+ * con el atributo que ella misma acaba de poner.
+ */
+const sinConfirmacionVigente = () => {
   try {
     const vence = localStorage.getItem(CLAVE);
     return !vence || Date.now() > Number(vence);
   } catch {
+    // Navegador sin almacenamiento (modo privado, cookies bloqueadas): se
+    // pregunta de nuevo, igual que hace `AGE_GATE_SCRIPT` en su `catch`.
     return true;
   }
 };
+
+const suscribir = () => () => {};
+const hayQuePreguntar = sinConfirmacionVigente;
 const enElServidor = () => true;
 
 export default function AgeGate() {
@@ -128,6 +136,12 @@ export default function AgeGate() {
   // página a quien ya confirmó su edad.
   useEffect(() => {
     if (estado === "oculto") return;
+    // El primer render del cliente repite el del servidor —que siempre dice
+    // "preguntando", para que el marcado exista— y recien despues
+    // `useSyncExternalStore` corrige con el dato del navegador. A quien ya
+    // confirmo hay que dejarlo pasar por ese render sin tocar nada: poner el
+    // atributo ahi lo encerraba en la capa para siempre. Medido el 2026-08-20.
+    if (!sinConfirmacionVigente()) return;
     // Repone el atributo que puso `AGE_GATE_SCRIPT`. Al cambiar de idioma, el
     // `router.replace` re-renderiza `<html>` con las props del layout y React se
     // lleva por delante lo que no es suyo; el script no vuelve a correr, porque

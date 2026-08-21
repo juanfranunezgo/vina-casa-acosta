@@ -39,13 +39,32 @@ test("el componente y el CSS hablan del mismo atributo y del mismo valor", () =>
   assert.match(gate, /id="age-gate"/);
 });
 
-test("saber si hay que preguntar no depende solo del atributo", () => {
+test("saber si hay que preguntar sale del navegador, no del atributo", () => {
   // El atributo es una optimizacion para el primer pintado; el dato duro es la
-  // fecha guardada en el navegador. Si la lectura vuelve a apoyarse solo en el
-  // atributo, el bypass del cambio de idioma regresa.
-  const bloque = gate.match(/const hayQuePreguntar = \(\) => \{([\s\S]*?)\n\};/);
-  assert.ok(bloque, "no se encontro `hayQuePreguntar`");
+  // fecha guardada en el navegador. Apoyarse en el atributo trae las dos
+  // desgracias a la vez: sin atributo —navegacion del cliente— deja entrar sin
+  // confirmar, y con el atributo puesto por la propia capa la sostiene para
+  // siempre, incluso a quien ya confirmo.
+  const bloque = gate.match(/const sinConfirmacionVigente = \(\) => \{([\s\S]*?)\n\};/);
+  assert.ok(bloque, "no se encontro `sinConfirmacionVigente`");
   assert.match(bloque[1], /localStorage\.getItem\(CLAVE\)/);
+  assert.doesNotMatch(bloque[1], /getAttribute/);
+  assert.match(gate, /const hayQuePreguntar = sinConfirmacionVigente;/);
+});
+
+test("la capa no repone el atributo en el render transitorio de la hidratacion", () => {
+  // El primer render del cliente repite el del servidor —que siempre dice
+  // "preguntando", para que el marcado exista— y el efecto corre ahi, antes de
+  // que `useSyncExternalStore` corrija con el dato del navegador. Sin esta
+  // guarda, a quien ya confirmo se le ponia el atributo y quedaba encerrado en
+  // la capa: la pregunta volvia en cada carga. Medido el 2026-08-20.
+  const efecto = gate.match(/if \(estado === "oculto"\) return;([\s\S]*?)setAttribute/);
+  assert.ok(efecto, "no se encontro el efecto que repone el atributo");
+  assert.match(
+    efecto[1],
+    /if \(!sinConfirmacionVigente\(\)\) return;/,
+    "el efecto pone el atributo sin preguntarle al navegador si ya hay confirmacion",
+  );
 });
 
 test("el foco entra por el boton que contesta, no por el selector de idioma", () => {
