@@ -55,8 +55,37 @@ test("sin precio NO se emite offers", () => {
     ...CRUMBS,
     category: "Talleres",
   });
-  const [product] = nodes(graph, "Product");
-  assert.equal(product.offers, undefined);
+  const [servicio] = nodes(graph, "Service");
+  assert.equal(servicio.offers, undefined);
+});
+
+test("sin precio la actividad NO se declara Product", () => {
+  // Un Product sin offers, review ni aggregateRating es el error critico que
+  // Search Console levanto contra las 13 fichas de vino en agosto. Sin precio
+  // no hay oferta que declarar, asi que la actividad no es un producto: es un
+  // servicio que la vina presta y cotiza.
+  const graph = buildActivityJsonLd("es", SIN_PRECIO, COPY, {
+    ...CRUMBS,
+    category: "Talleres",
+  });
+  assert.equal(nodes(graph, "Product").length, 0);
+});
+
+test("sin precio la actividad se declara Service, con la vina como proveedora", () => {
+  const graph = buildActivityJsonLd("es", SIN_PRECIO, COPY, {
+    ...CRUMBS,
+    category: "Talleres",
+  });
+  const [servicio] = nodes(graph, "Service");
+  assert.equal(servicio.name, COPY.name);
+  assert.match(servicio.url, /\/actividades\/talleres\/pizzas$/);
+  assert.match(servicio.provider["@id"], /#winery$/);
+});
+
+test("con precio la actividad sigue siendo Product y no duplica Service", () => {
+  const graph = buildActivityJsonLd("es", CON_PRECIO, COPY, CRUMBS);
+  assert.equal(nodes(graph, "Product").length, 1);
+  assert.equal(nodes(graph, "Service").length, 0);
 });
 
 test("el Offer declara availability InStock", () => {
@@ -141,6 +170,15 @@ test("la URL del Offer del indice es la misma del Product", () => {
   const [lista] = nodes(graph, "ItemList");
   const producto = lista.itemListElement[0].item;
   assert.equal(producto.offers.url, producto.url);
+});
+
+test("el Offer del indice declara availability InStock", () => {
+  // Es el Offer que Google esta viendo: el aviso de "falta availability" del
+  // 20-08-2026 nombraba los tres tours de esta lista, no las fichas.
+  const graph = buildActividadesJsonLd("es", COPY_INDICE, [ENTRADA]);
+  const [lista] = nodes(graph, "ItemList");
+  const producto = lista.itemListElement[0].item;
+  assert.equal(producto.offers.availability, "https://schema.org/InStock");
 });
 
 test("el indice y la ficha declaran la MISMA url para la misma actividad", () => {

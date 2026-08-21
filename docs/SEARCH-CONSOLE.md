@@ -10,7 +10,28 @@ trámite.
 
 ---
 
-## 0. Estado verificado el 19 de agosto de 2026
+## 0. Estado verificado el 21 de agosto de 2026
+
+Medido con `curl` contra producción, no leído de este documento. Lo que cambió
+respecto del 19, y lo que este documento daba por otra cosa:
+
+| Punto | Estado |
+|---|---|
+| Escudo anti-bot de `casaacosta.cl` | ✅ **ya no está.** Las 7 URLs probadas contestan **301**, también con user-agent de Googlebot. El bloqueante del 19/8 desapareció |
+| Destino de esas 301 | ❌ **sigue siendo la home pelada**: `/tour-ombu/` → `https://vinacasaacosta.cl` → **307** → `/es`. Cadena `301 → 307 → 200` y soft 404 para Google — ver §10 |
+| Canonical del sitio nuevo | ✅ auto-referencial y en el dominio propio (portada, índice de actividades y fichas de actividad y de vino) |
+| hreflang + `x-default` | ✅ los cuatro, en las páginas medidas |
+| `Offer` de los tours en producción | ❌ **todavía sin `availability`**: el arreglo del 20/8 (`bb25cbf`) sigue en `main` **sin pushear** |
+| `/llms.txt` en producción | ❌ sirve el **horario viejo** ("lunes a sábado de 10:00 a 18:00; jueves hasta las 20:00"). El repo ya tiene el vigente: es deuda de deploy, pero mientras tanto contradice al `OpeningHoursSpecification` del schema y al pie |
+| `og:site_name` | ⚠️ **solo en la portada.** Next fusiona `openGraph` de forma superficial: cada página que declara el suyo pierde `siteName` (y `/es/actividades`, además, `og:type` y `og:locale`) |
+| Descripción de las 14 fichas de actividad | ⚠️ **46 a 59 caracteres** — es el *tagline*, contra ~150 útiles. Ningún título ni descripción de ficha nombra el Valle del Cachapoal |
+| Página 404 | ⚠️ devuelve 404 de verdad, pero con el `<title>` por defecto de la portada |
+
+Las tres últimas filas no bloquean la indexación: mueven el CTR y el calce con
+la búsqueda. La corrección de los textos es copy en tres idiomas y necesita
+validación del cliente, así que no se inventó acá.
+
+## 0.b Estado verificado el 19 de agosto de 2026
 
 Lo que cambió respecto del 18, y que este documento daba por otra cosa:
 
@@ -23,7 +44,7 @@ Lo que cambió respecto del 18, y que este documento daba por otra cosa:
 | Indexación | 37 indexadas · 48 sin indexar, en 5 motivos — ver §10 |
 | Fragmentos de productos | 0 no válidas (el error de "offers" del 8 ago quedó resuelto) y 0 válidas: falta que Google vuelva a rastrear las fichas |
 
-## 0.b Estado verificado el 18 de agosto de 2026
+## 0.c Estado verificado el 18 de agosto de 2026
 
 Lo comprobado con `curl` contra producción, para no repetir trabajo:
 
@@ -237,11 +258,13 @@ conjunto entero: Descubierta (34), Duplicada (1) y Alternativa con canónica (2)
 
 ### Lo que queda pendiente, por orden de impacto
 
-1. **Levantar el escudo anti-bot de `casaacosta.cl`** o sacar el dominio de
-   BanaHosting. Mientras conteste 200 con la pantalla de espera, Google no ve
-   ningún 301, las 13 fichas del WordPress no traspasan nada y el **Cambio de
-   dirección del paso 4 va a fallar**. El shell con las 113 reglas está listo en
-   `casaacosta-redirect/`.
+1. ~~**Levantar el escudo anti-bot de `casaacosta.cl`.**~~ **Ya no está**,
+   comprobado el 21/8 con Googlebot incluido (ver §0). Lo que queda es lo de
+   siempre, y ahora sin excusa: el dominio manda **todas** sus URLs a la home
+   pelada —cadena `301 → 307 → 200`—, Google lo lee como soft 404 y las 13
+   fichas del WordPress no traspasan nada. El shell con las 113 reglas sigue
+   listo y **sin desplegar** en `casaacosta-redirect/`. Es el pendiente de mayor
+   impacto del proyecto.
 2. ~~Confirmar `NEXT_PUBLIC_SITE_URL` en Netlify.~~ **Hecho el 20/8**: la
    variable ya estaba definida. El guard queda de red de seguridad por si
    alguien la borra.
@@ -305,16 +328,38 @@ dentro de su `Offer`, que sigue apareciendo solo cuando el precio se ve en la
 página. Dos pruebas nuevas en `tests/actividades-jsonld.test.mjs`: que el Offer
 lo declara, y que donde no hay oferta no queda ningún `availability` suelto.
 
+**El 21/8** se cerró el resto, con el catálogo ya con los precios de taller:
+
+- `lib/siteJsonLd.ts` — el `Offer` de cada tour del `ItemList` declara
+  `availability: InStock`. **Es el marcado que disparó el aviso**: los tres
+  elementos del informe cuelgan de esta lista, no de las fichas.
+- `lib/activityJsonLd.ts` — una actividad **sin precio ya no se declara
+  `Product`, sino `Service`** prestado por la viña. Un `Product` sin `offers`,
+  `review` ni `aggregateRating` es el error **crítico** que Search Console
+  levantó contra las 13 fichas de vino a principios de agosto, y el que volvería
+  con las 8 experiencias sin precio apenas Google las rastree. Ninguna de ellas
+  figura en el `ItemList` del índice —solo lista tours—, así que las dos ramas
+  no pueden contradecirse.
+- Los tres talleres estrenan `priceCLP: 39900`, así que **pasaron a la rama con
+  oferta**: `Product` + `Offer` con precio y disponibilidad, como los tours.
+
+Cuatro pruebas nuevas en `tests/actividades-jsonld.test.mjs` (availability en el
+`ItemList`, sin precio no hay `Product`, el `Service` referencia a la viña, y con
+precio no se duplican los dos tipos). Verificado además contra el servidor de
+desarrollo: el índice emite tres `Offer` con `InStock`, `/talleres/pizzas` emite
+`Product` + `Offer` de $39.900 y `/experiencias/enologo-por-un-dia` emite
+`Service` + `BreadcrumbList`, sin ningún `Offer` suelto.
+
 ### Qué queda pendiente de esto
 
-1. **El `ItemList` del índice** (`lib/siteJsonLd.ts`, el `Offer` de cada tour).
-   Es el que Google ya está viendo y el que dispara el aviso de los 3 elementos.
-   No se tocó el 20/8 porque el archivo estaba modificado por otra sesión en
-   paralelo.
-2. **Precio de los talleres**: el cliente lo fijó en **$39.900 por persona** el
-   20/8. Hoy los talleres no tienen `priceCLP` en `data/activities.ts`, así que
-   no emiten `Offer`. Cuando lo tengan, emitirán oferta con disponibilidad como
-   los tours. El archivo también lo tenía tomado la otra sesión.
-3. **Validar la corrección** en Search Console recién *después* del deploy:
+1. ~~El `ItemList` del índice.~~ **Hecho el 21/8** — ver arriba.
+2. ~~Precio de los talleres.~~ **Hecho el 21/8**: los tres tienen `priceCLP:
+   39900` en `data/activities.ts` y emiten oferta con disponibilidad.
+3. **Desplegar.** Nada de esto está en producción: `main` tiene `05ce6cb` y
+   `bb25cbf` sin pushear, y lo del 21/8 vive en la rama de trabajo. Mientras
+   tanto el `Offer` que Google rastrea sigue sin `availability` y el `llms.txt`
+   servido sigue con el horario viejo.
+4. **Validar la corrección** en Search Console recién *después* del deploy:
    Fragmentos de productos → "Falta el campo availability" → **Validar
-   corrección**. Validar antes de que el sitio sirva el cambio quema el intento.
+   corrección**. Validar antes de que el sitio sirva el cambio quema el intento y
+   hay que esperar el ciclo siguiente.

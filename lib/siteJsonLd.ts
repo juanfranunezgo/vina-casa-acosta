@@ -267,10 +267,14 @@ type TourEntry = {
  * Actividades: la colección de tours, cada uno con su precio.
  *
  * El precio se declara porque **se ve en la página** (la grilla lo muestra
- * formateado). No se declara `availability`: los tours se reservan y tienen
- * mínimo de personas, así que afirmar "InStock" sería decir algo que el sitio
- * no dice. Google puede no mostrar rich result sin ese campo — preferible eso a
- * marcar disponibilidad que no está confirmada.
+ * formateado), y el `Offer` lleva `availability: InStock` porque el campo
+ * describe la OFERTA —el tour se vende hoy, con su precio a la vista—, no el
+ * cupo de una fecha concreta: la reserva y el mínimo de personas se acuerdan
+ * después, y ninguna de las dos es lo que `availability` declara. Este archivo
+ * decía lo contrario hasta el aviso de Search Console del 20-08-2026, que
+ * nombró a los tres tours de ESTA lista —el `ItemList` de la página es lo que
+ * Google tenía rastreado, no las fichas—. La viña confirmó ese día que los tres
+ * tienen cupo. `lib/activityJsonLd.ts` lo declara con el mismo criterio.
  *
  * Por el mismo criterio, una actividad sin precio publicado sale **sin**
  * `offers`: un `Offer` sin `price` no produce rich result y afirma una oferta
@@ -316,6 +320,7 @@ export function buildActividadesJsonLd(
                   "@type": "Offer",
                   price: tour.priceCLP,
                   priceCurrency: "CLP",
+                  availability: "https://schema.org/InStock",
                   url: `${SITE_URL}/${locale}${tour.path}`,
                   seller: { "@id": WINERY_ID },
                 },

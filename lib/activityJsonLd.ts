@@ -9,13 +9,25 @@ import {
 /**
  * Structured data de una ficha de actividad.
  *
- * Se modela como `Product` y no como `Event` ni `Course`: los dos exigen fechas
+ * No se modela como `Event` ni como `Course`: los dos exigen fechas
  * (`startDate`, `hasCourseInstance`) que el catálogo del cliente no publica, y
- * declararlas inventadas es peor que no tener rich result. `Product` además es
- * lo que `lib/siteJsonLd.ts` ya emite para los tours en el índice, así que la
- * misma actividad no se describe de dos formas distintas según la página.
+ * declararlas inventadas es peor que no tener rich result.
  *
- * `offers` solo aparece cuando el precio SE VE en la página, y lleva
+ * El tipo lo decide el precio, porque es lo que decide si hay oferta:
+ *
+ * - **Con precio publicado → `Product` + `Offer`.** Es lo que
+ *   `lib/siteJsonLd.ts` emite para los mismos tours en el índice, así que la
+ *   actividad no se describe de dos formas distintas según la página.
+ * - **Sin precio → `Service`,** prestado por la viña. Un `Product` sin
+ *   `offers`, `review` ni `aggregateRating` no es marcado incompleto: es el
+ *   error CRÍTICO que Search Console levantó contra las 13 fichas de vino a
+ *   principios de agosto de 2026, y el que volvería con las fichas sin precio
+ *   apenas Google las rastree. Sin precio no hay oferta que declarar, y una
+ *   actividad que se cotiza es un servicio, no un producto en góndola.
+ *   Ninguna de esas fichas figura en el `ItemList` del índice —solo lista
+ *   tours—, así que la rama no puede contradecir a la otra página.
+ *
+ * El `Offer` aparece solo cuando el precio SE VE en la página, y lleva
  * `availability: InStock` porque el campo describe la OFERTA —el tour se vende
  * hoy, con su precio y su formulario a la vista—, no el cupo de una fecha
  * concreta. La reserva y el mínimo de personas se acuerdan después; ninguna de
@@ -50,26 +62,34 @@ export function buildActivityJsonLd(
   const path = activityPath(activity);
   const url = `${SITE_URL}/${locale}${path}`;
 
-  const product: Record<string, unknown> = {
-    "@type": "Product",
+  const identity = {
     "@id": `${url}#activity`,
     name: copy.name,
     description: copy.description,
     image: absolute(copy.image),
     url,
-    brand: { "@type": "Brand", name: "Viña Casa Acosta" },
   };
 
-  if (activity.priceCLP !== undefined) {
-    product.offers = {
-      "@type": "Offer",
-      price: activity.priceCLP,
-      priceCurrency: "CLP",
-      availability: "https://schema.org/InStock",
-      url,
-      seller: { "@id": WINERY_ID },
-    };
-  }
+  const activityNode =
+    activity.priceCLP === undefined
+      ? {
+          "@type": "Service",
+          ...identity,
+          provider: { "@id": WINERY_ID },
+        }
+      : {
+          "@type": "Product",
+          ...identity,
+          brand: { "@type": "Brand", name: "Viña Casa Acosta" },
+          offers: {
+            "@type": "Offer",
+            price: activity.priceCLP,
+            priceCurrency: "CLP",
+            availability: "https://schema.org/InStock",
+            url,
+            seller: { "@id": WINERY_ID },
+          },
+        };
 
   const crumbs = [
     { name: crumbLabels.home, item: `${SITE_URL}/${locale}` },
@@ -84,7 +104,7 @@ export function buildActivityJsonLd(
   return {
     "@context": "https://schema.org",
     "@graph": [
-      product,
+      activityNode,
       {
         "@type": "BreadcrumbList",
         "@id": `${url}#breadcrumb`,
