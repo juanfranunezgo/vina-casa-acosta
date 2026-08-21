@@ -289,7 +289,8 @@
     "hero": {
       "eyebrow": "As mãos por trás da vinícola",
       "title": "Staff",
-      "subtitle": "A equipe humana por trás de cada garrafa."
+      "subtitle": "A equipe humana por trás de cada garrafa.",
+        "imageAlt": "Um trabalhador da colheita apoia no chão uma caixa cheia de cachos recém-colhidos, entre as fileiras do vinhedo"
     },
     "members": {
       "damian": {

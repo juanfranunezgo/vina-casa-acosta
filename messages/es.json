@@ -289,7 +289,8 @@
     "hero": {
       "eyebrow": "Las manos detrás de la viña",
       "title": "Staff",
-      "subtitle": "El equipo humano detrás de cada botella."
+      "subtitle": "El equipo humano detrás de cada botella.",
+        "imageAlt": "Un temporero deja en el suelo una caja llena de racimos recién cortados, entre las hileras del viñedo"
     },
     "members": {
       "damian": {

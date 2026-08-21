@@ -289,7 +289,8 @@
     "hero": {
       "eyebrow": "The hands behind the winery",
       "title": "Staff",
-      "subtitle": "The people behind every bottle."
+      "subtitle": "The people behind every bottle.",
+        "imageAlt": "A harvest worker sets down a crate full of freshly cut grape bunches between the vineyard rows"
     },
     "members": {
       "damian": {

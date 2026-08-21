@@ -58,6 +58,15 @@ const HEROS = [
     movil: { source: fuentes("hero-actividades-movil.jpg"), out: "public/images/actividades/hero-grupal-movil", widths: [828, 1200, 1600] },
   },
   {
+    // Staff. El recorte vertical sale del master a 700px de la izquierda: es el
+    // encuadre donde la caja queda centrada con la mano dentro. Como el de la
+    // capa de +18, su candidato mas grande es de 1125px —lo que dan 2000 de alto
+    // por 9/16— y no de 1600.
+    id: "staff",
+    desktop: { source: fuentes("hero-staff.jpg"), out: "public/images/staff/hero-caja-uvas", widths: [1280, 1920, 2560] },
+    movil: { source: fuentes("hero-staff-movil.jpg"), out: "public/images/staff/hero-caja-uvas-movil", widths: [828, 1125] },
+  },
+  {
     // Capa de verificacion de edad. No es el hero de una pagina —va sobre todas—,
     // pero usa el mismo mecanismo: es una foto a sangre con texto encima, y en
     // pantalla vertical sufre lo mismo que sufrian los heros. El recorte 9:16 se
