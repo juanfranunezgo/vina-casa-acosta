@@ -1053,7 +1053,8 @@
     "hero": {
       "eyebrow": "Let's talk",
       "title": "Contact us",
-      "subtitle": "Book a visit, request an event quote, or tell us what brought you here. We'll reply within 24 hours."
+      "subtitle": "Book a visit, request an event quote, or tell us what brought you here. We'll reply within 24 hours.",
+      "imageAlt": "Night-time dinner at a long table among the vines: someone pours red wine while the guests talk"
     },
     "mapTitle": "Viña Casa Acosta location in San Vicente de Tagua Tagua",
     "cards": {

@@ -21,7 +21,7 @@ const staffMembers = [
   { key: "alfonso", image: "/images/staff/alfonso.webp", pos: "62% 50%" },
 ] as const;
 
-// El hero E1 va en <picture> y no en next/image, porque next/image no hace art
+// El hero H1 va en <picture> y no en next/image, porque next/image no hace art
 // direction: elige a qué tamaño bajar una foto, no cuál de dos. Mismo mecanismo
 // que el resto de los heros del sitio — ver scripts/optimize-heros.mjs.
 const heroSources = {
@@ -74,7 +74,7 @@ export default async function StaffPage({
   return (
     <>
       <JsonLd data={jsonLd} />
-      {/* E1 — Hero cinematográfico, en el mismo lenguaje que Historia y Vinos.
+      {/* H1 — Hero cinematográfico, en el mismo lenguaje que Historia y Vinos.
           La página era la última con un encabezado de sólo texto sobre papel,
           así que llegar a Staff se sentía como salir del sitio. La foto es la
           del temporero dejando la caja: el eyebrow habla de las manos detrás de
@@ -139,7 +139,7 @@ export default async function StaffPage({
         </div>
       </section>
 
-      {/* E2 — Las cuatro filas del equipo. */}
+      {/* H2 — Las cuatro filas del equipo. */}
       <section className="max-w-(--container-max) mx-auto px-margin-mobile md:px-margin-desktop py-section-gap">
         <div className="space-y-20 md:space-y-28">
           {staffMembers.map((person, idx) => {

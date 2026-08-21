@@ -31,6 +31,23 @@ const mapsUrl = "https://maps.app.goo.gl/2EAjVCjMTFMhj5A59";
 const mapEmbedSrc =
   "https://maps.google.com/maps?q=-34.4651334,-71.0096746&z=16&output=embed";
 
+/**
+ * El hero E1 va en <picture> y no en next/image, porque next/image no hace art
+ * direction: elige a qué tamaño bajar una foto, no cuál de dos. Mismo mecanismo
+ * que el resto de los heros del sitio — ver `scripts/optimize-heros.mjs`.
+ *
+ * Los candidatos llegan hasta 1920px (desktop) y 750px (móvil) porque el master
+ * mide 2000px de ancho: es la foto que ya vivía en el repo, no hay original
+ * suelto. Prometer un `1920w` que la foto no tiene sería peor que servir esto.
+ */
+const heroSources = {
+  desktop: [
+    "/images/contacto/hero-mesa-larga-1280.webp 1280w",
+    "/images/contacto/hero-mesa-larga-1920.webp 1920w",
+  ].join(", "),
+  movil: "/images/contacto/hero-mesa-larga-movil-750.webp 750w",
+};
+
 export async function generateMetadata({
   params,
 }: PageProps<"/[locale]/contacto">): Promise<Metadata> {
@@ -69,24 +86,83 @@ export default async function ContactoPage({
           dirección y el horario que el schema declara. Ver lib/siteJsonLd.ts. */}
       <JsonLd data={jsonLd} />
 
-      <section className="mx-auto max-w-(--container-max) px-margin-mobile pb-12 pt-32 text-center md:px-margin-desktop">
-        <Reveal>
-          <p className="mb-2 font-accent text-xl font-light italic text-primary md:text-2xl">
-            {t("hero.eyebrow")}
-          </p>
-          <h1
-            className="mb-6 font-display text-primary"
-            style={{ fontSize: "clamp(2.25rem, 5.5vw, 4rem)", lineHeight: 1.08 }}
-          >
-            {t("hero.title")}
-          </h1>
-          <p className="mx-auto max-w-2xl font-body text-body-lg text-on-surface-variant">
-            {t("hero.subtitle")}
-          </p>
-        </Reveal>
+      {/* HERO (E1) — cinematográfico, en el mismo lenguaje que Historia, Vinos y
+          Staff. Era el último encabezado de sólo texto sobre papel junto con el
+          de la Tienda, y llegar acá desde cualquier otra página se sentía como
+          salir del sitio. La foto es la cena en la mesa larga: la página pide
+          reservar una visita y cotizar un evento, y esto es exactamente un
+          evento. Al navbar hay que avisarle aparte — ver `hasDarkHero` en
+          `components/Navbar.tsx`, que en Staff se olvidó y dejó texto oscuro
+          sobre foto oscura. */}
+      <section className="relative flex min-h-[100svh] w-full items-center overflow-hidden">
+        {/* Dos encuadres: el 3:2 del master y un 9:16 recortado de él para
+            pantallas verticales. `sizes` lleva el alto del viewport porque con
+            object-cover en vertical la foto se estira hasta cubrir el alto, y
+            ese ancho estirado —no el del contenedor— es el que hay que bajar. */}
+        <picture className="absolute inset-0">
+          <source
+            media="(min-aspect-ratio: 3/4)"
+            srcSet={heroSources.desktop}
+            sizes="(max-aspect-ratio: 3/2) 150vh, 100vw"
+          />
+          <source srcSet={heroSources.movil} sizes="(max-aspect-ratio: 9/16) 56.25vh, 100vw" />
+          <img
+            src="/images/contacto/hero-mesa-larga-1920.webp"
+            alt={t("hero.imageAlt")}
+            fetchPriority="high"
+            decoding="async"
+            className="h-full w-full object-cover object-center motion-safe:animate-[heroZoom_20s_ease-out_forwards]"
+          />
+        </picture>
+        {/* Los velos van más suaves que en los otros heros: la foto es de noche
+            y ya trae su propia oscuridad. Con el `from-black/70` de Staff, las
+            copas y las luces del fondo —lo único que se ve— se apagaban. */}
+        <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/35 to-transparent" />
+        {/* El velo vertical se oscurece al medio sólo en celular: ahí el texto va
+            centrado y cae encima de las copas iluminadas, que es lo más claro de
+            la foto. En escritorio el texto se corre a la izquierda, donde ya lo
+            cubre el velo lateral, y ensuciar el centro apagaría la mesa. */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/45 via-black/25 to-black/30 md:via-transparent" />
+
+        <div className="relative z-10 w-full px-margin-mobile pb-24 pt-24 md:px-margin-desktop lg:pl-20">
+          <div data-hero-text className="mx-auto max-w-2xl text-center md:mx-0 md:text-left">
+            <Reveal delay={120}>
+              <p className="mb-4 font-accent text-lg font-light italic tracking-wide text-primary-fixed drop-shadow-md md:text-xl">
+                {t("hero.eyebrow")}
+              </p>
+            </Reveal>
+            <Reveal delay={220}>
+              <h1
+                className="mb-6 font-display text-on-primary drop-shadow-[0_4px_24px_rgba(0,0,0,0.55)]"
+                style={{
+                  fontSize: "clamp(2.25rem, 6.4vw, 4.5rem)",
+                  lineHeight: 1.14,
+                  letterSpacing: "-0.015em",
+                }}
+              >
+                {t("hero.title")}
+              </h1>
+            </Reveal>
+            <Reveal delay={320}>
+              {/* Misma medida que el resto de los heros (ver la nota del de
+                  Staff): el bloque va centrado en el alto de la pantalla, así
+                  que su altura decide dónde cae el título. */}
+              <p
+                className="mx-auto max-w-xl font-body text-on-primary/90 drop-shadow-[0_2px_12px_rgba(0,0,0,0.5)] md:mx-0"
+                style={{
+                  fontSize: "clamp(1rem, 1.5vw, 1.25rem)",
+                  lineHeight: 1.6,
+                  minHeight: "3.2em",
+                }}
+              >
+                {t("hero.subtitle")}
+              </p>
+            </Reveal>
+          </div>
+        </div>
       </section>
 
-      <section className="mx-auto max-w-(--container-max) px-margin-mobile pb-section-gap md:px-margin-desktop">
+      <section className="mx-auto max-w-(--container-max) px-margin-mobile py-section-gap md:px-margin-desktop">
         <div className="grid overflow-hidden rounded-2xl bg-surface ambient-shadow-lg ring-1 ring-outline-variant/40 md:grid-cols-2">
           <div className="p-7 md:p-12 lg:p-16">
             <ContactForm />

@@ -94,9 +94,47 @@ const HEROS = [
     // por escalón, ya no vale la pena.
     desktop: { source: fuentes("hero-vendimia.jpg"), out: "public/images/actividades/hero-vendimia", widths: [1280, 1920, 2560], quality: 72 },
   },
+  {
+    // Contacto. Su foto —la mesa larga de noche— ya vivía en el repo como card
+    // de Eventos (A4 y D4): no hay original suelto en `_fuentes-fotos`, así que
+    // el master es ese mismo archivo y el candidato más grande es de 1920px.
+    // Los 2000px del JPG no dan para el escalón de 2560, y `withoutEnlargement`
+    // devolvería el mismo archivo con otro nombre.
+    //
+    // Es también el único hero cuyo encuadre vertical sale de un RECORTE del
+    // master y no de una toma aparte, por lo mismo. El 9:16 se calcula sobre los
+    // 1334px de alto: 750px de ancho, menos que los 828 de costumbre, pero es lo
+    // que la foto tiene. Es una foto de noche y bokeh, donde el estirón se nota
+    // mucho menos que en una diurna con detalle fino.
+    id: "contacto",
+    desktop: { source: src("public/images/actividades/eventos.jpg"), out: "public/images/contacto/hero-mesa-larga", widths: [1280, 1920] },
+    // `centro: 0.45` y no 0.5: el recorte centrado parte la botella que sirve el
+    // vino, que es el gesto de la foto. Corrido a la izquierda entra entera.
+    movil: { source: src("public/images/actividades/eventos.jpg"), out: "public/images/contacto/hero-mesa-larga-movil", widths: [750], recorte: { proporcion: 9 / 16, centro: 0.45 } },
+  },
 ];
 
 const exists = async (p) => access(p).then(() => true, () => false);
+
+/**
+ * Devuelve el master listo para escalar. Sin `recorte` es la ruta del archivo;
+ * con `recorte`, el buffer del encuadre pedido —proporción ancho/alto y centro
+ * horizontal en fracción del ancho—. Se resuelve una vez por encuadre y no por
+ * candidato: recortar es barato, pero decodificar el master tres veces no.
+ */
+async function masterDe(cfg) {
+  if (!cfg.recorte) return cfg.source;
+  // Las medidas se leen del buffer ya rotado y no de `metadata()`, que informa
+  // el archivo tal como está en disco: con una foto en vertical por EXIF, el
+  // ancho y el alto vienen dados vuelta y el recorte cae fuera de la imagen.
+  const { data, info } = await sharp(cfg.source).rotate().toBuffer({ resolveWithObject: true });
+  const width = Math.round(info.height * cfg.recorte.proporcion);
+  const left = Math.max(
+    0,
+    Math.min(info.width - width, Math.round(info.width * cfg.recorte.centro - width / 2)),
+  );
+  return sharp(data).extract({ left, top: 0, width, height: info.height }).toBuffer();
+}
 
 for (const hero of HEROS) {
   console.log(`\n${hero.id}`);
@@ -106,10 +144,11 @@ for (const hero of HEROS) {
       console.log(`  ⚠ ${encuadre}: falta ${cfg.source.split(/[\\/]/).pop()} — se salta (ver docs/FOTOS.md)`);
       continue;
     }
+    const master = await masterDe(cfg);
     for (const width of cfg.widths) {
       const output = src(`${cfg.out}-${width}.webp`);
       await mkdir(dirname(output), { recursive: true });
-      const resized = sharp(cfg.source).rotate().resize({ width, withoutEnlargement: true });
+      const resized = sharp(master).rotate().resize({ width, withoutEnlargement: true });
       const { width: w, height: h } = await resized
         .clone()
         .toBuffer({ resolveWithObject: true })

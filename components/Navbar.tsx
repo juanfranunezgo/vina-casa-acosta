@@ -61,7 +61,7 @@ export default function Navbar() {
 
   // El navbar va transparente con logo/texto claros sobre los heros oscuros
   // full-bleed (Inicio, Historia, Actividades —incluidas las fichas de tour—,
-  // Vinos y Staff). Al pasar el hero —o en páginas de fondo claro— toma el
+  // Vinos, Staff y Contacto). Al pasar el hero —o en páginas de fondo claro— toma el
   // tratamiento oscuro para no perder legibilidad. /vinos va con match exacto
   // porque la ficha de vino (/vinos/[slug]) sí abre con fondo claro.
   //
@@ -75,7 +75,8 @@ export default function Navbar() {
     pathname === `${homePath}/historia` ||
     pathname.startsWith(`${homePath}/actividades`) ||
     pathname === `${homePath}/vinos` ||
-    pathname === `${homePath}/staff`;
+    pathname === `${homePath}/staff` ||
+    pathname === `${homePath}/contacto`;
 
   useEffect(() => {
     // Fondo claro: el header se vuelve opaco apenas se scrollea.
