@@ -60,7 +60,13 @@ padre de categoría redirigen **307**, a propósito: sus landings están planifi
 
 **Agregar una actividad** cuesta un objeto en `data/activities.ts` y un bloque en
 `activities.items` de **los tres** archivos de `messages/`. Nada más: ruta, sitemap,
-submenú del navbar y JSON-LD se derivan de esos datos.
+submenú del navbar, menús de las tarjetas-puerta y JSON-LD se derivan de esos datos.
+
+**Las tres tarjetas-puerta son una sola lista** (`categoryDoors`), y el menú que despliegan
+es un solo componente (`components/CategoryMenu.tsx`). Están en dos páginas —el mosaico A4
+del Inicio y la sección D3 del índice— y hasta el 2026-08-21 la lista vivía duplicada en las
+dos: las de D3 desplegaban su categoría y las del Inicio llevaban a `/actividades`, o sea a
+la página donde están estas mismas tarjetas. Si una puerta nueva se agrega, se agrega una vez.
 
 **Las traducciones no son opcionales.** next-intl no falla cuando falta una clave:
 `getMessageFallback` devuelve la ruta de la clave y la página se publica mostrando
@@ -76,10 +82,13 @@ genera en 805 ms con 15 workers). El sitemap emite **105 URLs**, 42 de ellas fic
 actividad y 3 el hub. El costo por página resultó marginal, como se había estimado: el trabajo real
 fue el copy en tres idiomas.
 
-El catálogo son **14 actividades**: 3 tours, 3 talleres y 8 experiencias. Ninguna de las 11
-nuevas publica precio, así que sus fichas salen en modo cotización. El orden dentro de cada
-categoría es el del catálogo del cliente y **se ve en pantalla** (bloque "otras actividades
-de la misma categoría").
+El catálogo son **14 actividades**: 3 tours, 3 talleres y 8 experiencias. Publican precio los
+3 tours y —desde el 2026-08-21— los **3 talleres, a 39.900 por persona los tres**; las 8
+experiencias siguen sin cifra, así que sus fichas salen en modo cotización. Publicar el
+precio no es sólo un número en pantalla: la ficha pasa de "precio a consultar" a mostrarlo,
+el formulario cambia de cotización a reserva y el JSON-LD estrena un `Offer`. El orden dentro
+de cada categoría es el del catálogo del cliente y **se ve en pantalla** (bloque "otras
+actividades de la misma categoría").
 
 **Las 14 fichas están a un salto desde cualquier página** (plan 3). Medido sobre el HTML del
 build, no en el navegador: `/es/contacto`, `/es/historia`, `/es/staff`, `/es/tienda` y
@@ -229,8 +238,14 @@ encabezados antes del contenido —"¿Qué incluye?" → "Durante la experiencia
 - La foto de la capa de +18 usa un recorte vertical de 1125px de ancho, bajo el ideal de
   ≥1440 para un teléfono a DPR 3, porque sale del master horizontal. Se resuelve con una
   toma vertical propia, si llega.
-- `/contacto` y `/tienda` siguen con encabezado de sólo texto: son las dos páginas que
-  quedan sin hero de foto.
+- `/tienda` es la última página con encabezado de sólo texto. `/contacto` estrenó hero el
+  2026-08-21 con la foto de la mesa larga de noche (`actividades/eventos.jpg`), que **ya se
+  usa como card de Eventos en A4 y D4**: es su tercera aparición y sale de que no hay
+  original suelto para esta página. El master mide 2000px, así que el candidato de
+  escritorio llega a 1920 y el recorte vertical a 750 — bajo el ideal para un teléfono a
+  DPR 3. Con una toma propia (o el original del letrero de entrada, que sería el motivo más
+  fiel para esta página) se agrega a `_fuentes-fotos/` y se regenera con
+  `npm run foto:heros`, sin tocar la página.
 
 **Infraestructura de SEO:**
 - ~~No hay `app/sitemap.ts` ni `app/robots.ts`~~ → hechos. El sitemap emite 69 URLs
@@ -305,6 +320,15 @@ negocio y cualquier superficie que la anuncie tiene que leer el mismo valor. Las
 agotadas no cuentan, igual que no suman al total estimado. **Pendiente:** hoy la regla
 sólo se descubre al abrir el carrito; falta anunciarla en la tienda y en la ficha de cada
 vino (una cadena nueva en tres idiomas) para que nadie llegue al cierre con la sorpresa.
+
+**El consentimiento cubre dos documentos desde el 2026-08-21.** La casilla decía "He leído y
+acepto la Política de Privacidad" y ahora dice **"Acepto los términos y condiciones y estoy
+de acuerdo con las políticas de privacidad"**, con los dos PDF enlazados (`TERMINOS_PDF` y
+`PRIVACIDAD_PDF` en `lib/legal.ts`). El envío pasó a llevar **dos** campos de versión
+—`terminos` y `privacidad`—, declarados en `public/__forms.html`: si el archivo no se
+deployea con el campo nuevo, Netlify lo descarta en silencio y el registro dice qué política
+se aceptó pero no qué términos. El texto en inglés y portugués es traducción de trabajo, como
+el resto del copy EN/PT: falta validación humana.
 
 **Legal (actualizado 2026-08-18):** el footer enlaza **tres documentos**, todos en
 `public/documentos/` y **sólo en español**: `politica-de-privacidad.pdf` (v1.1),
@@ -477,6 +501,15 @@ que hay que leer con ojo.
   estáticos. Las páginas las sirve el handler de Next y se los saltan — verificado con
   `curl -I` en producción. Los headers que deban valer para el HTML van en la función
   `headers()` de `next.config.ts`.
+- **La CSP puede tumbar una sección sin romper nada.** El mapa de `/contacto` estuvo caído
+  con el iframe perfecto: la CSP de `next.config.ts` llevaba `frame-src 'none'` y el
+  navegador bloqueaba el marco, dejando a la vista el esqueleto de `MapEmbed`. No falla el
+  build, no falla ningún test de render y la única señal es una línea en la consola del
+  visitante (`Framing 'https://maps.google.com/' violates …`). Dos detalles al arreglarlo:
+  la directiva se evalúa **también en cada redirección** —el embed salta a `google.com` y
+  después a `www.google.com`, así que van los tres orígenes—, y el `frame-src` es sólo del
+  documento que embebe: lo que el iframe cargue adentro lo rige la CSP de Google, no ésta.
+  `tests/map-embed-source.test.mjs` falla si el origen del embed sale de la lista.
 - Al iterar CSS conviene hard refresh (Ctrl+Shift+R).
 
 ---

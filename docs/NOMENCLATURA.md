@@ -20,7 +20,7 @@ Sistema de IDs para referirse a páginas y secciones del sitio de forma rápida 
 | A1 | Hero (banner principal a pantalla completa) |
 | A2 | Casa Acosta (antetítulo "San Vicente de Tagua Tagua" + StackedPhotos + texto; la frase "Tres generaciones, un mismo origen" vive en la card "Herencia familiar") |
 | A3 | Vinos Destacados (grilla heritage con esquinas serif) |
-| A4 | Actividades (mosaico bento con filtros píldora: Todas / Tours / Experiencias / Eventos + banner de eventos que enlaza a `/contacto`) |
+| A4 | Actividades (mosaico bento con filtros píldora: Todas / Tours / Experiencias / Eventos + banner de eventos que enlaza a `/contacto`). Las tarjetas de tour llevan a su ficha; las **tres de experiencia son las mismas puertas de D3** (`categoryDoors` en `data/activities.ts`) y despliegan ahí mismo el menú de su categoría — el del tren EFE sale al sitio del socio. Antes las tres llevaban a `/actividades`. |
 | A5 | CTA Contacto (banner final vino-tinto) |
 
 ## B — Historia (`app/[locale]/historia/page.tsx`)
@@ -61,7 +61,7 @@ Sistema de IDs para referirse a páginas y secciones del sitio de forma rápida 
 | D1 | Hero cinematográfico full-bleed (foto grupal, texto claro sobre degradados) |
 | D1b | Sub-nav de sección (pestañas Tours/Experiencias/Eventos + scroll-spy), debajo del hero. Sticky **solo en desktop** (`md:sticky md:top-24`) |
 | D2 | Tours (`#tours`) |
-| D3 | Experiencias (`#experiencias`) — tres tarjetas-puerta, no la categoría. Las dos primeras son **selectoras** (`CategoryChooserCard`): despliegan la lista de su categoría. Tren EFE es enlace externo, sin desplegable. La miga de una ficha **no** apunta acá: ver `CATEGORIES_WITH_INDEX_ANCHOR` en `data/activities.ts`. |
+| D3 | Experiencias (`#experiencias`) — tres tarjetas-puerta, no la categoría. Las dos primeras son **selectoras** (`CategoryChooserCard`): despliegan la lista de su categoría. Tren EFE es enlace externo, sin desplegable. Las tres salen de `categoryDoors` y **son las mismas de A4**, con el mismo menú (`components/CategoryMenu.tsx`); cambiar una cambia las dos. La miga de una ficha **no** apunta acá: ver `CATEGORIES_WITH_INDEX_ANCHOR` en `data/activities.ts`. |
 | D4 | Eventos (`#eventos`) |
 
 ## Dd — Detalle de actividad (`app/[locale]/actividades/[categoria]/[slug]/page.tsx`)
@@ -141,9 +141,9 @@ sugieren los nombres de Tailwind.
 
 | ID | Sección |
 |---|---|
-| E1 | Hero ("Contáctanos") |
+| E1 | Hero full-screen (foto `hero-mesa-larga`, la cena en la mesa larga; texto claro sobre degradados). Desde el 2026-08-21: antes era un encabezado de sólo texto sobre papel. El navbar se vuelve claro sobre este hero (Navbar → `hasDarkHero` incluye `/contacto`). |
 | E2 | Formulario + mapa (split 50/50) |
-| E3 | 3 cards de info (Ubicación, Horarios, Email) |
+| E3 | "Visítanos": ficha de datos (Ubicación, Horarios, Teléfono/WhatsApp, Email) + galería de 4 fotos |
 
 ## F — Tienda (`app/[locale]/tienda/page.tsx`)
 
