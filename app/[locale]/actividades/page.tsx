@@ -169,7 +169,14 @@ export default async function ActividadesPage({
         {/* Texto apoyado en el margen izquierdo, igual que los heros de Historia
             (B1) y Nuestros Vinos (C1): sin contenedor centrado, con `lg:pl-20`. */}
         <div className="relative z-10 w-full px-margin-mobile pb-14 md:px-margin-desktop md:pb-20 lg:pl-20">
-          <div data-hero-text className="max-w-2xl">
+          {/* En celular el bloque va centrado, como en Historia, Staff y
+              Contacto: a 375px el texto alineado al margen izquierdo dejaba una
+              columna angosta y el título partido contra el borde. En escritorio
+              vuelve al margen, que es donde lo apoyan los otros heros. */}
+          <div
+            data-hero-text
+            className="mx-auto max-w-2xl text-center md:mx-0 md:text-left"
+          >
             <Reveal delay={120}>
               <p className="mb-4 font-accent text-lg font-light italic tracking-wide text-primary-fixed drop-shadow-md md:text-xl">
                 {t("hero.eyebrow")}
@@ -188,7 +195,7 @@ export default async function ActividadesPage({
               </h1>
             </Reveal>
             <Reveal delay={320}>
-              <p className="max-w-xl font-body text-body-lg text-on-primary/90 drop-shadow-[0_2px_12px_rgba(0,0,0,0.5)]">
+              <p className="mx-auto max-w-xl font-body text-body-lg text-on-primary/90 drop-shadow-[0_2px_12px_rgba(0,0,0,0.5)] md:mx-0">
                 {t("hero.subtitle")}
               </p>
             </Reveal>
