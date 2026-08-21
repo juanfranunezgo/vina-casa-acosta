@@ -184,8 +184,13 @@ function LineCard({
 }) {
   return (
     <article className="grid h-full grid-cols-1 items-center gap-6 rounded-3xl border border-outline-variant/40 bg-surface p-6 ambient-shadow md:grid-cols-[0.75fr_1.7fr_0.7fr] md:gap-8 md:px-9 md:py-7">
-      {/* Identidad de la colección */}
-      <div>
+      {/* Identidad de la colección.
+          Apilada —o sea en móvil— va centrada: el bloque ocupa el ancho entero de
+          la tarjeta y las botellas que van debajo ya estaban centradas, así que a
+          la izquierda quedaba como una columna que perdió a su vecina. En
+          escritorio vuelve a la izquierda, que ahí sí es una columna con dos al
+          lado. */}
+      <div className="text-center md:text-left">
         <h3 className="mb-3 font-display text-headline-h1-mobile leading-none text-primary md:text-headline-h1">
           {line.name}
         </h3>
@@ -193,7 +198,7 @@ function LineCard({
           {line.description}
         </p>
         {line.chips.length > 0 && (
-          <ul className="mb-6 flex list-none flex-wrap gap-2 p-0">
+          <ul className="mb-6 flex list-none flex-wrap justify-center gap-2 p-0 md:justify-start">
             {line.chips.map((chip) => (
               <li
                 key={chip}
@@ -204,14 +209,6 @@ function LineCard({
             ))}
           </ul>
         )}
-        <Button
-          href={line.collectionHref}
-          variant="primary"
-          size="sm"
-          iconRight={<ArrowRight className="h-4 w-4" />}
-        >
-          {viewCollectionLabel}
-        </Button>
       </div>
 
       {/* Line-up de botellas — lista semántica (ul/li). Fila única centrada: cada
@@ -251,24 +248,49 @@ function LineCard({
         ))}
       </ul>
 
-      {/* Detalles de la colección */}
-      {line.details.length > 0 && (
-        <dl className="m-0 flex flex-col gap-2.5 md:gap-3">
-          {line.details.map((detail) => (
-            <div
-              key={detail.label}
-              className="rounded-xl bg-surface-container px-3.5 py-2.5"
-            >
-              <dt className="mb-0.5 font-body text-[0.62rem] font-semibold uppercase tracking-[0.12em] text-wine-accent">
-                {detail.label}
-              </dt>
-              <dd className="m-0 font-body text-sm leading-snug text-on-surface">
-                {detail.value}
-              </dd>
-            </div>
-          ))}
-        </dl>
-      )}
+      {/* Los datos de la colección y la llamada a la acción.
+          El botón bajó de la columna del nombre a esta: cierra la columna que da
+          los datos, que es donde termina de leerse la ficha. En móvil, apilado,
+          eso lo deja al final de la tarjeta, después de las botellas. */}
+      <div className="flex flex-col items-center gap-4 text-center md:items-start md:text-left">
+        {line.details.length > 0 && (
+          <dl className="m-0 flex w-full flex-col gap-2.5 md:gap-3">
+            {line.details.map((detail) => (
+              // Iba en una caja gris de 24px de radio y sin borde, sobre el papel
+              // de la tarjeta: a 254px de ancho se leía como una pastilla vacía
+              // más que como un dato. Ahora la sostiene un filete —el mismo
+              // `outline-variant` del resto del sitio— sobre un fondo un punto
+              // más claro y con la mitad de radio: una ficha, no una píldora.
+              //
+              // Y el valor pasa a la serif del sitio. Son frases de catálogo
+              // —"Barricas de roble francés"—, no cifras: en Work Sans a 14px
+              // quedaban como el pie de una tabla, y en Libre Caslon a 15px
+              // responden al nombre de la colección. El rótulo se queda en la de
+              // cuerpo, que es la que sostiene bien la versalita.
+              <div
+                key={detail.label}
+                className="rounded-lg border border-outline-variant/50 bg-surface-container-low px-4 py-3"
+              >
+                <dt className="mb-1 font-body text-[0.66rem] font-semibold uppercase tracking-[0.14em] text-wine-accent">
+                  {detail.label}
+                </dt>
+                <dd className="m-0 font-display text-[0.9375rem] leading-snug text-on-surface">
+                  {detail.value}
+                </dd>
+              </div>
+            ))}
+          </dl>
+        )}
+
+        <Button
+          href={line.collectionHref}
+          variant="primary"
+          size="sm"
+          iconRight={<ArrowRight className="h-4 w-4" />}
+        >
+          {viewCollectionLabel}
+        </Button>
+      </div>
     </article>
   );
 }
