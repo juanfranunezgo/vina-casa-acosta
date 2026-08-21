@@ -80,17 +80,14 @@ export const AGE_GATE_SCRIPT = `try{var v=localStorage.getItem(${JSON.stringify(
 )});if(!v||Date.now()>Number(v)){document.documentElement.setAttribute("data-age-gate","pendiente")}}catch(e){document.documentElement.setAttribute("data-age-gate","pendiente")}`;
 
 /**
- * Si la capa está pendiente, leído del atributo que dejó `AGE_GATE_SCRIPT`.
+ * Si este navegador NO tiene una confirmación vigente. Es el dato duro, y la
+ * única fuente que se consulta después del primer pintado.
  *
- * Va por `useSyncExternalStore` y no por un `useState` con efecto: el dato vive
- * fuera de React —en el `<html>`— y el servidor tiene que responder `true` para
- * que el marcado exista en el HTML servido, que es lo que le permite al CSS
- * mostrar la capa antes del primer pintado. El atributo no cambia solo, así que
- * la suscripción no tiene a qué escuchar.
- */
-/**
- * Si este navegador NO tiene una confirmacion vigente. Es el dato duro, y la
- * unica fuente que se consulta despues del primer pintado.
+ * Se lee por `useSyncExternalStore` y no por un `useState` con efecto: el dato
+ * vive fuera de React y el servidor tiene que responder `true` para que el
+ * marcado exista en el HTML servido, que es lo que le permite al CSS mostrar la
+ * capa antes del primer pintado. No cambia solo, así que la suscripción no tiene
+ * a qué escuchar.
  *
  * El atributo del `<html>` no sirve como respuesta: no sobrevive a una
  * navegacion del cliente (React lo borra al re-renderizar el layout) y, peor,
