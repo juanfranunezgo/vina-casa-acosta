@@ -16,14 +16,23 @@
  */
 
 import { existsSync } from "node:fs";
-import { writeFile } from "node:fs/promises";
+import { readFile } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
 import path from "node:path";
-import { sellar } from "./catalogo-integridad.mjs";
+import { RUTA_SELLO, RUTA_SNAPSHOT, escribirAtomico, sellar } from "./catalogo-integridad.mjs";
+import { razonParaRechazar } from "./catalogo-validacion.mjs";
 
-const CONTRACT_VERSION = 1;
+/**
+ * Techo de espera de la API. Sin esto, una API que acepta la conexión y nunca
+ * contesta deja el proceso colgado para siempre: en un build de Netlify eso
+ * consume el timeout global y **bloquea el despliegue**, que es exactamente la
+ * regla que el fallback existe para no violar («un Afeleia caído no puede además
+ * impedir desplegar»). Colgado es peor que caído: caído se detecta.
+ */
+const TIMEOUT_MS = 15_000;
+
 const ROOT = path.join(path.dirname(fileURLToPath(import.meta.url)), "..");
-const OUTPUT = path.join(ROOT, "data", "catalogo-fallback.json");
+const OUTPUT = RUTA_SNAPSHOT;
 /** Carpeta de `public/` donde viven las fotos de botella committeadas. */
 const LOCAL_IMAGE_DIR = "/vinos";
 
@@ -59,10 +68,15 @@ console.info(`Consultando ${endpoint}`);
 // el fallback— así que se informa como los demás fallos y no como un stack trace.
 let response;
 try {
-  response = await fetch(endpoint);
+  response = await fetch(endpoint, { signal: AbortSignal.timeout(TIMEOUT_MS) });
 } catch (error) {
   const detalle = error instanceof Error ? error.message : String(error);
-  console.error(`No se pudo consultar la API (${detalle}). El snapshot NO se tocó.`);
+  const colgada = error instanceof Error && error.name === "TimeoutError";
+  console.error(
+    colgada
+      ? `La API no respondió en ${TIMEOUT_MS / 1000}s. El snapshot NO se tocó.`
+      : `No se pudo consultar la API (${detalle}). El snapshot NO se tocó.`,
+  );
   process.exit(1);
 }
 if (!response.ok) {
@@ -79,13 +93,12 @@ try {
 }
 
 // Nunca pisar un snapshot bueno con uno inservible: el fallback es la última
-// línea de defensa de la web y se regenera a mano, no en cada deploy.
-if (payload?.version !== CONTRACT_VERSION) {
-  console.error(`Se esperaba version ${CONTRACT_VERSION} y llegó ${payload?.version}. El snapshot NO se tocó.`);
-  process.exit(1);
-}
-if (!Array.isArray(payload.productos) || payload.productos.length === 0) {
-  console.error("El catálogo llegó vacío. El snapshot NO se tocó.");
+// línea de defensa de la web, y desde que se refresca en cada build esta
+// comprobación corre en cada deploy. Incluye que la respuesta sea DE ESTE SITIO
+// y que cumpla el mismo contrato que exige el runtime — ver `razonParaRechazar`.
+const rechazo = razonParaRechazar(payload, sitio);
+if (rechazo) {
+  console.error(`Respuesta rechazada: ${rechazo}. El snapshot NO se tocó.`);
   process.exit(1);
 }
 
@@ -140,12 +153,76 @@ if (colisiones.length > 0) {
   );
 }
 
-await writeFile(OUTPUT, `${JSON.stringify(payload, null, 2)}\n`, "utf8");
-// Sellar acá y no en un paso aparte: un snapshot regenerado sin sellar deja el
-// test de integridad en rojo, y "acordarse de correr el sello" es exactamente el
-// tipo de regla que ya falló una vez.
-const sello = await sellar();
-console.info(
-  `Snapshot escrito: ${payload.productos.length} productos, ${payload.categorias?.length ?? 0} categorías → data/catalogo-fallback.json\n` +
-    `Sello: sha256 ${sello.hash}`,
-);
+// --- Reemplazo del fallback: de todo o nada -----------------------------------
+// Son DOS archivos que tienen que quedar de acuerdo —el snapshot y su sello— y
+// hasta acá se escribían en secuencia, sin red: si el sello fallaba, quedaba un
+// snapshot nuevo con un sello viejo (integridad en rojo) y encima el mensaje
+// decía «el snapshot NO se tocó», que era mentira. Ahora el estado previo se
+// guarda en memoria y se restaura si algo falla en el medio.
+
+/** Contenido actual de un archivo, o `null` si todavía no existe. */
+async function leerSiExiste(ruta) {
+  try {
+    return await readFile(ruta, "utf8");
+  } catch {
+    return null;
+  }
+}
+
+const previo = {
+  snapshot: await leerSiExiste(OUTPUT),
+  sello: await leerSiExiste(RUTA_SELLO),
+};
+
+/**
+ * Devuelve los archivos que NO se pudieron restaurar.
+ *
+ * Cada uno se intenta por separado y ningún fallo interrumpe al siguiente: si
+ * restaurar el sello falla, el snapshot igual tiene que volver a su estado. Y
+ * nada de esto puede lanzar — una excepción acá moriría como rechazo sin
+ * capturar, con stack trace, en medio de un build (visto en la verificación).
+ */
+async function restaurar() {
+  const fallos = [];
+  for (const [ruta, contenido] of [
+    [OUTPUT, previo.snapshot],
+    [RUTA_SELLO, previo.sello],
+  ]) {
+    if (contenido === null) continue;
+    try {
+      await escribirAtomico(ruta, contenido);
+    } catch (error) {
+      fallos.push(`${path.basename(ruta)} (${error instanceof Error ? error.message : error})`);
+    }
+  }
+  return fallos;
+}
+
+let sello;
+try {
+  await escribirAtomico(OUTPUT, `${JSON.stringify(payload, null, 2)}\n`);
+  // Sellar acá y no en un paso aparte: un snapshot regenerado sin sellar deja el
+  // test de integridad en rojo, y "acordarse de correr el sello" es exactamente
+  // el tipo de regla que ya falló una vez.
+  sello = await sellar();
+} catch (error) {
+  const detalle = error instanceof Error ? error.message : String(error);
+  const fallos = await restaurar();
+  console.error(
+    fallos.length === 0
+      ? `No se pudo escribir el snapshot (${detalle}). Se restauró el anterior.`
+      : `No se pudo escribir el snapshot (${detalle}), y tampoco restaurar: ${fallos.join(", ")}. ` +
+          `Revisar data/ a mano: el fallback puede haber quedado a medias.`,
+  );
+  // `exitCode` y no `exit()`: cortar el proceso de golpe con escrituras de disco
+  // todavía cerrándose hace abortar a libuv en Windows (`UV_HANDLE_CLOSING`), y
+  // eso devuelve 3221226505 en vez de 1 — un fallo entendible disfrazado de
+  // choque incomprensible. Salir por las buenas deja el código correcto.
+  process.exitCode = 1;
+}
+if (sello) {
+  console.info(
+    `Snapshot escrito: ${payload.productos.length} productos, ${payload.categorias?.length ?? 0} categorías → data/catalogo-fallback.json\n` +
+      `Sello: sha256 ${sello.hash}`,
+  );
+}

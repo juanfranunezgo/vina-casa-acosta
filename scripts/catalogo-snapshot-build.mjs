@@ -41,13 +41,40 @@ if (!process.env.NEXT_PUBLIC_AFELEIA_API_URL || !process.env.NEXT_PUBLIC_AFELEIA
   process.exit(0);
 }
 
+/**
+ * Techo duro del paso entero, por encima del que ya tiene el fetch del
+ * generador.
+ *
+ * Son dos relojes a proposito: el de adentro cubre la API que no contesta, este
+ * cubre todo lo demas —DNS que no resuelve, disco trabado, un generador que se
+ * cuelga por un motivo que hoy no existe—. Colgarse es la peor de las fallas
+ * posibles acá: no se distingue de "esta tardando", consume el timeout global
+ * del build y termina impidiendo desplegar, que es la unica cosa que este paso
+ * tiene prohibido hacer.
+ */
+const TIMEOUT_MS = 45_000;
+
 // Se delega en el generador de siempre en vez de repetir su logica: el es el
 // unico que sabe localizar las imagenes a public/vinos y sellar el resultado.
 // Si divergieran, el snapshot del build se veria distinto del generado a mano.
-const resultado = spawnSync(process.execPath, [GENERADOR], { stdio: "inherit" });
+const resultado = spawnSync(process.execPath, [GENERADOR], {
+  stdio: "inherit",
+  timeout: TIMEOUT_MS,
+  killSignal: "SIGKILL",
+});
 
 if (resultado.error) {
-  console.warn(`[afeleia] no se pudo ejecutar el generador (${resultado.error.message}). ${CONSERVADO}`);
+  const colgado = resultado.error.code === "ETIMEDOUT";
+  console.warn(
+    colgado
+      ? `[afeleia] el generador no termino en ${TIMEOUT_MS / 1000}s y se corto. ${CONSERVADO}`
+      : `[afeleia] no se pudo ejecutar el generador (${resultado.error.message}). ${CONSERVADO}`,
+  );
+  process.exit(0);
+}
+
+if (resultado.signal) {
+  console.warn(`[afeleia] el generador termino por senal ${resultado.signal}. ${CONSERVADO}`);
   process.exit(0);
 }
 

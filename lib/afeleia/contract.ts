@@ -225,6 +225,25 @@ export function isValidCatalog(value: unknown): value is ApiCatalog {
   return catalog.productos.every(isValidProduct);
 }
 
+/**
+ * Un catálogo vacío pero VÁLIDO, para cuando no hay ninguno servible.
+ *
+ * Es el último escalón del modo degradado: si hasta el snapshot committeado está
+ * corrupto, el sitio muestra una tienda vacía en vez de tirar. Suena peor de lo
+ * que es — un producto sin `slug` revienta `generateStaticParams` y con eso el
+ * build entero, o sea que un archivo roto impediría desplegar cualquier otra
+ * cosa del sitio. Vacío y ruidoso se arregla; caído, no.
+ */
+export function emptyCatalog(sitio = ""): ApiCatalog {
+  return {
+    version: CONTRACT_VERSION,
+    sitio,
+    generado_en: "",
+    categorias: [],
+    productos: [],
+  };
+}
+
 // --- Definiciones de atributos ------------------------------------------------
 // Todo lo de acá abajo vive en este archivo, y no en `catalog.ts`, porque
 // `catalog.ts` importa React y el snapshot: `node --test` no puede cargarlo. Acá

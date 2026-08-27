@@ -15,7 +15,7 @@
  *   npm run catalogo:sellar     (lo llama también `catalogo:snapshot` al terminar)
  */
 
-import { readFile, writeFile } from "node:fs/promises";
+import { readFile, rename, rm, writeFile } from "node:fs/promises";
 import { createHash } from "node:crypto";
 import { fileURLToPath } from "node:url";
 import path from "node:path";
@@ -23,6 +23,33 @@ import path from "node:path";
 const ROOT = path.join(path.dirname(fileURLToPath(import.meta.url)), "..");
 const SNAPSHOT = path.join(ROOT, "data", "catalogo-fallback.json");
 const SELLO = path.join(ROOT, "data", "catalogo-fallback.integrity.json");
+
+/** Los dos archivos del fallback, para quien tenga que restaurarlos. */
+export const RUTA_SNAPSHOT = SNAPSHOT;
+export const RUTA_SELLO = SELLO;
+
+/**
+ * Escribe reemplazando de una sola vez: primero a un temporal, después `rename`.
+ *
+ * `writeFile` directo TRUNCA el destino y recién entonces escribe. Si el proceso
+ * muere en el medio —y el generador corre dentro de un build, que puede quedarse
+ * sin tiempo o sin memoria— el fallback queda como medio JSON: `next build` no
+ * lo puede importar y el sitio pierde su última línea de defensa justo mientras
+ * intenta desplegarse. `rename` en el mismo volumen es atómico: o está el
+ * archivo viejo entero, o está el nuevo entero.
+ */
+export async function escribirAtomico(destino, contenido) {
+  const temporal = `${destino}.tmp`;
+  try {
+    await writeFile(temporal, contenido, "utf8");
+    await rename(temporal, destino);
+  } catch (error) {
+    // Sin esto, un `rename` que falla —el destino bloqueado, por ejemplo— deja
+    // el temporal tirado en `data/`, donde alguien termina commiteándolo.
+    await rm(temporal, { force: true }).catch(() => {});
+    throw error;
+  }
+}
 
 /**
  * Hash del CONTENIDO, no del archivo.
@@ -44,7 +71,7 @@ export async function sellar() {
     sellado_en: new Date().toISOString(),
     productos: snapshot.productos.length,
   };
-  await writeFile(SELLO, `${JSON.stringify(sello, null, 2)}\n`, "utf8");
+  await escribirAtomico(SELLO, `${JSON.stringify(sello, null, 2)}\n`);
   return sello;
 }
 

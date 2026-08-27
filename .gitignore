@@ -45,6 +45,10 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
+# escrituras a medio hacer del snapshot (escribirAtomico las limpia sola;
+# esto es por si el proceso muere justo entre el write y el rename)
+data/*.tmp
+
 # copias de trabajo de los agentes (.claude/worktrees son repos enteros: 617 MB
 # el dia que se midio). launch.json NO se ignora: es configuracion de verdad.
 /.claude/worktrees

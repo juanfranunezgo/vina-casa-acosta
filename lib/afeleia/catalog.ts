@@ -26,6 +26,7 @@ import catalogoFallback from "@/data/catalogo-fallback.json";
 import {
   CONTRACT_VERSION,
   catalogEndpoint,
+  emptyCatalog,
   isValidCatalog,
   optionsFor,
   readOptionValue,
@@ -95,6 +96,14 @@ export type CatalogWine = Omit<
 
 /** Ventana de revalidación del ISR, en segundos (spec M3: cambios visibles ≤60s). */
 export const CATALOG_REVALIDATE_SECONDS = 60;
+
+/**
+ * Cuánto se espera a la API antes de darla por no disponible.
+ *
+ * Diez segundos es holgado para una Edge Function que responde en decenas de
+ * milisegundos, y corto frente al timeout de un build de Netlify.
+ */
+const CATALOG_TIMEOUT_MS = 10_000;
 
 // --- Lectura de atributos -----------------------------------------------------
 // DEC-5 del contrato: si una clave está presente, tiene valor no vacío; y una
@@ -201,9 +210,27 @@ export type CatalogLoad = {
  */
 const SNAPSHOT_STALE_DAYS = 7;
 
-/** El snapshot committeado: la web sirve esto cuando la API no está disponible. */
+/**
+ * El snapshot committeado: la web sirve esto cuando la API no está disponible.
+ *
+ * Se valida con el MISMO guard que la respuesta viva, y no por simetría: hasta
+ * acá el snapshot se servía a ciegas, así que un archivo corrupto —un producto
+ * sin `slug`— reventaba `generateStaticParams` y hacía fallar el build entero.
+ * O sea: el archivo que existe para que una caída no tumbe el sitio podía ser
+ * él mismo el que impidiera desplegarlo.
+ *
+ * `npm test` ya exige que el committeado sea válido y el generador se niega a
+ * escribir uno que no lo sea, así que llegar acá significa que las dos barreras
+ * anteriores fallaron. Aun así, el sitio queda en pie.
+ */
 function fallbackCatalog(): ApiCatalog {
-  return catalogoFallback as unknown as ApiCatalog;
+  const snapshot: unknown = catalogoFallback;
+  if (isValidCatalog(snapshot)) return snapshot;
+  console.error(
+    "[afeleia] el snapshot committeado NO cumple el contrato: se sirve un catálogo vacío " +
+      "para no tumbar el sitio. Regenerarlo con `npm run catalogo:snapshot`.",
+  );
+  return emptyCatalog(process.env.NEXT_PUBLIC_AFELEIA_SITIO ?? "");
 }
 
 /** Antigüedad del snapshot en días, o `null` si no trae `generado_en` legible. */
@@ -249,6 +276,11 @@ const loadCatalog = cache(async (): Promise<CatalogLoad> => {
   try {
     const response = await fetch(url, {
       next: { revalidate: CATALOG_REVALIDATE_SECONDS },
+      // Una API que acepta la conexión y no contesta es peor que una caída: no
+      // se distingue de "está tardando". Durante `next build` esa espera es la
+      // del build entero —Next resuelve estas páginas ahí— y sin techo puede
+      // terminar impidiendo desplegar. Con techo, cae al snapshot y sigue.
+      signal: AbortSignal.timeout(CATALOG_TIMEOUT_MS),
     });
     // 429 y 503 no son fallas del contrato sino respuestas normales bajo carga,
     // y como cualquier otra respuesta no-ok caen al snapshot.
