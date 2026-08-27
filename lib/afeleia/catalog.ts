@@ -291,6 +291,18 @@ const loadCatalog = cache(async (): Promise<CatalogLoad> => {
     if (!isValidCatalog(payload)) {
       return degraded(`la respuesta no cumple el contrato v${CONTRACT_VERSION}`);
     }
+    // El catálogo tiene que ser DE ESTE SITIO. Se pide por `?sitio=`, así que
+    // recibir otro significa que algo del otro lado está mal —un endpoint mal
+    // configurado, una redirección, un slug equivocado— y ninguna de esas
+    // posibilidades justifica publicar los nombres y los precios de otro
+    // cliente. Ante la duda, el catálogo propio de ayer le gana al ajeno de hoy.
+    //
+    // El generador del snapshot hace la misma comprobación: las dos capas tienen
+    // que mirar lo mismo, o la que no mira se vuelve el agujero.
+    const sitio = process.env.NEXT_PUBLIC_AFELEIA_SITIO;
+    if (sitio && payload.sitio !== sitio) {
+      return degraded(`la respuesta es del sitio "${payload.sitio}" y se pidió "${sitio}"`);
+    }
     return { catalog: payload, origin: "api" };
   } catch (error) {
     const detail = error instanceof Error ? error.message : String(error);

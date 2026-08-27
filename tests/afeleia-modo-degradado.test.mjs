@@ -92,6 +92,11 @@ test("las tres puertas al modo degradado siguen cableadas", () => {
   assert.match(catalogSource, /if \(!response\.ok\) \{\s*return degraded\(/, "respuesta no-ok");
   assert.match(catalogSource, /if \(!isValidCatalog\(payload\)\) \{\s*return degraded\(/, "contrato roto");
   assert.match(catalogSource, /catch \(error\) \{[\s\S]{0,200}?return degraded\(/, "fetch caido");
+  // Cuarta puerta: la respuesta valida pero de OTRO sitio. El generador ya la
+  // rechaza (`razonParaRechazar`), pero el runtime la servia igual: el sitio
+  // habria publicado el catalogo de otro cliente hasta la siguiente
+  // revalidacion. Las dos capas tienen que mirar lo mismo.
+  assert.match(catalogSource, /payload\.sitio !== sitio[\s\S]{0,200}?return degraded\(/, "sitio ajeno");
 });
 
 test("el cuerpo de `degraded` devuelve el snapshot y nada mas", () => {
