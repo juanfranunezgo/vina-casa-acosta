@@ -316,6 +316,10 @@
     }
   },
   "vinos": {
+    "otherLine": {
+      "title": "Other wines",
+      "description": "Labels that do not belong to the six collections above."
+    },
     "hero": {
       "eyebrow": "Full catalog",
       "title": "Our wines",
@@ -373,6 +377,18 @@
     }
   },
   "wineDetail": {
+    "technical": {
+      "title": "Technical sheet"
+    },
+    "technicalFields": {
+      "blend": "Blend",
+      "alcohol": "Alcohol",
+      "valle": "Valley",
+      "conduccion": "Training system",
+      "volumen_ml": "Volume (ml)",
+      "cierre": "Closure",
+      "servicio": "Serving temperature"
+    },
     "backToCatalog": "Back to the collection",
     "vintageLabel": "Vintage {year}",
     "vintageProperty": "Vintage",
@@ -382,86 +398,6 @@
     "technicalSheet": "Technical sheet (PDF)",
     "currency": "CLP",
     "youMayAlsoLike": "You may also like"
-  },
-  "wines": {
-    "ombu-carmenere": {
-      "shortDescription": "100% Carmenere Reserve, with intense spice and ripe black fruit.",
-      "description": "Deep cherry red. A complex nose of intense spice and ripe black fruit. On the palate, soft, round tannins, good structure and a long, pleasant finish.",
-      "tastingNotes": ["Ripe black fruit", "Spices", "Cherry red", "Round tannins"],
-      "pairings": ["Pasta", "Filet mignon", "Corn pudding"]
-    },
-    "ombu-tannat": {
-      "shortDescription": "100% Reserve Tannat, with firm tannins and good ageing potential.",
-      "description": "Cherry red. On the nose, aromas of black fruit such as blueberry and blackberry, with some spice like black pepper and clove. Complex-bodied, with firm tannins, balanced acidity and good ageing potential.",
-      "tastingNotes": ["Blueberry", "Blackberry", "Black pepper", "Clove"],
-      "pairings": ["Red meats", "Aged cheeses"]
-    },
-    "ombu-sauvignon": {
-      "shortDescription": "100% Cabernet Sauvignon from the Cachapoal Valley, balanced and silky.",
-      "description": "A fresh nose of nuts, spice and ripe red fruit, with a slight touch of vanilla. Balanced and fleshy, with present yet silky tannins, good volume and a long, very persistent finish.",
-      "tastingNotes": ["Nuts", "Spices", "Ripe red fruit", "Vanilla"],
-      "pairings": ["Spit-roast lamb", "Middle Eastern food"]
-    },
-    "lajau-sam": {
-      "shortDescription": "Carmenere–Tannat blend, structured with a long finish.",
-      "description": "Aromas of very ripe black fruit, spice and bitter chocolate. On the palate it is structured, balanced and with a long aftertaste.",
-      "tastingNotes": ["Ripe black fruit", "Spices", "Bitter chocolate", "Long aftertaste"],
-      "pairings": ["Meat-filled pasta", "Skirt steak"]
-    },
-    "lajau-deti": {
-      "shortDescription": "Blend of Carmenere, Cabernet Sauvignon and Petit Verdot — elegant and complex.",
-      "description": "An intriguing cherry red with fresh, complex aromas: intense black fruit, cocoa and smoke. A structured palate with soft, elegant tannins, long and with a pleasant finish.",
-      "tastingNotes": ["Black fruit", "Cocoa", "Smoke", "Elegant tannins"],
-      "pairings": ["Aged cheeses", "Wild boar with rosemary"]
-    },
-    "lajau-betum": {
-      "shortDescription": "A four-variety blend, complex and full-bodied.",
-      "description": "A deep ruby red with violet hints. Very complex: ripe red fruit and black fruit, with touches of smoke and pepper. A palate of good structure and volume, with juicy tannins, great aftertaste and a long finish.",
-      "tastingNotes": ["Ripe red fruit", "Black fruit", "Smoke", "Pepper"],
-      "pairings": ["Goat cheese", "Duck à l'orange", "Lamb"]
-    },
-    "lajau-betum-yu": {
-      "shortDescription": "A five-variety blend — the apex of the Lajau line.",
-      "description": "A deep ruby red, with present yet round tannins and balanced acidity. A finish with a touch of bitter chocolate and some smoke, long on the palate.",
-      "tastingNotes": ["Ruby red", "Bitter chocolate", "Smoke", "Round tannins"],
-      "pairings": ["Grilled red meats"]
-    },
-    "estacion-francia-carmenere": {
-      "shortDescription": "Grand Reserve of Carmenere and Petit Verdot, of great complexity and ageing.",
-      "description": "A vivid morello-cherry red with violet notes. Aromas of black fruit, chocolate and spice, with touches of redcurrant, nuts and tobacco. On the palate, silky tannins; juicy and well balanced, with a persistent finish.",
-      "tastingNotes": ["Black fruit", "Chocolate", "Redcurrant", "Tobacco"],
-      "pairings": ["Pork ribs", "Grilled blood sausage"]
-    },
-    "estacion-francia-tannat": {
-      "shortDescription": "Grand Reserve of Tannat and Carmenere, powerful and structured.",
-      "description": "Deeply colored. Aromas of ripe red fruit, plum and blackberry, with touches of black cherry and tobacco notes. A powerful, greatly structured palate, robust in body, long and persistent.",
-      "tastingNotes": ["Ripe red fruit", "Plum", "Black cherry", "Tobacco"],
-      "pairings": ["Lamb shank", "Blue cheeses"]
-    },
-    "bera": {
-      "shortDescription": "Fresh, floral rosé of Carmenere and Cabernet Sauvignon.",
-      "description": "A pink-colored rosé with a complex profile. Aromas of fresh raspberry, very floral, with notes of red cherry. A fresh palate with intriguing acidity, juicy and with a pleasant finish.",
-      "tastingNotes": ["Fresh raspberry", "Floral", "Red cherry", "Juicy acidity"],
-      "pairings": ["Asian cuisine", "Vegetable panaché", "Pastrami", "Paella"]
-    },
-    "guidai": {
-      "shortDescription": "Rosé sparkling wine, fresh and fine-bubbled.",
-      "description": "A pale-pink sparkling wine. Aromas of strawberry, with a spicy touch. A whitish mousse with persistent fine bubbles; fresh and with balanced acidity.",
-      "tastingNotes": ["Strawberry", "Pale pink", "Fine bubbles", "Fresh acidity"],
-      "pairings": ["Thai food", "Salmon sashimi"]
-    },
-    "yaray-gua-tinto": {
-      "shortDescription": "Late-harvest Carmenere, luscious with balanced sweetness.",
-      "description": "A brick-red color. Aromas of candied red fruit, figs and honey. On the palate it is luscious, with balanced sweetness and an acidity that keeps it from being cloying.",
-      "tastingNotes": ["Candied red fruit", "Figs", "Honey", "Brick red"],
-      "pairings": ["Dark chocolate", "Blue cheese"]
-    },
-    "yaray-gua-blanco": {
-      "shortDescription": "Late-harvest white, unctuous with a complex finish.",
-      "description": "A golden-yellow color with marked amber, bright reflections. Full-volumed and powerful, with pleasant, firm and vibrant acidity. A very long, unctuous finish with a complex aftertaste where notes of bitter-orange marmalade, toasted nuts and a subtle touch of honey return.",
-      "tastingNotes": ["Orange marmalade", "Toasted nuts", "Honey", "Golden yellow"],
-      "pairings": ["Foie gras", "Passion-fruit cheesecake"]
-    }
   },
   "actividades": {
     "hero": {

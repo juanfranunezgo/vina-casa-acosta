@@ -11,7 +11,7 @@ import ProductPurchase from "@/components/ProductPurchase";
 import TastingProfile from "@/components/TastingProfile";
 import WineBottleImage from "@/components/WineBottleImage";
 import { getCatalog, getWineBySlug } from "@/lib/afeleia/catalog";
-import { joinLabels, labelOr, translatedListOr, translatedOr } from "@/lib/afeleia/copy";
+import { joinLabels, labelOr, translatedOr } from "@/lib/afeleia/copy";
 import { routing } from "@/i18n/routing";
 import { alternatesFor } from "@/lib/alternates";
 import { buildWineDetailJsonLd } from "@/lib/wineJsonLd";
@@ -35,16 +35,11 @@ export async function generateMetadata({
   const { locale, slug } = await params;
   const wine = await getWineBySlug(slug);
   if (!wine) return { title: "—" };
-  const tWine = await getTranslations({ locale, namespace: "wines" });
   const tMeta = await getTranslations({ locale, namespace: "metadata" });
-  // La descripción cae al copy del panel cuando el vino no tiene traducción
-  // curada: desde que el catálogo lo administra Afeleia, un vino nuevo existe
-  // antes de que alguien le escriba el texto en los tres idiomas.
-  const description = translatedOr(
-    tWine,
-    `${slug}.shortDescription`,
-    wine.shortDescription,
-  );
+  // R1: la descripción es contenido del cliente y sale del catálogo, sin pasar
+  // por next-intl. El repo del sitio guarda diseño; el texto del producto vive
+  // en el panel y se edita ahí, no acá.
+  const description = wine.shortDescription || wine.description;
   const path = `/vinos/${slug}`;
   // El `title` recibe la plantilla del layout ("%s · Viña Casa Acosta"), pero
   // Open Graph no: hay que escribir el título completo a mano. Sin esto la ficha
@@ -86,11 +81,17 @@ export default async function WinePage({
 
   const t = await getTranslations("wineDetail");
   const tVinos = await getTranslations("vinos");
-  const tWine = await getTranslations("wines");
   const tBadges = await getTranslations("vinos.badges");
+  const tTech = await getTranslations("wineDetail.technicalFields");
 
-  const tastingNotes = translatedListOr(tWine, `${slug}.tastingNotes`, wine.tastingNotes);
-  const pairings = translatedListOr(tWine, `${slug}.pairings`, wine.pairings);
+  // R1 — contenido del cliente, directo del catálogo. Notas y maridajes se
+  // editan en el panel y se ven publicados; ya no hay una copia en el repo que
+  // pudiera ganarle y dejar la ficha mostrando algo que el cliente ya cambió.
+  const tastingNotes = wine.tastingNotes;
+  const pairings = wine.pairings;
+  // La descripción larga, con la corta como respaldo: sin ninguna de las dos no
+  // se dibuja el párrafo. Hasta hoy quedaba un <p> vacío ocupando su margen.
+  const description = wine.description || wine.shortDescription;
 
   // "Línea Ombú · Reserva" — pero sin línea asignada no se imprime el rótulo solo.
   const lineEyebrow = wine.line
@@ -122,7 +123,7 @@ export default async function WinePage({
   // del catálogo: así lo marcado y lo visible no pueden separarse.
   const tMeta = await getTranslations("metadata");
   const jsonLd = buildWineDetailJsonLd(wine, locale, {
-    description: translatedOr(tWine, `${slug}.description`, wine.description),
+    description,
     category: joinLabels(
       labelOr(tVinos, "types", wine.type),
       labelOr(tVinos, "varieties", wine.variety),
@@ -194,9 +195,11 @@ export default async function WinePage({
               )}
             </p>
 
-            <p className="font-body text-body-md text-on-surface leading-relaxed mb-8">
-              {translatedOr(tWine, `${slug}.description`, wine.description)}
-            </p>
+            {description && (
+              <p className="font-body text-body-md text-on-surface leading-relaxed mb-8">
+                {description}
+              </p>
+            )}
 
             {/* DEC-5: cada sección se dibuja solo si su dato existe. Un producto
                 creado en el panel sin PDF dejaba antes un botón con href="" que
@@ -249,6 +252,37 @@ export default async function WinePage({
                     </ul>
                   </div>
                 )}
+              </div>
+            )}
+
+            {/* Ficha técnica. Las filas, su orden y sus etiquetas los publica
+                Afeleia: acá no hay ninguna lista de campos escrita a mano, así
+                que un subcampo nuevo aparece solo. La etiqueta usa la traducción
+                curada si existe —«Composición» y «Alcohol» son vocabulario de la
+                plantilla, no contenido del cliente— y cae a la etiqueta publicada
+                cuando este sitio no conoce ese subcampo: nunca una clave cruda.
+                Sin filas con valor no se dibuja nada. */}
+            {wine.technical.length > 0 && (
+              <div className="mb-10">
+                <h3 className="font-body text-label-sm uppercase tracking-widest text-primary mb-4 flex items-center gap-2">
+                  <span className="h-px w-6 bg-primary/40" />
+                  {t("technical.title")}
+                </h3>
+                <dl className="grid grid-cols-1 gap-x-8 sm:grid-cols-2">
+                  {wine.technical.map((row) => (
+                    <div
+                      key={row.clave}
+                      className="flex items-baseline justify-between gap-4 border-b border-outline-variant/20 py-2.5"
+                    >
+                      <dt className="font-body text-body-md text-on-surface-variant">
+                        {translatedOr(tTech, row.clave, row.etiqueta)}
+                      </dt>
+                      <dd className="font-body text-body-md text-on-surface text-right">
+                        {row.valor}
+                      </dd>
+                    </div>
+                  ))}
+                </dl>
               </div>
             )}
 

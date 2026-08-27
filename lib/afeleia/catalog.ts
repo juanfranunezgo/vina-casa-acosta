@@ -1,27 +1,43 @@
 import { cache } from "react";
+/**
+ * Las listas de `data/wines.ts` **ya no son la autoridad de validación**: desde la
+ * Etapa D la autoridad es `definiciones_atributos`, que publica Afeleia. Acá
+ * quedan degradadas a dos papeles, los dos legítimos:
+ *
+ *   1. fallback de modo degradado — cuando la respuesta no trae definiciones (el
+ *      snapshot committeado, o una API vieja), `optionsFor` cae a estas listas y
+ *      la tienda sigue teniendo filtros;
+ *   2. fuente de siembra del importador, que fue de donde salieron las opciones
+ *      que hoy están cargadas en el panel.
+ *
+ * No se agregan valores nuevos acá: un valor nuevo se crea en el panel. Tocar
+ * estas listas para "habilitar" algo sería volver a poner el contenido del
+ * cliente dentro del repo del sitio.
+ */
 import {
   cepaGroups,
   varieties,
   wineCategories,
   wineLines,
   wineTypes,
-  type CepaGroup,
-  type Variety,
   type Wine,
-  type WineLine,
-  type WineTechnical,
-  type WineType,
 } from "@/data/wines";
 import catalogoFallback from "@/data/catalogo-fallback.json";
 import {
   CONTRACT_VERSION,
   catalogEndpoint,
   isValidCatalog,
+  optionsFor,
+  readOptionValue,
   renderableDocument,
   renderableImage,
+  sanitizeDefinitions,
+  technicalRowsFrom,
   type ApiCatalog,
   type ApiProduct,
+  type AttributeDefinition,
   type AttributeValue,
+  type TechnicalRow,
 } from "@/lib/afeleia/contract";
 
 /**
@@ -52,15 +68,28 @@ import {
  */
 export type CatalogWine = Omit<
   Wine,
-  "line" | "type" | "variety" | "cepaGroup" | "image" | "technicalSheet" | "technical"
+  "line" | "type" | "variety" | "cepaGroup" | "category" | "image" | "technicalSheet" | "technical"
 > & {
-  line?: WineLine;
-  type?: WineType;
-  variety?: Variety;
-  cepaGroup?: CepaGroup;
+  /**
+   * Los cinco campos de lista cerrada son `string` y no uniones locales: sus
+   * valores admitidos los publica Afeleia y pueden crecer sin que este repo se
+   * entere. Escribirlos como unión obligaría a desplegar la web cada vez que el
+   * cliente agrega una línea, que es exactamente lo que la Etapa D vino a
+   * terminar. Siguen siendo opcionales: DEC-5, clave ausente = sin valor.
+   */
+  line?: string;
+  type?: string;
+  variety?: string;
+  cepaGroup?: string;
+  category?: string;
   image?: string;
   technicalSheet?: string;
-  technical?: WineTechnical;
+  /**
+   * Ficha técnica ya resuelta a filas dibujables, en el orden que declaró la
+   * definición. Lista vacía —no `undefined`— porque "no hay ficha" y "la ficha no
+   * tiene ninguna fila con valor" se dibujan igual: no se dibuja la sección.
+   */
+  technical: TechnicalRow[];
   agotado: boolean;
 };
 
@@ -81,8 +110,8 @@ function readText(attrs: Record<string, AttributeValue>, key: string): string | 
 function readNumber(attrs: Record<string, AttributeValue>, key: string): number | undefined {
   const value = attrs[key];
   if (typeof value === "number") return Number.isFinite(value) ? value : undefined;
-  // El tipo `numero` viaja como number, pero un subcampo de grupo siempre es
-  // texto: `volumen_ml` llega como "750".
+  // El tipo `numero` del contrato viaja como number, pero el mismo dato cargado
+  // como texto en el panel llega como "2024" y significa lo mismo.
   if (typeof value === "string" && value.trim() !== "") {
     const parsed = Number(value);
     return Number.isFinite(parsed) ? parsed : undefined;
@@ -96,56 +125,6 @@ function readList(attrs: Record<string, AttributeValue>, key: string): string[] 
   return value.filter((item): item is string => typeof item === "string" && item !== "");
 }
 
-function readGroup(
-  attrs: Record<string, AttributeValue>,
-  key: string,
-): Record<string, string> | undefined {
-  const value = attrs[key];
-  if (typeof value !== "object" || value === null || Array.isArray(value)) return undefined;
-  return value as Record<string, string>;
-}
-
-/**
- * Valor de un campo de unión (`linea`, `tipo`, `cepa`, `grupo_cepa`, `nivel`).
- *
- * Comprueba contra la unión real en vez de afirmar el tipo: el catálogo lo puede
- * editar cualquiera desde el panel, así que "el importador lo sembró desde
- * wines.ts" dejó de ser garantía el día que la viña creó su primer producto.
- * Un valor fuera de la unión vuelve como `undefined` —el mismo caso que "sin
- * valor"— y el consumidor ya sabe no dibujar esa etiqueta.
- */
-function readUnion<T extends string>(
-  attrs: Record<string, AttributeValue>,
-  key: string,
-  allowed: readonly T[],
-): T | undefined {
-  const value = readText(attrs, key);
-  return value !== undefined && (allowed as readonly string[]).includes(value)
-    ? (value as T)
-    : undefined;
-}
-
-/**
- * Ficha técnica: el grupo `ficha_tecnica` con subcampos en español (los definió
- * el importador) de vuelta a las claves en inglés del tipo `WineTechnical`.
- *
- * Devuelve `undefined` si el grupo entero falta: un producto del panel sin ficha
- * cargada no tiene una ficha con todos los campos en blanco, no tiene ficha.
- */
-function readTechnical(attrs: Record<string, AttributeValue>): WineTechnical | undefined {
-  const group = readGroup(attrs, "ficha_tecnica");
-  if (!group) return undefined;
-  return {
-    blend: group.blend ?? "",
-    alcohol: group.alcohol ?? "",
-    valley: group.valle ?? "",
-    training: group.conduccion ?? "",
-    volumeMl: readNumber(group, "volumen_ml") ?? 0,
-    closure: group.cierre ?? "",
-    serve: group.servicio ?? "",
-  };
-}
-
 // --- Adaptador ----------------------------------------------------------------
 
 /**
@@ -156,27 +135,37 @@ function readTechnical(attrs: Record<string, AttributeValue>): WineTechnical | u
  * esto lo devuelve a su campo de `CatalogWine`.
  *
  * Nada se colapsa a `""` ni a `0` para llenar un hueco: lo que la API no trae
- * sale `undefined` y cada sección decide si se dibuja (DEC-5). Los campos de
- * unión se validan contra su lista, no se afirman: ver `readUnion`.
+ * sale `undefined` y cada sección decide si se dibuja (DEC-5).
+ *
+ * `definitions` son las listas publicadas por Afeleia. Cuando no viajan —el
+ * snapshot— cada campo cae a la lista local de `data/wines.ts` y el comportamiento
+ * es exactamente el de antes de la Etapa D: el modo degradado no pierde nada.
  */
-export function apiProductToWine(product: ApiProduct): CatalogWine {
+export function apiProductToWine(
+  product: ApiProduct,
+  definitions: readonly AttributeDefinition[] = [],
+): CatalogWine {
   const attrs = product.atributos ?? {};
   return {
     slug: product.slug,
     name: product.nombre,
-    line: readUnion(attrs, "linea", wineLines),
-    type: readUnion(attrs, "tipo", wineTypes),
-    variety: readUnion(attrs, "cepa", varieties),
-    cepaGroup: readUnion(attrs, "grupo_cepa", cepaGroups),
+    line: readOptionValue(attrs, "linea", optionsFor(definitions, "linea", wineLines)),
+    type: readOptionValue(attrs, "tipo", optionsFor(definitions, "tipo", wineTypes)),
+    variety: readOptionValue(attrs, "cepa", optionsFor(definitions, "cepa", varieties)),
+    cepaGroup: readOptionValue(
+      attrs,
+      "grupo_cepa",
+      optionsFor(definitions, "grupo_cepa", cepaGroups),
+    ),
     sweet: readText(attrs, "dulce") === "si",
-    category: readUnion(attrs, "nivel", wineCategories),
+    category: readOptionValue(attrs, "nivel", optionsFor(definitions, "nivel", wineCategories)),
     image: renderableImage(product.imagenes),
     technicalSheet: renderableDocument(readText(attrs, "ficha_tecnica_pdf")),
     shortDescription: product.descripcion_corta ?? "",
     description: product.descripcion ?? "",
     tastingNotes: readList(attrs, "notas_cata"),
     pairings: readList(attrs, "maridajes"),
-    technical: readTechnical(attrs),
+    technical: technicalRowsFrom(definitions, attrs),
     priceCLP: product.precio,
     vintage: readNumber(attrs, "cosecha"),
     featured: product.destacado,
@@ -282,7 +271,8 @@ const loadCatalog = cache(async (): Promise<CatalogLoad> => {
 /** Catálogo completo, en el orden que publica la API (alfabético por nombre). */
 export async function getCatalog(): Promise<CatalogWine[]> {
   const { catalog } = await loadCatalog();
-  return catalog.productos.map(apiProductToWine);
+  const definitions = sanitizeDefinitions(catalog.definiciones_atributos);
+  return catalog.productos.map((product) => apiProductToWine(product, definitions));
 }
 
 /** Origen del catálogo de este render. Lo consume `<CatalogOriginMeta>`. */
@@ -291,13 +281,31 @@ export async function getCatalogOrigin(): Promise<CatalogOrigin> {
   return origin;
 }
 
+/**
+ * Definiciones publicadas para este sitio, o `[]` si la respuesta no las trae.
+ *
+ * Sale del mismo `cache()` que el catálogo: **no cuesta un fetch extra**, el mismo
+ * truco que ya usa `getCatalogOrigin`. Una página que necesita las listas para
+ * dibujar sus filtros no paga una segunda lectura por pedirlas.
+ */
+export async function getCatalogDefinitions(): Promise<AttributeDefinition[]> {
+  const { catalog } = await loadCatalog();
+  return sanitizeDefinitions(catalog.definiciones_atributos);
+}
+
 /** Un vino por slug, o `null` si el catálogo no lo trae. */
 export async function getWineBySlug(slug: string): Promise<CatalogWine | null> {
   const catalog = await getCatalog();
   return catalog.find((wine) => wine.slug === slug) ?? null;
 }
 
-/** Vinos de una línea. Puro: se aplica sobre un catálogo ya leído. */
-export function winesByLine(catalog: CatalogWine[], line: WineLine): CatalogWine[] {
+/**
+ * Vinos de una línea. Puro: se aplica sobre un catálogo ya leído.
+ *
+ * `line` es `string` porque las líneas ya no son una unión de este repo. La
+ * comparación es exacta contra el valor publicado: una línea que el sitio no
+ * conoce simplemente no tiene banda, y sus vinos caen en «Otros vinos».
+ */
+export function winesByLine(catalog: CatalogWine[], line: string): CatalogWine[] {
   return catalog.filter((wine) => wine.line === line);
 }

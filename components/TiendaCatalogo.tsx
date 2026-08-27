@@ -7,15 +7,7 @@ import { Filter, X } from "lucide-react";
 import Reveal from "@/components/Reveal";
 import AddToCartButton from "@/components/AddToCartButton";
 import WineBottleImage from "@/components/WineBottleImage";
-import {
-  wineLines,
-  wineTypes,
-  cepaGroups,
-  matchesWineType,
-  type WineLine,
-  type WineType,
-  type CepaGroup,
-} from "@/data/wines";
+import { matchesWineType } from "@/data/wines";
 import type { CatalogWine } from "@/lib/afeleia/catalog";
 import { joinLabels, labelOr, translatedOr } from "@/lib/afeleia/copy";
 
@@ -25,8 +17,23 @@ import { joinLabels, labelOr, translatedOr } from "@/lib/afeleia/copy";
  * Los filtros son estado del cliente, pero el catálogo lo resuelve el servidor
  * contra la API de Afeleia. Por eso la página (`app/[locale]/tienda/page.tsx`)
  * hace el fetch y este componente recibe los vinos ya resueltos.
+ *
+ * `tipos`, `lineas` y `cepas` llegan igual: ya resueltos desde el servidor, que
+ * es quien sabe si vinieron de las definiciones publicadas o del fallback local.
+ * Mantener esa decisión afuera deja a este componente sin conocimiento del
+ * contrato — acá solo hay strings que dibujar.
  */
-export default function TiendaCatalogo({ wines }: { wines: CatalogWine[] }) {
+export default function TiendaCatalogo({
+  wines,
+  tipos,
+  lineas,
+  cepas,
+}: {
+  wines: CatalogWine[];
+  tipos: readonly string[];
+  lineas: readonly string[];
+  cepas: readonly string[];
+}) {
   const t = useTranslations("tienda");
   const tVinos = useTranslations("vinos");
   const tBadges = useTranslations("vinos.badges");
@@ -40,9 +47,9 @@ export default function TiendaCatalogo({ wines }: { wines: CatalogWine[] }) {
       maximumFractionDigits: 0,
     }).format(amount);
 
-  const [selectedTypes, setSelectedTypes] = useState<Set<WineType>>(new Set());
-  const [selectedLines, setSelectedLines] = useState<Set<WineLine>>(new Set());
-  const [selectedCepas, setSelectedCepas] = useState<Set<CepaGroup>>(new Set());
+  const [selectedTypes, setSelectedTypes] = useState<Set<string>>(new Set());
+  const [selectedLines, setSelectedLines] = useState<Set<string>>(new Set());
+  const [selectedCepas, setSelectedCepas] = useState<Set<string>>(new Set());
   const [sort, setSort] = useState<"featured" | "price-asc" | "price-desc">("featured");
   const [isFiltering, setIsFiltering] = useState(false);
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
@@ -83,7 +90,7 @@ export default function TiendaCatalogo({ wines }: { wines: CatalogWine[] }) {
     return list;
   }, [wines, selectedTypes, selectedLines, selectedCepas, sort]);
 
-  const toggleType = (type: WineType) => {
+  const toggleType = (type: string) => {
     startFiltering();
     setSelectedTypes((prev) => {
       const next = new Set(prev);
@@ -92,7 +99,7 @@ export default function TiendaCatalogo({ wines }: { wines: CatalogWine[] }) {
       return next;
     });
   };
-  const toggleLine = (line: WineLine) => {
+  const toggleLine = (line: string) => {
     startFiltering();
     setSelectedLines((prev) => {
       const next = new Set(prev);
@@ -101,7 +108,7 @@ export default function TiendaCatalogo({ wines }: { wines: CatalogWine[] }) {
       return next;
     });
   };
-  const toggleCepa = (cepa: CepaGroup) => {
+  const toggleCepa = (cepa: string) => {
     startFiltering();
     setSelectedCepas((prev) => {
       const next = new Set(prev);
@@ -138,7 +145,7 @@ export default function TiendaCatalogo({ wines }: { wines: CatalogWine[] }) {
           {t("filters.type")}
         </h3>
         <div className="space-y-2.5">
-          {wineTypes.map((type) => {
+          {tipos.map((type) => {
             const checked = selectedTypes.has(type);
             return (
               <label
@@ -160,7 +167,7 @@ export default function TiendaCatalogo({ wines }: { wines: CatalogWine[] }) {
                       : "text-on-surface group-hover:text-primary"
                   }`}
                 >
-                  {tVinos(`types.${type}`)}
+                  {labelOr(tVinos, "types", type)}
                 </span>
               </label>
             );
@@ -173,7 +180,7 @@ export default function TiendaCatalogo({ wines }: { wines: CatalogWine[] }) {
           {t("filters.line")}
         </h3>
         <div className="space-y-2.5">
-          {wineLines.map((line) => {
+          {lineas.map((line) => {
             const checked = selectedLines.has(line);
             return (
               <label
@@ -208,7 +215,7 @@ export default function TiendaCatalogo({ wines }: { wines: CatalogWine[] }) {
           {t("filters.cepa")}
         </h3>
         <div className="space-y-2.5">
-          {cepaGroups.map((cepa) => {
+          {cepas.map((cepa) => {
             const checked = selectedCepas.has(cepa);
             return (
               <label
@@ -230,7 +237,7 @@ export default function TiendaCatalogo({ wines }: { wines: CatalogWine[] }) {
                       : "text-on-surface group-hover:text-primary"
                   }`}
                 >
-                  {tVinos(`cepaGroups.${cepa}`)}
+                  {labelOr(tVinos, "cepaGroups", cepa)}
                 </span>
               </label>
             );

@@ -5,10 +5,11 @@ import CatalogOriginMeta from "@/components/CatalogOriginMeta";
 import CollectionBand, { type CollectionWine } from "@/components/CollectionBand";
 import JsonLd from "@/components/JsonLd";
 import Reveal from "@/components/Reveal";
+import WineCard from "@/components/WineCard";
 import Button from "@/components/ui/Button";
 import { lineSlugs, lineMeta, type WineLine } from "@/data/wines";
 import { getCatalog, winesByLine, type CatalogWine } from "@/lib/afeleia/catalog";
-import { joinLabels, labelOr, translatedOr } from "@/lib/afeleia/copy";
+import { joinLabels, labelOr } from "@/lib/afeleia/copy";
 import { buildWinesItemListJsonLd } from "@/lib/wineJsonLd";
 import { alternatesFor } from "@/lib/alternates";
 import { buildVinosJsonLd } from "@/lib/siteJsonLd";
@@ -57,8 +58,21 @@ export default async function VinosPage({ params }: PageProps<"/[locale]/vinos">
   setRequestLocale(locale);
   const t = await getTranslations("vinos");
   const tCart = await getTranslations("cart");
-  const tWine = await getTranslations("wines");
   const catalog = await getCatalog();
+
+  /**
+   * Vinos que ninguna banda editorial va a mostrar: los de una línea que este
+   * repo no conoce y los que todavía no tienen línea asignada.
+   *
+   * Las bandas se arman con activos de diseño locales —fotos, tier, ancla de URL,
+   * copy de marca— y nada de eso puede venir de la API. Sin esta sección, un
+   * producto recién creado en el panel quedaba invisible en la página de catálogo
+   * de su propio dueño. El invariante que esto sostiene: **todo producto del
+   * catálogo aparece en /vinos, en /tienda y en /vinos/<slug>**, tenga los
+   * atributos que tenga.
+   */
+  const curatedLines: readonly string[] = collectionLines;
+  const otherWines = catalog.filter((wine) => !wine.line || !curatedLines.includes(wine.line));
 
   // `joinLabels` y no plantillas con " · ": un producto del panel puede no traer
   // tipo o cepa, y concatenar a ciegas deja separadores colgando ("Tinto · ").
@@ -81,9 +95,11 @@ export default async function VinosPage({ params }: PageProps<"/[locale]/vinos">
     return eyebrowOf(wine);
   };
 
+  // El texto del producto sale del catálogo, sin pasar por next-intl (R1): el
+  // contenido es del panel. Lo que se traduce acá son las etiquetas de la
+  // plantilla —"Tinto", "Carmenere"—, que sí son vocabulario del sitio.
   const jsonLd = buildWinesItemListJsonLd(catalog, locale, {
-    shortDescription: (wine) =>
-      translatedOr(tWine, `${wine.slug}.shortDescription`, wine.shortDescription),
+    shortDescription: (wine) => wine.shortDescription,
     category: eyebrowOf,
   });
 
@@ -194,6 +210,42 @@ export default async function VinosPage({ params }: PageProps<"/[locale]/vinos">
           />
         );
       })}
+
+      {/* C2b — «Otros vinos»: la red de seguridad del catálogo.
+          Solo aparece cuando hay algo que mostrar, así que en el estado normal
+          —los seis colecciones completas— esta sección no existe.
+
+          Usa `WineCard`, la misma tarjeta que dibujan las bandas: no se duplica
+          markup, el aviso de agotado viaja con ella y `CollectionBand` no se
+          toca, así que el layout editorial vivo queda intacto. */}
+      {otherWines.length > 0 && (
+        <section className="bg-surface-container-low py-section-gap px-margin-mobile md:px-margin-desktop">
+          <div className="mx-auto max-w-(--container-max)">
+            <Reveal className="mb-12">
+              <h2 className="font-display text-headline-h2 text-primary">{t("otherLine.title")}</h2>
+              <p className="mt-3 max-w-2xl font-body text-body-md text-on-surface-variant">
+                {t("otherLine.description")}
+              </p>
+            </Reveal>
+            <ul className="grid grid-cols-1 gap-gutter sm:grid-cols-2 lg:grid-cols-4">
+              {otherWines.map((wine, idx) => (
+                <li key={wine.slug}>
+                  <Reveal delay={idx * 80}>
+                    <WineCard
+                      href={`/${locale}/vinos/${wine.slug}`}
+                      image={wine.image}
+                      name={wine.name}
+                      eyebrow={eyebrowOf(wine)}
+                      agotado={wine.agotado}
+                      soldOutLabel={tCart("soldOut")}
+                    />
+                  </Reveal>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </section>
+      )}
 
       {/* C3 — Cierre: puente del catálogo a la tienda. */}
       <section className="bg-surface">

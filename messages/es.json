@@ -316,6 +316,10 @@
     }
   },
   "vinos": {
+    "otherLine": {
+      "title": "Otros vinos",
+      "description": "Etiquetas que no pertenecen a las seis colecciones de arriba."
+    },
     "hero": {
       "eyebrow": "Catálogo completo",
       "title": "Nuestros vinos",
@@ -373,6 +377,18 @@
     }
   },
   "wineDetail": {
+    "technical": {
+      "title": "Ficha técnica"
+    },
+    "technicalFields": {
+      "blend": "Composición",
+      "alcohol": "Alcohol",
+      "valle": "Valle",
+      "conduccion": "Conducción",
+      "volumen_ml": "Volumen (ml)",
+      "cierre": "Cierre",
+      "servicio": "Temperatura de servicio"
+    },
     "backToCatalog": "Toda la colección",
     "vintageLabel": "Cosecha {year}",
     "vintageProperty": "Cosecha",
@@ -382,86 +398,6 @@
     "technicalSheet": "Ficha técnica (PDF)",
     "currency": "CLP",
     "youMayAlsoLike": "También te puede interesar"
-  },
-  "wines": {
-    "ombu-carmenere": {
-      "shortDescription": "Carmenere Reserva 100%, de intensas notas especiadas y frutos negros maduros.",
-      "description": "Intenso color rojo cereza. Nariz compleja, de intensas notas especiadas y frutos negros maduros. En boca, taninos suaves y redondos, de buena estructura, largo y agradable final.",
-      "tastingNotes": ["Frutos negros maduros", "Especias", "Rojo cereza", "Taninos redondos"],
-      "pairings": ["Pastas", "Filete mignon", "Pastelera de maíz"]
-    },
-    "ombu-tannat": {
-      "shortDescription": "Tannat Reserva 100%, de taninos firmes y buen potencial de guarda.",
-      "description": "Rojo cereza. En nariz, aromas a frutos negros como arándanos y moras, con algo de especias como pimienta negra y clavo de olor. De cuerpo complejo, con taninos firmes, acidez equilibrada y buen potencial de guarda.",
-      "tastingNotes": ["Arándanos", "Moras", "Pimienta negra", "Clavo de olor"],
-      "pairings": ["Carnes rojas", "Quesos maduros"]
-    },
-    "ombu-sauvignon": {
-      "shortDescription": "Cabernet Sauvignon 100% del Valle del Cachapoal, equilibrado y sedoso.",
-      "description": "Nariz fresca, con notas a frutos secos, especias y frutos rojos maduros, y un leve toque de vainilla. Es equilibrado y carnoso, con taninos presentes pero sedosos, buen volumen y un final largo de muy buena persistencia.",
-      "tastingNotes": ["Frutos secos", "Especias", "Frutos rojos maduros", "Vainilla"],
-      "pairings": ["Cordero al palo", "Comida árabe"]
-    },
-    "lajau-sam": {
-      "shortDescription": "Ensamblaje Carmenere–Tannat, estructurado y de largo retrogusto.",
-      "description": "Aromas a frutos negros muy maduros, especias y chocolate amargo. En boca es estructurado, equilibrado y de largo retrogusto.",
-      "tastingNotes": ["Frutos negros maduros", "Especias", "Chocolate amargo", "Largo retrogusto"],
-      "pairings": ["Masas con carne", "Entraña"]
-    },
-    "lajau-deti": {
-      "shortDescription": "Ensamblaje de Carmenere, Cabernet Sauvignon y Petit Verdot, elegante y complejo.",
-      "description": "Interesante rojo cereza con aromas frescos y complejos: intensa fruta negra, cacao y humo. Boca estructurada, de taninos suaves y elegantes, largo y de agradable final.",
-      "tastingNotes": ["Fruta negra", "Cacao", "Humo", "Taninos elegantes"],
-      "pairings": ["Quesos maduros", "Jabalí al romero"]
-    },
-    "lajau-betum": {
-      "shortDescription": "Ensamblaje de cuatro cepas, complejo y de gran volumen.",
-      "description": "Vino de intenso color rojo rubí con tintes violáceos. Muy complejo: fruta roja madura y fruta negra, con toques de humo y pimienta. Boca de buena estructura y volumen, de taninos jugosos, gran retrogusto y largo final.",
-      "tastingNotes": ["Fruta roja madura", "Fruta negra", "Humo", "Pimienta"],
-      "pairings": ["Queso de cabra", "Pato a la naranja", "Cordero"]
-    },
-    "lajau-betum-yu": {
-      "shortDescription": "Ensamblaje de cinco cepas, expresión cumbre de la línea Lajau.",
-      "description": "Vino de intenso color rojo rubí, de taninos presentes pero redondos y una acidez equilibrada. Final de boca con un toque a chocolate amargo y algo de humo, de largo final.",
-      "tastingNotes": ["Rojo rubí", "Chocolate amargo", "Humo", "Taninos redondos"],
-      "pairings": ["Carnes rojas a la parrilla"]
-    },
-    "estacion-francia-carmenere": {
-      "shortDescription": "Gran Reserva de Carmenere y Petit Verdot, de gran complejidad y guarda.",
-      "description": "Vivo color rojo guinda, con notas violáceas. Aromas a frutos negros, chocolate y especias, con toques de grosella, frutos secos y tabaco. En boca hay taninos sedosos; es jugoso y de buen equilibrio, con un final persistente.",
-      "tastingNotes": ["Frutos negros", "Chocolate", "Grosella", "Tabaco"],
-      "pairings": ["Costillas de cerdo", "Morcillas a la parrilla"]
-    },
-    "estacion-francia-tannat": {
-      "shortDescription": "Gran Reserva de Tannat y Carmenere, potente y de gran estructura.",
-      "description": "Vino de intenso color. Aromas a frutos rojos maduros, ciruela y mora, con toques a cereza negra y notas a tabaco. Boca potente y de gran estructura, cuerpo robusto, largo y persistente.",
-      "tastingNotes": ["Frutos rojos maduros", "Ciruela", "Cereza negra", "Tabaco"],
-      "pairings": ["Garrón de cordero", "Quesos azules"]
-    },
-    "bera": {
-      "shortDescription": "Rosé fresco y floral de Carmenere y Cabernet Sauvignon.",
-      "description": "Rosé de color rosa y perfil complejo. Aromas a frambuesa fresca, muy floral, con notas a cereza roja. Boca fresca, de interesante acidez, jugoso y de agradable final.",
-      "tastingNotes": ["Frambuesa fresca", "Floral", "Cereza roja", "Acidez jugosa"],
-      "pairings": ["Comida oriental", "Panaché de verduras", "Pastrami", "Paella"]
-    },
-    "guidai": {
-      "shortDescription": "Espumante rosado, fresco y de burbuja fina.",
-      "description": "Espumante de color rosado pálido. Aromas a fresas, con un toque picante. Corona blanquecina, con persistentes burbujas pequeñas; fresco y de equilibrada acidez.",
-      "tastingNotes": ["Fresas", "Rosado pálido", "Burbuja fina", "Acidez fresca"],
-      "pairings": ["Comida thai", "Sashimi de salmón"]
-    },
-    "yaray-gua-tinto": {
-      "shortDescription": "Carmenere de cosecha tardía, goloso y de dulzor balanceado.",
-      "description": "Color rojo teja. Aromas de frutas rojas confitadas, higos y miel. En boca es goloso, con un dulzor balanceado y una acidez que evita que sea empalagoso.",
-      "tastingNotes": ["Frutas rojas confitadas", "Higos", "Miel", "Rojo teja"],
-      "pairings": ["Chocolate amargo", "Queso azul"]
-    },
-    "yaray-gua-blanco": {
-      "shortDescription": "Blanco de cosecha tardía, untuoso y de retrogusto complejo.",
-      "description": "Color amarillo oro con marcados reflejos ambarinos y brillantes. De gran volumen, potente, de grata acidez firme y vibrante. Final larguísimo y untuoso, con un retrogusto complejo donde regresan las notas de mermelada de naranja amarga, frutos secos tostados y un sutil toque de miel.",
-      "tastingNotes": ["Mermelada de naranja", "Frutos secos tostados", "Miel", "Amarillo oro"],
-      "pairings": ["Foie gras", "Cheesecake de maracuyá"]
-    }
   },
   "actividades": {
     "hero": {

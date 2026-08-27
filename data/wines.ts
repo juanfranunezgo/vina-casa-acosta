@@ -560,8 +560,13 @@ export const wineCategories: NonNullable<Wine["category"]>[] = [
 export function matchesWineType(
   // Estructural y no `Wine`: el filtro también corre sobre `CatalogWine`, donde
   // el tipo puede faltar (producto del panel a medio completar).
-  wine: { type?: WineType; sweet?: boolean },
-  type: WineType,
+  //
+  // `type` es `string` desde la Etapa D: los tipos los publica Afeleia y el
+  // filtro se arma con la lista publicada, no con la unión local. Un tipo que
+  // este repo no conoce igual filtra bien —la comparación es por valor— y
+  // "Dulce" sigue siendo el único que cruza los tipos.
+  wine: { type?: string; sweet?: boolean },
+  type: string,
 ): boolean {
   if (type === "Dulce") return wine.type === "Dulce" || wine.sweet === true;
   return wine.type === type;

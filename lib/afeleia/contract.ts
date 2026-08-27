@@ -27,10 +27,40 @@ export type ApiProduct = {
   atributos: Record<string, AttributeValue>;
 };
 
+/** Un subcampo de una definición de tipo `grupo` (los siete de `ficha_tecnica`). */
+export type AttributeSubfield = {
+  clave: string;
+  etiqueta: string;
+};
+
+/**
+ * Cómo se llama, qué forma tiene y qué valores admite un atributo del sitio.
+ *
+ * `tipo` es `string` y no una unión **a propósito**: la política de extensión del
+ * contrato v1 permite tipos nuevos, y un consumidor v1 no puede atragantarse con
+ * uno que todavía no existe. Estrechar esto a `"texto" | "opcion" | ...` haría
+ * que agregar un tipo en Afeleia rompiera el build de cada web conectada.
+ */
+export type AttributeDefinition = {
+  clave: string;
+  etiqueta: string;
+  tipo: string;
+  orden: number;
+  opciones?: string[];
+  subcampos?: AttributeSubfield[];
+};
+
 export type ApiCatalog = {
   version: number;
   sitio: string;
   generado_en: string;
+  /**
+   * Clave agregada por la Etapa B, y **opcional en la lectura** por la regla 3 de
+   * la política de extensión: el snapshot committeado en cada web es una respuesta
+   * v1 vieja y no la trae hasta que alguien lo regenere. Todo lo que la lea tiene
+   * que funcionar sin ella.
+   */
+  definiciones_atributos?: AttributeDefinition[];
   categorias: Array<{ slug: string; nombre: string; orden: number }>;
   productos: ApiProduct[];
 };
@@ -183,10 +213,161 @@ function isValidProduct(value: unknown): value is ApiProduct {
   );
 }
 
+/**
+ * `isValidCatalog` NO mira `definiciones_atributos`, y eso es la decisión, no un
+ * olvido: ver la asimetría explicada en `sanitizeDefinitions`.
+ */
 export function isValidCatalog(value: unknown): value is ApiCatalog {
   if (typeof value !== "object" || value === null) return false;
   const catalog = value as Record<string, unknown>;
   if (catalog.version !== CONTRACT_VERSION) return false;
   if (!Array.isArray(catalog.productos)) return false;
   return catalog.productos.every(isValidProduct);
+}
+
+// --- Definiciones de atributos ------------------------------------------------
+// Todo lo de acá abajo vive en este archivo, y no en `catalog.ts`, porque
+// `catalog.ts` importa React y el snapshot: `node --test` no puede cargarlo. Acá
+// es donde la lógica queda cubierta por tests.
+
+function nonEmptyString(value: unknown): string | undefined {
+  return typeof value === "string" && value.trim() !== "" ? value : undefined;
+}
+
+function sanitizeOptions(value: unknown): string[] | undefined {
+  if (!Array.isArray(value)) return undefined;
+  return value.filter((option): option is string => nonEmptyString(option) !== undefined);
+}
+
+function sanitizeSubfields(value: unknown): AttributeSubfield[] | undefined {
+  if (!Array.isArray(value)) return undefined;
+  const subfields: AttributeSubfield[] = [];
+  for (const entry of value) {
+    if (typeof entry !== "object" || entry === null) continue;
+    const { clave, etiqueta } = entry as Record<string, unknown>;
+    const key = nonEmptyString(clave);
+    if (!key) continue;
+    subfields.push({ clave: key, etiqueta: nonEmptyString(etiqueta) ?? key });
+  }
+  return subfields;
+}
+
+/**
+ * Las definiciones publicadas que esta web puede usar, en el orden en que llegan.
+ *
+ * **Asimetría deliberada frente a `isValidProduct`, y no se "arregla":** un bloque
+ * de definiciones malformado devuelve `[]` en vez de invalidar el catálogo. Las
+ * definiciones son una MEJORA —mejores etiquetas, listas al día—; los productos
+ * son el producto. Si un bloque roto empujara al sitio a modo snapshot, un error
+ * en el bloque menos importante de la respuesta dejaría la tienda entera con
+ * precios viejos. Una entrada rota se descarta sola, sin llevarse a las sanas.
+ *
+ * No se reordena por `orden`: la API ya las emite ordenadas y el único consumidor
+ * que depende de una secuencia —`technicalRowsFrom`— usa el orden de `subcampos`.
+ * Reordenar acá sería una segunda regla de orden compitiendo con la del emisor.
+ */
+export function sanitizeDefinitions(value: unknown): AttributeDefinition[] {
+  if (!Array.isArray(value)) return [];
+
+  const definitions: AttributeDefinition[] = [];
+  for (const entry of value) {
+    if (typeof entry !== "object" || entry === null) continue;
+    const raw = entry as Record<string, unknown>;
+    const clave = nonEmptyString(raw.clave);
+    const tipo = nonEmptyString(raw.tipo);
+    if (!clave || !tipo) continue;
+
+    const definition: AttributeDefinition = {
+      clave,
+      // Sin etiqueta se muestra la clave: feo, pero legible. La alternativa que
+      // importa evitar —imprimir una clave de i18n cruda— la cubre `labelOr`.
+      etiqueta: nonEmptyString(raw.etiqueta) ?? clave,
+      tipo,
+      orden: typeof raw.orden === "number" && Number.isFinite(raw.orden) ? raw.orden : Number.MAX_SAFE_INTEGER,
+    };
+
+    const opciones = sanitizeOptions(raw.opciones);
+    if (opciones) definition.opciones = opciones;
+    const subcampos = sanitizeSubfields(raw.subcampos);
+    if (subcampos) definition.subcampos = subcampos;
+
+    definitions.push(definition);
+  }
+  return definitions;
+}
+
+/**
+ * Valores admitidos de un atributo: los publicados si existen, si no el fallback
+ * local.
+ *
+ * **Este es el único lugar donde se razona el modo degradado de las listas.** Sin
+ * definiciones —el snapshot, o una API que todavía no las publica— el sitio sigue
+ * dibujando sus filtros con las listas de `data/wines.ts`. Una lista publicada
+ * vacía también cae al fallback: dejar la tienda sin ningún filtro es peor que
+ * mostrar los seis de siempre.
+ */
+export function optionsFor(
+  definitions: readonly AttributeDefinition[],
+  clave: string,
+  fallback: readonly string[],
+): readonly string[] {
+  const published = definitions.find((definition) => definition.clave === clave)?.opciones;
+  return published && published.length > 0 ? published : fallback;
+}
+
+/**
+ * Valor de un atributo de lista cerrada, comprobado contra la lista de runtime.
+ *
+ * Reemplaza al viejo `readUnion`, que comparaba contra una unión de TypeScript
+ * escrita en el repo: esa unión dejó de ser la autoridad el día que la lista pasó
+ * a vivir en Afeleia. La semántica no cambia — un valor ajeno vuelve `undefined`,
+ * el mismo caso que "sin valor", y el consumidor ya sabe no dibujar la etiqueta.
+ */
+export function readOptionValue(
+  attrs: Record<string, AttributeValue>,
+  clave: string,
+  allowed: readonly string[],
+): string | undefined {
+  const value = attrs[clave];
+  if (typeof value !== "string" || value === "") return undefined;
+  return allowed.includes(value) ? value : undefined;
+}
+
+/** Una fila de la ficha técnica ya lista para dibujar. */
+export type TechnicalRow = {
+  clave: string;
+  etiqueta: string;
+  valor: string;
+};
+
+/**
+ * Filas de un atributo de tipo `grupo`, **en el orden que declaró la definición**.
+ *
+ * El orden importa y no puede salir del objeto de valores: el panel guarda las
+ * claves en el orden en que las tocó el cliente, así que recorrer el objeto
+ * dibujaría la ficha técnica distinta en cada producto. La definición es la que
+ * dice que «Composición» va antes que «Alcohol».
+ *
+ * Solo sobreviven los subcampos con texto: un grupo a medio llenar no dibuja
+ * filas vacías. Sin definición o sin grupo no hay ficha — `[]`, y la sección
+ * entera se oculta.
+ */
+export function technicalRowsFrom(
+  definitions: readonly AttributeDefinition[],
+  attrs: Record<string, AttributeValue>,
+  clave = "ficha_tecnica",
+): TechnicalRow[] {
+  const subcampos = definitions.find((definition) => definition.clave === clave)?.subcampos;
+  if (!subcampos || subcampos.length === 0) return [];
+
+  const group = attrs[clave];
+  if (typeof group !== "object" || group === null || Array.isArray(group)) return [];
+  const values = group as Record<string, unknown>;
+
+  const rows: TechnicalRow[] = [];
+  for (const { clave: subclave, etiqueta } of subcampos) {
+    const valor = nonEmptyString(values[subclave]);
+    if (valor) rows.push({ clave: subclave, etiqueta, valor });
+  }
+  return rows;
 }
