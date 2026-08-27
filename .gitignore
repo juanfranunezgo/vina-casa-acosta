@@ -44,3 +44,7 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# copias de trabajo de los agentes (.claude/worktrees son repos enteros: 617 MB
+# el dia que se midio). launch.json NO se ignora: es configuracion de verdad.
+/.claude/worktrees
