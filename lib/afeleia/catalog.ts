@@ -282,6 +282,22 @@ export async function getCatalogOrigin(): Promise<CatalogOrigin> {
 }
 
 /**
+ * `generado_en` del catálogo que se está sirviendo, o `undefined` si no viene.
+ *
+ * En modo degradado esta fecha es la EDAD de la copia, y es el dato que convierte
+ * «este sitio está degradado» en «este sitio está degradado y su copia tiene N
+ * días». Viaja al HTML junto al origen porque es lo único auditable desde afuera:
+ * con 100 sitios conectados nadie va a mirar 100 paneles de logs, pero un
+ * chequeo automático sí puede leer un `<meta>` en la URL pública.
+ */
+export async function getCatalogGeneratedAt(): Promise<string | undefined> {
+  const { catalog } = await loadCatalog();
+  return typeof catalog.generado_en === "string" && catalog.generado_en !== ""
+    ? catalog.generado_en
+    : undefined;
+}
+
+/**
  * Definiciones publicadas para este sitio, o `[]` si la respuesta no las trae.
  *
  * Sale del mismo `cache()` que el catálogo: **no cuesta un fetch extra**, el mismo

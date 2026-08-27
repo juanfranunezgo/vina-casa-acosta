@@ -6,6 +6,7 @@ import {
   readOptionValue,
   sanitizeDefinitions,
   technicalRowsFrom,
+  winesOutsideLines,
 } from "../lib/afeleia/contract.ts";
 
 /**
@@ -177,6 +178,37 @@ test("technicalRowsFrom solo mira la clave que se le pide", () => {
   const otra = { ...FICHA, clave: "ficha_larga" };
   assert.equal(technicalRowsFrom([otra], { ficha_larga: { blend: "x" } }, "ficha_larga").length, 1);
   assert.deepEqual(technicalRowsFrom([otra], { ficha_larga: { blend: "x" } }), []);
+});
+
+// --- winesOutsideLines: el invariante de /vinos -------------------------------
+
+const CURADAS = ["Ombu", "Lajau"];
+
+test("winesOutsideLines rescata al producto SIN linea", () => {
+  // Es como nace un producto en el panel, y era el caso que lo dejaba invisible
+  // en la pagina de catalogo de su propio dueno.
+  const fuera = winesOutsideLines([{ slug: "nuevo" }, { slug: "ombu-x", line: "Ombu" }], CURADAS);
+  assert.deepEqual(
+    fuera.map((w) => w.slug),
+    ["nuevo"],
+  );
+});
+
+test("winesOutsideLines rescata al producto de una linea que el sitio no conoce", () => {
+  const fuera = winesOutsideLines([{ slug: "x", line: "Coleccion Nueva" }], CURADAS);
+  assert.equal(fuera.length, 1);
+});
+
+test("winesOutsideLines no toca a los que ya tienen banda", () => {
+  const wines = [
+    { slug: "a", line: "Ombu" },
+    { slug: "b", line: "Lajau" },
+  ];
+  assert.deepEqual(winesOutsideLines(wines, CURADAS), []);
+});
+
+test("winesOutsideLines devuelve [] con el catalogo vacio, y la seccion no se dibuja", () => {
+  assert.deepEqual(winesOutsideLines([], CURADAS), []);
 });
 
 // --- isValidCatalog: la asimetria deliberada ----------------------------------

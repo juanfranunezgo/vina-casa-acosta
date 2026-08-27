@@ -333,6 +333,27 @@ export function readOptionValue(
   return allowed.includes(value) ? value : undefined;
 }
 
+/**
+ * Los productos que ninguna de `lines` reclama — **incluidos los que no tienen
+ * línea**.
+ *
+ * Sostiene un invariante que el sitio promete y que nada más comprueba: *todo
+ * producto del catálogo aparece en /vinos*. Las bandas editoriales se arman con
+ * activos de diseño locales (fotos, copy de marca, anclas de URL) y solo existen
+ * para las seis líneas curadas; sin esta lista, un producto con una línea nueva
+ * —o sin línea, que es como nace en el panel— quedaba invisible en la página de
+ * catálogo de su propio dueño.
+ *
+ * Estructural y genérica a propósito: acá no se importa el tipo de la web, y así
+ * la regla se puede probar sin cargar el módulo que trae React y el snapshot.
+ */
+export function winesOutsideLines<T extends { line?: string }>(
+  wines: readonly T[],
+  lines: readonly string[],
+): T[] {
+  return wines.filter((wine) => !wine.line || !lines.includes(wine.line));
+}
+
 /** Una fila de la ficha técnica ya lista para dibujar. */
 export type TechnicalRow = {
   clave: string;

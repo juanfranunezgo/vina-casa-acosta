@@ -9,6 +9,7 @@ import WineCard from "@/components/WineCard";
 import Button from "@/components/ui/Button";
 import { lineSlugs, lineMeta, type WineLine } from "@/data/wines";
 import { getCatalog, winesByLine, type CatalogWine } from "@/lib/afeleia/catalog";
+import { winesOutsideLines } from "@/lib/afeleia/contract";
 import { joinLabels, labelOr } from "@/lib/afeleia/copy";
 import { buildWinesItemListJsonLd } from "@/lib/wineJsonLd";
 import { alternatesFor } from "@/lib/alternates";
@@ -71,8 +72,7 @@ export default async function VinosPage({ params }: PageProps<"/[locale]/vinos">
    * catálogo aparece en /vinos, en /tienda y en /vinos/<slug>**, tenga los
    * atributos que tenga.
    */
-  const curatedLines: readonly string[] = collectionLines;
-  const otherWines = catalog.filter((wine) => !wine.line || !curatedLines.includes(wine.line));
+  const otherWines = winesOutsideLines(catalog, collectionLines);
 
   // `joinLabels` y no plantillas con " · ": un producto del panel puede no traer
   // tipo o cepa, y concatenar a ciegas deja separadores colgando ("Tinto · ").

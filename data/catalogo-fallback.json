@@ -1,7 +1,147 @@
 {
   "version": 1,
   "sitio": "vina-casa-acosta",
-  "generado_en": "2026-08-06T00:09:57.905Z",
+  "generado_en": "2026-08-27T21:39:03.533Z",
+  "definiciones_atributos": [
+    {
+      "clave": "linea",
+      "etiqueta": "Línea",
+      "tipo": "opcion",
+      "orden": 1,
+      "opciones": [
+        "Ombú",
+        "Lajau",
+        "Estación Francia",
+        "Berá",
+        "Guidaí",
+        "Yaráy Guá"
+      ]
+    },
+    {
+      "clave": "tipo",
+      "etiqueta": "Tipo",
+      "tipo": "opcion",
+      "orden": 2,
+      "opciones": [
+        "Tinto",
+        "Rosado",
+        "Blanco",
+        "Espumante",
+        "Dulce"
+      ]
+    },
+    {
+      "clave": "cepa",
+      "etiqueta": "Cepa",
+      "tipo": "opcion",
+      "orden": 3,
+      "opciones": [
+        "Carmenere",
+        "Tannat",
+        "Cabernet Sauvignon",
+        "Chardonnay + Viognier",
+        "Ensamblaje"
+      ]
+    },
+    {
+      "clave": "grupo_cepa",
+      "etiqueta": "Grupo de cepa",
+      "tipo": "opcion",
+      "orden": 4,
+      "opciones": [
+        "Monovarietario",
+        "Ensamblaje",
+        "Chardonnay + Viognier"
+      ]
+    },
+    {
+      "clave": "dulce",
+      "etiqueta": "Dulce",
+      "tipo": "opcion",
+      "orden": 5,
+      "opciones": [
+        "si",
+        "no"
+      ]
+    },
+    {
+      "clave": "nivel",
+      "etiqueta": "Nivel",
+      "tipo": "opcion",
+      "orden": 6,
+      "opciones": [
+        "Reserva",
+        "Gran Reserva",
+        "Edición Limitada"
+      ]
+    },
+    {
+      "clave": "cosecha",
+      "etiqueta": "Cosecha",
+      "tipo": "numero",
+      "orden": 7
+    },
+    {
+      "clave": "badge",
+      "etiqueta": "Badge",
+      "tipo": "texto",
+      "orden": 8
+    },
+    {
+      "clave": "notas_cata",
+      "etiqueta": "Notas de cata",
+      "tipo": "lista",
+      "orden": 9
+    },
+    {
+      "clave": "maridajes",
+      "etiqueta": "Maridajes",
+      "tipo": "lista",
+      "orden": 10
+    },
+    {
+      "clave": "ficha_tecnica",
+      "etiqueta": "Ficha técnica",
+      "tipo": "grupo",
+      "orden": 11,
+      "subcampos": [
+        {
+          "clave": "blend",
+          "etiqueta": "Composición"
+        },
+        {
+          "clave": "alcohol",
+          "etiqueta": "Alcohol"
+        },
+        {
+          "clave": "valle",
+          "etiqueta": "Valle"
+        },
+        {
+          "clave": "conduccion",
+          "etiqueta": "Conducción"
+        },
+        {
+          "clave": "volumen_ml",
+          "etiqueta": "Volumen (ml)"
+        },
+        {
+          "clave": "cierre",
+          "etiqueta": "Cierre"
+        },
+        {
+          "clave": "servicio",
+          "etiqueta": "Servicio"
+        }
+      ]
+    },
+    {
+      "clave": "ficha_tecnica_pdf",
+      "etiqueta": "Ficha técnica (PDF)",
+      "tipo": "texto",
+      "orden": 12
+    }
+  ],
   "categorias": [
     {
       "slug": "vinos",
@@ -505,7 +645,7 @@
       "nombre": "Yaráy Guá Carmenere",
       "descripcion": "Color rojo teja. Aromas de frutas rojas confitadas, higos y miel. En boca es goloso, con un dulzor balanceado y una acidez que evita que sea empalagoso.",
       "descripcion_corta": "Carmenere de cosecha tardía, goloso y de dulzor balanceado.",
-      "precio": 9120,
+      "precio": 11400,
       "moneda": "CLP",
       "imagenes": [
         "/vinos/yaray-gua-tinto.png"
@@ -549,7 +689,7 @@
       "nombre": "Yaráy Guá Chardonnay Viognier",
       "descripcion": "Color amarillo oro con marcados reflejos ambarinos y brillantes. De gran volumen, potente, de grata acidez firme y vibrante. Final larguísimo y untuoso, con un retrogusto complejo donde regresan las notas de mermelada de naranja amarga, frutos secos tostados y un sutil toque de miel.",
       "descripcion_corta": "Blanco de cosecha tardía, untuoso y de retrogusto complejo.",
-      "precio": 9120,
+      "precio": 11400,
       "moneda": "CLP",
       "imagenes": [
         "/vinos/yaray-gua-blanco.png"

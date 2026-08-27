@@ -1,4 +1,4 @@
-import { getCatalogOrigin } from "@/lib/afeleia/catalog";
+import { getCatalogGeneratedAt, getCatalogOrigin } from "@/lib/afeleia/catalog";
 
 /**
  * Declara en el HTML de dónde salió el catálogo de esta página: `api` o `snapshot`.
@@ -13,9 +13,15 @@ import { getCatalogOrigin } from "@/lib/afeleia/catalog";
  * "la web está leyendo la API" pasa de ser una afirmación del documento a una
  * aserción que corre y falla.
  *
- * No expone nada: `api`/`snapshot` no dice ni la URL ni el proyecto.
+ * `data-generado` agrega la fecha del catálogo servido. En modo degradado es la
+ * edad de la copia, y es lo que permite afirmar desde afuera —sin logs y sin
+ * acceso a la base— «este sitio lleva N días sirviendo una copia vieja». Con un
+ * solo sitio se puede mirar a mano; con cien, esto es lo único que escala.
+ *
+ * No expone nada: `api`/`snapshot` no dice ni la URL ni el proyecto, y la fecha
+ * de generación del catálogo ya viaja dentro de la propia respuesta pública.
  */
 export default async function CatalogOriginMeta() {
-  const origin = await getCatalogOrigin();
-  return <meta name="afeleia-catalogo" content={origin} />;
+  const [origin, generado] = await Promise.all([getCatalogOrigin(), getCatalogGeneratedAt()]);
+  return <meta name="afeleia-catalogo" content={origin} data-generado={generado} />;
 }
