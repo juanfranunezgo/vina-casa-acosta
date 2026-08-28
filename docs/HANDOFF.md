@@ -229,6 +229,94 @@ encabezados antes del contenido —"¿Qué incluye?" → "Durante la experiencia
 
 ---
 
+## Catálogo — qué manda el panel y qué manda el repo
+
+Desde la Etapa D (M3, 2026-08-27) el sitio **no tiene ninguna lista de valores escrita a
+mano que gobierne el catálogo**. Las líneas, los tipos, las cepas, los grupos de cepa, los
+niveles y los campos de la ficha técnica los publica Afeleia en `definiciones_atributos`, y
+el sitio se dibuja con eso. Antes, esas listas vivían en `data/wines.ts` y **validaban**: una
+línea creada en el panel no existía para la web, y la ficha técnica cargada en el panel no
+se dibujaba en ninguna parte.
+
+### La frontera, que es la regla que hay que entender
+
+| Vive en el panel | Vive en el repo |
+|---|---|
+| Descripción, notas de cata, maridajes, ficha técnica, precio, stock, foto | Fotos de ambiente de cada colección (`lineMeta`), anclas de URL (`lineSlugs`), secuencia editorial (`collectionLines`) |
+| Los valores admitidos de cada atributo | El **vocabulario de la plantilla**: «Tinto», «Composición», «Ficha técnica», traducido en los tres idiomas |
+
+**El contenido del cliente ya no pasa por next-intl** (regla R1 del founder). La consecuencia
+está aceptada y es visible: un visitante en inglés o portugués ve esos textos en español
+hasta que el panel tenga módulo de traducciones. Lo que sí se traduce son las etiquetas del
+sitio, y ahí la traducción curada gana; si no existe, se muestra la etiqueta publicada — pero
+**nunca una clave de i18n cruda**, que es lo que `labelOr` y `translatedOr` existen para
+evitar.
+
+**Única excepción reconocida, y queda como deuda:** el copy de marca de las seis colecciones
+(`vinos.lineDescriptions.*`) sigue en el repo. Afeleia hoy no tiene dónde guardarlo: las
+líneas son *valores de un atributo*, no entidades con contenido propio. Cerrarlo exige un
+módulo de colecciones, fuera del alcance del M3.
+
+### El invariante que sostiene `/vinos`
+
+> **Todo producto del catálogo aparece en `/vinos`, en `/tienda` y en `/vinos/<slug>`,
+> cualesquiera sean sus atributos.**
+
+Las bandas de `/vinos` solo existen para las seis líneas curadas, porque necesitan activos de
+diseño que la API no puede tener. Un producto de una línea desconocida —o **sin línea, que es
+como nace en el panel**— cae en la sección «Otros vinos», que solo se dibuja cuando tiene
+algo que mostrar. La regla es `winesOutsideLines` en `lib/afeleia/contract.ts` y está fijada
+por test, incluido el caso `line === undefined`.
+
+### Modo degradado: qué pasa cuando Afeleia no responde
+
+Hay **cuatro puertas** que mandan el sitio a servir su copia local, y todas terminan en la
+misma función (`degraded` en `lib/afeleia/catalog.ts`): la API no contesta o tarda más de 10
+segundos, responde un HTTP no-ok, responde algo que no cumple el contrato, o responde el
+catálogo **de otro sitio**. Esa última se agregó tras la review: una respuesta ajena publicaría
+nombres y precios de otro cliente, y el catálogo propio de ayer le gana al ajeno de hoy.
+
+Tres reglas que conviene no «arreglar»:
+
+1. **Un bloque de definiciones malformado NO invalida el catálogo.** `sanitizeDefinitions`
+   devuelve `[]` y el sitio sigue sirviendo la API. Las definiciones son una mejora; los
+   productos son el producto. Si un bloque roto empujara al sitio a modo snapshot, un error
+   en la parte menos importante de la respuesta dejaría la tienda entera con precios viejos.
+2. **`optionsFor` es el único lugar donde se razona el modo degradado de las listas.** Sin
+   definiciones —un snapshot viejo— cae a las listas de `data/wines.ts`. Esas listas quedaron
+   degradadas de *autoridad de validación* a *fallback y fuente de siembra del importador*:
+   **no se agregan valores nuevos ahí**, un valor nuevo se crea en el panel.
+3. **El snapshot committeado se valida antes de servirse.** Uno corrupto se sirve como
+   catálogo vacío y ruidoso, en vez de reventar `generateStaticParams` y con eso el build:
+   vacío se arregla, caído no.
+
+### El snapshot se refresca solo, y no puede impedir desplegar
+
+`prebuild` (`scripts/catalogo-snapshot-build.mjs`) consulta la API antes de cada `next build`
+y reescribe `data/catalogo-fallback.json`. **Si la API no responde, el build NO falla:** avisa
+y conserva la copia committeada. Una caída de Afeleia no puede además impedir desplegar —
+sería convertir una caída en dos.
+
+Lo que el generador **se niega** a escribir: una respuesta de otro sitio, una que no cumpla el
+mismo contrato que exige el runtime, una vacía, o una que tarde más de 15 segundos. El
+reemplazo es de todo o nada —temporal + `rename`— y si algo falla en el medio restaura el
+estado anterior de los dos archivos.
+
+El HTML publica `<meta name="afeleia-catalogo" content="api|snapshot" data-generado="…">`. La
+fecha es lo que permite afirmar **desde afuera, sin logs y sin acceso a la base**, «este sitio
+lleva N días sirviendo una copia vieja». Con un sitio se puede mirar a mano; con cien, es lo
+único que escala.
+
+### Topes conocidos
+
+La API corta en **1000 productos** y **200 definiciones** por sitio, y registra un evento al
+truncar. El sitio, por su lado, **carga el catálogo entero en cada render**: hoy son 18 KB con
+14 productos (~1,2 KB por producto), o sea que el tope de la API proyecta ~1,15 MB por
+respuesta. Para esta viña sobra; paginar exigiría subir el contrato a v2 y no es algo que este
+repo pueda decidir solo.
+
+---
+
 ## Lo que falta para producción
 
 **Decisiones abiertas del cliente (2026-08-20):**
