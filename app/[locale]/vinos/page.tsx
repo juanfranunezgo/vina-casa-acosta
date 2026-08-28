@@ -7,9 +7,9 @@ import JsonLd from "@/components/JsonLd";
 import Reveal from "@/components/Reveal";
 import WineCard from "@/components/WineCard";
 import Button from "@/components/ui/Button";
-import { lineSlugs, lineMeta, type WineLine } from "@/data/wines";
+import { WINE_CATEGORY, lineSlugs, lineMeta, type WineLine } from "@/data/wines";
 import { getCatalog, winesByLine, type CatalogWine } from "@/lib/afeleia/catalog";
-import { winesOutsideLines } from "@/lib/afeleia/contract";
+import { excludingOtherCategories, winesOutsideLines } from "@/lib/afeleia/contract";
 import { joinLabels, labelOr } from "@/lib/afeleia/copy";
 import { buildWinesItemListJsonLd } from "@/lib/wineJsonLd";
 import { alternatesFor } from "@/lib/alternates";
@@ -59,7 +59,18 @@ export default async function VinosPage({ params }: PageProps<"/[locale]/vinos">
   setRequestLocale(locale);
   const t = await getTranslations("vinos");
   const tCart = await getTranslations("cart");
-  const catalog = await getCatalog();
+  const todoElCatalogo = await getCatalog();
+
+  /**
+   * Esta página es el catálogo de VINOS, y el catálogo de Afeleia no es solo de
+   * vinos: desde el mismo panel el cliente puede vender delicatessen o cualquier
+   * otra cosa, y todo llega por la misma API. Un producto declarado en otra
+   * categoría no entra acá — mostrarlo le pondría «Cosecha» y «Notas de cata» a
+   * algo que no es una botella.
+   *
+   * Lo que no tiene categoría sí entra: ver `excludingOtherCategories`.
+   */
+  const catalog = excludingOtherCategories(todoElCatalogo, WINE_CATEGORY);
 
   /**
    * Vinos que ninguna banda editorial va a mostrar: los de una línea que este

@@ -442,6 +442,16 @@ export const wines: Wine[] = [
   },
 ];
 
+/**
+ * Slug de la categoría del catálogo bajo la que viven los vinos en Afeleia.
+ *
+ * Es un valor del panel, no una unión de este repo: se comprueba contra lo que
+ * publica la API (`producto.categoria`), y hoy los 13 vinos están ahí. Vive acá
+ * y no en `contract.ts` porque es una decisión de ESTE sitio: otro cliente
+ * llamará distinto a su categoría principal.
+ */
+export const WINE_CATEGORY = "vinos";
+
 export const wineLines: WineLine[] = ["Ombú", "Lajau", "Estación Francia", "Berá", "Guidaí", "Yaráy Guá"];
 
 /** Slug URL/i18n de cada línea (para anclas en /vinos y claves de mensajes). */

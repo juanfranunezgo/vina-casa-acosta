@@ -82,7 +82,23 @@ export type CatalogWine = Omit<
   type?: string;
   variety?: string;
   cepaGroup?: string;
+  /**
+   * Nivel del vino («Reserva», «Gran Reserva»). Sale del atributo `nivel`.
+   *
+   * ⚠️ NO confundir con `catalogCategory`, que es la categoría de tienda. Los dos
+   * se llaman parecido en castellano y significan cosas distintas: esta es una
+   * etiqueta del vino, la otra dice qué clase de producto es.
+   */
   category?: string;
+  /**
+   * Categoría del catálogo (`producto.categoria`): «vinos», «delicatessen», lo
+   * que el cliente haya creado en el panel. `undefined` cuando no le asignó
+   * ninguna.
+   *
+   * La usa `/vinos` para no mostrar productos que no son vino — ver
+   * `excludingOtherCategories`.
+   */
+  catalogCategory?: string;
   image?: string;
   technicalSheet?: string;
   /**
@@ -168,6 +184,7 @@ export function apiProductToWine(
     ),
     sweet: readText(attrs, "dulce") === "si",
     category: readOptionValue(attrs, "nivel", optionsFor(definitions, "nivel", wineCategories)),
+    catalogCategory: product.categoria ?? undefined,
     image: renderableImage(product.imagenes),
     technicalSheet: renderableDocument(readText(attrs, "ficha_tecnica_pdf")),
     shortDescription: product.descripcion_corta ?? "",

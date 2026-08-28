@@ -353,6 +353,34 @@ export function readOptionValue(
 }
 
 /**
+ * Los productos que NO están declarados en otra categoría del catálogo.
+ *
+ * El catálogo de Afeleia no es solo de vinos: el cliente puede vender delicatessen,
+ * merchandising o cualquier otra cosa desde el mismo panel, y esos productos
+ * llegan por la misma API. La página de vinos no puede mostrarlos —tendrían
+ * «Notas de cata» y «Cosecha» encima de un huevo de avestruz— y esta es la
+ * puerta que lo impide.
+ *
+ * Un producto **sin categoría asignada sigue entrando**: es como nace en el panel,
+ * y esconderlo por no estar clasificado rompería el invariante de que todo
+ * producto del cliente es visible. Dicho al revés: lo que excluye a un producto
+ * es una declaración explícita de que pertenece a otra cosa, nunca un olvido.
+ *
+ * La consecuencia operativa importa y hay que decirla: **el guard solo funciona
+ * si el cliente le pone categoría a lo que no es vino.** Es un clic en el panel,
+ * y es el mismo clic que va a necesitar cuando esos productos tengan su propia
+ * sección.
+ */
+export function excludingOtherCategories<T extends { catalogCategory?: string }>(
+  items: readonly T[],
+  category: string,
+): T[] {
+  return items.filter(
+    (item) => item.catalogCategory === undefined || item.catalogCategory === category,
+  );
+}
+
+/**
  * Los productos que ninguna de `lines` reclama — **incluidos los que no tienen
  * línea**.
  *

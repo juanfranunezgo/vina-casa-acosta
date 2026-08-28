@@ -1,6 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import {
+  excludingOtherCategories,
   isValidCatalog,
   optionsFor,
   readOptionValue,
@@ -209,6 +210,57 @@ test("winesOutsideLines no toca a los que ya tienen banda", () => {
 
 test("winesOutsideLines devuelve [] con el catalogo vacio, y la seccion no se dibuja", () => {
   assert.deepEqual(winesOutsideLines([], CURADAS), []);
+});
+
+// --- excludingOtherCategories: el catalogo no es solo de vinos ----------------
+
+test("excludingOtherCategories deja afuera lo declarado en otra categoria", () => {
+  // El caso real que viene: el cliente vende huevos de avestruz y pecheras de
+  // parrilla desde el mismo panel. En la pagina de vinos, un huevo de avestruz
+  // saldria con "Cosecha" y "Notas de cata".
+  const catalogo = [
+    { slug: "bera", catalogCategory: "vinos" },
+    { slug: "huevos-de-avestruz", catalogCategory: "delicatessen" },
+    { slug: "pechera-parrilla", catalogCategory: "merchandising" },
+  ];
+  assert.deepEqual(
+    excludingOtherCategories(catalogo, "vinos").map((p) => p.slug),
+    ["bera"],
+  );
+});
+
+test("excludingOtherCategories NO esconde lo que todavia no tiene categoria", () => {
+  // Es como nace un producto en el panel ("Sin categoria"). Excluirlo por un
+  // olvido de clasificacion romperia el invariante: lo que saca a un producto de
+  // aca tiene que ser una declaracion, nunca una omision.
+  const catalogo = [{ slug: "recien-creado" }, { slug: "bera", catalogCategory: "vinos" }];
+  assert.deepEqual(
+    excludingOtherCategories(catalogo, "vinos").map((p) => p.slug),
+    ["recien-creado", "bera"],
+  );
+});
+
+test("excludingOtherCategories no toca un catalogo que es todo de la misma categoria", () => {
+  const catalogo = [
+    { slug: "a", catalogCategory: "vinos" },
+    { slug: "b", catalogCategory: "vinos" },
+  ];
+  assert.equal(excludingOtherCategories(catalogo, "vinos").length, 2);
+});
+
+test("los dos filtros de /vinos se componen: primero categoria, despues linea", () => {
+  // Un producto de otra categoria y sin linea no puede colarse por «Otros vinos»,
+  // que es exactamente por donde se habria colado.
+  const catalogo = [
+    { slug: "bera", catalogCategory: "vinos", line: "Ombu" },
+    { slug: "vino-sin-linea", catalogCategory: "vinos" },
+    { slug: "huevos-de-avestruz", catalogCategory: "delicatessen" },
+  ];
+  const deVinos = excludingOtherCategories(catalogo, "vinos");
+  assert.deepEqual(
+    winesOutsideLines(deVinos, ["Ombu"]).map((p) => p.slug),
+    ["vino-sin-linea"],
+  );
 });
 
 // --- isValidCatalog: la asimetria deliberada ----------------------------------
