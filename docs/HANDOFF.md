@@ -307,6 +307,20 @@ fecha es lo que permite afirmar **desde afuera, sin logs y sin acceso a la base*
 lleva N días sirviendo una copia vieja». Con un sitio se puede mirar a mano; con cien, es lo
 único que escala.
 
+### Deterioro conocido: las fotos del modo degradado
+
+El snapshot reapunta cada foto a `public/vinos/<archivo>` **solo si ese archivo existe
+committeado**; si no, conserva la URL de Storage y avisa. Los 13 vinos originales los sembró
+el importador con nombres por slug (`bera.png`) y tienen su copia local. **Un producto creado
+desde el panel no la tiene** —su foto se llama con un timestamp— así que en modo degradado
+esa imagen se le pide al mismo host que se acaba de caer.
+
+Medido el 2026-08-27: 13 de 14 productos con copia local; el único sin ella es el creado desde
+el panel. No rompe la página —el resto se dibuja igual— pero **el número empeora solo** a
+medida que el cliente cargue productos, y el aviso del generador se pierde en el log de un
+build que nadie lee. Cerrarlo de verdad implicaría bajar las fotos al repo en cada snapshot,
+que es un cambio más grande y con binarios de por medio.
+
 ### Topes conocidos
 
 La API corta en **1000 productos** y **200 definiciones** por sitio, y registra un evento al
