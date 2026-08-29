@@ -244,6 +244,47 @@ export function emptyCatalog(sitio = ""): ApiCatalog {
   };
 }
 
+/**
+ * Memoria corta de una caída, por proceso.
+ *
+ * Next cachea las respuestas de `fetch` pero **no los fallos**: durante una caída,
+ * cada página y cada worker vuelven a intentar. Medido en un build de este sitio:
+ * **53 intentos** contra una API caída, donde una sana necesita **una sola
+ * consulta**. Con un sitio es ruido; con cien sitios desplegando durante la misma
+ * caída son miles de intentos contra el servicio que ya se cayó — cada web
+ * conectada empujando más fuerte justo en el peor momento.
+ *
+ * Recordar el fallo por la misma ventana que dura el ISR corta eso sin inventar
+ * una política nueva: el primer intento de cada proceso decide, los demás leen la
+ * copia, y cumplida la ventana se vuelve a intentar. El vencimiento no es un
+ * detalle: sin él, un proceso que vio una caída serviría el snapshot para siempre
+ * aunque Afeleia hubiera vuelto.
+ *
+ * El reloj se puede inyectar para poder probar el vencimiento sin esperarlo.
+ */
+export function createOutageMemo<T>(windowMs: number, now: () => number = Date.now) {
+  let remembered: { until: number; value: T } | null = null;
+  return {
+    /** Guarda el resultado degradado y arranca la ventana. */
+    remember(value: T): void {
+      remembered = { until: now() + windowMs, value };
+    },
+    /** Lo recordado si la ventana sigue abierta, o `null`. */
+    current(): T | null {
+      if (remembered === null) return null;
+      if (now() >= remembered.until) {
+        remembered = null;
+        return null;
+      }
+      return remembered.value;
+    },
+    /** La API contestó: el fallo viejo ya no manda. */
+    forget(): void {
+      remembered = null;
+    },
+  };
+}
+
 // --- Definiciones de atributos ------------------------------------------------
 // Todo lo de acá abajo vive en este archivo, y no en `catalog.ts`, porque
 // `catalog.ts` importa React y el snapshot: `node --test` no puede cargarlo. Acá

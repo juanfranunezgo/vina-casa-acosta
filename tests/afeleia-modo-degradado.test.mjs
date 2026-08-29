@@ -117,7 +117,12 @@ test("el cuerpo de `degraded` devuelve el snapshot y nada mas", () => {
     .filter((linea) => linea !== "" && !linea.startsWith("//"));
   assert.deepEqual(sentencias, [
     "reportFallback(reason);",
-    'return { catalog: fallbackCatalog(), origin: "snapshot" };',
+    'const load: CatalogLoad = { catalog: fallbackCatalog(), origin: "snapshot" };',
+    // Recordar la caida es parte del camino degradado desde que se midio la
+    // amplificacion: sin esta linea, cada pagina y cada worker vuelven a
+    // intentar contra la API que ya se sabe caida (53 intentos por build).
+    "caidaReciente.remember(load);",
+    "return load;",
   ]);
 });
 

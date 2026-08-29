@@ -26,6 +26,7 @@ import catalogoFallback from "@/data/catalogo-fallback.json";
 import {
   CONTRACT_VERSION,
   catalogEndpoint,
+  createOutageMemo,
   emptyCatalog,
   isValidCatalog,
   optionsFor,
@@ -274,9 +275,26 @@ function reportFallback(reason: string): void {
   );
 }
 
+/**
+ * Lo que ya se sabe de una caída, recordado por proceso y por la misma ventana
+ * que dura el ISR.
+ *
+ * Next cachea las respuestas de la API pero no los fallos, así que sin esto cada
+ * página y cada worker vuelven a intentar contra el servicio caído: medido, **53
+ * intentos** en un build que sano hace **una sola consulta**. Con cien sitios
+ * conectados eso convierte una caída de Afeleia en miles de intentos de sus
+ * propios clientes. Ver `createOutageMemo`.
+ */
+const caidaReciente = createOutageMemo<CatalogLoad>(CATALOG_REVALIDATE_SECONDS * 1000);
+
 function degraded(reason: string): CatalogLoad {
   reportFallback(reason);
-  return { catalog: fallbackCatalog(), origin: "snapshot" };
+  const load: CatalogLoad = { catalog: fallbackCatalog(), origin: "snapshot" };
+  // Se recuerda DESPUÉS de reportar: el log sale una vez por proceso y por
+  // ventana, en vez de una vez por página. La misma señal, sin el ruido que hacía
+  // ilegibles los logs del build justo cuando había que leerlos.
+  caidaReciente.remember(load);
+  return load;
 }
 
 /**
@@ -285,6 +303,11 @@ function degraded(reason: string): CatalogLoad {
  * costaría un fetch extra por página solo para poder informarlo.
  */
 const loadCatalog = cache(async (): Promise<CatalogLoad> => {
+  // Preguntar por la caída ANTES del fetch: consultarla después no ahorraría
+  // ningún intento, que es exactamente lo que hay que ahorrar.
+  const recordada = caidaReciente.current();
+  if (recordada) return recordada;
+
   const url = catalogEndpoint();
   if (!url) {
     return degraded("faltan NEXT_PUBLIC_AFELEIA_API_URL o NEXT_PUBLIC_AFELEIA_SITIO");
@@ -320,6 +343,9 @@ const loadCatalog = cache(async (): Promise<CatalogLoad> => {
     if (sitio && payload.sitio !== sitio) {
       return degraded(`la respuesta es del sitio "${payload.sitio}" y se pidió "${sitio}"`);
     }
+    // La API contestó: si este proceso venía sirviendo el snapshot por una caída
+    // anterior, ese recuerdo deja de mandar ahora mismo y no cuando venza.
+    caidaReciente.forget();
     return { catalog: payload, origin: "api" };
   } catch (error) {
     const detail = error instanceof Error ? error.message : String(error);
@@ -368,6 +394,41 @@ export async function getCatalogGeneratedAt(): Promise<string | undefined> {
 export async function getCatalogDefinitions(): Promise<AttributeDefinition[]> {
   const { catalog } = await loadCatalog();
   return sanitizeDefinitions(catalog.definiciones_atributos);
+}
+
+/**
+ * Lo que hace falta para auditar este sitio DESDE AFUERA, en una sola lectura.
+ *
+ * Los cuatro datos salen del mismo `loadCatalog()` a propósito: pedirlos por
+ * separado permitiría que el `<meta>` se contradijera —«origen api» junto a la
+ * cantidad de productos del snapshot— y un control que puede mentir no es un
+ * control.
+ *
+ * `sitio` y `products` los agregó la segunda ronda de review: con origen y fecha
+ * se detecta que un sitio está degradado, pero no que esté sirviendo el catálogo
+ * de OTRO cliente ni que se haya quedado sin productos. Las dos son fallas
+ * silenciosas —la web se ve sana— y las dos escalan mal: con cien sitios nadie
+ * va a mirar cien paneles de logs, pero un chequeo automático sí puede leer un
+ * `<meta>` en la URL pública.
+ */
+export type CatalogMeta = {
+  origin: CatalogOrigin;
+  generatedAt?: string;
+  sitio: string;
+  products: number;
+};
+
+export async function getCatalogMeta(): Promise<CatalogMeta> {
+  const { catalog, origin } = await loadCatalog();
+  return {
+    origin,
+    generatedAt:
+      typeof catalog.generado_en === "string" && catalog.generado_en !== ""
+        ? catalog.generado_en
+        : undefined,
+    sitio: catalog.sitio,
+    products: catalog.productos.length,
+  };
 }
 
 /** Un vino por slug, o `null` si el catálogo no lo trae. */
