@@ -296,7 +296,7 @@ importa React y el snapshot y `node --test` no puede cargarlo. Son tres:
    que no tenerlo. Un slug envenenado **no rompe el build**: se descarta y el sitio se despliega.
 3. **Tope.** 50.000 URLs es el máximo del estándar y pasarlo invalida el archivo entero, así
    que el exceso se corta —por ruta, nunca dejando una página anunciada en dos idiomas de
-   tres— y se avisa. Hoy el sitio va por 108 URLs. Cuando esto se acerque al tope, la salida es
+   tres— y se avisa. Hoy el sitio va por 105 URLs (13 productos, medido en el preview). Cuando esto se acerque al tope, la salida es
    `generateSitemaps()`.
 
 El sitemap se revalida cada 60 segundos, igual que las fichas que anuncia: sin eso quedaría

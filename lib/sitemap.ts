@@ -38,7 +38,7 @@ export const STATIC_PATHS = [
  *
  * Pasarlo no degrada nada gradualmente —invalida el archivo entero y el crawler
  * lo descarta completo—, así que el exceso se corta y se avisa. Hoy el sitio
- * anda por las 108 URLs (medido en el build); el día que esto se acerque al tope, la salida es
+ * anda por las 105 URLs (medido en el preview, con 13 productos); el día que esto se acerque al tope, la salida es
  * `generateSitemaps()` de Next, que parte el sitemap en varios archivos.
  */
 export const SITEMAP_URL_LIMIT = 50_000;
