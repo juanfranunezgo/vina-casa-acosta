@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { razonParaRechazar } from "../scripts/catalogo-validacion.mjs";
+import { avisoPorVaciado, razonParaRechazar } from "../scripts/catalogo-validacion.mjs";
 
 /**
  * Qué respuesta puede convertirse en el snapshot que el sitio sirve cuando
@@ -72,8 +72,24 @@ test("RECHAZA un producto sin precio numerico", () => {
   assert.ok(razonParaRechazar(sinPrecio, SITIO));
 });
 
-test("RECHAZA el catalogo vacio", () => {
-  assert.match(razonParaRechazar({ ...SANO, productos: [] }, SITIO) ?? "", /vacio/);
+test("ACEPTA el catalogo vacio: despublicar todo es legitimo", () => {
+  // El contrato lo declara valido y el runtime lo sirve, pero el generador lo
+  // rechazaba, y esa incoherencia tenia consecuencia: el cliente despublica todo,
+  // la API y el sitio vivo muestran cero productos, el snapshot se queda con los
+  // de ayer y en la proxima caida REAPARECE inventario retirado. H-54 —un control
+  // que reprueba un estado correcto es peor que no tenerlo— y ademas en silencio,
+  // porque el build seguia verde.
+  assert.equal(razonParaRechazar({ ...SANO, productos: [] }, SITIO), null);
+});
+
+test("RECHAZA productos que no sea una lista", () => {
+  // Vacio es un estado; ausente o de otro tipo es una respuesta rota.
+  for (const basura of [null, undefined, "", {}, 0]) {
+    assert.ok(
+      razonParaRechazar({ ...SANO, productos: basura }, SITIO),
+      `productos: ${JSON.stringify(basura)} no puede pasar`,
+    );
+  }
 });
 
 test("RECHAZA otra version del contrato", () => {
@@ -84,4 +100,15 @@ test("RECHAZA lo que no es un objeto", () => {
   for (const basura of [null, undefined, "", 7, [], "una pagina de error"]) {
     assert.ok(razonParaRechazar(basura, SITIO), `${JSON.stringify(basura)} no puede pasar`);
   }
+});
+
+test("avisa cuando el catalogo se vacia, y no cuando ya estaba vacio", () => {
+  // Aceptar el vacio sin decirlo seria cambiar un falso positivo por un silencio:
+  // la tienda queda sin productos y el build sale verde igual. El aviso nombra
+  // cuantos habia, que es el dato que permite distinguir "el cliente despublico
+  // todo" de "algo se rompio del otro lado".
+  assert.match(avisoPorVaciado(13, 0) ?? "", /13/);
+  assert.equal(avisoPorVaciado(0, 0), null, "ya estaba vacio: no hay nada que anunciar");
+  assert.equal(avisoPorVaciado(13, 12), null, "una baja normal no es asunto de este aviso");
+  assert.equal(avisoPorVaciado(null, 0), null, "sin snapshot previo no hay comparacion");
 });

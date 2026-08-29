@@ -19,8 +19,20 @@ import { existsSync } from "node:fs";
 import { readFile } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
 import path from "node:path";
-import { RUTA_SELLO, RUTA_SNAPSHOT, escribirAtomico, sellar } from "./catalogo-integridad.mjs";
-import { razonParaRechazar } from "./catalogo-validacion.mjs";
+import {
+  RUTA_SNAPSHOT,
+  confirmarPar,
+  escribirAtomico,
+  estadoDelPar,
+  respaldarPar,
+  restaurarPar,
+  sellar,
+} from "./catalogo-integridad.mjs";
+import {
+  avisoPorVaciado,
+  mensajeDeCuerpoIlegible,
+  razonParaRechazar,
+} from "./catalogo-validacion.mjs";
 
 /**
  * Techo de espera de la API. Sin esto, una API que acepta la conexión y nunca
@@ -87,8 +99,11 @@ if (!response.ok) {
 let payload;
 try {
   payload = await response.json();
-} catch {
-  console.error("La API respondió algo que no es JSON. El snapshot NO se tocó.");
+} catch (error) {
+  // Una API que manda los headers y nunca termina el cuerpo agota el mismo reloj
+  // y aparecia como "no es JSON", que manda a buscar el problema al lugar
+  // equivocado. Ver `mensajeDeCuerpoIlegible`.
+  console.error(`${mensajeDeCuerpoIlegible(error, TIMEOUT_MS)} El snapshot NO se tocó.`);
   process.exit(1);
 }
 
@@ -154,60 +169,43 @@ if (colisiones.length > 0) {
 }
 
 // --- Reemplazo del fallback: de todo o nada -----------------------------------
-// Son DOS archivos que tienen que quedar de acuerdo —el snapshot y su sello— y
-// hasta acá se escribían en secuencia, sin red: si el sello fallaba, quedaba un
-// snapshot nuevo con un sello viejo (integridad en rojo) y encima el mensaje
-// decía «el snapshot NO se tocó», que era mentira. Ahora el estado previo se
-// guarda en memoria y se restaura si algo falla en el medio.
+// Son DOS archivos que tienen que quedar de acuerdo —el snapshot y su sello— y el
+// sistema de archivos no sabe reemplazar dos de una vez. Guardar el estado previo
+// en memoria no alcanzaba: la review mato el proceso entre los dos `rename` y la
+// memoria se fue con él, dejando un snapshot nuevo con un sello viejo y a nadie
+// que lo supiera. Ahora el respaldo va A DISCO antes de tocar nada, el par se
+// verifica contra el disco después de escribirlo, y el respaldo se retira recién
+// cuando cierra. Si el proceso muere en el medio, el respaldo queda y el prebuild
+// de la corrida siguiente repara antes de que el build lea nada.
+// Todo el protocolo vive en `catalogo-integridad.mjs`.
 
-/** Contenido actual de un archivo, o `null` si todavía no existe. */
-async function leerSiExiste(ruta) {
+/** Cuántos productos tenía el snapshot que está por reemplazarse. */
+async function productosDelSnapshotActual() {
   try {
-    return await readFile(ruta, "utf8");
+    const actual = JSON.parse(await readFile(OUTPUT, "utf8"));
+    return Array.isArray(actual.productos) ? actual.productos.length : null;
   } catch {
     return null;
   }
 }
 
-const previo = {
-  snapshot: await leerSiExiste(OUTPUT),
-  sello: await leerSiExiste(RUTA_SELLO),
-};
+const aviso = avisoPorVaciado(await productosDelSnapshotActual(), payload.productos.length);
+if (aviso) console.warn(`Aviso: ${aviso}`);
 
-/**
- * Devuelve los archivos que NO se pudieron restaurar.
- *
- * Cada uno se intenta por separado y ningún fallo interrumpe al siguiente: si
- * restaurar el sello falla, el snapshot igual tiene que volver a su estado. Y
- * nada de esto puede lanzar — una excepción acá moriría como rechazo sin
- * capturar, con stack trace, en medio de un build (visto en la verificación).
- */
-async function restaurar() {
-  const fallos = [];
-  for (const [ruta, contenido] of [
-    [OUTPUT, previo.snapshot],
-    [RUTA_SELLO, previo.sello],
-  ]) {
-    if (contenido === null) continue;
-    try {
-      await escribirAtomico(ruta, contenido);
-    } catch (error) {
-      fallos.push(`${path.basename(ruta)} (${error instanceof Error ? error.message : error})`);
-    }
-  }
-  return fallos;
-}
+await respaldarPar();
 
 let sello;
 try {
-  await escribirAtomico(OUTPUT, `${JSON.stringify(payload, null, 2)}\n`);
+  await escribirAtomico(OUTPUT, `${JSON.stringify(payload, null, 2)}
+`);
   // Sellar acá y no en un paso aparte: un snapshot regenerado sin sellar deja el
   // test de integridad en rojo, y "acordarse de correr el sello" es exactamente
   // el tipo de regla que ya falló una vez.
   sello = await sellar();
 } catch (error) {
   const detalle = error instanceof Error ? error.message : String(error);
-  const fallos = await restaurar();
+  const fallos = await restaurarPar();
+  await confirmarPar();
   console.error(
     fallos.length === 0
       ? `No se pudo escribir el snapshot (${detalle}). Se restauró el anterior.`
@@ -220,9 +218,30 @@ try {
   // choque incomprensible. Salir por las buenas deja el código correcto.
   process.exitCode = 1;
 }
+
 if (sello) {
-  console.info(
-    `Snapshot escrito: ${payload.productos.length} productos, ${payload.categorias?.length ?? 0} categorías → data/catalogo-fallback.json\n` +
-      `Sello: sha256 ${sello.hash}`,
-  );
+  // No alcanza con que las dos escrituras no hayan tirado: lo que el sitio va a
+  // servir es lo que quedó EN EL DISCO, así que se lee de ahí y se comprueba que
+  // el sello describa a este snapshot. Si no cierra, se vuelve al respaldo: un
+  // par incoherente hace fallar el test de integridad del próximo que lo toque,
+  // sin que nadie sepa de dónde salió.
+  const estado = await estadoDelPar();
+  if (!estado.coherente) {
+    const fallos = await restaurarPar();
+    await confirmarPar();
+    console.error(
+      `El snapshot y su sello no quedaron de acuerdo (${estado.motivo}). ` +
+        (fallos.length === 0
+          ? "Se restauró el par anterior."
+          : `Y tampoco se pudo restaurar: ${fallos.join(", ")}. Revisar data/ a mano.`),
+    );
+    process.exitCode = 1;
+  } else {
+    await confirmarPar();
+    console.info(
+      `Snapshot escrito: ${payload.productos.length} productos, ${payload.categorias?.length ?? 0} categorías → data/catalogo-fallback.json
+` +
+        `Sello: sha256 ${sello.hash}`,
+    );
+  }
 }
