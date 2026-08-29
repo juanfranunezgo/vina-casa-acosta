@@ -2,7 +2,7 @@ import "./alias-hook.mjs";
 import test from "node:test";
 import assert from "node:assert/strict";
 
-const sitemap = (await import("@/app/sitemap")).default;
+const { sitemapEntries, sitemapPaths } = await import("@/lib/sitemap");
 const { activities, activityPath } = await import("@/data/activities");
 const { routing } = await import("@/i18n/routing");
 
@@ -10,9 +10,19 @@ const { routing } = await import("@/i18n/routing");
  * El sitemap se deriva de los datos justamente para que nadie tenga que
  * acordarse de agregar la actividad numero quince. Este test es lo que hace que
  * ese "se deriva" sea verdad y no una intencion escrita en un comentario.
+ *
+ * Desde que las fichas de producto salen del catalogo publicado, `app/sitemap.ts`
+ * es una funcion async que importa React y el snapshot: `node --test` no puede
+ * cargarla. Las reglas viven en `lib/sitemap.ts`, que si se puede cargar, y es lo
+ * que se ejerce aca. Que la pagina real pase por esas reglas lo afirma
+ * `tests/sitemap-catalogo.test.mjs`, junto con lo que entra y lo que no del lado
+ * del catalogo.
+ *
+ * El catalogo va vacio a proposito: las actividades no dependen de el, y asi
+ * estas afirmaciones no cambian cuando el cliente carga un producto.
  */
 
-const entries = sitemap();
+const entries = sitemapEntries(sitemapPaths([]));
 const urls = entries.map((e) => e.url);
 
 test("cada actividad esta en el sitemap en los tres idiomas", () => {

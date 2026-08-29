@@ -10,7 +10,7 @@ const {
   activities,
   vendimiaRelatedActivities,
 } = await import("@/data/activities");
-const sitemap = (await import("@/app/sitemap")).default;
+const { sitemapEntries, sitemapPaths } = await import("@/lib/sitemap");
 const { routing } = await import("@/i18n/routing");
 
 const LOCALES = ["es", "en", "pt"];
@@ -49,7 +49,10 @@ test("el hub existe y su ruta es la del segmento reservado", () => {
 });
 
 test("el sitemap declara el hub en los tres idiomas", () => {
-  const urls = sitemap().map((entry) => entry.url);
+  // Las reglas del sitemap viven en `lib/sitemap.ts` desde que la pagina lee el
+  // catalogo publicado y `node --test` ya no puede cargarla. El catalogo va
+  // vacio: el hub no depende de el.
+  const urls = sitemapEntries(sitemapPaths([])).map((entry) => entry.url);
   for (const locale of routing.locales) {
     const esperada = `/${locale}${VENDIMIA_HUB}`;
     assert.ok(urls.some((url) => url.endsWith(esperada)), `falta ${esperada}`);
@@ -59,9 +62,11 @@ test("el sitemap declara el hub en los tres idiomas", () => {
 test("el sitemap deja de declararlo si el hub se apaga", async () => {
   // Lo que se afirma es que la ruta sale de la constante y no esta escrita a
   // mano en STATIC_PATHS: apagar el hub tiene que sacarla del sitemap sola.
-  const texto = await source("app/sitemap.ts");
+  const texto = await source("lib/sitemap.ts");
   assert.match(texto, /VENDIMIA_HUB/);
   assert.doesNotMatch(texto, /"\/actividades\/vendimia"/);
+  // Ni escrita a mano en la pagina, que es el otro lugar donde podria colarse.
+  assert.doesNotMatch(await source("app/sitemap.ts"), /"\/actividades\/vendimia"/);
 });
 
 test("la vendimia se publica por meses, nunca por fecha exacta", () => {

@@ -268,6 +268,43 @@ como nace en el panel**— cae en la sección «Otros vinos», que solo se dibuj
 algo que mostrar. La regla es `winesOutsideLines` en `lib/afeleia/contract.ts` y está fijada
 por test, incluido el caso `line === undefined`.
 
+### Qué URLs anuncia el sitemap, y cuáles no
+
+`app/sitemap.ts` arma las fichas de producto **con el catálogo publicado**, no con la lista de
+`data/wines.ts`. Hasta la Etapa E esa lista era la fuente: un producto cargado en el panel
+tenía página —`generateStaticParams` sí lee el catálogo— pero no entraba al listado que lee
+Google. Existía y era invisible; y al revés, un vino retirado del panel seguía anunciándose
+mientras estuviera escrito en el repo.
+
+Las reglas viven en `lib/sitemap.ts`, aparte de la página, porque `lib/afeleia/catalog.ts`
+importa React y el snapshot y `node --test` no puede cargarlo. Son tres:
+
+1. **Categoría.** Se anuncian los productos que `/vinos` muestra: la categoría `vinos` y los
+   que **no declaran ninguna** (`excludingOtherCategories`, la misma puerta de `a8d34b8`). Los
+   que no son vino tienen ficha viva en `/vinos/<slug>` pero **no se anuncian**: su dirección
+   definitiva es una decisión abierta del cliente, y una URL que Google ya indexó no se mueve
+   sin arrastrar una redirección para siempre. Anunciarla hoy sería tomar esa decisión sin
+   tomarla. ⚠️ **El sitemap no impide que se indexen**: `/tienda` las enlaza y el crawler sigue
+   enlaces. Cerrar esa puerta —`noindex` hasta que tengan sección propia— va con la etapa que
+   decida sus URLs.
+2. **Slug.** El `slug` lo escribe el cliente en el panel y el contrato solo exige que sea un
+   string no vacío. Lo que no sea un segmento de URL (`../`, espacios, `?`, `#`, `%`, `//`, una
+   URL entera) **no se anuncia**, y el descarte se grita en el log del build. Es una lista de
+   permitidos —letras de cualquier alfabeto, dígitos, `- _ . ~`— porque con una de prohibidos
+   cada carácter que nadie previó es un agujero. Las tildes y la eñe entran: dejar afuera un
+   producto real lo vuelve invisible para Google, y un chequeo que reprueba lo correcto es peor
+   que no tenerlo. Un slug envenenado **no rompe el build**: se descarta y el sitio se despliega.
+3. **Tope.** 50.000 URLs es el máximo del estándar y pasarlo invalida el archivo entero, así
+   que el exceso se corta —por ruta, nunca dejando una página anunciada en dos idiomas de
+   tres— y se avisa. Hoy el sitio va por 108 URLs. Cuando esto se acerque al tope, la salida es
+   `generateSitemaps()`.
+
+El sitemap se revalida cada 60 segundos, igual que las fichas que anuncia: sin eso quedaría
+congelado en el build y un producto nuevo tendría ficha viva y URL ausente hasta el próximo
+deploy, que es el mismo bug con otro disfraz. Sigue **sin `lastmod`**: el contrato v1 no
+publica `updated_at` por producto y `generado_en` es cuándo se armó el catálogo entero, no
+cuándo cambió esa ficha. Un `lastmod` falso es peor que ninguno.
+
 ### Modo degradado: qué pasa cuando Afeleia no responde
 
 Hay **cuatro puertas** que mandan el sitio a servir su copia local, y todas terminan en la
