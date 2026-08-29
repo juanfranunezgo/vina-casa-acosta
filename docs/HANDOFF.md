@@ -327,22 +327,51 @@ Tres reglas que conviene no «arreglar»:
    catálogo vacío y ruidoso, en vez de reventar `generateStaticParams` y con eso el build:
    vacío se arregla, caído no.
 
-### El snapshot se refresca solo, y no puede impedir desplegar
+### El snapshot se refresca solo; qué puede y qué no puede frenar un deploy
 
 `prebuild` (`scripts/catalogo-snapshot-build.mjs`) consulta la API antes de cada `next build`
-y reescribe `data/catalogo-fallback.json`. **Si la API no responde, el build NO falla:** avisa
-y conserva la copia committeada. Una caída de Afeleia no puede además impedir desplegar —
-sería convertir una caída en dos.
+y reescribe `data/catalogo-fallback.json`. La regla de fondo no cambió: **una caída de Afeleia
+no puede impedir desplegar** —sería convertir una caída en dos—. Lo que sí cambió, tras la
+segunda ronda de review, es que hay **dos estados que ya no pasan en verde**, porque no son
+caídas:
 
-Lo que el generador **se niega** a escribir: una respuesta de otro sitio, una que no cumpla el
-mismo contrato que exige el runtime, una vacía, o una que tarde más de 15 segundos. El
-reemplazo es de todo o nada —temporal + `rename`— y si algo falla en el medio restaura el
-estado anterior de los dos archivos.
+| Situación | Qué hace el prebuild | Por qué |
+|---|---|---|
+| La API no contesta, tarda, responde mal o responde de otro sitio | avisa y **construye** con el snapshot committeado | es exactamente para lo que existe el fallback |
+| El catálogo llega **vacío** y es válido | lo escribe y **avisa** nombrando cuántos había | si el cliente despublicó todo, la tienda vacía es la verdad; el snapshot viejo publicaría inventario retirado |
+| No queda **nada servible** (API caída *y* snapshot corrupto) | **falla el build** (salida 1) | Netlify despliega atómico: si el build falla, el deploy anterior sigue publicado **con sus productos**. Construir igual reemplazaba el sitio bueno por una tienda vacía |
+| La **configuración** es inválida (variable vacía, con espacios, a medias, URL que no es URL) | **falla el build** (salida 1) | no es una caída: con esa configuración el sitio queda degradado *para siempre* y en verde |
 
-El HTML publica `<meta name="afeleia-catalogo" content="api|snapshot" data-generado="…">`. La
-fecha es lo que permite afirmar **desde afuera, sin logs y sin acceso a la base**, «este sitio
-lleva N días sirviendo una copia vieja». Con un sitio se puede mirar a mano; con cien, es lo
-único que escala.
+La escotilla para el tercer caso es `AFELEIA_PERMITIR_SIN_CATALOGO=1`: construye igual, con la
+tienda vacía, y lo deja escrito en el log. Es una decisión operativa deliberada, no un default.
+
+**El par snapshot + sello.** Son dos archivos que describen una sola cosa y el sistema de
+archivos no sabe reemplazar dos de una vez: matar el proceso entre los dos `rename` dejaba un
+snapshot nuevo con un sello viejo —y el mensaje afirmaba que «el snapshot committeado quedó
+intacto», que era falso—. La ventana no se puede cerrar; lo que se hace es que un par a medias
+sea siempre **detectable y reparable**: respaldo a disco antes de tocar nada, verificación del
+par contra el disco después de escribir, y el respaldo se retira recién cuando cierra. Si el
+proceso muere en el medio, el respaldo queda y **el prebuild de la corrida siguiente repara
+antes de que el build lea nada**. El protocolo vive en `scripts/catalogo-integridad.mjs`
+(`estadoDelPar`, `respaldarPar`, `recuperarPar`, `confirmarPar`) y `data/*.bak` está ignorado.
+
+**Cuántas veces se le pregunta a una API caída.** Next cachea las respuestas pero no los
+fallos, así que cada página y cada worker volvían a intentar: **53 intentos medidos** en un
+build que sano hace **una sola consulta**. Con cien sitios conectados, una caída de Afeleia se
+convertía en miles de intentos de sus propios clientes contra el servicio ya caído. Ahora el
+fallo se recuerda por proceso y por la misma ventana del ISR (`createOutageMemo`): **15
+intentos medidos**, uno por worker, y el log del build deja de repetir la misma línea 53 veces.
+Bajar de ahí exige coordinación entre procesos —un artefacto publicado por Afeleia, o un lock
+compartido— y es decisión de la etapa de la «cañería instalable», no de este repo.
+
+El HTML publica
+`<meta name="afeleia-catalogo" content="api|snapshot" data-generado="…" data-sitio="…" data-productos="…">`.
+Con origen y fecha se afirma **desde afuera, sin logs y sin acceso a la base**, «este sitio
+lleva N días sirviendo una copia vieja»; con el sitio y la cantidad se detectan las dos fallas
+que eso no alcanza a describir: un sitio sirviendo el catálogo de **otro cliente** y un sitio
+que **se quedó sin productos**. Los cuatro datos salen de una sola lectura, para que el meta no
+pueda contradecirse. Falta todavía el **monitor externo** que lea eso cada 5–10 minutos y
+alerte: es un servicio aparte, no cabe en este repo, y está pendiente.
 
 ### Deterioro conocido: las fotos del modo degradado
 

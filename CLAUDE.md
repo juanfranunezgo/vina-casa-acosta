@@ -63,7 +63,9 @@ privado Afeleia:
 La web solo recibe `NEXT_PUBLIC_AFELEIA_API_URL` y `NEXT_PUBLIC_AFELEIA_SITIO`; nunca una
 service role ni acceso directo a la base. `data/catalogo-fallback.json` es salida de
 `npm run catalogo:snapshot`, no se edita a mano — y desde la Etapa D `prebuild` lo refresca
-solo en cada build, sin poder hacerlo fallar.
+solo en cada build. Una **caída** de Afeleia no puede hacer fallar el build; una
+**configuración inválida** o un **snapshot inservible** sí lo hacen, a propósito: ver
+[`docs/HANDOFF.md`](docs/HANDOFF.md).
 
 **Los valores admitidos de cada atributo los publica Afeleia**, no los declara este repo: las
 listas de `data/wines.ts` quedaron como fallback de modo degradado. Cómo se reparte el
