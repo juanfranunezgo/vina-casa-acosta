@@ -2,6 +2,7 @@ import "./alias-hook.mjs";
 import test from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
+import { createRequire } from "node:module";
 
 const { sitemapPaths, sitemapEntries, SITEMAP_URL_LIMIT } = await import("@/lib/sitemap");
 const { routing } = await import("@/i18n/routing");
@@ -81,6 +82,10 @@ const VENENOS = [
   "bera?utm_source=x",
   "bera#ancla",
   "bera con espacio",
+  // `.` no es cosmetico: `/vinos/.` se normaliza a `/vinos/` —el listado, no la
+  // ficha— y seria la unica URL del sitemap que no coincide con su canonical.
+  ".",
+  "bera>otro",
   "bera%2f..",
   // XML: Next serializa el sitemap SIN escapar —`<loc>` lleva la URL tal cual y
   // el hreflang la mete en un atributo—, asi que un `&` no degrada una URL:
@@ -253,4 +258,86 @@ test("app/sitemap.ts se revalida como las paginas que anuncia", () => {
   // tendria ficha viva (revalidate 60) y una URL ausente del sitemap hasta el
   // proximo deploy, que es el bug con otro disfraz.
   assert.match(fuente, /export const revalidate = 60/);
+});
+
+// --- El XML de verdad, serializado por Next ----------------------------------
+// La lista de permitidos se justifica en que Next serializa el sitemap SIN
+// escapar XML. Eso era una afirmacion en un comentario y una regex `[&<>"]` en
+// un test que no podia fallar por tres de esos cuatro caracteres (`URL` los
+// escapa antes de llegar ahi). Aca se usa el serializador real: si Next empezara
+// a escapar, o si un slug permitido rompiera el archivo, esto se pone rojo.
+
+const { resolveSitemap } = createRequire(import.meta.url)(
+  "next/dist/build/webpack/loaders/metadata/resolve-route-data.js",
+);
+
+test("Next serializa el sitemap sin escapar: por eso la lista es de permitidos", () => {
+  // La premisa, comprobada contra el serializador y no contra la memoria.
+  const xml = resolveSitemap([{ url: "https://vinacasaacosta.cl/es/vinos/a&b" }]);
+  assert.match(xml, /<loc>https:\/\/vinacasaacosta\.cl\/es\/vinos\/a&b<\/loc>/);
+});
+
+test("ningun slug aceptado produce XML mal formado", () => {
+  const slugs = [
+    "vino!casa",
+    "vino(casa)",
+    "vino'del-anio",
+    "cabernet+syrah",
+    "lote,7",
+    "reserva;2024",
+    "x@y",
+    "a*b",
+    "c$d",
+    "e=f",
+    "viña",
+    "viña",
+  ];
+  const xml = resolveSitemap(sitemapEntries(sitemapPaths(slugs.map((slug) => producto(slug)))));
+
+  // Un `&` suelto invalida el archivo entero: el crawler lo descarta completo.
+  assert.doesNotMatch(xml, /&(?!amp;|lt;|gt;|quot;|apos;|#)/, "hay un & sin escapar en el XML");
+  // Y ningun `<`, `>` o `"` dentro de una URL: cerrarian la etiqueta o el atributo.
+  for (const loc of xml.match(/<loc>[^<]*<\/loc>/g) ?? []) {
+    assert.doesNotMatch(loc.slice(5, -6), /["<>]/, `${loc} rompe la etiqueta`);
+  }
+  for (const slug of slugs) {
+    const esperada = new URL(`https://x/es/vinos/${slug}`).pathname;
+    assert.ok(
+      xml.includes(esperada),
+      `el slug ${JSON.stringify(slug)} no salio anunciado como ${esperada}`,
+    );
+  }
+});
+
+test("un slug en NFD entra igual que en NFC: se dibujan igual", () => {
+  // «vina» con enie se escribe de dos maneras —un solo caracter, o `n` mas la
+  // tilde combinante— y un pegado desde macOS produce la segunda. Sin `\p{M}` en
+  // la lista, ese producto quedaba afuera del sitemap con un mensaje de error
+  // donde el slug se lee perfecto: el mismo bug que motivo la lista, con el
+  // disfraz mas dificil de ver.
+  const NFC = "viña";        // un solo caracter
+  const NFD = "viña";
+  assert.notEqual(NFC, NFD, "son dos cadenas distintas que se dibujan igual");
+  assert.deepEqual(rutas([producto(NFC)]).filter((p) => p.startsWith("/vinos/")), [
+    "/vinos/" + NFC,
+  ]);
+  assert.deepEqual(rutas([producto(NFD)]).filter((p) => p.startsWith("/vinos/")), [
+    "/vinos/" + NFD,
+  ]);
+});
+
+test("un slug absurdamente largo no se anuncia", () => {
+  // El estandar corta las URLs en 2.048 caracteres. Un slug de 3.000 no lo
+  // escribio nadie a proposito.
+  const errores = [];
+  const original = console.error;
+  console.error = (...args) => errores.push(args.join(" "));
+  let fichas;
+  try {
+    fichas = rutas([producto("a".repeat(3000))]).filter((p) => p.startsWith("/vinos/"));
+  } finally {
+    console.error = original;
+  }
+  assert.deepEqual(fichas, []);
+  assert.equal(errores.length, 1, "y el descarte se grita, como todos");
 });

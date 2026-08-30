@@ -65,11 +65,14 @@ export const SITEMAP_URL_LIMIT = 50_000;
  *
  * **Lo que sigue afuera, y por qué:**
  *
- * - `& < > "` — Next serializa el sitemap **sin escapar XML**: `<loc>` lleva la
- *   URL tal cual y el hreflang la mete en un atributo. Un `&` en un slug no
- *   degrada una URL: invalida el archivo entero y el crawler lo descarta
- *   completo. Es la regla que convierte a esta lista en un control de verdad y no
- *   en una preferencia estética.
+ * - `&` — Next serializa el sitemap **sin escapar XML**: `<loc>` lleva la URL tal
+ *   cual y el hreflang la mete en un atributo. Un `&` en un slug no degrada una
+ *   URL: invalida el archivo entero y el crawler lo descarta completo. Es la
+ *   regla que convierte a esta lista en un control de verdad y no en una
+ *   preferencia estética, y la única de las cuatro que hace falta de verdad: a
+ *   `< > "` los percent-codifica `new URL()` antes de llegar al serializador
+ *   (medido). Siguen afuera igual, porque una lista de permitidos se justifica
+ *   por lo que deja entrar, no por lo que otro filtro alcance a tapar.
  * - `%` — ambigüedad de doble codificación (`bera%2f..` decodifica a un salto de
  *   directorio).
  * - `/ ? #`, espacios y controles — cambian de segmento, de query o de ancla: ya
@@ -79,17 +82,36 @@ export const SITEMAP_URL_LIMIT = 50_000;
  *
  * Las letras acentuadas entran: una eñe no cambia de segmento y dejar afuera un
  * producto real lo vuelve invisible para el buscador.
+ *
+ * `\p{M}` está por una razón que costó encontrar: «viña» se escribe de dos
+ * maneras que se dibujan igual —`ñ` (NFC) y `n` + tilde combinante (NFD)—, y un
+ * pegado desde macOS o desde ciertos paneles produce la segunda. Sin las marcas
+ * combinantes, ese producto quedaba afuera del sitemap con un mensaje de error
+ * en el que el slug se lee perfecto: el mismo bug que motivó esta lista, con el
+ * disfraz más difícil de ver.
  */
-const SEGMENTO_PERMITIDO = /^[\p{L}\p{N}._~!$'()*+,;=@-]+$/u;
+const SEGMENTO_PERMITIDO = /^[\p{L}\p{M}\p{N}._~!$'()*+,;=@-]+$/u;
+
+/**
+ * Largo máximo del slug.
+ *
+ * El estándar de sitemaps corta las URLs en 2.048 caracteres; con el prefijo del
+ * dominio y del idioma, un slug de más de 200 ya es un slug que nadie escribió a
+ * propósito. Se descarta con el mismo aviso que los demás.
+ */
+const LARGO_MAXIMO_DE_SLUG = 200;
 
 /**
  * Si el slug puede viajar dentro de `/vinos/<slug>` sin cambiar de significado.
  *
  * `.` y `..` se rechazan aparte: los dos pasan la lista de permitidos y los dos
- * son saltos de directorio.
+ * son saltos de directorio. `.` además no es inofensivo — `/vinos/.` se
+ * normaliza a `/vinos/`, o sea que el sitemap anunciaría el listado en lugar de
+ * la ficha, y sería la única URL del archivo que no coincide con su canonical.
  */
 export function isSafeSlug(slug: string): boolean {
   if (slug === "." || slug === "..") return false;
+  if (slug.length > LARGO_MAXIMO_DE_SLUG) return false;
   return SEGMENTO_PERMITIDO.test(slug);
 }
 
