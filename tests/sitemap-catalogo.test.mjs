@@ -82,6 +82,13 @@ const VENENOS = [
   "bera#ancla",
   "bera con espacio",
   "bera%2f..",
+  // XML: Next serializa el sitemap SIN escapar —`<loc>` lleva la URL tal cual y
+  // el hreflang la mete en un atributo—, asi que un `&` no degrada una URL:
+  // invalida el archivo entero y el crawler lo descarta completo. Y un `"`
+  // cierra el atributo del hreflang.
+  "bera&otro",
+  'bera"otro',
+  "bera<otro",
   "bera\\otro",
   "bera\nSitemap: https://evil.example.com/sitemap.xml",
 ];
@@ -118,6 +125,43 @@ test("un slug legitimo con acentos entra, y viaja escapado", () => {
     conEnie.some((url) => url.endsWith("/es/vinos/vi%C3%B1a")),
     `esperaba la eñe escapada, hay: ${conEnie.filter((u) => u.includes("vi"))}`,
   );
+});
+
+test("un slug con puntuacion que la ruta SI sirve entra al sitemap", () => {
+  // Hallazgo de la tercera ronda: `vino!casa` y `vino(casa)` se cargaban en el
+  // panel, la ficha respondia 200 y el canonical las anunciaba, pero el sitemap
+  // las tiraba. Un guard que reprueba lo correcto es el mismo bug que esta rama
+  // vino a cerrar —existe y Google no lo ve— con otro disfraz.
+  const legitimos = ["vino!casa", "vino(casa)", "cabernet+syrah", "lote,7", "vino'del-año", "x@y", "a*b", "c$d", "e=f", "g;h"];
+  const errores = [];
+  const original = console.error;
+  console.error = (...args) => errores.push(args.join(" "));
+  try {
+    for (const slug of legitimos) {
+      const fichas = rutas([producto(slug)]).filter((p) => p.startsWith("/vinos/"));
+      assert.deepEqual(fichas, [`/vinos/${slug}`], `${JSON.stringify(slug)} tendria que entrar`);
+    }
+  } finally {
+    console.error = original;
+  }
+  assert.deepEqual(errores, [], "no se descarta nada legitimo");
+});
+
+test("lo que se anuncia decodifica al slug servido, y no rompe el XML", () => {
+  // Las dos condiciones que hacen que la lista de permitidos sea un control y no
+  // una preferencia: la URL anunciada tiene que ser LA MISMA que sirve la ruta
+  // (si no, el sitemap manda al crawler a otra pagina o a un 404), y no puede
+  // llevar caracteres que invaliden el XML del sitemap entero.
+  const slugs = ["vino!casa", "vino(casa)", "viña", "cabernet+syrah", "vino'del-año", "lote,7"];
+  for (const slug of slugs) {
+    const anunciadas = urls([producto(slug)]).filter((url) => url.includes("/vinos/"));
+    assert.ok(anunciadas.length > 0, `${slug} no se anuncio`);
+    for (const url of anunciadas) {
+      assert.doesNotMatch(url, /[&<>"]/, `${url} rompe el XML del sitemap`);
+      const segmento = decodeURIComponent(new URL(url).pathname.split("/").pop());
+      assert.equal(segmento, slug, "la URL anunciada tiene que decodificar al slug servido");
+    }
+  }
 });
 
 test("un producto duplicado no duplica la URL", () => {

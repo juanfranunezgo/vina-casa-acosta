@@ -45,7 +45,8 @@ export const SITEMAP_URL_LIMIT = 50_000;
 
 /**
  * Lo único que se acepta dentro del segmento de una URL: letras (de cualquier
- * alfabeto), dígitos, guion, guion bajo, punto y tilde.
+ * alfabeto), dígitos y la puntuación que un segmento de path admite sin cambiar
+ * de significado ni romper el XML — `- . _ ~ ! $ ' ( ) * + , ; = @`.
  *
  * Es una lista de permitidos y no de prohibidos a propósito. El `slug` lo
  * escribe el cliente en el panel de Afeleia y el contrato solo exige que sea un
@@ -54,11 +55,32 @@ export const SITEMAP_URL_LIMIT = 50_000;
  * rastree. Con una lista de prohibidos, cada carácter que no se me ocurrió hoy
  * es un agujero; con una de permitidos, es un descarte.
  *
+ * **La lista creció en la tercera ronda de review, y por un motivo concreto:**
+ * `vino!casa` y `vino(casa)` son slugs que el panel acepta, que la ruta sirve con
+ * 200 y que el canonical de la ficha anuncia — y quedaban fuera del sitemap. Un
+ * guard que reprueba lo correcto es el mismo bug que esta rama vino a cerrar
+ * (existe y Google no lo ve), con otro disfraz. Estos son exactamente los
+ * `sub-delims` de la RFC 3986 que `URL` deja pasar sin escapar, así que la URL
+ * del sitemap y la del canonical siguen siendo la misma cadena.
+ *
+ * **Lo que sigue afuera, y por qué:**
+ *
+ * - `& < > "` — Next serializa el sitemap **sin escapar XML**: `<loc>` lleva la
+ *   URL tal cual y el hreflang la mete en un atributo. Un `&` en un slug no
+ *   degrada una URL: invalida el archivo entero y el crawler lo descarta
+ *   completo. Es la regla que convierte a esta lista en un control de verdad y no
+ *   en una preferencia estética.
+ * - `%` — ambigüedad de doble codificación (`bera%2f..` decodifica a un salto de
+ *   directorio).
+ * - `/ ? #`, espacios y controles — cambian de segmento, de query o de ancla: ya
+ *   no es la URL de este producto.
+ * - `:` — en la primera posición de una referencia relativa se lee como esquema;
+ *   no vale la pena para un carácter que ningún slug necesita.
+ *
  * Las letras acentuadas entran: una eñe no cambia de segmento y dejar afuera un
- * producto real lo vuelve invisible para el buscador. Un chequeo que reprueba lo
- * correcto es peor que no tenerlo.
+ * producto real lo vuelve invisible para el buscador.
  */
-const SEGMENTO_PERMITIDO = /^[\p{L}\p{N}._~-]+$/u;
+const SEGMENTO_PERMITIDO = /^[\p{L}\p{N}._~!$'()*+,;=@-]+$/u;
 
 /**
  * Si el slug puede viajar dentro de `/vinos/<slug>` sin cambiar de significado.
