@@ -36,6 +36,23 @@ import {
   razonParaRechazar,
 } from "./catalogo-validacion.mjs";
 import { catalogEndpointFor } from "../lib/afeleia/contract.ts";
+// `@next/env` es CommonJS: el named import no existe desde ESM.
+import entornoDeNext from "@next/env";
+
+/**
+ * Las mismas variables que ven el prebuild y `next build`.
+ *
+ * Sin esto, la salida que el propio mensaje de error del prebuild recomienda
+ * —«regeneralo con `npm run catalogo:snapshot`»— fallaba con "faltan datos de
+ * conexion" en la maquina de cualquiera que tuviera su configuracion en
+ * `.env.local`: la quinta capa mirando otra cosa que las otras cuatro. Las
+ * banderas `--url` y `--sitio` siguen ganando, que es lo que permite regenerar
+ * contra otro sitio a proposito.
+ */
+entornoDeNext.loadEnvConfig(path.join(path.dirname(fileURLToPath(import.meta.url)), ".."), false, {
+  info: () => {},
+  error: (mensaje) => console.error(mensaje),
+});
 
 /**
  * Techo de espera de la API. Sin esto, una API que acepta la conexión y nunca
@@ -274,7 +291,10 @@ async function reemplazarElPar() {
 }
 
 try {
-  await conElParTomado(reemplazarElPar);
+  // 10 s como mucho: sumado a los 15 s del fetch entra holgado en los 45 s con
+  // los que el wrapper corta este proceso. Esperar mas seria hacerse matar a la
+  // mitad del protocolo, que es peor que no refrescar.
+  await conElParTomado(reemplazarElPar, { esperaMs: 10_000 });
 } catch (error) {
   if (error instanceof CandadoOcupado) {
     // Rendirse es correcto: el que tiene el candado está escribiendo un snapshot

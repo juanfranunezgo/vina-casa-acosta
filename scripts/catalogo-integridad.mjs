@@ -15,7 +15,7 @@
  *   npm run catalogo:sellar     (lo llama también `catalogo:snapshot` al terminar)
  */
 
-import { open, readFile, rename, rm, writeFile } from "node:fs/promises";
+import { link, open, readFile, rename, rm, stat, writeFile } from "node:fs/promises";
 import { createHash, randomUUID } from "node:crypto";
 import { fileURLToPath } from "node:url";
 import path from "node:path";
@@ -120,6 +120,16 @@ async function renombrarConReintento(temporal, destino, intentos = 10) {
  *     par bloqueado para siempre, que es cambiar una falla rara por una peor;
  *   - **solo lo suelta su dueño**: se compara el contenido antes de borrarlo, asi
  *     el que se pasa de tiempo no le retira el candado al que se lo robo.
+ *
+ * La primera version de esto tenia adentro el bug que venia a cerrar, y lo midio
+ * la revision siguiente: `open(wx)` crea el archivo VACIO y escribe el dueño
+ * despues, asi que habia un instante en el que el candado existia sin contenido.
+ * El que llegaba segundo lo leia vacio, no lo podia parsear, lo tomaba por
+ * abandonado y se lo robaba a un dueño vivo: dos escritores adentro, que es
+ * exactamente el P1 que este candado vino a cerrar. Por eso ahora el candado se
+ * publica con `link()` —el contenido ya esta completo cuando el nombre aparece—
+ * y por eso un candado ilegible NO se roba por ilegible: se juzga por la edad del
+ * archivo, como cualquier otro.
  */
 
 /** Cuanto se espera a que se libere antes de rendirse y no refrescar. */
@@ -134,6 +144,9 @@ const ESPERA_MAXIMA_MS = 20_000;
  */
 const CANDADO_VENCIDO_MS = 60_000;
 
+/** Codigos de `link` que significan "este sistema de archivos no sabe hacerlo". */
+const SIN_ENLACES = new Set(["EPERM", "EACCES", "ENOSYS", "EXDEV", "EOPNOTSUPP", "EMLINK"]);
+
 /** Error de "no se pudo tomar el candado", para distinguirlo de un fallo de disco. */
 export class CandadoOcupado extends Error {
   constructor(mensaje) {
@@ -143,6 +156,48 @@ export class CandadoOcupado extends Error {
   }
 }
 
+/** Si la ruta existe, sea archivo o carpeta. */
+async function existeRuta(ruta) {
+  try {
+    await stat(ruta);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+/** Edad del archivo segun su mtime, o `null` si no se puede saber. */
+async function edadPorArchivo(ruta) {
+  try {
+    return Date.now() - (await stat(ruta)).mtimeMs;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Saca el candado y dice si REALMENTE salio.
+ *
+ * `recursive` porque una ruta vieja puede haber quedado como carpeta —la misma
+ * leccion que ya estaba escrita en `escribirAtomico`—, y se comprueba que haya
+ * salido porque devolver "lo saque" sin haberlo sacado convierte la espera en un
+ * bucle apretado: medido, un core al 100% durante los 20 segundos enteros.
+ */
+async function sacarCandado(candado) {
+  await rm(candado, { force: true, recursive: true }).catch(() => {});
+  return !(await existeRuta(candado));
+}
+
+/**
+ * Toma el candado, o `null` si ya esta tomado.
+ *
+ * El contenido se escribe en un temporal y el candado se PUBLICA con `link()`:
+ * cuando el nombre aparece, el dueño ya esta escrito. `link` falla con EEXIST si
+ * el nombre existe, que es la misma atomicidad que daba `open(wx)` pero sin la
+ * ventana del archivo vacio. Donde no hay enlaces duros —FAT, algunos montajes
+ * de red— se cae al modo anterior, y ahi la ventana la cubre la regla de que un
+ * candado ilegible no se roba por ilegible.
+ */
 async function intentarTomar(candado) {
   const dueño = JSON.stringify({
     pid: process.pid,
@@ -150,24 +205,36 @@ async function intentarTomar(candado) {
     desde: Date.now(),
     id: randomUUID(),
   });
-  let archivo;
+
+  const temporal = `${candado}.${process.pid}.${randomUUID().slice(0, 8)}.tmp`;
   try {
-    // `wx` falla con EEXIST si ya existe: es la primitiva atomica que hace de
-    // candado. No se usa un `existsSync` + `writeFile`, que tiene la carrera
-    // adentro.
-    archivo = await open(candado, "wx");
-  } catch (error) {
-    if (error?.code === "EEXIST") return null;
-    throw error;
-  }
-  try {
-    await archivo.writeFile(dueño, "utf8");
+    await writeFile(temporal, dueño, "utf8");
+    try {
+      await link(temporal, candado);
+      return dueño;
+    } catch (error) {
+      if (error?.code === "EEXIST") return null;
+      if (!SIN_ENLACES.has(error?.code)) throw error;
+      // Sin enlaces duros: creacion exclusiva y escritura, como antes.
+      let archivo;
+      try {
+        archivo = await open(candado, "wx");
+      } catch (fallo) {
+        if (fallo?.code === "EEXIST") return null;
+        throw fallo;
+      }
+      try {
+        await archivo.writeFile(dueño, "utf8");
+      } finally {
+        // Se cierra enseguida: un candado con el descriptor abierto no se puede
+        // borrar en Windows, ni siquiera por su dueño.
+        await archivo.close();
+      }
+      return dueño;
+    }
   } finally {
-    // Se cierra enseguida: un candado con el descriptor abierto no se puede
-    // borrar en Windows, ni siquiera por su dueño.
-    await archivo.close();
+    await rm(temporal, { force: true, recursive: true }).catch(() => {});
   }
-  return dueño;
 }
 
 /**
@@ -177,10 +244,14 @@ async function intentarTomar(candado) {
  * Sirve para el caso que importa —el generador muerto con SIGKILL, que no
  * alcanza a soltar nada— y que sin esto obligaba a esperar el minuto entero
  * ANTES de poder reparar el par, dentro de un build. Un candado de otra maquina,
- * o sin pid, no se puede juzgar asi: se respeta y decide la edad.
+ * o con un pid que no es un pid, no se puede juzgar asi: se respeta, y decide la
+ * edad. El pid se valida porque `kill(0)` y `kill(-1)` son selectores de GRUPO en
+ * Linux y devuelven exito: sin validarlo, el mismo archivo se juzgaria al reves
+ * en la maquina donde construye Netlify.
  */
 function dueñoVivo(dueño) {
-  if (typeof dueño.pid !== "number" || dueño.host !== os.hostname()) return true;
+  if (!Number.isInteger(dueño.pid) || dueño.pid <= 0) return true;
+  if (dueño.host !== os.hostname()) return true;
   try {
     process.kill(dueño.pid, 0);
     return true;
@@ -193,17 +264,40 @@ function dueñoVivo(dueño) {
 /** Roba el candado si esta vencido o su dueño ya no existe. Devuelve si lo robo. */
 async function robarSiVencido(candado, vencidoMs) {
   const crudo = await leerSiExiste(candado);
-  if (crudo === null) return true; // se libero solo mientras mirabamos
-  let dueño;
+  if (crudo === null && !(await existeRuta(candado))) return true; // se libero solo
+
+  let dueño = null;
   try {
-    dueño = JSON.parse(crudo);
+    const leido = JSON.parse(crudo ?? "");
+    if (leido && typeof leido === "object") dueño = leido;
   } catch {
-    // Un candado ilegible no tiene dueño reclamable: se descarta.
-    await rm(candado, { force: true }).catch(() => {});
-    return true;
+    // Ilegible: se decide abajo, por la edad del archivo.
   }
-  const edad = Date.now() - (typeof dueño.desde === "number" ? dueño.desde : 0);
+
+  // Un candado ilegible NO se roba por ilegible. Puede ser el instante en que
+  // otro proceso lo esta publicando —o un candado que quedo a medias por un disco
+  // lleno—, y robarlo ahi mete a dos escritores en la seccion critica: es el bug
+  // que tenia la primera version de este archivo. Se juzga por la edad, que
+  // existe aunque el contenido no sirva.
+  if (dueño === null) {
+    const edad = await edadPorArchivo(candado);
+    if (edad === null || edad < vencidoMs) return false;
+    console.warn(
+      "[afeleia] el candado del snapshot esta ilegible y sin tocar hace " +
+        `${Math.round(edad / 1000)}s: se lo saca y se sigue.`,
+    );
+    return sacarCandado(candado);
+  }
+
   const muerto = !dueñoVivo(dueño);
+  // `desde` tiene que ser un numero para poder juzgar por contenido. Cualquier
+  // otra cosa se mira por el archivo: tratar un `desde` raro como "infinitamente
+  // viejo" le robaba el candado a un dueño vivo al instante.
+  const edad =
+    typeof dueño.desde === "number" && Number.isFinite(dueño.desde)
+      ? Date.now() - dueño.desde
+      : ((await edadPorArchivo(candado)) ?? 0);
+
   if (!muerto && edad < vencidoMs) return false;
   console.warn(
     muerto
@@ -212,8 +306,7 @@ async function robarSiVencido(candado, vencidoMs) {
       : `[afeleia] candado del snapshot abandonado hace ${Math.round(edad / 1000)}s ` +
           `(pid ${dueño.pid} en ${dueño.host}): se lo saca y se sigue.`,
   );
-  await rm(candado, { force: true }).catch(() => {});
-  return true;
+  return sacarCandado(candado);
 }
 
 /**
@@ -247,20 +340,23 @@ export async function conElParTomado(tarea, opciones = {}) {
     // El limite se mira en CADA vuelta, incluso despues de robar: si alguien
     // recreara el candado sin parar, saltearse esta comprobacion seria un bucle
     // infinito adentro de un build.
-    if (Date.now() >= limite) {
+    const restante = limite - Date.now();
+    if (restante <= 0) {
       throw new CandadoOcupado(
         `otro proceso tiene tomado el snapshot desde hace mas de ${Math.round(esperaMs / 1000)}s ` +
           `(${path.basename(candado)})`,
       );
     }
-    // Si lo robamos, se reintenta ya. Si no, espera corta y con tope: el caso
-    // normal es que el otro tarde milisegundos.
+    // Si lo sacamos, se reintenta ya. Si no —incluido el caso en que el borrado
+    // fallo—, espera corta, con tope y sin pasarse del limite: sin esto, un
+    // candado que no se puede borrar convierte la espera en un bucle apretado que
+    // quema un core entero.
     if (!robado) {
-      await new Promise((listo) => setTimeout(listo, Math.min(50 * (intento + 1), 500)));
+      const dormir = Math.min(50 * (intento + 1), 500, restante);
+      await new Promise((listo) => setTimeout(listo, dormir));
     }
   }
 }
-
 /**
  * --- El par: snapshot + sello -------------------------------------------------
  *
@@ -322,6 +418,16 @@ export async function estadoDelPar(snapshot = SNAPSHOT, sello = SELLO) {
     return { coherente: false, motivo: "el sello no es JSON legible" };
   }
 
+  // `marca?.hash` y no `marca.hash`: un sello que contiene el literal `null` es
+  // JSON valido y parsea a `null`, y leerle una propiedad tiraba un TypeError
+  // que nadie captura — el prebuild moria con un stack trace en vez del mensaje
+  // que esta funcion existe para dar.
+  if (typeof marca !== "object" || marca === null || Array.isArray(marca)) {
+    return { coherente: false, motivo: "el sello no es un objeto" };
+  }
+  if (typeof catalogo !== "object" || catalogo === null || Array.isArray(catalogo)) {
+    return { coherente: false, motivo: "el snapshot no es un objeto" };
+  }
   if (hashCatalogo(catalogo) !== marca.hash) {
     return { coherente: false, motivo: "el hash del sello no describe a este snapshot" };
   }
@@ -489,8 +595,10 @@ export function hashCatalogo(payload) {
  * argumento se relee —es el modo `npm run catalogo:sellar`, que existe para
  * volver a sellar lo que ya esta committeado.
  */
-export async function sellar(catalogo) {
-  const snapshot = catalogo ?? JSON.parse(await readFile(SNAPSHOT, "utf8"));
+export async function sellar(catalogo, rutas = {}) {
+  const rutaSnapshot = rutas.snapshot ?? SNAPSHOT;
+  const rutaSello = rutas.sello ?? SELLO;
+  const snapshot = catalogo ?? JSON.parse(await readFile(rutaSnapshot, "utf8"));
   const sello = {
     algoritmo: "sha256",
     hash: hashCatalogo(snapshot),
@@ -498,7 +606,7 @@ export async function sellar(catalogo) {
     sellado_en: new Date().toISOString(),
     productos: snapshot.productos.length,
   };
-  await escribirAtomico(SELLO, `${JSON.stringify(sello, null, 2)}\n`);
+  await escribirAtomico(rutaSello, `${JSON.stringify(sello, null, 2)}\n`);
   return sello;
 }
 
@@ -506,9 +614,17 @@ export async function sellar(catalogo) {
 if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
   // Con el candado tomado: sellar mientras un generador escribe produce
   // exactamente el par incoherente que el sello existe para detectar.
-  const sello = await conElParTomado(() => sellar());
-  console.info(
-    `Sello escrito: ${sello.productos} productos, generado_en ${sello.generado_en}\n` +
-      `  sha256 ${sello.hash}`,
-  );
+  try {
+    const sello = await conElParTomado(() => sellar());
+    console.info(
+      `Sello escrito: ${sello.productos} productos, generado_en ${sello.generado_en}\n` +
+        `  sha256 ${sello.hash}`,
+    );
+  } catch (error) {
+    // Un stack trace no le dice a nadie que hay OTRO proceso escribiendo; el
+    // mensaje si, y la accion que sigue es esperar y volver a intentar.
+    if (!(error instanceof CandadoOcupado)) throw error;
+    console.error(`${error.message}. El sello NO se toco.`);
+    process.exitCode = 1;
+  }
 }

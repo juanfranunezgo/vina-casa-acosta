@@ -2,6 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { mkdir, mkdtemp, readFile, rm, writeFile, access } from "node:fs/promises";
 import { hostname, tmpdir } from "node:os";
+import { spawn } from "node:child_process";
 import path from "node:path";
 import {
   CandadoOcupado,
@@ -12,7 +13,9 @@ import {
   frenteAlRespaldo,
   hashCatalogo,
   recuperarPar,
+  repararDesdeRespaldo,
   respaldarPar,
+  sellar,
 } from "../scripts/catalogo-integridad.mjs";
 
 /**
@@ -341,4 +344,229 @@ test("el candado se suelta aunque la tarea falle", async () => {
   );
 
   assert.equal(await existe(candado), false, "un candado que no se suelta bloquea el proximo build");
+});
+
+// --- El candado, atacado como lo ataco la revision ---------------------------
+// La primera version de este candado tenia adentro el bug que venia a cerrar:
+// `open(wx)` creaba el archivo VACIO y escribia el dueño despues, y el que
+// llegaba segundo lo leia vacio, no lo podia parsear y se lo robaba a un dueño
+// vivo. La suite quedo verde igual, porque estos tests fabricaban el candado a
+// mano —con el contenido ya completo— y corrian los dos refrescos en el MISMO
+// proceso, donde la creacion exclusiva serializa siempre. Los de abajo son los
+// que faltaban.
+
+test("un candado VACIO no se roba: es el instante en que otro lo esta publicando", async () => {
+  const { carpeta } = await parSano();
+  const candado = path.join(carpeta, "candado.lock");
+  await writeFile(candado, "", "utf8");
+
+  await assert.rejects(
+    () =>
+      conElParTomado(async () => "no deberia correr", {
+        candado,
+        esperaMs: 200,
+        vencidoMs: 3_600_000,
+      }),
+    (error) => error instanceof CandadoOcupado,
+    "un candado ilegible y RECIEN tocado es un escritor publicando, no un abandonado",
+  );
+});
+
+test("un candado ilegible pero viejo si se saca", async () => {
+  // La otra mitad: si de verdad quedo basura vieja —un disco lleno a mitad de
+  // escritura—, el par no puede quedar bloqueado para siempre.
+  const { carpeta } = await parSano();
+  const candado = path.join(carpeta, "candado.lock");
+  await writeFile(candado, "{ esto no es json", "utf8");
+
+  const avisos = [];
+  const original = console.warn;
+  console.warn = (...args) => avisos.push(args.join(" "));
+  let corrio = false;
+  try {
+    await conElParTomado(
+      async () => {
+        corrio = true;
+      },
+      { candado, esperaMs: 500, vencidoMs: 0 },
+    );
+  } finally {
+    console.warn = original;
+  }
+
+  assert.equal(corrio, true);
+  assert.ok(avisos.some((linea) => linea.includes("ilegible")));
+});
+
+test("un candado que no se puede borrar no quema la espera", async () => {
+  // Medido en la primera version: el `rm` sin `recursive` fallaba sobre una
+  // carpeta, `robarSiVencido` devolvia "lo saque" igual, y como decia que si, no
+  // se dormia nunca: un core al 100% durante los 20 segundos de espera, con el
+  // par bloqueado para siempre. La espera tiene que ser espera, no bucle.
+  const { carpeta } = await parSano();
+  const candado = path.join(carpeta, "candado.lock");
+  await mkdir(candado);
+
+  const cpuAntes = process.cpuUsage();
+  const desde = Date.now();
+  await assert.rejects(
+    () => conElParTomado(async () => "no deberia correr", { candado, esperaMs: 400 }),
+    (error) => error instanceof CandadoOcupado,
+  );
+  const cpu = process.cpuUsage(cpuAntes);
+  const pared = Date.now() - desde;
+  const cpuMs = (cpu.user + cpu.system) / 1000;
+
+  assert.ok(pared >= 350, `esperó ${pared}ms: tiene que agotar la espera`);
+  assert.ok(cpuMs < pared / 2, `quemó ${Math.round(cpuMs)}ms de CPU en ${pared}ms de espera`);
+});
+
+test("un `desde` que no es un numero no vence el candado", async () => {
+  // `Date.now() - 0` da 55.000 años: cualquier `desde` no numerico hacia pasar
+  // por abandonado el candado de un dueño vivo. Un dato que no se puede juzgar
+  // se respeta.
+  const { carpeta } = await parSano();
+  const candado = path.join(carpeta, "candado.lock");
+  await writeFile(
+    candado,
+    JSON.stringify({ pid: process.pid, host: hostname(), desde: "2026-08-30T12:00:00.000Z" }),
+    "utf8",
+  );
+
+  await assert.rejects(
+    () => conElParTomado(async () => "no deberia correr", { candado, esperaMs: 200 }),
+    (error) => error instanceof CandadoOcupado,
+  );
+});
+
+test("al que se le paso el tiempo no le saca el candado al que se lo robo", async () => {
+  // Es la regla que impide que el lento vuelva a meter dos escritores adentro.
+  const { carpeta } = await parSano();
+  const candado = path.join(carpeta, "candado.lock");
+
+  await conElParTomado(
+    async () => {
+      // Mientras trabajamos, otro se lo lleva y pone el suyo.
+      await writeFile(candado, JSON.stringify({ pid: 1, host: "otro", desde: Date.now() }), "utf8");
+    },
+    { candado },
+  );
+
+  assert.equal(await existe(candado), true, "el candado del otro tiene que seguir ahi");
+  const dueño = JSON.parse(await readFile(candado, "utf8"));
+  assert.equal(dueño.host, "otro");
+});
+
+test("procesos de VERDAD compitiendo por el candado no se pisan", async () => {
+  // Prueba de humo del candado ENTRE PROCESOS: separados de verdad, con el
+  // candado creado por el codigo real —no fabricado a mano— y arrancando todos
+  // juntos. Medido: con el bug adentro este test pasaba igual (la carrera pide
+  // mas procesos y mas vueltas para asomar), asi que el guard determinista del
+  // bug es el de arriba —"un candado VACIO no se roba"—, no este. Este cubre lo
+  // que aquel no puede: que el protocolo real, con procesos reales, no se pise.
+  const { carpeta } = await parSano();
+  const candado = path.join(carpeta, "candado.lock");
+  const registro = path.join(carpeta, "registro.txt");
+  const obrero = path.join(carpeta, "obrero.mjs");
+  const modulo = new URL("../scripts/catalogo-integridad.mjs", import.meta.url).href;
+
+  const fuenteDelObrero = [
+    'import { appendFile } from "node:fs/promises";',
+    "const [modulo, candado, registro, vueltas] = process.argv.slice(2);",
+    "const { conElParTomado } = await import(modulo);",
+    "for (let i = 0; i < Number(vueltas); i += 1) {",
+    "  await conElParTomado(async () => {",
+    "    await appendFile(registro, `E ${process.pid}` + String.fromCharCode(10), \"utf8\");",
+    "    await new Promise((listo) => setTimeout(listo, 3));",
+    "    await appendFile(registro, `S ${process.pid}` + String.fromCharCode(10), \"utf8\");",
+    "  }, { candado, esperaMs: 30_000 });",
+    "}",
+  ].join("\n");
+  await writeFile(obrero, fuenteDelObrero, "utf8");
+  await writeFile(registro, "", "utf8");
+
+  const PROCESOS = 4;
+  const VUELTAS = 5;
+  const salidas = await Promise.all(
+    Array.from(
+      { length: PROCESOS },
+      () =>
+        new Promise((listo, fallo) => {
+          const hijo = spawn(
+            process.execPath,
+            [obrero, modulo, candado, registro, String(VUELTAS)],
+            { stdio: "ignore" },
+          );
+          hijo.on("error", fallo);
+          hijo.on("exit", (codigo) => listo(codigo));
+        }),
+    ),
+  );
+  assert.deepEqual(salidas, Array(PROCESOS).fill(0), "algun obrero no termino bien");
+
+  const lineas = (await readFile(registro, "utf8")).split("\n").filter((linea) => linea !== "");
+  assert.equal(lineas.length, PROCESOS * VUELTAS * 2, "el registro quedo a medias");
+
+  const adentro = new Set();
+  const solapes = [];
+  for (const linea of lineas) {
+    const [marca, pid] = linea.split(" ");
+    if (marca === "E") {
+      if (adentro.size > 0) solapes.push(`${pid} entro con ${[...adentro].join(",")} adentro`);
+      adentro.add(pid);
+    } else {
+      adentro.delete(pid);
+    }
+  }
+  assert.deepEqual(solapes, [], "dos escritores adentro de la seccion critica");
+  assert.equal(await existe(candado), false, "el candado quedo tomado despues de terminar");
+});
+
+// --- Reparar: la mitad fina --------------------------------------------------
+
+test("no se confirma si el par restaurado tampoco cierra", async () => {
+  // El test anterior forzaba el fallo por ESCRITURA, asi que `fallos.length > 0`
+  // ya decidia solo. Este cubre la otra mitad, que es la que el comentario
+  // promete: las escrituras salen bien y el par igual no cierra.
+  const { snapshot, sello } = await parSano();
+  await respaldarPar(snapshot, sello);
+  await rm(`${sello}.bak`); // solo queda respaldo del snapshot
+  // Y el disco queda con el sello de OTRO catalogo: restaurar el snapshot viejo
+  // no alcanza para que el par cierre.
+  await writeFile(sello, `${JSON.stringify(selloDe(OTRO_CATALOGO), null, 2)}\n`, "utf8");
+
+  const reparacion = await repararDesdeRespaldo(snapshot, sello);
+
+  assert.equal(reparacion.restaurado, false, "el par restaurado no cierra: no se confirma");
+  assert.deepEqual(reparacion.fallos, [], "las escrituras salieron bien; el problema es el par");
+  assert.ok(reparacion.motivo, "tiene que decir por que no cierra");
+  assert.equal(await existe(`${snapshot}.bak`), true, "el respaldo se conserva");
+});
+
+// --- El sello ----------------------------------------------------------------
+
+test("sellar escribe el sello del catalogo que recibe, no el del disco", async () => {
+  // Releer el disco para sellar era la mitad de la carrera entre dos
+  // generadores. Y hasta ahora `sellar` no la ejercitaba ningun test, siendo la
+  // unica funcion que escribe el sello en produccion.
+  const { snapshot, sello } = await parSano();
+  const escrito = await sellar(OTRO_CATALOGO, { snapshot, sello });
+
+  assert.equal(escrito.hash, hashCatalogo(OTRO_CATALOGO));
+  assert.equal(escrito.productos, OTRO_CATALOGO.productos.length);
+  assert.equal(escrito.generado_en, OTRO_CATALOGO.generado_en);
+  const enDisco = JSON.parse(await readFile(sello, "utf8"));
+  assert.equal(enDisco.hash, escrito.hash);
+});
+
+test("un sello con el literal null no tira: dice que no es un objeto", async () => {
+  // `marca.hash` sobre `null` tiraba un TypeError que nadie capturaba, y el
+  // prebuild moria con un stack trace en vez del mensaje diseñado.
+  const { snapshot, sello } = await parSano();
+  await writeFile(sello, "null", "utf8");
+
+  const estado = await estadoDelPar(snapshot, sello);
+
+  assert.equal(estado.coherente, false);
+  assert.match(estado.motivo ?? "", /objeto/);
 });
