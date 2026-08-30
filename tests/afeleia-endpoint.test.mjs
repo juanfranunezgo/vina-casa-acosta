@@ -74,7 +74,17 @@ test("una base con query, fragmento o credenciales NO arma endpoint", () => {
   assert.equal(catalogEndpointFor("https://xyz.supabase.co/functions/v1", undefined), null);
 });
 
-test("el runtime compone el endpoint con catalogEndpointFor", async () => {
+test("el generador arma el endpoint con la MISMA funcion que el runtime", async () => {
+  // Si el generador y el runtime lo armaran distinto, el snapshot se refrescaria
+  // contra un endpoint y el sitio consultaria otro — y nadie lo notaria hasta que
+  // los datos no coincidan.
+  const generador = await readFile(path.join(ROOT, "scripts", "catalogo-snapshot.mjs"), "utf8");
+  assert.match(generador, /catalogEndpointFor\(apiUrl, sitio\)/);
+  // El pegado de texto era `...${apiUrl}/catalogo-publico?sitio=${...}`: lo que
+  // no puede volver es la interpolacion, no la palabra (los comentarios la
+  // nombran para explicar el bug).
+  assert.doesNotMatch(generador, /catalogo-publico\?sitio=\$\{/, "volvio el pegado de texto");
+
   const contrato = await readFile(path.join(ROOT, "lib", "afeleia", "contract.ts"), "utf8");
   assert.match(contrato, /export function catalogEndpoint\(\): string \| null \{\s*return catalogEndpointFor\(/);
 });

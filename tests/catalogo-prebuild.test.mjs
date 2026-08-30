@@ -216,3 +216,25 @@ test("las bases legitimas raras siguen pasando", () => {
     );
   }
 });
+
+// --- 4. El prebuild mira la misma configuracion que `next build` --------------
+
+test("el prebuild carga los .env como los carga Next", async () => {
+  // `next build` lee `.env.local` y `.env`; el prebuild corre antes y en otro
+  // proceso, y solo veia las variables del shell. Con eso las dos capas
+  // comparaban contra configuraciones distintas —el prebuild dejaba pasar por
+  // "sin API/SITIO" y el runtime se encontraba con un snapshot que no era de su
+  // sitio— y el build salia en verde con la tienda vacia. En Netlify no cambia
+  // nada: ahi las variables son de entorno y no hay `.env*` en el repo.
+  const { readFile } = await import("node:fs/promises");
+  const wrapper = await readFile(
+    new URL("../scripts/catalogo-snapshot-build.mjs", import.meta.url),
+    "utf8",
+  );
+  assert.match(wrapper, /from "@next\/env"/, "el cargador tiene que ser el de Next, no uno propio");
+  assert.match(wrapper, /loadEnvConfig\(RAIZ, false/);
+  // Y antes de leer nada: cargar despues de decidir no sirve de nada.
+  const carga = wrapper.indexOf("loadEnvConfig(");
+  const primeraLectura = wrapper.indexOf("razonDeConfiguracionInvalida(process.env)");
+  assert.ok(carga > 0 && carga < primeraLectura, "se carga antes de mirar la configuracion");
+});

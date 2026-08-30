@@ -20,12 +20,14 @@ import { readFile } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
 import path from "node:path";
 import {
+  CandadoOcupado,
   RUTA_SNAPSHOT,
+  conElParTomado,
   confirmarPar,
   escribirAtomico,
   estadoDelPar,
+  repararDesdeRespaldo,
   respaldarPar,
-  restaurarPar,
   sellar,
 } from "./catalogo-integridad.mjs";
 import {
@@ -33,6 +35,7 @@ import {
   mensajeDeCuerpoIlegible,
   razonParaRechazar,
 } from "./catalogo-validacion.mjs";
+import { catalogEndpointFor } from "../lib/afeleia/contract.ts";
 
 /**
  * Techo de espera de la API. Sin esto, una API que acepta la conexión y nunca
@@ -73,7 +76,19 @@ if (!apiUrl || !sitio) {
   process.exit(1);
 }
 
-const endpoint = `${apiUrl.replace(/\/+$/, "")}/catalogo-publico?sitio=${encodeURIComponent(sitio)}`;
+// La misma composición que usa el runtime (`catalogEndpointFor`), y no un pegado
+// de texto acá: con una base que trae query —`.../functions/v1?token=x`— el
+// pegado producía `/functions/v1?token=x/catalogo-publico?sitio=...`, o sea el
+// path metido dentro del query. Si el generador y el runtime arman la URL
+// distinto, el snapshot se refresca contra un endpoint y el sitio consulta otro.
+const endpoint = catalogEndpointFor(apiUrl, sitio);
+if (!endpoint) {
+  console.error(
+    `Con --url ${JSON.stringify(apiUrl)} no se puede armar el endpoint: tiene que ser una URL ` +
+      "http(s) sin query, sin fragmento y sin credenciales. El snapshot NO se tocó.",
+  );
+  process.exit(1);
+}
 console.info(`Consultando ${endpoint}`);
 
 // La API caída es el caso NORMAL de este script —es el motivo por el que existe
@@ -189,37 +204,48 @@ async function productosDelSnapshotActual() {
   }
 }
 
-const aviso = avisoPorVaciado(await productosDelSnapshotActual(), payload.productos.length);
-if (aviso) console.warn(`Aviso: ${aviso}`);
+/**
+ * El reemplazo entero, con el par tomado.
+ *
+ * Todo lo que toca disco va acá adentro —contar los productos previos,
+ * respaldar, escribir, sellar, verificar y confirmar— porque el candado protege
+ * la SECUENCIA, no cada escritura: dos generadores intercalados dejaban snapshot
+ * de uno con sello del otro y sin respaldos (tercera ronda de review). El `fetch`
+ * quedó afuera a propósito: una API lenta no tiene por qué bloquear al que quiera
+ * reparar el par.
+ */
+async function reemplazarElPar() {
+  const aviso = avisoPorVaciado(await productosDelSnapshotActual(), payload.productos.length);
+  if (aviso) console.warn(`Aviso: ${aviso}`);
 
-await respaldarPar();
+  await respaldarPar();
 
-let sello;
-try {
-  await escribirAtomico(OUTPUT, `${JSON.stringify(payload, null, 2)}
-`);
-  // Sellar acá y no en un paso aparte: un snapshot regenerado sin sellar deja el
-  // test de integridad en rojo, y "acordarse de correr el sello" es exactamente
-  // el tipo de regla que ya falló una vez.
-  sello = await sellar();
-} catch (error) {
-  const detalle = error instanceof Error ? error.message : String(error);
-  const fallos = await restaurarPar();
-  await confirmarPar();
-  console.error(
-    fallos.length === 0
-      ? `No se pudo escribir el snapshot (${detalle}). Se restauró el anterior.`
-      : `No se pudo escribir el snapshot (${detalle}), y tampoco restaurar: ${fallos.join(", ")}. ` +
-          `Revisar data/ a mano: el fallback puede haber quedado a medias.`,
-  );
-  // `exitCode` y no `exit()`: cortar el proceso de golpe con escrituras de disco
-  // todavía cerrándose hace abortar a libuv en Windows (`UV_HANDLE_CLOSING`), y
-  // eso devuelve 3221226505 en vez de 1 — un fallo entendible disfrazado de
-  // choque incomprensible. Salir por las buenas deja el código correcto.
-  process.exitCode = 1;
-}
+  let sello;
+  try {
+    await escribirAtomico(OUTPUT, `${JSON.stringify(payload, null, 2)}\n`);
+    // Sellar acá y no en un paso aparte: un snapshot regenerado sin sellar deja el
+    // test de integridad en rojo, y "acordarse de correr el sello" es exactamente
+    // el tipo de regla que ya falló una vez. Y se sella EL PAYLOAD, no lo que haya
+    // en el disco: releerlo era la mitad de la carrera entre dos generadores.
+    sello = await sellar(payload);
+  } catch (error) {
+    const detalle = error instanceof Error ? error.message : String(error);
+    const reparacion = await repararDesdeRespaldo();
+    console.error(
+      reparacion.restaurado
+        ? `No se pudo escribir el snapshot (${detalle}). Se restauró el anterior.`
+        : `No se pudo escribir el snapshot (${detalle}), y tampoco restaurar` +
+            `${reparacion.fallos.length > 0 ? `: ${reparacion.fallos.join(", ")}` : ` (${reparacion.motivo})`}. ` +
+            "El respaldo (data/*.bak) queda para el próximo prebuild. Revisar data/ a mano.",
+    );
+    // `exitCode` y no `exit()`: cortar el proceso de golpe con escrituras de disco
+    // todavía cerrándose hace abortar a libuv en Windows (`UV_HANDLE_CLOSING`), y
+    // eso devuelve 3221226505 en vez de 1 — un fallo entendible disfrazado de
+    // choque incomprensible. Salir por las buenas deja el código correcto.
+    process.exitCode = 1;
+    return;
+  }
 
-if (sello) {
   // No alcanza con que las dos escrituras no hayan tirado: lo que el sitio va a
   // servir es lo que quedó EN EL DISCO, así que se lee de ahí y se comprueba que
   // el sello describa a este snapshot. Si no cierra, se vuelve al respaldo: un
@@ -227,21 +253,37 @@ if (sello) {
   // sin que nadie sepa de dónde salió.
   const estado = await estadoDelPar();
   if (!estado.coherente) {
-    const fallos = await restaurarPar();
-    await confirmarPar();
+    const reparacion = await repararDesdeRespaldo();
     console.error(
       `El snapshot y su sello no quedaron de acuerdo (${estado.motivo}). ` +
-        (fallos.length === 0
+        (reparacion.restaurado
           ? "Se restauró el par anterior."
-          : `Y tampoco se pudo restaurar: ${fallos.join(", ")}. Revisar data/ a mano.`),
+          : `Y tampoco se pudo restaurar${reparacion.fallos.length > 0 ? `: ${reparacion.fallos.join(", ")}` : ""}. ` +
+            "El respaldo (data/*.bak) queda para el próximo prebuild. Revisar data/ a mano."),
     );
     process.exitCode = 1;
+    return;
+  }
+
+  await confirmarPar();
+  console.info(
+    `Snapshot escrito: ${payload.productos.length} productos, ` +
+      `${payload.categorias?.length ?? 0} categorías → data/catalogo-fallback.json\n` +
+      `Sello: sha256 ${sello.hash}`,
+  );
+}
+
+try {
+  await conElParTomado(reemplazarElPar);
+} catch (error) {
+  if (error instanceof CandadoOcupado) {
+    // Rendirse es correcto: el que tiene el candado está escribiendo un snapshot
+    // igual de bueno que el nuestro, y colgarse esperándolo dentro de un build es
+    // convertir una molestia en un despliegue perdido. El wrapper lo cuenta como
+    // "no se pudo refrescar" y sigue con lo committeado.
+    console.error(`${error.message}. El snapshot NO se tocó.`);
+    process.exitCode = 1;
   } else {
-    await confirmarPar();
-    console.info(
-      `Snapshot escrito: ${payload.productos.length} productos, ${payload.categorias?.length ?? 0} categorías → data/catalogo-fallback.json
-` +
-        `Sello: sha256 ${sello.hash}`,
-    );
+    throw error;
   }
 }

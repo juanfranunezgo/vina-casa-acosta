@@ -53,8 +53,9 @@ data/*.tmp
 # el dia que se midio). launch.json NO se ignora: es configuracion de verdad.
 /.claude/worktrees
 
-# respaldos y temporales del refresco del snapshot: viven lo que dura una
-# corrida (ver el protocolo del par en scripts/catalogo-integridad.mjs) y si
+# respaldos, temporales y candado del refresco del snapshot: viven lo que dura
+# una corrida (ver el protocolo del par en scripts/catalogo-integridad.mjs) y si
 # alguno sobrevive es porque hubo una muerte, no algo para commitear
 /data/*.bak
 /data/*.tmp
+/data/*.lock

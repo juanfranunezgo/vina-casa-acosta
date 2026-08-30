@@ -15,18 +15,22 @@
  *   npm run catalogo:sellar     (lo llama también `catalogo:snapshot` al terminar)
  */
 
-import { readFile, rename, rm, writeFile } from "node:fs/promises";
+import { open, readFile, rename, rm, writeFile } from "node:fs/promises";
 import { createHash, randomUUID } from "node:crypto";
 import { fileURLToPath } from "node:url";
 import path from "node:path";
+import os from "node:os";
 
 const ROOT = path.join(path.dirname(fileURLToPath(import.meta.url)), "..");
 const SNAPSHOT = path.join(ROOT, "data", "catalogo-fallback.json");
 const SELLO = path.join(ROOT, "data", "catalogo-fallback.integrity.json");
+const CANDADO = path.join(ROOT, "data", "catalogo-fallback.lock");
 
 /** Los dos archivos del fallback, para quien tenga que restaurarlos. */
 export const RUTA_SNAPSHOT = SNAPSHOT;
 export const RUTA_SELLO = SELLO;
+/** El candado que serializa a los que refrescan o reparan el par. */
+export const RUTA_CANDADO = CANDADO;
 
 /**
  * Escribe reemplazando de una sola vez: primero a un temporal, después `rename`.
@@ -83,6 +87,176 @@ async function renombrarConReintento(temporal, destino, intentos = 10) {
       const ocupado = OCUPADO.has(error?.code);
       if (!ocupado || intento >= intentos) throw error;
       await new Promise((listo) => setTimeout(listo, intento * 10));
+    }
+  }
+}
+
+/**
+ * --- El candado: un solo escritor por checkout --------------------------------
+ *
+ * El protocolo del par sobrevive a que el proceso MUERA, y eso ya estaba. Lo que
+ * no sobrevivia era que hubiera DOS: la tercera ronda de review largo dos
+ * generadores, dejo al primero pausado justo despues de leer el snapshot para
+ * sellarlo, dejo que el segundo escribiera y confirmara entero, y recien entonces
+ * dejo al primero escribir su sello. Quedo snapshot del segundo con sello del
+ * primero, sin respaldos —el segundo los retiro al confirmar, porque para el todo
+ * habia salido bien— y el build en verde.
+ *
+ * Escrituras atomicas de a un archivo no alcanzan para eso: el problema no es
+ * cada `rename`, es que la secuencia entera —respaldar, escribir, sellar,
+ * verificar, confirmar— tiene que ser de UN escritor a la vez. Serializar es la
+ * unica forma; versionar el par seria mas caro y no compra nada mas aca, donde
+ * los escritores viven en la misma maquina y el par tiene un solo dueño.
+ *
+ * Reglas del candado, todas por un motivo:
+ *
+ *   - **se toma con `wx`**, que es una creacion atomica del sistema de archivos:
+ *     dos procesos no pueden crearlo los dos;
+ *   - **la espera es acotada** (~20 s): pasada, el que espera NO refresca y se
+ *     queda con lo que hay, porque un refresco que no sale es una molestia y un
+ *     build colgado es un despliegue perdido;
+ *   - **un candado vencido se roba** (~60 s, y la seccion critica son cuatro
+ *     escrituras de disco): sin esto, un proceso muerto con SIGKILL dejaria el
+ *     par bloqueado para siempre, que es cambiar una falla rara por una peor;
+ *   - **solo lo suelta su dueño**: se compara el contenido antes de borrarlo, asi
+ *     el que se pasa de tiempo no le retira el candado al que se lo robo.
+ */
+
+/** Cuanto se espera a que se libere antes de rendirse y no refrescar. */
+const ESPERA_MAXIMA_MS = 20_000;
+
+/**
+ * A partir de cuanto un candado se considera abandonado.
+ *
+ * La seccion critica que protege son cuatro escrituras de disco: si sigue tomado
+ * un minuto despues, el dueño no existe. El `fetch` a la API pasa ANTES de tomar
+ * el candado, a proposito: una API lenta no puede bloquear al que quiere reparar.
+ */
+const CANDADO_VENCIDO_MS = 60_000;
+
+/** Error de "no se pudo tomar el candado", para distinguirlo de un fallo de disco. */
+export class CandadoOcupado extends Error {
+  constructor(mensaje) {
+    super(mensaje);
+    this.name = "CandadoOcupado";
+    this.code = "CANDADO_OCUPADO";
+  }
+}
+
+async function intentarTomar(candado) {
+  const dueño = JSON.stringify({
+    pid: process.pid,
+    host: os.hostname(),
+    desde: Date.now(),
+    id: randomUUID(),
+  });
+  let archivo;
+  try {
+    // `wx` falla con EEXIST si ya existe: es la primitiva atomica que hace de
+    // candado. No se usa un `existsSync` + `writeFile`, que tiene la carrera
+    // adentro.
+    archivo = await open(candado, "wx");
+  } catch (error) {
+    if (error?.code === "EEXIST") return null;
+    throw error;
+  }
+  try {
+    await archivo.writeFile(dueño, "utf8");
+  } finally {
+    // Se cierra enseguida: un candado con el descriptor abierto no se puede
+    // borrar en Windows, ni siquiera por su dueño.
+    await archivo.close();
+  }
+  return dueño;
+}
+
+/**
+ * Si el proceso que dice tener el candado sigue vivo EN ESTA MAQUINA.
+ *
+ * `kill(pid, 0)` no manda ninguna señal: solo pregunta si el proceso existe.
+ * Sirve para el caso que importa —el generador muerto con SIGKILL, que no
+ * alcanza a soltar nada— y que sin esto obligaba a esperar el minuto entero
+ * ANTES de poder reparar el par, dentro de un build. Un candado de otra maquina,
+ * o sin pid, no se puede juzgar asi: se respeta y decide la edad.
+ */
+function dueñoVivo(dueño) {
+  if (typeof dueño.pid !== "number" || dueño.host !== os.hostname()) return true;
+  try {
+    process.kill(dueño.pid, 0);
+    return true;
+  } catch (error) {
+    // EPERM = existe pero es de otro usuario. ESRCH = no existe.
+    return error?.code === "EPERM";
+  }
+}
+
+/** Roba el candado si esta vencido o su dueño ya no existe. Devuelve si lo robo. */
+async function robarSiVencido(candado, vencidoMs) {
+  const crudo = await leerSiExiste(candado);
+  if (crudo === null) return true; // se libero solo mientras mirabamos
+  let dueño;
+  try {
+    dueño = JSON.parse(crudo);
+  } catch {
+    // Un candado ilegible no tiene dueño reclamable: se descarta.
+    await rm(candado, { force: true }).catch(() => {});
+    return true;
+  }
+  const edad = Date.now() - (typeof dueño.desde === "number" ? dueño.desde : 0);
+  const muerto = !dueñoVivo(dueño);
+  if (!muerto && edad < vencidoMs) return false;
+  console.warn(
+    muerto
+      ? `[afeleia] el proceso que tenia el candado del snapshot (pid ${dueño.pid}) ya no existe: ` +
+          "se lo saca y se sigue."
+      : `[afeleia] candado del snapshot abandonado hace ${Math.round(edad / 1000)}s ` +
+          `(pid ${dueño.pid} en ${dueño.host}): se lo saca y se sigue.`,
+  );
+  await rm(candado, { force: true }).catch(() => {});
+  return true;
+}
+
+/**
+ * Corre `tarea` con el par tomado, y lo suelta pase lo que pase.
+ *
+ * Lo que va adentro es TODO el protocolo —respaldar, escribir, sellar, verificar,
+ * confirmar—: partirlo devuelve la carrera que este candado vino a cerrar.
+ *
+ * @throws {CandadoOcupado} si no se pudo tomar dentro de la espera
+ */
+export async function conElParTomado(tarea, opciones = {}) {
+  const candado = opciones.candado ?? CANDADO;
+  const esperaMs = opciones.esperaMs ?? ESPERA_MAXIMA_MS;
+  const vencidoMs = opciones.vencidoMs ?? CANDADO_VENCIDO_MS;
+  const limite = Date.now() + esperaMs;
+
+  for (let intento = 0; ; intento += 1) {
+    const dueño = await intentarTomar(candado);
+    if (dueño !== null) {
+      try {
+        return await tarea();
+      } finally {
+        // Solo si sigue siendo nuestro: si se vencio y otro se lo llevo, borrarlo
+        // le sacaria el candado a alguien que esta escribiendo ahora mismo.
+        const actual = await leerSiExiste(candado);
+        if (actual === dueño) await rm(candado, { force: true }).catch(() => {});
+      }
+    }
+
+    const robado = await robarSiVencido(candado, vencidoMs);
+    // El limite se mira en CADA vuelta, incluso despues de robar: si alguien
+    // recreara el candado sin parar, saltearse esta comprobacion seria un bucle
+    // infinito adentro de un build.
+    if (Date.now() >= limite) {
+      throw new CandadoOcupado(
+        `otro proceso tiene tomado el snapshot desde hace mas de ${Math.round(esperaMs / 1000)}s ` +
+          `(${path.basename(candado)})`,
+      );
+    }
+    // Si lo robamos, se reintenta ya. Si no, espera corta y con tope: el caso
+    // normal es que el otro tarde milisegundos.
+    if (!robado) {
+      await new Promise((listo) => setTimeout(listo, Math.min(50 * (intento + 1), 500)));
     }
   }
 }
@@ -193,6 +367,57 @@ export async function restaurarPar(snapshot = SNAPSHOT, sello = SELLO) {
 }
 
 /**
+ * Como quedo el snapshot del disco FRENTE a su respaldo.
+ *
+ * Es lo unico que permite decir la verdad despues de que un generador se corta:
+ * "sin-respaldo" es que nadie llego a tocar el par —sigue el committeado—,
+ * "igual" es que se respaldo pero no se alcanzo a escribir, y "distinto" es que
+ * el refresco nuevo SI quedo. El wrapper afirmaba siempre lo primero, y la
+ * tercera ronda de review mostro que podia ser falso.
+ *
+ * @returns {Promise<"sin-respaldo" | "igual" | "distinto">}
+ */
+export async function frenteAlRespaldo(ruta = SNAPSHOT) {
+  const [actual, respaldo] = await Promise.all([
+    leerSiExiste(ruta),
+    leerSiExiste(rutaDeRespaldo(ruta)),
+  ]);
+  if (respaldo === null) return "sin-respaldo";
+  return actual === respaldo ? "igual" : "distinto";
+}
+
+/** Si quedo un respaldo de una corrida anterior sin retirar. */
+export async function hayRespaldoPendiente(snapshot = SNAPSHOT, sello = SELLO) {
+  const respaldos = await Promise.all(
+    [snapshot, sello].map((ruta) => leerSiExiste(rutaDeRespaldo(ruta))),
+  );
+  return respaldos.some((contenido) => contenido !== null);
+}
+
+/**
+ * Restaura el par desde el respaldo y lo retira **solo si la restauracion salio**.
+ *
+ * La tercera ronda de review encontro justo lo contrario: se convirtio el destino
+ * en una carpeta para forzar un `EPERM`, `restaurarPar` devolvio el fallo... y el
+ * respaldo se borraba igual. O sea que el unico camino de recuperacion que le
+ * quedaba al sitio se consumia en el intento que fallo, y la corrida siguiente ya
+ * no tenia de donde volver. Un respaldo se retira cuando sobra, nunca cuando
+ * podria hacer falta: si la restauracion no cerro, el `.bak` se queda y el
+ * proximo prebuild vuelve a intentar.
+ *
+ * @returns {Promise<{restaurado: boolean, fallos: string[], motivo: string | null}>}
+ */
+export async function repararDesdeRespaldo(snapshot = SNAPSHOT, sello = SELLO) {
+  const fallos = await restaurarPar(snapshot, sello);
+  // No alcanza con que las escrituras no hayan tirado: lo que importa es si el par
+  // que quedo EN EL DISCO cierra.
+  const estado = await estadoDelPar(snapshot, sello);
+  const restaurado = fallos.length === 0 && estado.coherente;
+  if (restaurado) await confirmarPar(snapshot, sello);
+  return { restaurado, fallos, motivo: estado.motivo };
+}
+
+/**
  * Deja el par en un estado coherente antes de que nadie lo lea.
  *
  * Se llama al empezar el prebuild. Si hay respaldo pendiente, alguien murio en el
@@ -205,26 +430,42 @@ export async function restaurarPar(snapshot = SNAPSHOT, sello = SELLO) {
  *     respaldo: reparar aca seria PERDER un refresco bueno, asi que solo se
  *     retira el respaldo.
  *
- * @returns {Promise<{habiaRespaldo: boolean, reparado: boolean, motivo: string | null, fallos: string[]}>}
+ * Si la reparacion NO sale, el respaldo se conserva: es el ultimo par que cerraba
+ * y consumirlo en un intento fallido deja al sitio sin nada a lo que volver.
+ *
+ * @returns {Promise<{habiaRespaldo: boolean, reparado: boolean, motivo: string | null, fallos: string[], respaldoConservado: boolean}>}
  */
 export async function recuperarPar(snapshot = SNAPSHOT, sello = SELLO) {
-  const respaldos = await Promise.all(
-    [snapshot, sello].map((ruta) => leerSiExiste(rutaDeRespaldo(ruta))),
-  );
-  const habiaRespaldo = respaldos.some((contenido) => contenido !== null);
-  if (!habiaRespaldo) {
-    return { habiaRespaldo: false, reparado: false, motivo: null, fallos: [] };
+  if (!(await hayRespaldoPendiente(snapshot, sello))) {
+    return {
+      habiaRespaldo: false,
+      reparado: false,
+      motivo: null,
+      fallos: [],
+      respaldoConservado: false,
+    };
   }
 
   const estado = await estadoDelPar(snapshot, sello);
   if (estado.coherente) {
     await confirmarPar(snapshot, sello);
-    return { habiaRespaldo: true, reparado: false, motivo: null, fallos: [] };
+    return {
+      habiaRespaldo: true,
+      reparado: false,
+      motivo: null,
+      fallos: [],
+      respaldoConservado: false,
+    };
   }
 
-  const fallos = await restaurarPar(snapshot, sello);
-  await confirmarPar(snapshot, sello);
-  return { habiaRespaldo: true, reparado: true, motivo: estado.motivo, fallos };
+  const reparacion = await repararDesdeRespaldo(snapshot, sello);
+  return {
+    habiaRespaldo: true,
+    reparado: reparacion.restaurado,
+    motivo: estado.motivo,
+    fallos: reparacion.fallos,
+    respaldoConservado: !reparacion.restaurado,
+  };
 }
 
 /**
@@ -238,8 +479,18 @@ export function hashCatalogo(payload) {
   return createHash("sha256").update(JSON.stringify(payload), "utf8").digest("hex");
 }
 
-export async function sellar() {
-  const snapshot = JSON.parse(await readFile(SNAPSHOT, "utf8"));
+/**
+ * Escribe el sello del snapshot.
+ *
+ * `catalogo` es lo que el generador ACABA de escribir, y pasarlo no es un ahorro
+ * de una lectura: sellar releyendo el disco es sellar lo que haya en el disco en
+ * ese instante, que con dos escritores puede ser el snapshot del otro. Sellar el
+ * contenido propio deja el par siempre describiendo una sola generacion. Sin
+ * argumento se relee —es el modo `npm run catalogo:sellar`, que existe para
+ * volver a sellar lo que ya esta committeado.
+ */
+export async function sellar(catalogo) {
+  const snapshot = catalogo ?? JSON.parse(await readFile(SNAPSHOT, "utf8"));
   const sello = {
     algoritmo: "sha256",
     hash: hashCatalogo(snapshot),
@@ -253,7 +504,9 @@ export async function sellar() {
 
 // Solo cuando se ejecuta directo: importarlo desde un test no debe escribir nada.
 if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
-  const sello = await sellar();
+  // Con el candado tomado: sellar mientras un generador escribe produce
+  // exactamente el par incoherente que el sello existe para detectar.
+  const sello = await conElParTomado(() => sellar());
   console.info(
     `Sello escrito: ${sello.productos} productos, generado_en ${sello.generado_en}\n` +
       `  sha256 ${sello.hash}`,
