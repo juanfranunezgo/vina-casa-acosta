@@ -14,7 +14,12 @@
  * viva. Si el generador aceptara algo que el runtime rechaza, el sitio quedaria
  * con un fallback que no puede servir: el peor de los dos mundos, y sin aviso.
  */
-import { CONTRACT_VERSION, isValidCatalog } from "../lib/afeleia/contract.ts";
+import {
+  CONTRACT_VERSION,
+  catalogEndpointFor,
+  isOwnCatalog,
+  isValidCatalog,
+} from "../lib/afeleia/contract.ts";
 
 /**
  * Motivo por el que esta respuesta NO puede escribirse como snapshot, o `null`
@@ -37,7 +42,7 @@ export function razonParaRechazar(payload, sitioEsperado) {
   // el sitio publicaria nombres y precios ajenos, y ese catalogo quedaria
   // sellado como fallback legitimo. Un endpoint mal configurado, un slug mal
   // escrito o una API redirigida bastan para producirlo, sin que nada falle.
-  if (payload.sitio !== sitioEsperado) {
+  if (!isOwnCatalog(payload, sitioEsperado)) {
     return `la respuesta es del sitio ${JSON.stringify(payload.sitio)} y se pidio ${JSON.stringify(sitioEsperado)}`;
   }
 
@@ -150,6 +155,29 @@ export function razonDeConfiguracionInvalida(env) {
     return `NEXT_PUBLIC_AFELEIA_API_URL tiene que ser http(s): ${JSON.stringify(url)}`;
   }
 
+  // La BASE es una base: host y path, nada mas. Con query o fragmento el endpoint
+  // sale mal armado —`/functions/v1?token=x` + `/catalogo-publico?sitio=...` deja
+  // el path adentro del query— y el sitio queda degradado en verde, que es la
+  // falla que esta funcion existe para atajar. Se rechaza en vez de recortarlo en
+  // silencio: quien puso ese token queria que viajara, y tiene que enterarse de
+  // que asi no viaja.
+  if (endpoint.search !== "" || endpoint.hash !== "") {
+    return (
+      `NEXT_PUBLIC_AFELEIA_API_URL tiene que ser la base de la API, sin query ni fragmento: ` +
+      `${JSON.stringify(url)}. Con ${JSON.stringify(endpoint.search || endpoint.hash)} el ` +
+      "endpoint del catalogo se arma mal y el sitio se construye degradado."
+    );
+  }
+  // Credenciales en la URL: viajarian en cada consulta del build y del runtime, y
+  // `NEXT_PUBLIC_*` termina ademas en el bundle del navegador. El contrato v1 es
+  // publico y no las necesita.
+  if (endpoint.username !== "" || endpoint.password !== "") {
+    return (
+      "NEXT_PUBLIC_AFELEIA_API_URL no puede llevar credenciales: la variable es publica " +
+      "y el contrato v1 no las usa"
+    );
+  }
+
   // En produccion, https y no es negociable: el catalogo lleva los precios y las
   // fotos del cliente, y en texto plano cualquier intermediario puede leerlo y,
   // peor, reescribirlo — un catalogo alterado en vuelo es un sitio publicando lo
@@ -172,6 +200,16 @@ export function razonDeConfiguracionInvalida(env) {
     );
   }
 
+  // Ultima puerta, y la unica que no puede quedar desalineada: se arma el endpoint
+  // CON LA MISMA FUNCION que usa el runtime. Si el sitio no va a poder consultar,
+  // se sabe acá y no en produccion.
+  if (!catalogEndpointFor(url, sitio)) {
+    return (
+      `con NEXT_PUBLIC_AFELEIA_API_URL ${JSON.stringify(url)} no se puede armar el endpoint ` +
+      "del catalogo"
+    );
+  }
+
   return null;
 }
 
@@ -191,9 +229,11 @@ export function razonDeConfiguracionInvalida(env) {
  * donde no la hay.
  *
  * @param {string | null} crudoSnapshot contenido de `data/catalogo-fallback.json`
+ * @param {string | undefined} sitioEsperado slug configurado
+ *   (`NEXT_PUBLIC_AFELEIA_SITIO`); sin el no hay contra que comparar el tenant
  * @returns {string | null}
  */
-export function razonParaNoDesplegar(crudoSnapshot) {
+export function razonParaNoDesplegar(crudoSnapshot, sitioEsperado) {
   const conservado =
     "No se construye: el deploy anterior sigue publicado con sus productos, que es " +
     "mejor que reemplazarlo por una tienda vacia.";
@@ -212,6 +252,20 @@ export function razonParaNoDesplegar(crudoSnapshot) {
   if (!isValidCatalog(catalogo)) {
     return (
       `el snapshot de fallback no cumple el contrato v${CONTRACT_VERSION}. ${conservado}`
+    );
+  }
+
+  // Y tiene que ser DE ESTE SITIO. Esta era la puerta que faltaba: la tercera
+  // ronda de review dejo un snapshot coherente y bien sellado con
+  // `sitio: "bodega-ajena"`, y el build salio en verde con 77 paginas publicando
+  // `/es/vinos/producto-ajeno`. El generador ya rechazaba una RESPUESTA ajena,
+  // pero nadie miraba el ARCHIVO — y el archivo es lo que se despliega. Publicar
+  // el catalogo de otro cliente es peor que no desplegar: se frena.
+  if (!isOwnCatalog(catalogo, sitioEsperado)) {
+    return (
+      `el snapshot de fallback es del sitio ${JSON.stringify(catalogo.sitio)} y este sitio es ` +
+      `${JSON.stringify(sitioEsperado)}: publicarlo seria publicar el catalogo de otro cliente. ` +
+      `${conservado}`
     );
   }
 

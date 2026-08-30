@@ -28,6 +28,7 @@ import {
   catalogEndpoint,
   createOutageMemo,
   emptyCatalog,
+  isOwnCatalog,
   isValidCatalog,
   optionsFor,
   readOptionValue,
@@ -243,12 +244,32 @@ const SNAPSHOT_STALE_DAYS = 7;
  */
 function fallbackCatalog(): ApiCatalog {
   const snapshot: unknown = catalogoFallback;
-  if (isValidCatalog(snapshot)) return snapshot;
-  console.error(
-    "[afeleia] el snapshot committeado NO cumple el contrato: se sirve un catálogo vacío " +
-      "para no tumbar el sitio. Regenerarlo con `npm run catalogo:snapshot`.",
-  );
-  return emptyCatalog(process.env.NEXT_PUBLIC_AFELEIA_SITIO ?? "");
+  const sitio = process.env.NEXT_PUBLIC_AFELEIA_SITIO;
+
+  if (!isValidCatalog(snapshot)) {
+    console.error(
+      "[afeleia] el snapshot committeado NO cumple el contrato: se sirve un catálogo vacío " +
+        "para no tumbar el sitio. Regenerarlo con `npm run catalogo:snapshot`.",
+    );
+    return emptyCatalog(sitio ?? "");
+  }
+
+  // Y tiene que ser DE ESTE SITIO. La respuesta viva ya se comprobaba; el archivo
+  // no, y esa era la mitad que faltaba: un snapshot ajeno —committeado por error,
+  // copiado de otra web del mismo cliente, generado contra el slug equivocado—
+  // se servía tal cual, con la web mostrando el catálogo de otra bodega y todos
+  // los controles en verde. Publicar productos ajenos es peor que no publicar
+  // ninguno, así que acá se degrada a la tienda vacía, que es ruidosa y no miente.
+  if (!isOwnCatalog(snapshot, sitio)) {
+    console.error(
+      `[afeleia] el snapshot committeado es del sitio ${JSON.stringify(snapshot.sitio)} y este ` +
+        `sitio es ${JSON.stringify(sitio)}: NO se sirve. Se sirve un catálogo vacío en vez de ` +
+        "publicar el catálogo de otro cliente. Regenerarlo con `npm run catalogo:snapshot`.",
+    );
+    return emptyCatalog(sitio ?? "");
+  }
+
+  return snapshot;
 }
 
 /** Antigüedad del snapshot en días, o `null` si no trae `generado_en` legible. */
@@ -298,9 +319,33 @@ function degraded(reason: string): CatalogLoad {
 }
 
 /**
+ * La consulta que este proceso ya tiene en vuelo, o `null`.
+ *
+ * `cache()` de React memoiza por REQUEST, no por proceso: la tercera ronda de
+ * review mandó 30 rutas simultáneas contra una API que tardaba 750 ms y cortaba,
+ * y midió **30 conexiones y 30 degradaciones**. Todas leyeron la memoria de caída
+ * antes de que el primer fallo llegara a escribirla — recordar el RESULTADO no
+ * contiene una ráfaga, porque durante la ráfaga todavía no hay resultado.
+ *
+ * Lo que la contiene es compartir la PROMESA: el primero que llega dispara la
+ * consulta, los demás se cuelgan de esa misma, y el proceso abre una conexión por
+ * ventana en vez de una por render. Es la mitad que le faltaba a la memoria de
+ * caída, y las dos juntas son las que hacen que cien webs desplegando durante una
+ * caída de Afeleia no la conviertan en miles de intentos.
+ *
+ * Se limpia al resolverse, así que nadie se cuelga de una consulta vieja: lo que
+ * se comparte es una lectura EN CURSO, no un resultado cacheado. De cachear el
+ * resultado ya se encarga el `fetch` de Next con su `revalidate`.
+ */
+let consultaEnCurso: Promise<CatalogLoad> | null = null;
+
+/**
  * `cache()` de React: dentro de UN mismo render, la página y el `<meta>` que
  * declara el origen comparten la misma lectura. Sin esto, emitir el origen
  * costaría un fetch extra por página solo para poder informarlo.
+ *
+ * Y por encima, el single-flight de `consultaEnCurso`, que es lo mismo pero entre
+ * renders del mismo proceso.
  */
 const loadCatalog = cache(async (): Promise<CatalogLoad> => {
   // Preguntar por la caída ANTES del fetch: consultarla después no ahorraría
@@ -308,9 +353,36 @@ const loadCatalog = cache(async (): Promise<CatalogLoad> => {
   const recordada = caidaReciente.current();
   if (recordada) return recordada;
 
+  // Ya hay una consulta en vuelo: se espera esa. Nada que reintentar acá — si
+  // falla, falla para todos y la memoria de caída se encarga de lo que sigue.
+  if (consultaEnCurso) return consultaEnCurso;
+
+  const consulta = consultarCatalogo();
+  consultaEnCurso = consulta;
+  try {
+    return await consulta;
+  } finally {
+    // Solo el que la puso la saca: si otra corrida ya arrancó la siguiente, esa
+    // es la que vale.
+    if (consultaEnCurso === consulta) consultaEnCurso = null;
+  }
+});
+
+/**
+ * La consulta de verdad. Vive aparte de `loadCatalog` para que el single-flight
+ * envuelva SIEMPRE a la única función que abre una conexión.
+ *
+ * No tira nunca: todos los caminos de falla terminan en `degraded()`, que es lo
+ * que permite compartir la promesa sin que un rechazo se propague a treinta
+ * renders a la vez.
+ */
+async function consultarCatalogo(): Promise<CatalogLoad> {
   const url = catalogEndpoint();
   if (!url) {
-    return degraded("faltan NEXT_PUBLIC_AFELEIA_API_URL o NEXT_PUBLIC_AFELEIA_SITIO");
+    return degraded(
+      "no hay endpoint utilizable: NEXT_PUBLIC_AFELEIA_API_URL / NEXT_PUBLIC_AFELEIA_SITIO " +
+        "faltan o no arman una URL válida",
+    );
   }
 
   try {
@@ -337,10 +409,11 @@ const loadCatalog = cache(async (): Promise<CatalogLoad> => {
     // posibilidades justifica publicar los nombres y los precios de otro
     // cliente. Ante la duda, el catálogo propio de ayer le gana al ajeno de hoy.
     //
-    // El generador del snapshot hace la misma comprobación: las dos capas tienen
-    // que mirar lo mismo, o la que no mira se vuelve el agujero.
+    // Es la MISMA función que aplican el generador, el prebuild y el fallback:
+    // cuando la regla estaba escrita una vez por capa, faltaba en dos de las
+    // cuatro (`isOwnCatalog`).
     const sitio = process.env.NEXT_PUBLIC_AFELEIA_SITIO;
-    if (sitio && payload.sitio !== sitio) {
+    if (!isOwnCatalog(payload, sitio)) {
       return degraded(`la respuesta es del sitio "${payload.sitio}" y se pidió "${sitio}"`);
     }
     // La API contestó: si este proceso venía sirviendo el snapshot por una caída
@@ -351,7 +424,7 @@ const loadCatalog = cache(async (): Promise<CatalogLoad> => {
     const detail = error instanceof Error ? error.message : String(error);
     return degraded(`no se pudo consultar la API: ${detail}`);
   }
-});
+}
 
 // --- API para las páginas -----------------------------------------------------
 

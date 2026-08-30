@@ -181,11 +181,74 @@ function storageOrigin(apiUrl: string | undefined): string | null {
   }
 }
 
-export function catalogEndpoint(): string | null {
-  const base = process.env.NEXT_PUBLIC_AFELEIA_API_URL;
-  const sitio = process.env.NEXT_PUBLIC_AFELEIA_SITIO;
+/**
+ * El endpoint del catálogo para una base y un sitio, o `null` si con esa base no
+ * se puede armar uno.
+ *
+ * Se compone modificando `pathname` con `URL` y **no pegando texto**, y eso salió
+ * de la tercera ronda de review: con una base legítima en apariencia
+ * —`https://host/functions/v1?token=x`— la concatenación producía
+ * `/functions/v1?token=x/catalogo-publico?sitio=...`, o sea el path metido dentro
+ * del query. El servidor recibe cualquier cosa, contesta cualquier cosa, y el
+ * sitio queda degradado en verde. Con `URL`, una base con path sigue funcionando
+ * —que es el caso normal, `/functions/v1`— y una con query no se puede armar mal:
+ * se rechaza, y el prebuild lo dice antes de desplegar.
+ *
+ * Las credenciales embebidas (`https://usuario:clave@host`) también se rechazan:
+ * viajarían en cada consulta del build y del runtime, y el contrato v1 no las
+ * necesita — la web no tiene credenciales de ningún tipo.
+ */
+export function catalogEndpointFor(
+  base: string | undefined,
+  sitio: string | undefined,
+): string | null {
   if (!base || !sitio) return null;
-  return `${base.replace(/\/+$/, "")}/catalogo-publico?sitio=${encodeURIComponent(sitio)}`;
+
+  let url: URL;
+  try {
+    url = new URL(base);
+  } catch {
+    return null;
+  }
+  if (url.protocol !== "https:" && url.protocol !== "http:") return null;
+  if (url.search !== "" || url.hash !== "") return null;
+  if (url.username !== "" || url.password !== "") return null;
+
+  url.pathname = `${url.pathname.replace(/\/+$/, "")}/catalogo-publico`;
+  url.searchParams.set("sitio", sitio);
+  return url.toString();
+}
+
+export function catalogEndpoint(): string | null {
+  return catalogEndpointFor(
+    process.env.NEXT_PUBLIC_AFELEIA_API_URL,
+    process.env.NEXT_PUBLIC_AFELEIA_SITIO,
+  );
+}
+
+/**
+ * Si este catálogo es **del sitio configurado**.
+ *
+ * Un catálogo ajeno servido como propio es la peor falla del sistema: el sitio
+ * publica los nombres y los precios de otro cliente, y se ve perfectamente sano.
+ * Hasta la tercera ronda de review la comprobación existía en dos de las cuatro
+ * capas —la respuesta viva y el generador del snapshot— y faltaba justo en las
+ * dos que leen el ARCHIVO: el prebuild que decide si se despliega y el runtime
+ * que lo sirve. Medido en la review: un snapshot coherente y sellado con
+ * `sitio: "bodega-ajena"` construía 77 páginas y publicaba
+ * `/es/vinos/producto-ajeno` con el build en verde.
+ *
+ * La regla vive acá, una sola vez, y la usan las cuatro capas. Que estuviera
+ * escrita dos veces fue lo que permitió que faltara en las otras dos.
+ *
+ * **Sin sitio configurado no se puede juzgar, y pasa**: es el clon local sin
+ * `.env.local`, donde no hay contra qué comparar y el snapshot committeado es
+ * todo lo que hay. Que esa configuración a medias no llegue a producción lo
+ * asegura `razonDeConfiguracionInvalida`, que es donde corresponde.
+ */
+export function isOwnCatalog(catalog: { sitio?: unknown }, sitio: string | undefined): boolean {
+  if (!sitio) return true;
+  return catalog.sitio === sitio;
 }
 
 /**
@@ -260,19 +323,32 @@ export function emptyCatalog(sitio = ""): ApiCatalog {
  * detalle: sin él, un proceso que vio una caída serviría el snapshot para siempre
  * aunque Afeleia hubiera vuelto.
  *
- * El reloj se puede inyectar para poder probar el vencimiento sin esperarlo.
+ * El reloj se puede inyectar para poder probar el vencimiento sin esperarlo, pero
+ * el de por defecto es MONOTÓNICO (`performance.now()`) y no `Date.now()`. La
+ * tercera ronda de review atrasó el reloj de pared 60 s y la ventana se estiró
+ * otro tanto: con `Date.now()`, un ajuste de NTP, una VM que se despierta o un
+ * contenedor con el reloj corregido dejan al sitio sirviendo el snapshot DESPUÉS
+ * de que Afeleia volvió, que es exactamente lo que el vencimiento existe para
+ * impedir. El monotónico no salta.
  */
-export function createOutageMemo<T>(windowMs: number, now: () => number = Date.now) {
-  let remembered: { until: number; value: T } | null = null;
+export function createOutageMemo<T>(windowMs: number, now: () => number = () => performance.now()) {
+  let remembered: { desde: number; until: number; value: T } | null = null;
   return {
     /** Guarda el resultado degradado y arranca la ventana. */
     remember(value: T): void {
-      remembered = { until: now() + windowMs, value };
+      const desde = now();
+      remembered = { desde, until: desde + windowMs, value };
     },
     /** Lo recordado si la ventana sigue abierta, o `null`. */
     current(): T | null {
       if (remembered === null) return null;
-      if (now() >= remembered.until) {
+      const ahora = now();
+      // Vencida, o el reloj se fue para atrás. Lo segundo no puede pasar con el
+      // reloj monotónico de por defecto, y es la red por si a alguien le inyectan
+      // otro: retroceder es la única forma de estirar la ventana. Ante la duda se
+      // vuelve a preguntar — reintentar de más cuesta una consulta; recordar de
+      // más cuesta servir precios viejos como vigentes.
+      if (ahora >= remembered.until || ahora < remembered.desde) {
         remembered = null;
         return null;
       }

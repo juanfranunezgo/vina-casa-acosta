@@ -96,7 +96,40 @@ test("las tres puertas al modo degradado siguen cableadas", () => {
   // rechaza (`razonParaRechazar`), pero el runtime la servia igual: el sitio
   // habria publicado el catalogo de otro cliente hasta la siguiente
   // revalidacion. Las dos capas tienen que mirar lo mismo.
-  assert.match(catalogSource, /payload\.sitio !== sitio[\s\S]{0,200}?return degraded\(/, "sitio ajeno");
+  assert.match(
+    catalogSource,
+    /!isOwnCatalog\(payload, sitio\)[\s\S]{0,200}?return degraded\(/,
+    "sitio ajeno",
+  );
+});
+
+test("el SNAPSHOT tambien se comprueba contra el sitio configurado", () => {
+  // La quinta puerta, y la que faltaba: la respuesta viva se comprobaba, el
+  // archivo no. La tercera ronda de review committeo un snapshot coherente y
+  // sellado con `sitio: "bodega-ajena"` y el build salio en verde publicando
+  // `/es/vinos/producto-ajeno`. Servir el catalogo de otro cliente es peor que
+  // no servir ninguno: se degrada a la tienda vacia, que es ruidosa y no miente.
+  const cuerpo = catalogSource.match(/function fallbackCatalog\(\): ApiCatalog \{([\s\S]*?)\n\}/);
+  assert.ok(cuerpo, "no se encontro la funcion fallbackCatalog");
+  assert.match(cuerpo[1], /!isOwnCatalog\(snapshot, sitio\)/);
+  assert.match(cuerpo[1], /return emptyCatalog\(sitio \?\? ""\);[\s\S]*return emptyCatalog\(sitio \?\? ""\);/);
+});
+
+test("una rafaga no abre una conexion por render: hay single-flight", () => {
+  // `cache()` de React memoiza por REQUEST. Con 30 rutas simultaneas contra una
+  // API que tarda y corta, la review midio 30 conexiones y 30 degradaciones: la
+  // memoria de caida no las contiene porque durante la rafaga todavia no hay
+  // resultado que recordar. Lo que las contiene es compartir la PROMESA.
+  assert.match(catalogSource, /let consultaEnCurso: Promise<CatalogLoad> \| null = null;/);
+  assert.match(catalogSource, /if \(consultaEnCurso\) return consultaEnCurso;/);
+  // Y se limpia al resolverse: si no, el proceso se cuelga para siempre de una
+  // lectura vieja y el sitio deja de revalidar.
+  assert.match(catalogSource, /if \(consultaEnCurso === consulta\) consultaEnCurso = null;/);
+  // El unico lugar que abre la conexion tiene que quedar ADENTRO del single
+  // flight: si `fetch` volviera a `loadCatalog`, la rafaga vuelve con el.
+  const consultar = catalogSource.indexOf("async function consultarCatalogo(");
+  const fetchEn = catalogSource.indexOf("await fetch(");
+  assert.ok(consultar > 0 && consultar < fetchEn, "el fetch vive dentro de consultarCatalogo");
 });
 
 test("el cuerpo de `degraded` devuelve el snapshot y nada mas", () => {

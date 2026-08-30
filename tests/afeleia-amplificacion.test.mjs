@@ -4,6 +4,10 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 
 const { createOutageMemo } = await import("@/lib/afeleia/contract");
+const fuenteContrato = readFileSync(
+  new URL("../lib/afeleia/contract.ts", import.meta.url),
+  "utf8",
+);
 
 /**
  * Cuantas veces se le pregunta a una API que ya se sabe caida.
@@ -48,6 +52,26 @@ test("cumplida la ventana se vuelve a intentar", () => {
 
   ahora += 60_000;
   assert.equal(memo.current(), null);
+});
+
+test("un reloj que salta hacia atras NO estira la ventana", () => {
+  // Hallazgo de la tercera ronda: con `Date.now()`, atrasar el reloj 60 s
+  // extendia la ventana otro tanto y el sitio seguia sirviendo el snapshot
+  // despues de que la API habia vuelto. Pasa de verdad: un ajuste de NTP, una VM
+  // que se despierta, un contenedor con el reloj corregido al arrancar.
+  let ahora = 1_000_000;
+  const memo = createOutageMemo(60_000, () => ahora);
+  memo.remember("snapshot");
+
+  ahora -= 60_000;
+  assert.equal(memo.current(), null, "ante un reloj que retrocede, se vuelve a intentar");
+});
+
+test("el reloj de por defecto es monotonico", () => {
+  // La proteccion de arriba es la red; esto es la regla: `performance.now()` no
+  // salta. Si alguien vuelve a `Date.now()`, este test se pone rojo.
+  assert.match(fuenteContrato, /now: \(\) => number = \(\) => performance\.now\(\)/);
+  assert.doesNotMatch(fuenteContrato, /now: \(\) => number = Date\.now/);
 });
 
 test("una respuesta buena borra el recuerdo de la caida", () => {
