@@ -301,7 +301,9 @@ export default function Navbar() {
             open ? "translate-y-0" : "translate-y-4"
           }`}
         >
-          {/* Top row: logo, nombre, idioma y la X, todos sobre el mismo eje.
+          {/* Top row: logo, idioma y la X, todos sobre el mismo eje. El nombre
+              se fue al pie del panel: arriba competía con el idioma por el ancho
+              de un teléfono de 375px, y abajo cierra el menú sin apretar nada.
               El envoltorio lleva `flex`: sin él era un bloque con un `inline-flex`
               adentro, y un elemento en línea reserva debajo el hueco de los
               descendentes de su tipografía. Eso hacía la caja 6,7px más alta que
@@ -318,13 +320,11 @@ export default function Navbar() {
               <Link
                 href={homePath}
                 onClick={closeMobileMenu}
-                className="flex items-center gap-2.5 leading-none"
+                className="flex items-center leading-none"
                 aria-label={t("logoAlt")}
               >
-                {/* 56px y no 64: con el desplegable de idioma en la misma fila,
-                    a 375px el nombre se partía en dos líneas. El nombre lleva
-                    `whitespace-nowrap` para que si algún día vuelve a no caber
-                    se note en el acto y no en un salto de línea silencioso. */}
+                {/* 56px se mantiene aunque el nombre ya no esté al lado: es la
+                    altura que deja el logo y la X sobre el mismo eje óptico. */}
                 <Image
                   src="/brand/logo-blanco-v2.webp"
                   alt=""
@@ -333,12 +333,6 @@ export default function Navbar() {
                   className="h-14 w-auto"
                   sizes="56px"
                 />
-                <span
-                  aria-hidden="true"
-                  className="font-display text-on-primary text-base leading-tight tracking-tight whitespace-nowrap"
-                >
-                  Viña Casa Acosta
-                </span>
               </Link>
             </div>
 
@@ -494,6 +488,23 @@ export default function Navbar() {
               </button>
             </div>
           </div>
+
+          {/* El nombre, al pie: cierra el panel y libera la fila de arriba, que
+              a 375px se repartía entre logo, nombre, idioma y la X. Entra el
+              último de la escalera de aparición —después del bloque de tienda—
+              y es `aria-hidden` porque el logo de arriba ya anuncia el sitio:
+              leerlo dos veces no agrega nada. `mt-auto` lo empuja al fondo
+              cuando el menú no llena la pantalla, sin despegarlo del contenido
+              cuando sí la llena. */}
+          <p
+            aria-hidden="true"
+            className={`mt-auto pt-10 text-center font-display text-base leading-tight tracking-tight text-on-primary/70 transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] ${
+              open ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
+            }`}
+            style={{ transitionDelay: open ? `${links.length * 60 + 320}ms` : "0ms" }}
+          >
+            Viña Casa Acosta
+          </p>
         </div>
       </div>
     </>

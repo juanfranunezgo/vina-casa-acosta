@@ -71,16 +71,14 @@ export default function LanguageSwitcher({
   // nada. Va sobre la foto a sangre de la capa, de ahi el vidrio: el actual es
   // una pastilla blanca y los otros dos, texto claro sobre la foto. La `mobile`
   // tambien son tres botones, pero rellenos y pensados para el panel del menu.
+  //
+  // Sin globo: las tres pastillas dicen solas de que se trata la fila, y sobre
+  // la foto a sangre de la capa el icono era una mancha mas. Quien navega con
+  // lector de pantalla no pierde nada: el grupo ya se anuncia como "Language",
+  // que es lo que el globo hacia por los que ven.
   if (variant === "gate") {
     return (
       <div className="flex items-center gap-2" role="group" aria-label="Language" translate="no">
-        {/* El globo dice de que se trata la fila sin gastar una palabra que
-            habria que traducir tres veces. Es `aria-hidden` porque el grupo ya
-            se anuncia como "Language". */}
-        <Globe
-          className="h-[18px] w-[18px] shrink-0 text-on-primary/85 drop-shadow-[0_2px_8px_rgba(0,0,0,0.6)]"
-          aria-hidden="true"
-        />
         {locales.map((loc) => {
           const isCurrent = loc === currentLocale;
           return (
