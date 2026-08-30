@@ -27,6 +27,7 @@ import {
   CONTRACT_VERSION,
   catalogEndpoint,
   createOutageMemo,
+  crearVueloUnico,
   emptyCatalog,
   isOwnCatalog,
   isValidCatalog,
@@ -283,8 +284,7 @@ function snapshotAgeDays(catalog: ApiCatalog): number | null {
  * El fallback nunca se muestra como error al visitante: se registra del lado
  * del servidor para que quede en los logs de Netlify.
  */
-function reportFallback(reason: string): void {
-  const catalog = fallbackCatalog();
+function reportFallback(reason: string, catalog: ApiCatalog): void {
   const age = snapshotAgeDays(catalog);
   const antiguedad =
     age === null
@@ -309,8 +309,12 @@ function reportFallback(reason: string): void {
 const caidaReciente = createOutageMemo<CatalogLoad>(CATALOG_REVALIDATE_SECONDS * 1000);
 
 function degraded(reason: string): CatalogLoad {
-  reportFallback(reason);
-  const load: CatalogLoad = { catalog: fallbackCatalog(), origin: "snapshot" };
+  // Se lee UNA vez y se pasa: `reportFallback` lo llamaba por su cuenta para
+  // medir la edad, asi que cada degradacion validaba el snapshot dos veces y —con
+  // un snapshot ajeno— gritaba dos veces la misma linea.
+  const catalog = fallbackCatalog();
+  reportFallback(reason, catalog);
+  const load: CatalogLoad = { catalog, origin: "snapshot" };
   // Se recuerda DESPUÉS de reportar: el log sale una vez por proceso y por
   // ventana, en vez de una vez por página. La misma señal, sin el ruido que hacía
   // ilegibles los logs del build justo cuando había que leerlos.
@@ -319,33 +323,40 @@ function degraded(reason: string): CatalogLoad {
 }
 
 /**
- * La consulta que este proceso ya tiene en vuelo, o `null`.
+ * La consulta compartida: una sola en vuelo por proceso.
  *
- * `cache()` de React memoiza por REQUEST, no por proceso: la tercera ronda de
- * review mandó 30 rutas simultáneas contra una API que tardaba 750 ms y cortaba,
- * y midió **30 conexiones y 30 degradaciones**. Todas leyeron la memoria de caída
- * antes de que el primer fallo llegara a escribirla — recordar el RESULTADO no
- * contiene una ráfaga, porque durante la ráfaga todavía no hay resultado.
- *
- * Lo que la contiene es compartir la PROMESA: el primero que llega dispara la
- * consulta, los demás se cuelgan de esa misma, y el proceso abre una conexión por
- * ventana en vez de una por render. Es la mitad que le faltaba a la memoria de
- * caída, y las dos juntas son las que hacen que cien webs desplegando durante una
- * caída de Afeleia no la conviertan en miles de intentos.
- *
- * Se limpia al resolverse, así que nadie se cuelga de una consulta vieja: lo que
- * se comparte es una lectura EN CURSO, no un resultado cacheado. De cachear el
- * resultado ya se encarga el `fetch` de Next con su `revalidate`.
+ * `crearVueloUnico` vive en el contrato y está probado ejecutándolo (30 llamadas
+ * simultáneas, un solo disparo). Acá arriba se le agrega la red que el resto
+ * necesita: **esta promesa no puede rechazar**, porque de ella pueden estar
+ * colgados treinta renders y un rechazo los tumbaría a todos. `consultarCatalogo`
+ * ya termina todos sus caminos en `degraded()`, pero un invariante del que
+ * dependen otros tiene que ser mecanismo y no comentario.
  */
-let consultaEnCurso: Promise<CatalogLoad> | null = null;
+const consultaCompartida = crearVueloUnico(async (): Promise<CatalogLoad> => {
+  try {
+    return await consultarCatalogo();
+  } catch (error) {
+    // Último escalón: ni siquiera se pasa por `degraded()`, que es lo único que
+    // podría haber tirado. Catálogo vacío, ruidoso, y el sitio en pie.
+    const detalle = error instanceof Error ? error.message : String(error);
+    console.error(
+      `[afeleia] la lectura del catálogo tiró (${detalle}): se sirve un catálogo vacío. ` +
+        "Esto no debería pasar: `consultarCatalogo` degrada por su cuenta.",
+    );
+    return {
+      catalog: emptyCatalog(process.env.NEXT_PUBLIC_AFELEIA_SITIO ?? ""),
+      origin: "snapshot",
+    };
+  }
+});
 
 /**
  * `cache()` de React: dentro de UN mismo render, la página y el `<meta>` que
  * declara el origen comparten la misma lectura. Sin esto, emitir el origen
  * costaría un fetch extra por página solo para poder informarlo.
  *
- * Y por encima, el single-flight de `consultaEnCurso`, que es lo mismo pero entre
- * renders del mismo proceso.
+ * Y por encima, el vuelo único, que es lo mismo pero entre renders del mismo
+ * proceso.
  */
 const loadCatalog = cache(async (): Promise<CatalogLoad> => {
   // Preguntar por la caída ANTES del fetch: consultarla después no ahorraría
@@ -353,19 +364,7 @@ const loadCatalog = cache(async (): Promise<CatalogLoad> => {
   const recordada = caidaReciente.current();
   if (recordada) return recordada;
 
-  // Ya hay una consulta en vuelo: se espera esa. Nada que reintentar acá — si
-  // falla, falla para todos y la memoria de caída se encarga de lo que sigue.
-  if (consultaEnCurso) return consultaEnCurso;
-
-  const consulta = consultarCatalogo();
-  consultaEnCurso = consulta;
-  try {
-    return await consulta;
-  } finally {
-    // Solo el que la puso la saca: si otra corrida ya arrancó la siguiente, esa
-    // es la que vale.
-    if (consultaEnCurso === consulta) consultaEnCurso = null;
-  }
+  return consultaCompartida();
 });
 
 /**

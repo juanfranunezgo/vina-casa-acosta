@@ -3,11 +3,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 
-const { createOutageMemo } = await import("@/lib/afeleia/contract");
-const fuenteContrato = readFileSync(
-  new URL("../lib/afeleia/contract.ts", import.meta.url),
-  "utf8",
-);
+const { createOutageMemo, crearVueloUnico } = await import("@/lib/afeleia/contract");
 
 /**
  * Cuantas veces se le pregunta a una API que ya se sabe caida.
@@ -67,12 +63,10 @@ test("un reloj que salta hacia atras NO estira la ventana", () => {
   assert.equal(memo.current(), null, "ante un reloj que retrocede, se vuelve a intentar");
 });
 
-test("el reloj de por defecto es monotonico", () => {
-  // La proteccion de arriba es la red; esto es la regla: `performance.now()` no
-  // salta. Si alguien vuelve a `Date.now()`, este test se pone rojo.
-  assert.match(fuenteContrato, /now: \(\) => number = \(\) => performance\.now\(\)/);
-  assert.doesNotMatch(fuenteContrato, /now: \(\) => number = Date\.now/);
-});
+// El guard de ortografia del reloj (una regex sobre el texto del parametro por
+// defecto) se reemplazo por el de comportamiento del final de este archivo: la
+// version de texto se ponia roja ante un refactor equivalente y podia no
+// notar un cambio de reloj de verdad.
 
 test("una respuesta buena borra el recuerdo de la caida", () => {
   let ahora = 1_000;
@@ -105,4 +99,84 @@ test("la ventana de la memoria es la misma del ISR", () => {
   // Recordar mas que la ventana de revalidacion dejaria al sitio sirviendo el
   // snapshot despues de que la API volvio; recordar menos no ahorraria intentos.
   assert.match(fuente, /createOutageMemo(<[^>]*>)?\(\s*CATALOG_REVALIDATE_SECONDS \* 1000/);
+});
+
+// --- El vuelo unico: lo que la memoria NO contiene ---------------------------
+// La memoria de arriba recuerda el RESULTADO, y por eso no contiene una rafaga:
+// durante la rafaga todavia no hay resultado. La review lo midio —30 rutas
+// simultaneas contra una API que tarda 750 ms y corta: 30 conexiones y 30
+// degradaciones, todas leyendo la memoria antes de que el primer fallo llegara a
+// escribirla—. Lo que la contiene es compartir la promesa EN VUELO.
+//
+// Esto se ejecuta, y no es un detalle: la primera version del guard era una
+// expresion regular sobre `catalog.ts` y se quedaba verde con el single-flight
+// desactivado (borrando una asignacion, o cambiando `return await` por `return`).
+
+test("treinta llamadas simultaneas disparan UNA sola consulta", async () => {
+  let disparos = 0;
+  let resolver;
+  const enEspera = new Promise((listo) => {
+    resolver = listo;
+  });
+  const consultar = crearVueloUnico(async () => {
+    disparos += 1;
+    await enEspera;
+    return "catalogo";
+  });
+
+  const rafaga = Promise.all(Array.from({ length: 30 }, () => consultar()));
+  resolver();
+  const resultados = await rafaga;
+
+  assert.equal(disparos, 1, `abrio ${disparos} consultas para 30 lecturas simultaneas`);
+  assert.deepEqual(new Set(resultados), new Set(["catalogo"]));
+});
+
+test("cumplida la consulta, la siguiente vuelve a preguntar", async () => {
+  // Sin esto el proceso se colgaria para siempre de una lectura vieja y el sitio
+  // dejaria de revalidar: compartir una consulta EN CURSO no es cachear.
+  let disparos = 0;
+  const consultar = crearVueloUnico(async () => {
+    disparos += 1;
+    return disparos;
+  });
+
+  assert.equal(await consultar(), 1);
+  assert.equal(await consultar(), 2);
+  assert.equal(disparos, 2);
+});
+
+test("si la consulta falla, falla para todos y la siguiente reintenta", async () => {
+  let disparos = 0;
+  const consultar = crearVueloUnico(async () => {
+    disparos += 1;
+    throw new Error(`fallo ${disparos}`);
+  });
+
+  const resultados = await Promise.allSettled([consultar(), consultar(), consultar()]);
+  assert.deepEqual(
+    resultados.map((r) => r.status),
+    ["rejected", "rejected", "rejected"],
+  );
+  assert.equal(disparos, 1, "los tres se colgaron de la misma consulta");
+
+  await assert.rejects(() => consultar(), /fallo 2/, "y la siguiente vuelve a intentar");
+});
+
+test("el reloj de por defecto no es el de pared", async () => {
+  // Guard de comportamiento, no de ortografia: la version anterior fijaba el
+  // texto del parametro por defecto, asi que un refactor equivalente la ponia
+  // roja y un cambio de reloj real podia no notarse. Aca se mueve `Date.now`
+  // hacia atras: con el reloj de pared la ventana se estiraba —el hallazgo— y
+  // con el monotonico no pasa nada.
+  const real = Date.now;
+  try {
+    Date.now = () => 1_000_000;
+    const memo = createOutageMemo(60_000);
+    memo.remember("snapshot");
+    Date.now = () => 0;
+    assert.equal(memo.current(), "snapshot", "el vencimiento no puede depender de Date.now");
+  } finally {
+    Date.now = real;
+  }
 });

@@ -211,7 +211,8 @@ export function catalogEndpointFor(
     return null;
   }
   if (url.protocol !== "https:" && url.protocol !== "http:") return null;
-  if (url.search !== "" || url.hash !== "") return null;
+  // El `#` vacio no aparece en `.hash` y sin embargo sobrevive a `toString()`.
+  if (url.search !== "" || url.hash !== "" || base.includes("#")) return null;
   if (url.username !== "" || url.password !== "") return null;
 
   url.pathname = `${url.pathname.replace(/\/+$/, "")}/catalogo-publico`;
@@ -241,10 +242,17 @@ export function catalogEndpoint(): string | null {
  * La regla vive acá, una sola vez, y la usan las cuatro capas. Que estuviera
  * escrita dos veces fue lo que permitió que faltara en las otras dos.
  *
- * **Sin sitio configurado no se puede juzgar, y pasa**: es el clon local sin
- * `.env.local`, donde no hay contra qué comparar y el snapshot committeado es
- * todo lo que hay. Que esa configuración a medias no llegue a producción lo
- * asegura `razonDeConfiguracionInvalida`, que es donde corresponde.
+ * **Sin sitio configurado (ausente o vacío) no se puede juzgar, y pasa**: es el
+ * clon local sin `.env.local`, donde no hay contra qué comparar y el snapshot
+ * committeado es todo lo que hay.
+ *
+ * Que esa ceguera no llegue a un despliegue lo asegura
+ * `razonDeConfiguracionInvalida`, **y hubo que arreglarlo para que fuera
+ * cierto**: con las dos variables ausentes devolvía `null` en cualquier
+ * contexto, así que un build de Netlify sin configurar dejaba a las cuatro capas
+ * sin nada contra qué comparar — la misma falla, entrando por la puerta más
+ * fácil de dejar abierta. Hoy, en un build de despliegue, faltar las dos es un
+ * error de configuración y frena.
  */
 export function isOwnCatalog(catalog: { sitio?: unknown }, sitio: string | undefined): boolean {
   if (!sitio) return true;
@@ -358,6 +366,40 @@ export function createOutageMemo<T>(windowMs: number, now: () => number = () => 
     forget(): void {
       remembered = null;
     },
+  };
+}
+
+
+/**
+ * Envuelve una consulta para que **una sola esté en vuelo por proceso**.
+ *
+ * `cache()` de React memoiza por REQUEST, no por proceso: una ráfaga de renders
+ * simultáneos abre una conexión cada uno. Y la memoria de caída no la contiene,
+ * porque durante la ráfaga todavía no hay resultado que recordar — la review lo
+ * midió: 30 rutas a la vez contra una API que tarda y corta daban 30 conexiones
+ * y 30 degradaciones. Lo que la contiene es compartir la PROMESA: el primero
+ * dispara, los demás se cuelgan de esa misma, y el proceso abre una conexión por
+ * ventana en vez de una por render.
+ *
+ * Vive acá, y no en `catalog.ts`, por el mismo motivo que `createOutageMemo`:
+ * ahí adentro solo se puede cubrir con un guard de texto, y un guard de texto se
+ * queda verde si alguien borra la línea que hace funcionar la cosa. Acá se
+ * ejecuta.
+ *
+ * Se limpia al asentarse, así que nadie se cuelga de una lectura vieja: lo que
+ * se comparte es una consulta EN CURSO, no un resultado cacheado.
+ */
+export function crearVueloUnico<T>(consulta: () => Promise<T>): () => Promise<T> {
+  let enVuelo: Promise<T> | null = null;
+  return () => {
+    if (enVuelo !== null) return enVuelo;
+    const vuelo = consulta().finally(() => {
+      // Solo el que lo puso lo saca: si ya arrancó el siguiente, ese es el que
+      // vale.
+      if (enVuelo === vuelo) enVuelo = null;
+    });
+    enVuelo = vuelo;
+    return vuelo;
   };
 }
 

@@ -96,10 +96,17 @@ test("las tres puertas al modo degradado siguen cableadas", () => {
   // rechaza (`razonParaRechazar`), pero el runtime la servia igual: el sitio
   // habria publicado el catalogo de otro cliente hasta la siguiente
   // revalidacion. Las dos capas tienen que mirar lo mismo.
+  // Forma exacta y cerrada: con la version laxa, agregarle `&& false` a la
+  // condicion dejaba la puerta muerta y el guard en verde.
   assert.match(
     catalogSource,
-    /!isOwnCatalog\(payload, sitio\)[\s\S]{0,200}?return degraded\(/,
+    /if \(!isOwnCatalog\(payload, sitio\)\) \{\s*return degraded\(/,
     "sitio ajeno",
+  );
+  assert.match(
+    catalogSource,
+    /const sitio = process\.env\.NEXT_PUBLIC_AFELEIA_SITIO;\s*if \(!isOwnCatalog\(payload, sitio\)\)/,
+    "el sitio contra el que se compara sale del entorno, no de la respuesta",
   );
 });
 
@@ -109,24 +116,40 @@ test("el SNAPSHOT tambien se comprueba contra el sitio configurado", () => {
   // sellado con `sitio: "bodega-ajena"` y el build salio en verde publicando
   // `/es/vinos/producto-ajeno`. Servir el catalogo de otro cliente es peor que
   // no servir ninguno: se degrada a la tienda vacia, que es ruidosa y no miente.
+  //
+  // La forma EXACTA importa, y salio de una revision de estos tests: con
+  // `/isOwnCatalog\(snapshot, sitio\)/` a secas, agregarle `&& false` a la
+  // condicion dejaba la regla en tautologia y el guard en verde. Por eso se pide
+  // el `if (...)` entero, cerrado.
   const cuerpo = catalogSource.match(/function fallbackCatalog\(\): ApiCatalog \{([\s\S]*?)\n\}/);
   assert.ok(cuerpo, "no se encontro la funcion fallbackCatalog");
-  assert.match(cuerpo[1], /!isOwnCatalog\(snapshot, sitio\)/);
+  assert.match(cuerpo[1], /if \(!isOwnCatalog\(snapshot, sitio\)\) \{/);
+  assert.match(cuerpo[1], /const sitio = process\.env\.NEXT_PUBLIC_AFELEIA_SITIO;/);
   assert.match(cuerpo[1], /return emptyCatalog\(sitio \?\? ""\);[\s\S]*return emptyCatalog\(sitio \?\? ""\);/);
 });
 
-test("una rafaga no abre una conexion por render: hay single-flight", () => {
+test("una rafaga no abre una conexion por render: hay vuelo unico", () => {
   // `cache()` de React memoiza por REQUEST. Con 30 rutas simultaneas contra una
   // API que tarda y corta, la review midio 30 conexiones y 30 degradaciones: la
   // memoria de caida no las contiene porque durante la rafaga todavia no hay
   // resultado que recordar. Lo que las contiene es compartir la PROMESA.
-  assert.match(catalogSource, /let consultaEnCurso: Promise<CatalogLoad> \| null = null;/);
-  assert.match(catalogSource, /if \(consultaEnCurso\) return consultaEnCurso;/);
-  // Y se limpia al resolverse: si no, el proceso se cuelga para siempre de una
-  // lectura vieja y el sitio deja de revalidar.
-  assert.match(catalogSource, /if \(consultaEnCurso === consulta\) consultaEnCurso = null;/);
-  // El unico lugar que abre la conexion tiene que quedar ADENTRO del single
-  // flight: si `fetch` volviera a `loadCatalog`, la rafaga vuelve con el.
+  //
+  // El COMPORTAMIENTO lo prueba `afeleia-amplificacion` ejecutando
+  // `crearVueloUnico` —la version anterior de este guard era puro texto y se
+  // quedaba verde con el single-flight desactivado—. Aca solo queda el cableado:
+  // que la pagina pase por el vuelo compartido y no por su propia consulta.
+  assert.match(catalogSource, /const consultaCompartida = crearVueloUnico\(/);
+  assert.match(catalogSource, /return consultaCompartida\(\);/);
+  // Y que la promesa compartida no pueda rechazar: colgada de ella puede haber
+  // media docena de renders, y un rechazo los tumba a todos.
+  const compartida = catalogSource.match(
+    /const consultaCompartida = crearVueloUnico\(([\s\S]*?)\n\}\);/,
+  );
+  assert.ok(compartida, "no se encontro la consulta compartida");
+  assert.match(compartida[1], /catch \(error\) \{/, "la promesa compartida no puede rechazar");
+  assert.match(compartida[1], /catalog: emptyCatalog\(/, "y su ultimo escalon es el vacio");
+  // El unico lugar que abre la conexion tiene que quedar ADENTRO del vuelo: si
+  // `fetch` volviera a `loadCatalog`, la rafaga vuelve con el.
   const consultar = catalogSource.indexOf("async function consultarCatalogo(");
   const fetchEn = catalogSource.indexOf("await fetch(");
   assert.ok(consultar > 0 && consultar < fetchEn, "el fetch vive dentro de consultarCatalogo");
@@ -149,8 +172,9 @@ test("el cuerpo de `degraded` devuelve el snapshot y nada mas", () => {
     .map((linea) => linea.trim())
     .filter((linea) => linea !== "" && !linea.startsWith("//"));
   assert.deepEqual(sentencias, [
-    "reportFallback(reason);",
-    'const load: CatalogLoad = { catalog: fallbackCatalog(), origin: "snapshot" };',
+    "const catalog = fallbackCatalog();",
+    "reportFallback(reason, catalog);",
+    'const load: CatalogLoad = { catalog, origin: "snapshot" };',
     // Recordar la caida es parte del camino degradado desde que se midio la
     // amplificacion: sin esta linea, cada pagina y cada worker vuelven a
     // intentar contra la API que ya se sabe caida (53 intentos por build).
