@@ -357,6 +357,14 @@ const consultaCompartida = crearVueloUnico(async (): Promise<CatalogLoad> => {
  *
  * Y por encima, el vuelo único, que es lo mismo pero entre renders del mismo
  * proceso.
+ *
+ * ⚠️ Toda ruta que consuma el catálogo tiene que declarar su propio
+ * `export const revalidate = 60`. Next propaga el `revalidate` del `fetch` al
+ * segmento **del render que lo inició**, y con el vuelo compartido los demás no
+ * ejecutan esa propagación: una ruta que se apoyara en el fetch quedaría con ISR
+ * de 60 s cuando inicia el vuelo y estática para siempre cuando se cuelga de
+ * otro, según el orden de render del build. Lo asserta
+ * `tests/afeleia-modo-degradado.test.mjs`.
  */
 const loadCatalog = cache(async (): Promise<CatalogLoad> => {
   // Preguntar por la caída ANTES del fetch: consultarla después no ahorraría

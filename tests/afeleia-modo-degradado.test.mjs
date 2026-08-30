@@ -206,3 +206,27 @@ test("el fallback vacio es un catalogo valido: no puede tumbar la pagina", () =>
   assert.deepEqual(vacio.productos, []);
   assert.deepEqual(sanitizeDefinitions(vacio.definiciones_atributos), []);
 });
+
+test("toda ruta que consume el catalogo declara su propio revalidate", async () => {
+  // Next propaga el `revalidate` del `fetch` al segmento DEL RENDER QUE LO
+  // INICIO, y con el vuelo compartido los demas no ejecutan esa propagacion: una
+  // ruta que se apoyara en el fetch quedaria con ISR de 60 s cuando inicia el
+  // vuelo y estatica para siempre cuando se cuelga de otro, segun el orden de
+  // render del build. O sea que el literal de segmento paso a ser load-bearing
+  // y nada lo decia.
+  const rutas = [
+    "app/sitemap.ts",
+    "app/[locale]/vinos/page.tsx",
+    "app/[locale]/vinos/[slug]/page.tsx",
+    "app/[locale]/tienda/page.tsx",
+  ];
+  for (const ruta of rutas) {
+    const fuente = await readFile(path.join(ROOT, ruta), "utf8");
+    if (!/getCatalog|getCatalogMeta|getCatalogDefinitions|getWineBySlug/.test(fuente)) continue;
+    assert.match(
+      fuente,
+      /export const revalidate = 60/,
+      `${ruta} lee el catalogo y no declara su revalidate`,
+    );
+  }
+});
