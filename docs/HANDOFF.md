@@ -297,8 +297,13 @@ importa React y el snapshot y `node --test` no puede cargarlo. Son tres:
    afuera — *existe y Google no lo ve* otra vez, con otro disfraz. Lo que **sigue afuera** es
    `& < > "`, y no por estética: Next serializa el sitemap **sin escapar XML**, así que un `&`
    en un slug no degrada una URL, invalida el archivo entero y el crawler lo descarta completo.
-   Las tildes y la eñe entran. Un slug envenenado **no rompe el build**: se descarta y el sitio
-   se despliega.
+   De los cuatro, el único que llega hasta el serializador es el `&` —a `< > "` los
+   percent-codifica `new URL()` antes—, y eso ahora lo comprueba un test que serializa con el
+   serializador real de Next, en vez de afirmarlo en un comentario. Las tildes y la eñe entran,
+   **incluida la eñe descompuesta** (`n` + tilde combinante, que es lo que produce un pegado
+   desde macOS): sin `\p{M}` en la lista, ese producto quedaba afuera y el mensaje de error
+   mostraba un slug que se lee perfecto. Un slug de más de 200 caracteres también se descarta.
+   Un slug envenenado **no rompe el build**: se descarta y el sitio se despliega.
 3. **Tope.** 50.000 URLs es el máximo del estándar y pasarlo invalida el archivo entero, así
    que el exceso se corta —por ruta, nunca dejando una página anunciada en dos idiomas de
    tres— y se avisa. Hoy el sitio va por 105 URLs (13 productos, medido en el preview). Cuando esto se acerque al tope, la salida es
@@ -352,8 +357,10 @@ caídas:
 | El catálogo llega **vacío** y es válido | lo escribe y **avisa** nombrando cuántos había | si el cliente despublicó todo, la tienda vacía es la verdad; el snapshot viejo publicaría inventario retirado |
 | No queda **nada servible** (API caída *y* snapshot corrupto) | **falla el build** (salida 1) | Netlify despliega atómico: si el build falla, el deploy anterior sigue publicado **con sus productos**. Construir igual reemplazaba el sitio bueno por una tienda vacía |
 | El snapshot es de **otro sitio** | **falla el build** (salida 1) | tercera ronda de review: un snapshot coherente y sellado con `sitio: "bodega-ajena"` construía 77 páginas y publicaba `/es/vinos/producto-ajeno`, en verde. Publicar el catálogo de otro cliente es peor que no desplegar |
-| El **par snapshot/sello no cierra** después de intentar repararlo | **falla el build** (salida 1) | un par que no cierra significa que alguien tocó la última línea de defensa fuera del protocolo: no se sabe qué catálogo se estaría desplegando |
+| El sello **contradice** al snapshot, después de intentar reparar | **falla el build** (salida 1) | alguien tocó la última línea de defensa fuera del protocolo: no se sabe qué catálogo se estaría desplegando |
+| El sello **falta** | **construye** y grita | el sello es un control de *procedencia*, no de servibilidad: el snapshot ya pasó el contrato y el dueño. Frenar acá convertiría una caída —o un archivo borrado— en un deploy imposible |
 | La **configuración** es inválida (variable vacía, con espacios, a medias, URL que no es URL, URL con query/fragmento/credenciales) | **falla el build** (salida 1) | no es una caída: con esa configuración el sitio queda degradado *para siempre* y en verde |
+| Faltan **las dos** variables en un build de despliegue (`CONTEXT`/`NETLIFY` presentes) | **falla el build** (salida 1) | además de dejar el sitio degradado para siempre, sin sitio configurado **ninguna de las cuatro capas puede comprobar de quién es el catálogo**: la puerta del tenant se apaga entera por la vía más fácil de dejar abierta. En local, sin contexto de deploy, sigue siendo válido: es el clon sin `.env.local` |
 
 Las escotillas son `AFELEIA_PERMITIR_SIN_CATALOGO=1` (construye con la tienda vacía) y
 `AFELEIA_PERMITIR_PAR_A_MEDIAS=1` (construye con el par que hay). Las dos dejan el motivo
@@ -364,7 +371,12 @@ y `.env`; el prebuild corría antes, en otro proceso, y solo veía las variables
 que en una máquina con `.env.local` apuntando a otro slug el prebuild decía «sin API/SITIO» y
 dejaba pasar, y el runtime, que sí lee el archivo, se encontraba con un snapshot que no era de
 su sitio. Ahora carga los mismos archivos con el cargador de Next (`@next/env`). En Netlify no
-cambia nada: ahí las variables son de entorno y no hay `.env*` en el repo. ⚠️ **Efecto local:**
+cambia nada: ahí las variables son de entorno y no hay `.env*` en el repo. El generador
+(`npm run catalogo:snapshot`) los carga también, y eso no es cosmética: el mensaje de error del
+prebuild recomienda correrlo, y sin esa línea ese comando fallaba con «faltan datos de
+conexión» en la máquina de cualquiera que tuviera su configuración en `.env.local` — la quinta
+capa mirando otra cosa que las otras cuatro. Las banderas `--url` y `--sitio` siguen ganando.
+⚠️ **Efecto local:**
 si tu `.env.local` apunta a un slug distinto del que trae `data/catalogo-fallback.json`
 —`afeleia-demo` contra `vina-casa-acosta`, por ejemplo— `npm run build` ahora **se detiene y lo
 dice**, en vez de construir una tienda vacía en verde.
@@ -398,13 +410,35 @@ Dos cosas más, de la tercera ronda:
   snapshot de uno con el sello del otro, *sin respaldos* —el segundo los retiraba al confirmar,
   porque para él todo había salido bien— y el build en verde. La secuencia entera (respaldar,
   escribir, sellar, verificar, confirmar) corre con un candado de archivo; el `fetch` queda
-  afuera, para que una API lenta no bloquee al que quiere reparar. El candado se roba si lleva
-  más de un minuto abandonado —un `SIGKILL` no suelta nada— y quien no lo consigue **no
+  afuera, para que una API lenta no bloquee al que quiere reparar. Quien no lo consigue **no
   refresca**, no se cuelga: un refresco que no sale es una molestia, un build colgado es un
   despliegue perdido.
+
+  **La primera versión del candado tenía adentro el bug que venía a cerrar**, y lo encontró la
+  revisión siguiente: `open(wx)` crea el archivo vacío y escribe el dueño después, así que había
+  un instante en que el candado existía sin contenido; el que llegaba segundo lo leía vacío, no
+  lo podía parsear, lo tomaba por abandonado y se lo robaba a un dueño vivo — dos escritores
+  adentro. Las tres reglas que lo cierran, y que conviene no «simplificar»:
+
+  1. el candado se **publica con `link()`**: cuando el nombre aparece, el dueño ya está escrito;
+  2. un candado **ilegible no se roba por ilegible** — se juzga por la edad del archivo, porque
+     un candado a medias puede ser alguien publicando el suyo ahora mismo;
+  3. sacarlo **se verifica**: devolver «lo saqué» sin haberlo sacado convertía la espera en un
+     bucle apretado —medido, un core al 100 % durante los 20 segundos— y dejaba el par
+     bloqueado para siempre si el archivo no se podía borrar.
+
+  El candado también se saca cuando su dueño ya no existe (`kill(pid, 0)`, con el pid validado
+  porque en Linux `kill(0)` y `kill(-1)` son selectores de grupo) o cuando lleva más de un
+  minuto abandonado: sin eso, un generador muerto con `SIGKILL` bloqueaba el par.
+
 - **Una reparación fallida no consume el respaldo.** `restaurarPar` devolvía el error y el
   `.bak` se borraba igual, así que el único camino de vuelta se gastaba en el intento que
   falló. Ahora se confirma **solo** si la restauración cerró (`repararDesdeRespaldo`).
+
+**Cuánto puede tardar el paso.** El techo del `spawnSync` del generador son 45 s, y **no es el
+techo del paso**: se le suman las tres tomas de candado de este script (5 s cada una), así que
+el techo real es ~60 s. El generador, a su vez, espera el candado 10 s como mucho, para que sus
+15 s de `fetch` más la espera entren en los 45 s con los que el wrapper lo corta.
 
 **Cuántas veces se le pregunta a una API caída.** Next cachea las respuestas pero no los
 fallos, así que cada página y cada worker volvían a intentar: **53 intentos medidos** en un
@@ -417,9 +451,19 @@ Las dos mitades hacen falta y la tercera ronda mostró por qué: recordar el *re
 contiene una ráfaga, porque durante la ráfaga todavía no hay resultado — 30 rutas simultáneas
 contra una API que tarda y corta abrían **30 conexiones**, todas leyendo la memoria antes de
 que el primer fallo llegara a escribirla. Medido después del arreglo, con la misma API:
-**6 conexiones en un build entero** (1 del prebuild + 5 de los 15 workers, 113 páginas) y
-**1 conexión por ventana de 60 s** en el server de producción, con 30 rutas pedidas a la vez.
-La serie completa es 53 → 22 → 6.
+**6 conexiones en un build entero** (1 del prebuild + 5 de los 15 workers, 113 páginas), y
+**1 conexión por ventana de 60 s** en `next start` con 30 rutas pedidas a la vez. La serie
+completa es 53 → 22 → 6.
+
+**Dónde paga cada mitad, dicho con precisión**, porque el número de `next start` puede leerse
+de más: los workers del build son procesos largos que renderizan muchas rutas en paralelo, y
+ahí el vuelo único es lo que corta la ráfaga. El runtime de producción es OpenNext sobre
+funciones de Netlify, donde cada instancia atiende un request por vez: ahí el vuelo único
+casi nunca dispara y lo que protege es la memoria de caída (y no hay deduplicación entre
+instancias — eso sería un artefacto publicado por Afeleia, y es decisión de la etapa de la
+«cañería instalable»). El otro mérito, que no se ve en el conteo de conexiones: sin vuelo
+único, el lock por clave de `fetch` de Next serializa la ráfaga y el último render espera
+*n × timeout*; con vuelo único espera **un** timeout.
 
 El vencimiento de esa memoria usa un **reloj monotónico** (`performance.now()`): con
 `Date.now()`, un salto del reloj hacia atrás —NTP, una VM que se despierta— estiraba la ventana
