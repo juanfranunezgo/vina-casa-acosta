@@ -290,10 +290,15 @@ importa React y el snapshot y `node --test` no puede cargarlo. Son tres:
 2. **Slug.** El `slug` lo escribe el cliente en el panel y el contrato solo exige que sea un
    string no vacío. Lo que no sea un segmento de URL (`../`, espacios, `?`, `#`, `%`, `//`, una
    URL entera) **no se anuncia**, y el descarte se grita en el log del build. Es una lista de
-   permitidos —letras de cualquier alfabeto, dígitos, `- _ . ~`— porque con una de prohibidos
-   cada carácter que nadie previó es un agujero. Las tildes y la eñe entran: dejar afuera un
-   producto real lo vuelve invisible para Google, y un chequeo que reprueba lo correcto es peor
-   que no tenerlo. Un slug envenenado **no rompe el build**: se descarta y el sitio se despliega.
+   permitidos —letras de cualquier alfabeto, dígitos y la puntuación que un segmento admite:
+   `- . _ ~ ! $ ' ( ) * + , ; = @`— porque con una de prohibidos cada carácter que nadie previó
+   es un agujero. La lista creció en la tercera ronda de review: `vino!casa` y `vino(casa)` son
+   slugs que el panel acepta, que la ruta sirve con 200 y que el canonical anuncia, y quedaban
+   afuera — *existe y Google no lo ve* otra vez, con otro disfraz. Lo que **sigue afuera** es
+   `& < > "`, y no por estética: Next serializa el sitemap **sin escapar XML**, así que un `&`
+   en un slug no degrada una URL, invalida el archivo entero y el crawler lo descarta completo.
+   Las tildes y la eñe entran. Un slug envenenado **no rompe el build**: se descarta y el sitio
+   se despliega.
 3. **Tope.** 50.000 URLs es el máximo del estándar y pasarlo invalida el archivo entero, así
    que el exceso se corta —por ruta, nunca dejando una página anunciada en dos idiomas de
    tres— y se avisa. Hoy el sitio va por 105 URLs (13 productos, medido en el preview). Cuando esto se acerque al tope, la salida es
@@ -312,6 +317,12 @@ misma función (`degraded` en `lib/afeleia/catalog.ts`): la API no contesta o ta
 segundos, responde un HTTP no-ok, responde algo que no cumple el contrato, o responde el
 catálogo **de otro sitio**. Esa última se agregó tras la review: una respuesta ajena publicaría
 nombres y precios de otro cliente, y el catálogo propio de ayer le gana al ajeno de hoy.
+
+Y una quinta puerta, un escalón más abajo: **el snapshot committeado también se comprueba
+contra el sitio configurado** antes de servirse. Si es de otro cliente, el runtime sirve el
+catálogo **vacío** en vez del ajeno. Es la asimetría deliberada de siempre —frenar donde hay
+red de contención (el build), degradar donde no la hay (el visitante)—, aplicada al caso que la
+tercera ronda de review encontró abierto.
 
 Tres reglas que conviene no «arreglar»:
 
@@ -340,10 +351,35 @@ caídas:
 | La API no contesta, tarda, responde mal o responde de otro sitio | avisa y **construye** con el snapshot committeado | es exactamente para lo que existe el fallback |
 | El catálogo llega **vacío** y es válido | lo escribe y **avisa** nombrando cuántos había | si el cliente despublicó todo, la tienda vacía es la verdad; el snapshot viejo publicaría inventario retirado |
 | No queda **nada servible** (API caída *y* snapshot corrupto) | **falla el build** (salida 1) | Netlify despliega atómico: si el build falla, el deploy anterior sigue publicado **con sus productos**. Construir igual reemplazaba el sitio bueno por una tienda vacía |
-| La **configuración** es inválida (variable vacía, con espacios, a medias, URL que no es URL) | **falla el build** (salida 1) | no es una caída: con esa configuración el sitio queda degradado *para siempre* y en verde |
+| El snapshot es de **otro sitio** | **falla el build** (salida 1) | tercera ronda de review: un snapshot coherente y sellado con `sitio: "bodega-ajena"` construía 77 páginas y publicaba `/es/vinos/producto-ajeno`, en verde. Publicar el catálogo de otro cliente es peor que no desplegar |
+| El **par snapshot/sello no cierra** después de intentar repararlo | **falla el build** (salida 1) | un par que no cierra significa que alguien tocó la última línea de defensa fuera del protocolo: no se sabe qué catálogo se estaría desplegando |
+| La **configuración** es inválida (variable vacía, con espacios, a medias, URL que no es URL, URL con query/fragmento/credenciales) | **falla el build** (salida 1) | no es una caída: con esa configuración el sitio queda degradado *para siempre* y en verde |
 
-La escotilla para el tercer caso es `AFELEIA_PERMITIR_SIN_CATALOGO=1`: construye igual, con la
-tienda vacía, y lo deja escrito en el log. Es una decisión operativa deliberada, no un default.
+Las escotillas son `AFELEIA_PERMITIR_SIN_CATALOGO=1` (construye con la tienda vacía) y
+`AFELEIA_PERMITIR_PAR_A_MEDIAS=1` (construye con el par que hay). Las dos dejan el motivo
+escrito en el log: son decisiones operativas deliberadas, no defaults.
+
+**El prebuild mira la misma configuración que `next build`.** `next build` carga `.env.local`
+y `.env`; el prebuild corría antes, en otro proceso, y solo veía las variables del shell — así
+que en una máquina con `.env.local` apuntando a otro slug el prebuild decía «sin API/SITIO» y
+dejaba pasar, y el runtime, que sí lee el archivo, se encontraba con un snapshot que no era de
+su sitio. Ahora carga los mismos archivos con el cargador de Next (`@next/env`). En Netlify no
+cambia nada: ahí las variables son de entorno y no hay `.env*` en el repo. ⚠️ **Efecto local:**
+si tu `.env.local` apunta a un slug distinto del que trae `data/catalogo-fallback.json`
+—`afeleia-demo` contra `vina-casa-acosta`, por ejemplo— `npm run build` ahora **se detiene y lo
+dice**, en vez de construir una tienda vacía en verde.
+
+**La URL de la API es una BASE.** El endpoint lo compone `catalogEndpointFor` modificando
+`pathname` con `URL`, y lo usan el runtime *y* el generador — antes cada uno lo pegaba con
+texto, y una base con query (`…/functions/v1?token=x`) producía
+`/functions/v1?token=x/catalogo-publico?sitio=…`: el path metido dentro del query, el sitio
+degradado y el build en verde. Query, fragmento y credenciales se rechazan en el prebuild, con
+el motivo escrito.
+
+**El dueño del catálogo se comprueba en las cuatro capas** (`isOwnCatalog`, una sola función):
+la respuesta viva, la respuesta que el generador acepta, el snapshot que el prebuild deja
+desplegar y el snapshot que el runtime sirve. Estaba escrita dos veces y por eso faltaba en las
+otras dos, que son justamente las que leen el **archivo** — el que se despliega.
 
 **El par snapshot + sello.** Son dos archivos que describen una sola cosa y el sistema de
 archivos no sabe reemplazar dos de una vez: matar el proceso entre los dos `rename` dejaba un
@@ -355,14 +391,39 @@ proceso muere en el medio, el respaldo queda y **el prebuild de la corrida sigui
 antes de que el build lea nada**. El protocolo vive en `scripts/catalogo-integridad.mjs`
 (`estadoDelPar`, `respaldarPar`, `recuperarPar`, `confirmarPar`) y `data/*.bak` está ignorado.
 
+Dos cosas más, de la tercera ronda:
+
+- **Un solo escritor por checkout** (`conElParTomado`). El protocolo sobrevivía a que el
+  proceso muriera, pero no a que hubiera **dos**: dos generadores intercalados dejaban el
+  snapshot de uno con el sello del otro, *sin respaldos* —el segundo los retiraba al confirmar,
+  porque para él todo había salido bien— y el build en verde. La secuencia entera (respaldar,
+  escribir, sellar, verificar, confirmar) corre con un candado de archivo; el `fetch` queda
+  afuera, para que una API lenta no bloquee al que quiere reparar. El candado se roba si lleva
+  más de un minuto abandonado —un `SIGKILL` no suelta nada— y quien no lo consigue **no
+  refresca**, no se cuelga: un refresco que no sale es una molestia, un build colgado es un
+  despliegue perdido.
+- **Una reparación fallida no consume el respaldo.** `restaurarPar` devolvía el error y el
+  `.bak` se borraba igual, así que el único camino de vuelta se gastaba en el intento que
+  falló. Ahora se confirma **solo** si la restauración cerró (`repararDesdeRespaldo`).
+
 **Cuántas veces se le pregunta a una API caída.** Next cachea las respuestas pero no los
 fallos, así que cada página y cada worker volvían a intentar: **53 intentos medidos** en un
 build que sano hace **una sola consulta**. Con cien sitios conectados, una caída de Afeleia se
 convertía en miles de intentos de sus propios clientes contra el servicio ya caído. Ahora el
-fallo se recuerda por proceso y por la misma ventana del ISR (`createOutageMemo`): **15
-intentos medidos**, uno por worker, y el log del build deja de repetir la misma línea 53 veces.
-Bajar de ahí exige coordinación entre procesos —un artefacto publicado por Afeleia, o un lock
-compartido— y es decisión de la etapa de la «cañería instalable», no de este repo.
+fallo se recuerda por proceso y por la misma ventana del ISR (`createOutageMemo`), **y las
+lecturas simultáneas comparten la consulta en vuelo** (`consultaEnCurso`, single-flight).
+
+Las dos mitades hacen falta y la tercera ronda mostró por qué: recordar el *resultado* no
+contiene una ráfaga, porque durante la ráfaga todavía no hay resultado — 30 rutas simultáneas
+contra una API que tarda y corta abrían **30 conexiones**, todas leyendo la memoria antes de
+que el primer fallo llegara a escribirla. Medido después del arreglo, con la misma API:
+**6 conexiones en un build entero** (1 del prebuild + 5 de los 15 workers, 113 páginas) y
+**1 conexión por ventana de 60 s** en el server de producción, con 30 rutas pedidas a la vez.
+La serie completa es 53 → 22 → 6.
+
+El vencimiento de esa memoria usa un **reloj monotónico** (`performance.now()`): con
+`Date.now()`, un salto del reloj hacia atrás —NTP, una VM que se despierta— estiraba la ventana
+y dejaba al sitio sirviendo el snapshot después de que Afeleia había vuelto.
 
 El HTML publica
 `<meta name="afeleia-catalogo" content="api|snapshot" data-generado="…" data-sitio="…" data-productos="…">`.
