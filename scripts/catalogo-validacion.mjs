@@ -42,6 +42,13 @@ export function razonParaRechazar(payload, sitioEsperado) {
   // el sitio publicaria nombres y precios ajenos, y ese catalogo quedaria
   // sellado como fallback legitimo. Un endpoint mal configurado, un slug mal
   // escrito o una API redirigida bastan para producirlo, sin que nada falle.
+  // Sin sitio pedido no hay dueño contra que comparar, y aceptar "cualquiera"
+  // seria escribir como snapshot una respuesta que nadie verifico. El generador
+  // ya corta antes por falta de configuracion; esto es que la regla no se
+  // ensanche sola al compartirla con las otras capas.
+  if (typeof sitioEsperado !== "string" || sitioEsperado === "") {
+    return "no se pidio ningun sitio: no se puede verificar de quien es la respuesta";
+  }
   if (!isOwnCatalog(payload, sitioEsperado)) {
     return `la respuesta es del sitio ${JSON.stringify(payload.sitio)} y se pidio ${JSON.stringify(sitioEsperado)}`;
   }
@@ -135,8 +142,28 @@ const SLUG_DE_SITIO = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 export function razonDeConfiguracionInvalida(env) {
   const url = env.NEXT_PUBLIC_AFELEIA_API_URL;
   const sitio = env.NEXT_PUBLIC_AFELEIA_SITIO;
+  // Netlify define `CONTEXT` (production / deploy-preview / branch-deploy) y
+  // `NETLIFY` en todos sus builds. Sirven para distinguir "clon local" de
+  // "despliegue", que es la unica distincion que importa acá abajo.
+  const enDespliegue = env.CONTEXT !== undefined || env.NETLIFY === "true";
 
-  if (url === undefined && sitio === undefined) return null;
+  if (url === undefined && sitio === undefined) {
+    // Sin ninguna de las dos: en local es un clon sin `.env.local` y se
+    // construye con el snapshot committeado. En un DESPLIEGUE es otra cosa: el
+    // sitio queda sirviendo la copia para siempre y en verde, y ademas ninguna
+    // de las cuatro capas puede comprobar de quien es ese catalogo —`isOwnCatalog`
+    // sin sitio configurado no tiene contra que comparar—. O sea que la falla que
+    // esta rama vino a cerrar reaparece justo en la configuracion mas facil de
+    // equivocar: la que todavia no se cargo.
+    if (!enDespliegue) return null;
+    return (
+      "faltan NEXT_PUBLIC_AFELEIA_API_URL y NEXT_PUBLIC_AFELEIA_SITIO en un build de " +
+      `despliegue (CONTEXT=${JSON.stringify(env.CONTEXT)}): el sitio quedaria sirviendo el ` +
+      "snapshot committeado para siempre, y sin sitio configurado tampoco se puede verificar " +
+      "de que cliente es ese catalogo. Cargarlas en Netlify -> Project configuration -> " +
+      "Environment variables."
+    );
+  }
 
   if (url === undefined) {
     return "falta NEXT_PUBLIC_AFELEIA_API_URL: esta definido el sitio pero no la API";
@@ -161,7 +188,10 @@ export function razonDeConfiguracionInvalida(env) {
   // falla que esta funcion existe para atajar. Se rechaza en vez de recortarlo en
   // silencio: quien puso ese token queria que viajara, y tiene que enterarse de
   // que asi no viaja.
-  if (endpoint.search !== "" || endpoint.hash !== "") {
+  // El `#` vacio no se ve en `.hash` pero SI sobrevive a `toString()`, asi que
+  // se mira tambien el texto crudo: un control que no cubre lo que dice cubrir
+  // es peor que no tenerlo.
+  if (endpoint.search !== "" || endpoint.hash !== "" || url.includes("#")) {
     return (
       `NEXT_PUBLIC_AFELEIA_API_URL tiene que ser la base de la API, sin query ni fragmento: ` +
       `${JSON.stringify(url)}. Con ${JSON.stringify(endpoint.search || endpoint.hash)} el ` +
@@ -186,7 +216,7 @@ export function razonDeConfiguracionInvalida(env) {
   // `lib/siteUrl.ts` rompe el build de produccion si el dominio publico quedo
   // provisional: en produccion los descuidos de configuracion no se avisan, se
   // frenan.
-  if (env.CONTEXT === "production" && endpoint.protocol !== "https:") {
+  if (env.CONTEXT?.toLowerCase() === "production" && endpoint.protocol !== "https:") {
     return (
       `NEXT_PUBLIC_AFELEIA_API_URL tiene que ser https en produccion: ${JSON.stringify(url)}`
     );
@@ -262,6 +292,20 @@ export function razonParaNoDesplegar(crudoSnapshot, sitioEsperado) {
   // pero nadie miraba el ARCHIVO — y el archivo es lo que se despliega. Publicar
   // el catalogo de otro cliente es peor que no desplegar: se frena.
   if (!isOwnCatalog(catalogo, sitioEsperado)) {
+    // "No declara dueño" y "declara OTRO dueño" son dos hechos distintos, y el
+    // mensaje tiene que decir cual es: con `JSON.stringify(undefined)` el aviso
+    // salia como "del sitio undefined", que parece un bug del script y no del
+    // archivo. Los dos frenan igual —lo que no se puede verificar no se publica—
+    // pero la salida de cada uno es otra.
+    const sinDueño = typeof catalogo.sitio !== "string" || catalogo.sitio === "";
+    if (sinDueño) {
+      return (
+        "el snapshot de fallback no declara de que sitio es, asi que no se puede verificar " +
+        `que sea de ${JSON.stringify(sitioEsperado)}. Regeneralo con ` +
+        "`npm run catalogo:snapshot`. " +
+        `${conservado}`
+      );
+    }
     return (
       `el snapshot de fallback es del sitio ${JSON.stringify(catalogo.sitio)} y este sitio es ` +
       `${JSON.stringify(sitioEsperado)}: publicarlo seria publicar el catalogo de otro cliente. ` +
@@ -270,4 +314,107 @@ export function razonParaNoDesplegar(crudoSnapshot, sitioEsperado) {
   }
 
   return null;
+}
+
+/**
+ * Que hace el prebuild al cerrar, dado lo que quedo en el disco.
+ *
+ * Es pura —no lee disco, no imprime, no sale del proceso— y eso es todo el
+ * punto: hasta esta tanda, las dos puertas que pueden FRENAR UN DEPLOY, sus dos
+ * escotillas y sus codigos de salida no los ejercitaba ningun test. Un typo en
+ * el nombre de una escotilla no lo detectaba nadie hasta que alguien la
+ * necesitara en medio de un incidente.
+ *
+ * Las reglas, en orden:
+ *
+ *   1. **No hay catalogo servible, o es de otro sitio** (`razon`): no se
+ *      construye. Escotilla `AFELEIA_PERMITIR_SIN_CATALOGO=1`.
+ *   2. **El par no se pudo juzgar** —otro proceso estaba escribiendo—: se
+ *      construye. La lectura habria sido de un refresco en vuelo, y frenar un
+ *      deploy por eso es frenar un build inocente.
+ *   3. **Falta el sello**: se construye, y se grita. El sello es un control de
+ *      PROCEDENCIA, no de servibilidad: el snapshot ya paso el contrato y el
+ *      dueño en el paso 1. Frenar acá convertiria una caida de Afeleia —o un
+ *      archivo borrado— en un deploy imposible, que es justo la regla que ordena
+ *      todo este archivo.
+ *   4. **El sello CONTRADICE al snapshot**: no se construye. Eso no es un
+ *      archivo que falta: es alguien que toco la ultima linea de defensa del
+ *      sitio por fuera del protocolo, y no se sabe que catalogo se estaria
+ *      desplegando. Escotilla `AFELEIA_PERMITIR_PAR_A_MEDIAS=1`.
+ *
+ * @param {{razon: string|null, parCoherente: boolean, motivoDelPar: string|null,
+ *          parJuzgable?: boolean, env?: Record<string, string|undefined>}} estado
+ * @returns {{salida: 0|1, nivel: "info"|"warn"|"error", mensaje: string|null}}
+ */
+export function decisionDeCierre({
+  razon,
+  parCoherente,
+  motivoDelPar,
+  parJuzgable = true,
+  env = {},
+}) {
+  const seguir = { salida: 0, nivel: "info", mensaje: null };
+
+  if (razon) {
+    if (env.AFELEIA_PERMITIR_SIN_CATALOGO === "1") {
+      return {
+        salida: 0,
+        nivel: "warn",
+        mensaje:
+          `[afeleia] ${razon}\n` +
+          "[afeleia] AFELEIA_PERMITIR_SIN_CATALOGO=1: se construye igual. Si el motivo es un " +
+          "snapshot de otro sitio, lo que se publica es la tienda VACIA —el runtime tampoco " +
+          "sirve un catalogo ajeno—, no el catalogo del otro cliente. Es una decision " +
+          "operativa deliberada; sacar la variable despues.",
+      };
+    }
+    return {
+      salida: 1,
+      nivel: "error",
+      mensaje:
+        `[afeleia] ${razon}\n` +
+        "[afeleia] Como salir: regenerar el snapshot con `npm run catalogo:snapshot` contra " +
+        "una API sana y commitearlo, o —si hace falta publicar YA con la tienda vacia— " +
+        "volver a desplegar con AFELEIA_PERMITIR_SIN_CATALOGO=1.",
+    };
+  }
+
+  if (!parJuzgable || parCoherente) return seguir;
+
+  if (motivoDelPar === "no hay sello") {
+    return {
+      salida: 0,
+      nivel: "warn",
+      mensaje:
+        "[afeleia] falta data/catalogo-fallback.integrity.json: el snapshot es servible y de " +
+        "este sitio, asi que el build sigue, pero su procedencia deja de estar sellada. " +
+        "Correr `npm run catalogo:sellar` y commitear el sello.",
+    };
+  }
+
+  const detalle =
+    `el snapshot y su sello no cierran (${motivoDelPar}): no se sabe que catalogo se ` +
+    "estaria desplegando.";
+
+  if (env.AFELEIA_PERMITIR_PAR_A_MEDIAS === "1") {
+    return {
+      salida: 0,
+      nivel: "warn",
+      mensaje:
+        `[afeleia] ${detalle}\n` +
+        "[afeleia] AFELEIA_PERMITIR_PAR_A_MEDIAS=1: se construye igual. Es una decision " +
+        "operativa deliberada; sacar la variable despues.",
+    };
+  }
+
+  return {
+    salida: 1,
+    nivel: "error",
+    mensaje:
+      `[afeleia] ${detalle}\n` +
+      "[afeleia] Como salir: `npm run catalogo:snapshot` contra una API sana (regenera y " +
+      "sella el par), o `npm run catalogo:sellar` si el snapshot es el bueno y lo unico " +
+      "desactualizado es el sello. Para publicar YA con lo que hay: " +
+      "AFELEIA_PERMITIR_PAR_A_MEDIAS=1.",
+  };
 }

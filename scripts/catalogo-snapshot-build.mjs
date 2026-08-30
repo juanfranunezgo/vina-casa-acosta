@@ -53,10 +53,10 @@ import {
   conElParTomado,
   estadoDelPar,
   frenteAlRespaldo,
-  hayRespaldoPendiente,
   recuperarPar,
 } from "./catalogo-integridad.mjs";
 import {
+  decisionDeCierre,
   razonDeConfiguracionInvalida,
   razonParaNoDesplegar,
 } from "./catalogo-validacion.mjs";
@@ -93,15 +93,62 @@ const CONSERVADO =
   "ademas impedir desplegar.";
 
 /**
- * Techo duro del paso entero, por encima del que ya tiene el fetch del generador.
+ * Techo del `spawnSync` del generador.
  *
  * Son dos relojes a proposito: el de adentro cubre la API que no contesta, este
  * cubre todo lo demas —DNS que no resuelve, disco trabado, un generador que se
  * cuelga por un motivo que hoy no existe—. Colgarse es la peor de las fallas
  * posibles aca: no se distingue de "esta tardando", consume el timeout global
  * del build y termina impidiendo desplegar.
+ *
+ * NO es el techo del paso entero, y decirlo importa: a esto se le suman las
+ * esperas del candado de este mismo script (`ESPERA_DEL_CANDADO_MS` por cada
+ * reparacion y por la lectura de cierre). El techo real del paso es
+ * 45 + 5 x 3 = **60 s**, y esta acotado a proposito: el generador espera el
+ * candado 10 s como mucho (`--espera-candado`), asi que sus 15 s de fetch mas su
+ * espera entran holgados en estos 45.
  */
 const TIMEOUT_MS = 45_000;
+
+/**
+ * Cuanto espera ESTE script por el candado, en cada una de sus tres tomas.
+ *
+ * Corto a proposito: si otro proceso esta refrescando, lo que hay en disco es
+ * suyo y va a quedar coherente; quedarse esperandolo adentro de un build es
+ * convertir una molestia en un despliegue lento.
+ */
+const ESPERA_DEL_CANDADO_MS = 5_000;
+
+/**
+ * Lo que el build va a servir, leido de una sola vez y CON EL CANDADO TOMADO.
+ *
+ * Sin el candado, la muestra puede caer en el medio de un refresco ajeno —entre
+ * el snapshot y su sello— y ahi el par se ve "a medias" sin que nada este mal:
+ * es trabajo en vuelo. Decidir frenar un deploy sobre esa lectura seria frenar
+ * un build inocente.
+ *
+ * Si el candado esta ocupado igual se lee, pero el estado del par se marca como
+ * NO juzgable: el contenido del snapshot se puede mirar siempre —`escribirAtomico`
+ * garantiza que sea el viejo entero o el nuevo entero— y lo unico que se suspende
+ * es la puerta del par.
+ */
+async function loQueSeVaAServir() {
+  const mirar = async () => ({
+    crudo: await readFile(RUTA_SNAPSHOT, "utf8").catch(() => null),
+    estado: await estadoDelPar(),
+    juzgable: true,
+  });
+  try {
+    return await conElParTomado(mirar, { esperaMs: ESPERA_DEL_CANDADO_MS });
+  } catch (error) {
+    if (!(error instanceof CandadoOcupado)) throw error;
+    console.warn(
+      "[afeleia] otro proceso esta escribiendo el snapshot: se construye con lo que hay y " +
+        "no se juzga el par (la lectura seria de un refresco en vuelo).",
+    );
+    return { ...(await mirar()), juzgable: false };
+  }
+}
 
 /**
  * Cierra el paso mirando lo que quedó en el disco, no lo que se quiso hacer.
@@ -109,64 +156,32 @@ const TIMEOUT_MS = 45_000;
  * Se llama por TODOS los caminos —refresco exitoso, API caída, generador
  * colgado, sin configuración—: es la única puerta por la que se pasa a
  * `next build`, así que es donde tiene sentido preguntar si queda algo servible.
+ *
+ * El ORDEN importa y salió de una review: primero se repara lo que haya quedado
+ * a medias, y recién después se juzga. Al revés, un par a medias hacía disparar
+ * la puerta equivocada —«no queda catálogo servible»— con el respaldo bueno ahí
+ * al lado, sin que nadie lo hubiera mirado; y la escotilla que ofrecía el
+ * mensaje publicaba la tienda vacía en vez de restaurar.
+ *
+ * Qué se decide con lo leído vive en `decisionDeCierre`, que es pura y está
+ * cubierta por tests: acá solo se lee el disco, se imprime y se sale.
  */
 async function cerrar() {
-  const crudo = await readFile(RUTA_SNAPSHOT, "utf8").catch(() => null);
-  // El tenant se mira acá igual que el contrato: un snapshot ajeno es servible
-  // —cumple el contrato— y publicarlo es publicar el catálogo de otro cliente.
-  const razon = razonParaNoDesplegar(crudo, process.env.NEXT_PUBLIC_AFELEIA_SITIO);
-  if (razon) {
-    if (process.env.AFELEIA_PERMITIR_SIN_CATALOGO === "1") {
-      console.warn(
-        `[afeleia] ${razon}\n` +
-          "[afeleia] AFELEIA_PERMITIR_SIN_CATALOGO=1: se construye igual, con la tienda " +
-          "vacia. Es una decision operativa deliberada; sacar la variable despues.",
-      );
-      process.exit(0);
-    }
+  await repararLoQueHayaQuedadoAMedias("antes de construir");
 
-    console.error(
-      `[afeleia] ${razon}\n` +
-        "[afeleia] Como salir: regenerar el snapshot con `npm run catalogo:snapshot` contra " +
-        "una API sana y commitearlo, o —si hace falta publicar YA con la tienda vacia— " +
-        "volver a desplegar con AFELEIA_PERMITIR_SIN_CATALOGO=1.",
-    );
-    process.exit(1);
-  }
+  const { crudo, estado, juzgable } = await loQueSeVaAServir();
+  const decision = decisionDeCierre({
+    // El tenant se mira acá igual que el contrato: un snapshot ajeno es servible
+    // —cumple el contrato— y publicarlo es publicar el catálogo de otro cliente.
+    razon: razonParaNoDesplegar(crudo, process.env.NEXT_PUBLIC_AFELEIA_SITIO),
+    parCoherente: estado.coherente,
+    motivoDelPar: estado.motivo,
+    parJuzgable: juzgable,
+    env: process.env,
+  });
 
-  // Segunda puerta: el par tiene que CERRAR. Que el snapshot sea servible no dice
-  // de donde salio, y la tercera ronda de review dejo justo eso —snapshot de un
-  // generador, sello de otro, sin respaldos— con el build en verde. Un par que no
-  // cierra significa que alguien toco la ultima linea de defensa del sitio sin
-  // que el protocolo lo acompanara: se intenta reparar y, si no cierra igual, no
-  // se despliega. En un hosting atomico eso deja publicado lo anterior, entero.
-  let estado = await estadoDelPar();
-  if (!estado.coherente && (await hayRespaldoPendiente())) {
-    await repararLoQueHayaQuedadoAMedias("antes de construir");
-    estado = await estadoDelPar();
-  }
-  if (estado.coherente) process.exit(0);
-
-  const detalle =
-    `el snapshot y su sello no cierran (${estado.motivo}): no se sabe que catalogo se ` +
-    "estaria desplegando.";
-  if (process.env.AFELEIA_PERMITIR_PAR_A_MEDIAS === "1") {
-    console.warn(
-      `[afeleia] ${detalle}\n` +
-        "[afeleia] AFELEIA_PERMITIR_PAR_A_MEDIAS=1: se construye igual. Es una decision " +
-        "operativa deliberada; sacar la variable despues.",
-    );
-    process.exit(0);
-  }
-
-  console.error(
-    `[afeleia] ${detalle}\n` +
-      "[afeleia] Como salir: `npm run catalogo:snapshot` contra una API sana (regenera y " +
-      "sella el par), o `npm run catalogo:sellar` si el snapshot es el bueno y lo unico " +
-      "desactualizado es el sello. Para publicar YA con lo que hay: " +
-      "AFELEIA_PERMITIR_PAR_A_MEDIAS=1.",
-  );
-  process.exit(1);
+  if (decision.mensaje) console[decision.nivel](decision.mensaje);
+  process.exit(decision.salida);
 }
 
 /**
@@ -179,7 +194,9 @@ async function cerrar() {
  */
 async function repararLoQueHayaQuedadoAMedias(momento) {
   try {
-    const reparacion = await conElParTomado(() => recuperarPar());
+    const reparacion = await conElParTomado(() => recuperarPar(), {
+      esperaMs: ESPERA_DEL_CANDADO_MS,
+    });
     if (!reparacion.habiaRespaldo) return;
     if (reparacion.reparado) {
       console.warn(

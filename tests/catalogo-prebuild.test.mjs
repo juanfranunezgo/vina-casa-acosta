@@ -1,6 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import {
+  decisionDeCierre,
   razonDeConfiguracionInvalida,
   razonParaNoDesplegar,
 } from "../scripts/catalogo-validacion.mjs";
@@ -237,4 +238,156 @@ test("el prebuild carga los .env como los carga Next", async () => {
   const carga = wrapper.indexOf("loadEnvConfig(");
   const primeraLectura = wrapper.indexOf("razonDeConfiguracionInvalida(process.env)");
   assert.ok(carga > 0 && carga < primeraLectura, "se carga antes de mirar la configuracion");
+});
+
+// --- 5. Faltar las DOS variables no es lo mismo en local que en un deploy -----
+
+test("sin ninguna de las dos variables, en un DESPLIEGUE, es un error", () => {
+  // El agujero que quedaba abierto: con las dos ausentes esto devolvia `null` en
+  // cualquier contexto, y entonces `isOwnCatalog` se queda sin nada contra que
+  // comparar en las CUATRO capas a la vez. O sea que el snapshot ajeno volvia a
+  // desplegarse por la puerta mas facil de dejar abierta: la configuracion que
+  // todavia no se cargo. En Netlify siempre hay `CONTEXT`.
+  for (const contexto of ["production", "deploy-preview", "branch-deploy"]) {
+    const razon = razonDeConfiguracionInvalida({ CONTEXT: contexto });
+    assert.ok(razon, `con CONTEXT=${contexto} tiene que fallar`);
+    assert.match(razon, /NEXT_PUBLIC_AFELEIA_API_URL/);
+    assert.match(razon, /NEXT_PUBLIC_AFELEIA_SITIO/);
+  }
+  assert.ok(razonDeConfiguracionInvalida({ NETLIFY: "true" }), "NETLIFY tambien alcanza");
+});
+
+test("sin ninguna de las dos y SIN contexto de deploy sigue siendo valido", () => {
+  // El clon local sin `.env.local` no puede romperse: ahi no hay nada que
+  // desplegar y el sitio se construye con el snapshot committeado.
+  assert.equal(razonDeConfiguracionInvalida({}), null);
+  assert.equal(razonDeConfiguracionInvalida({ NODE_ENV: "development" }), null);
+});
+
+test("un fragmento vacio tambien se rechaza", () => {
+  // `new URL(".../v1#").hash` es `""` —el `#` vacio no se representa— y sin
+  // embargo sobrevive al `toString()`. Un control que no cubre lo que dice
+  // cubrir es peor que no tenerlo.
+  assert.ok(
+    razonDeConfiguracionInvalida({ ...SANO, NEXT_PUBLIC_AFELEIA_API_URL: `${URL_API}#` }),
+  );
+});
+
+// --- 6. Qué hace el prebuild al cerrar ----------------------------------------
+// Las dos puertas que pueden FRENAR UN DEPLOY, sus dos escotillas y sus codigos
+// de salida no los ejercitaba ningun test: estaban adentro de `cerrar()`, que
+// lee disco y llama a `process.exit`. La decision es pura y vive en
+// `decisionDeCierre`; `cerrar()` quedo en leer, imprimir y salir.
+
+const PAR_SANO = { razon: null, parCoherente: true, motivoDelPar: null };
+
+test("con catalogo servible y el par cerrado, se construye y no se dice nada", () => {
+  assert.deepEqual(decisionDeCierre({ ...PAR_SANO, env: {} }), {
+    salida: 0,
+    nivel: "info",
+    mensaje: null,
+  });
+});
+
+test("sin catalogo servible no se construye, y el motivo viaja entero", () => {
+  const decision = decisionDeCierre({ ...PAR_SANO, razon: "el snapshot de fallback no es JSON legible. X", env: {} });
+  assert.equal(decision.salida, 1);
+  assert.equal(decision.nivel, "error");
+  assert.match(decision.mensaje, /no es JSON legible/);
+  assert.match(decision.mensaje, /catalogo:snapshot/, "tiene que decir como salir");
+});
+
+test("la escotilla del catalogo construye igual, y dice que publica la tienda vacia", () => {
+  const decision = decisionDeCierre({
+    ...PAR_SANO,
+    razon: "el snapshot de fallback es del sitio \"bodega-ajena\" y este sitio es \"vina-casa-acosta\"",
+    env: { AFELEIA_PERMITIR_SIN_CATALOGO: "1" },
+  });
+  assert.equal(decision.salida, 0);
+  assert.equal(decision.nivel, "warn");
+  // El nombre de la escotilla dice "sin catalogo", pero tambien abre la puerta
+  // del tenant: el mensaje tiene que decir que lo que se publica es la tienda
+  // vacia y no el catalogo del otro cliente.
+  assert.match(decision.mensaje, /VACIA/);
+});
+
+test("una escotilla que no vale exactamente 1 no abre nada", () => {
+  for (const valor of ["true", "yes", "", "0", " 1"]) {
+    assert.equal(
+      decisionDeCierre({ ...PAR_SANO, razon: "sin catalogo", env: { AFELEIA_PERMITIR_SIN_CATALOGO: valor } }).salida,
+      1,
+      `${JSON.stringify(valor)} no deberia abrir la escotilla`,
+    );
+  }
+});
+
+test("el par que NO cierra frena el build, con su escotilla propia", () => {
+  const roto = {
+    razon: null,
+    parCoherente: false,
+    motivoDelPar: "el hash del sello no describe a este snapshot",
+  };
+  const frena = decisionDeCierre({ ...roto, env: {} });
+  assert.equal(frena.salida, 1);
+  assert.match(frena.mensaje, /catalogo:sellar/, "tiene que ofrecer las dos salidas");
+  assert.match(frena.mensaje, /AFELEIA_PERMITIR_PAR_A_MEDIAS/);
+
+  const pasa = decisionDeCierre({ ...roto, env: { AFELEIA_PERMITIR_PAR_A_MEDIAS: "1" } });
+  assert.equal(pasa.salida, 0);
+  assert.equal(pasa.nivel, "warn");
+});
+
+test("que FALTE el sello no frena el deploy: grita", () => {
+  // El sello es un control de PROCEDENCIA, no de servibilidad: el snapshot ya
+  // paso el contrato y el dueño. Frenar aca convertia una caida de Afeleia —o un
+  // archivo borrado— en un deploy imposible, que es justo la regla que ordena
+  // todo este archivo. Que el sello CONTRADIGA al snapshot es otra cosa, y esa
+  // si frena (test de arriba).
+  const decision = decisionDeCierre({
+    razon: null,
+    parCoherente: false,
+    motivoDelPar: "no hay sello",
+    env: {},
+  });
+  assert.equal(decision.salida, 0);
+  assert.equal(decision.nivel, "warn");
+  assert.match(decision.mensaje, /catalogo:sellar/);
+});
+
+test("si el par no se pudo juzgar, no se frena por el par", () => {
+  // Otro proceso escribiendo: la lectura seria de un refresco en vuelo y frenar
+  // un deploy sobre esa muestra es frenar un build inocente. El contenido del
+  // snapshot si se sigue juzgando, porque `escribirAtomico` garantiza que sea el
+  // viejo entero o el nuevo entero.
+  assert.equal(
+    decisionDeCierre({
+      razon: null,
+      parCoherente: false,
+      motivoDelPar: "el hash del sello no describe a este snapshot",
+      parJuzgable: false,
+      env: {},
+    }).salida,
+    0,
+  );
+  assert.equal(
+    decisionDeCierre({ razon: "sin catalogo", parCoherente: true, motivoDelPar: null, parJuzgable: false, env: {} })
+      .salida,
+    1,
+    "pero el catalogo inservible frena igual",
+  );
+});
+
+test("el wrapper usa la decision pura, y no vuelve a decidir por su cuenta", async () => {
+  const { readFile } = await import("node:fs/promises");
+  const wrapper = await readFile(
+    new URL("../scripts/catalogo-snapshot-build.mjs", import.meta.url),
+    "utf8",
+  );
+  assert.match(wrapper, /const decision = decisionDeCierre\(\{/);
+  assert.match(wrapper, /process\.exit\(decision\.salida\)/);
+  // Y repara ANTES de juzgar: al reves, un par a medias disparaba la puerta
+  // equivocada con el respaldo bueno ahi al lado.
+  const reparar = wrapper.indexOf('repararLoQueHayaQuedadoAMedias("antes de construir")');
+  const juzgar = wrapper.indexOf("const decision = decisionDeCierre({");
+  assert.ok(reparar > 0 && reparar < juzgar, "se repara antes de decidir");
 });

@@ -54,9 +54,11 @@ test("una base con barra final, con puerto o sin path sigue funcionando", () => 
 test("el slug del sitio viaja escapado", () => {
   // No se espera un slug raro —`razonDeConfiguracionInvalida` exige la forma—
   // pero componer con `URL` significa que ni siquiera hace falta acordarse.
-  assert.match(
-    catalogEndpointFor("https://xyz.supabase.co/functions/v1", "vina casa&otra") ?? "",
-    /sitio=vina\+casa%26otra|sitio=vina%20casa%26otra/,
+  // Cadena exacta, no una alternativa: si mañana alguien vuelve a pegar texto,
+  // el escapado cambia (`+` por `%20`) y este test tiene que notarlo.
+  assert.equal(
+    catalogEndpointFor("https://xyz.supabase.co/functions/v1", "vina casa&otra"),
+    "https://xyz.supabase.co/functions/v1/catalogo-publico?sitio=vina+casa%26otra",
   );
 });
 
@@ -80,9 +82,12 @@ test("el generador arma el endpoint con la MISMA funcion que el runtime", async 
   // los datos no coincidan.
   const generador = await readFile(path.join(ROOT, "scripts", "catalogo-snapshot.mjs"), "utf8");
   assert.match(generador, /catalogEndpointFor\(apiUrl, sitio\)/);
-  // El pegado de texto era `...${apiUrl}/catalogo-publico?sitio=${...}`: lo que
-  // no puede volver es la interpolacion, no la palabra (los comentarios la
-  // nombran para explicar el bug).
+  // Y que el fetch use ESE endpoint. Prohibir solo la interpolacion no alcanzaba:
+  // medido en una revision de estos tests, rearmar la URL con `+` adentro del
+  // `fetch` dejaba `catalogEndpointFor` como codigo muerto y la suite en verde.
+  assert.match(generador, /const endpoint = catalogEndpointFor\(apiUrl, sitio\);/);
+  assert.match(generador, /await fetch\(endpoint, \{/);
+  assert.doesNotMatch(generador, /fetch\(\s*`/, "el fetch tiene que ir al endpoint compuesto");
   assert.doesNotMatch(generador, /catalogo-publico\?sitio=\$\{/, "volvio el pegado de texto");
 
   const contrato = await readFile(path.join(ROOT, "lib", "afeleia", "contract.ts"), "utf8");
@@ -111,14 +116,35 @@ test("sin sitio configurado no se puede juzgar, y pasa", () => {
 
 test("las cuatro capas comparten la regla del dueño", async () => {
   // La regla vale lo que valga su cobertura: si alguna capa vuelve a escribirla
-  // por su cuenta, esto se pone rojo.
+  // por su cuenta, esto se pone rojo. Se pide la FORMA de cada uso y no la
+  // cantidad: contar ocurrencias castigaba agregar una quinta capa legitima, y
+  // no veia la diferencia entre comparar contra el entorno o contra la propia
+  // respuesta —que es la mutacion que vuelve la regla una tautologia—.
   const capas = {
-    "lib/afeleia/catalog.ts": 2, // respuesta viva + snapshot committeado
-    "scripts/catalogo-validacion.mjs": 2, // respuesta del generador + snapshot del prebuild
+    "lib/afeleia/catalog.ts": [
+      /if \(!isOwnCatalog\(snapshot, sitio\)\) \{/,
+      /if \(!isOwnCatalog\(payload, sitio\)\) \{/,
+    ],
+    "scripts/catalogo-validacion.mjs": [
+      /if \(!isOwnCatalog\(payload, sitioEsperado\)\) \{/,
+      /if \(!isOwnCatalog\(catalogo, sitioEsperado\)\) \{/,
+    ],
   };
-  for (const [archivo, veces] of Object.entries(capas)) {
+  for (const [archivo, formas] of Object.entries(capas)) {
     const fuente = await readFile(path.join(ROOT, archivo), "utf8");
-    const usos = fuente.match(/isOwnCatalog\(/g) ?? [];
-    assert.equal(usos.length, veces, `${archivo} usa isOwnCatalog ${usos.length} veces`);
+    for (const forma of formas) {
+      assert.match(fuente, forma, `${archivo} no aplica la regla con la forma esperada`);
+    }
   }
+});
+
+test("el prebuild le pasa el sitio configurado a la puerta del snapshot", async () => {
+  // `sitioEsperado` es opcional, asi que si el wrapper deja de pasarlo la regla
+  // se apaga entera y el snapshot ajeno vuelve a desplegarse. Medido en una
+  // revision de estos tests: esa mutacion dejaba la suite completa en verde.
+  const wrapper = await readFile(path.join(ROOT, "scripts", "catalogo-snapshot-build.mjs"), "utf8");
+  assert.match(
+    wrapper,
+    /razonParaNoDesplegar\(crudo, process\.env\.NEXT_PUBLIC_AFELEIA_SITIO\)/,
+  );
 });
