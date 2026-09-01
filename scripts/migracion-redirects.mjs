@@ -31,9 +31,16 @@ const ENCABEZADO = `# ==========================================================
 #  normalizacion del proveedor. El "!" fuerza la regla por sobre los archivos
 #  estaticos: sin el, "/" serviria index.html en vez de redirigir.
 #
-#  Las URLs que NO estan aca (36 entradas de demostracion del tema, sus
-#  categorias y /wp-content/*) caen en 404.html a proposito: no tienen
-#  equivalente y el 404 las saca del indice de forma limpia.
+#  Las URLs que NO estan aca caen en 404.html A PROPOSITO. Son tres grupos y
+#  ninguno tiene equivalente en el sitio nuevo:
+#
+#    1. Las entradas de demostracion del tema (/sample-page/, /how-to-choose-wine/,
+#       /the-new-vineyard/ y companhia), sus categorias y sus etiquetas.
+#    2. Unas sesenta entradas de spam bajo /2022/* y /2023/* —citas, "mail order
+#       brides", ROMs— que el WordPress viejo publico sin permiso de nadie.
+#       Redirigirlas seria traer esa basura al dominio nuevo; el 404 las saca
+#       del indice, que es lo que corresponde.
+#    3. /wp-content/*, /xmlrpc.php y el resto de la infraestructura de WordPress.
 # ===========================================================================
 `;
 

@@ -7,6 +7,7 @@ import { fileURLToPath } from "node:url";
 
 const { activities, activityPath, VENDIMIA_HUB } = await import("@/data/activities");
 const { wines } = await import("@/data/wines");
+const { routing } = await import("@/i18n/routing");
 
 /**
  * La regla que este test cuida: el mapeo de la migracion no puede apuntar a una
@@ -28,18 +29,33 @@ const RAIZ = dirname(dirname(fileURLToPath(import.meta.url)));
 const CSV = join(RAIZ, "docs", "migracion-casaacosta-redirects.csv");
 const BASE = "https://vinacasaacosta.cl";
 
-const ESTATICAS = new Set(
-  ["", "/vinos", "/tienda", "/actividades", "/historia", "/staff", "/contacto"].map(
-    (p) => `/es${p}`,
-  ),
-);
+/**
+ * Las rutas validas se arman para LOS TRES IDIOMAS, no solo para español.
+ *
+ * El sitio viejo tambien tenia sus paginas en ingles —`/wines/`, `/our-story/`,
+ * `/contact/`, `/tours/`, `/shop/`—, y siguen indexadas. Mandarlas al castellano
+ * seria cambiarle el idioma a quien viene de un resultado en ingles; mandarlas
+ * a `/en/...` es la traduccion literal de la URL vieja. Cuando el mapeo era solo
+ * español esa mitad del sitio viejo no tenia a donde ir.
+ */
+const CAMINOS_ESTATICOS = [
+  "",
+  "/vinos",
+  "/tienda",
+  "/actividades",
+  "/historia",
+  "/staff",
+  "/contacto",
+];
 
-const rutasValidas = new Set([
-  ...ESTATICAS,
-  ...activities.map((a) => `/es${activityPath(a)}`),
-  ...wines.map((w) => `/es/vinos/${w.slug}`),
-  ...(VENDIMIA_HUB ? [`/es${VENDIMIA_HUB}`] : []),
-]);
+const rutasValidas = new Set(
+  routing.locales.flatMap((locale) => [
+    ...CAMINOS_ESTATICOS.map((p) => `/${locale}${p}`),
+    ...activities.map((a) => `/${locale}${activityPath(a)}`),
+    ...wines.map((w) => `/${locale}/vinos/${w.slug}`),
+    ...(VENDIMIA_HUB ? [`/${locale}${VENDIMIA_HUB}`] : []),
+  ]),
+);
 
 const reglas = readFileSync(CSV, "utf8")
   .split(/\r?\n/)
@@ -54,9 +70,10 @@ test("el mapeo no esta vacio", () => {
   assert.ok(reglas.length > 50, `solo se leyeron ${reglas.length} reglas`);
 });
 
-test("todos los destinos son URLs del dominio nuevo", () => {
+test("todos los destinos son URLs del dominio nuevo, con idioma en la ruta", () => {
   for (const { origen, destino } of reglas) {
-    assert.ok(destino.startsWith(`${BASE}/es`), `${origen} apunta a ${destino}`);
+    const conIdioma = routing.locales.some((l) => destino.startsWith(`${BASE}/${l}`));
+    assert.ok(conIdioma, `${origen} apunta a ${destino}`);
   }
 });
 
@@ -82,8 +99,8 @@ test("ningun destino usa un ancla que el indice ya no publica", () => {
 
 test("cada ficha de vino del mapeo existe en el catalogo", () => {
   const delMapeo = reglas
-    .filter((r) => r.destino.includes("/es/vinos/"))
-    .map((r) => r.destino.split("/es/vinos/")[1]);
+    .filter((r) => r.destino.includes("/vinos/"))
+    .map((r) => r.destino.split("/vinos/")[1]);
   for (const slug of delMapeo) {
     assert.ok(
       wines.some((w) => w.slug === slug),
