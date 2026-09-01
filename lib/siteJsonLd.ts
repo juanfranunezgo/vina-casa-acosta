@@ -19,7 +19,10 @@ import {
  *   el footer ya enlaza (`maps.app.goo.gl/oWWNuFKGuqojD86B9` resuelve a
  *   `.../VIÑA+CASA+ACOSTA/@-34.465133,-71.009675`). No es un geocode adivinado a
  *   partir de la dirección: es lo que Google mismo tiene fichado para este local.
- * - `sameAs` son los tres perfiles que el footer ya muestra. No se inventa ninguno.
+ * - `sameAs` son las direcciones de internet que SON esta misma viña: las tres
+ *   redes que el footer ya muestra y las tres fichas de directorio verificadas
+ *   una por una (ver `FICHAS_EXTERNAS`). No se inventa ninguna.
+ * - `founder` es el fundador con sus artículos de Wikipedia (ver `FUNDADOR`).
  *
  * Lo que NO está, y por qué: `priceRange` (no se declara en ninguna parte del
  * sitio) y `aggregateRating` (no hay reseñas propias publicadas; inventarlas o
@@ -34,6 +37,48 @@ import {
 
 export const WINERY_ID = `${SITE_URL}/#winery`;
 const WEBSITE_ID = `${SITE_URL}/#website`;
+
+/**
+ * Fichas de la viña en sitios de terceros, para `sameAs`.
+ *
+ * La propiedad no significa «lo que el footer enlaza» sino «qué otras
+ * direcciones de internet son esta misma viña». Es lo que le permite al
+ * buscador unir este dominio —estrenado hace semanas— con las reseñas y las
+ * fichas de directorio que existen desde antes y que hoy rankean por encima
+ * del sitio propio.
+ *
+ * Las tres se verificaron el 2026-08-31, y las dos últimas van con la URL
+ * **final**: las dos direcciones que publican los directorios responden 301 y
+ * declarar la que redirige sería mandar al buscador a un rebote.
+ */
+const FICHAS_EXTERNAS = [
+  "https://www.tripadvisor.com/Attraction_Review-g1226756-d25338718-Reviews-Vina_Casa_Acosta-San_Vicente_de_Tagua_Tagua_O_Higgins_Region.html",
+  "https://valledecachapoal.cl/vina-casa-acosta/",
+  "https://www.enoturismochile.cl/vinas-abiertas-al-turismo/valle-del-cachapoal/vina-casa-acosta/",
+];
+
+/**
+ * El fundador, con sus dos artículos de Wikipedia.
+ *
+ * No es un dato de color. Para el buscador esta viña es una entidad nueva y
+ * chica; Nelson Acosta está fichado hace años. `founder` dice que una fundó a
+ * la otra y el `sameAs` saca la ambigüedad —es ese Nelson Acosta y no un
+ * homónimo—, que es exactamente lo que hace falta para que «la viña de Nelson
+ * Acosta», una búsqueda que la gente ya escribe, pueda llegar acá.
+ *
+ * El hecho no es nuevo ni privado: la página de historia lo cuenta en prosa
+ * (`messages/*.json` → `historia.origin.body`). Esto solo lo dice en el formato
+ * que la máquina lee. Sin `image` ni fecha de nacimiento: no hacen falta para
+ * resolver la entidad y el sitio no las publica.
+ */
+const FUNDADOR = {
+  "@type": "Person",
+  name: "Nelson Acosta",
+  sameAs: [
+    "https://es.wikipedia.org/wiki/Nelson_Acosta",
+    "https://en.wikipedia.org/wiki/Nelson_Acosta",
+  ],
+};
 
 
 /**
@@ -100,7 +145,8 @@ export function wineryNode(locale: string, description: string) {
     },
     hasMap: GOOGLE_MAPS_URL,
     openingHoursSpecification: OPENING_HOURS,
-    sameAs: [INSTAGRAM_URL, FACEBOOK_URL, GOOGLE_MAPS_URL],
+    founder: FUNDADOR,
+    sameAs: [INSTAGRAM_URL, FACEBOOK_URL, GOOGLE_MAPS_URL, ...FICHAS_EXTERNAS],
   };
 }
 
