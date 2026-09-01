@@ -1,34 +1,43 @@
 {
   "metadata": {
     "siteName": "Viña Casa Acosta",
-    "titleDefault": "Viña Casa Acosta — Tributo à família",
-    "titleTemplate": "%s · Viña Casa Acosta",
-    "description": "Vinícola boutique familiar em San Vicente de Tagua Tagua, Vale do Cachapoal, Chile. Vinhos artesanais, tours e experiências que celebram nossas raízes.",
+    "titleDefault": "Viña Casa Acosta | Vinhos, tours e oficinas",
+    "titleTemplate": "%s | Viña Casa Acosta",
+    "description": "Vinícola familiar em San Vicente de Tagua Tagua, Chile: a 40 minutos de Rancagua e a menos de 2 horas de Santiago. Vinhos artesanais, tours e oficinas.",
     "ogTitle": "Viña Casa Acosta — Tributo à família",
     "ogDescription": "Vinícola boutique familiar no Vale do Cachapoal. Vinhos artesanais e experiências de enoturismo.",
     "historia": {
-      "title": "História",
-      "description": "Três gerações da família Acosta no Vale do Cachapoal. Da França '98 ao legado vinícola de hoje."
+      "title": "Nelson Acosta e a origem da vinícola",
+      "description": "Nelson Acosta comprou estas terras antes da Copa da França '98 e plantou os primeiros vinhedos. Três gerações da família em San Vicente de Tagua Tagua."
     },
     "staff": {
-      "title": "Staff",
+      "title": "A equipe da vinícola",
       "description": "Conheça a equipe da Viña Casa Acosta: as pessoas por trás de cada etapa, da terra à garrafa."
     },
     "vinos": {
-      "title": "Nossos vinhos",
-      "description": "Coleção completa de vinhos da Viña Casa Acosta: Ombú, Lajau, Estación Francia, Berá, Guidaí e Yaráy Guá."
+      "title": "Nossos vinhos, do Carmenere ao Tannat",
+      "description": "Carmenere, Cabernet Sauvignon, Tannat, blends de edição limitada, rosé, espumante e late harvest. Vinhos artesanais da Viña Casa Acosta."
     },
     "tienda": {
-      "title": "Comprar vinhos online",
+      "title": "Comprar vinhos online com entrega",
       "description": "Compre os vinhos da Viña Casa Acosta: Carmenere, Tannat, blends, rosé e espumante do Vale do Cachapoal, no Chile. Monte seu pedido e combinamos a entrega."
     },
     "actividades": {
-      "title": "Experiências",
-      "description": "Tours guiados pelos vinhedos, experiências sazonais e eventos privados na Viña Casa Acosta, Cachapoal."
+      "title": "Tours, oficinas e vindima na vinícola",
+      "description": "Tours guiados pelos vinhedos, oficinas de cozinha, vindima e eventos privados em San Vicente de Tagua Tagua, a menos de 2 horas de Santiago."
     },
     "contacto": {
-      "title": "Contato",
-      "description": "Visite-nos em San Vicente de Tagua Tagua, Vale do Cachapoal. Reserve tours, eventos ou tire dúvidas sobre nossos vinhos."
+      "title": "Como chegar e reservar sua visita",
+      "description": "Estamos no Fundo El Llano, San Vicente de Tagua Tagua. Reserve sua visita, peça um orçamento para eventos ou tire dúvidas sobre os vinhos."
+    },
+    "wineTitle": {
+      "blendRed": "blend tinto",
+      "byType": { "rosado": "vinho rosé", "espumante": "espumante" },
+      "overrides": {
+        "guidai": "espumante rosé",
+        "yaray-gua-tinto": "late harvest doce",
+        "yaray-gua-blanco": "late harvest"
+      }
     }
   },
   "notFound": {
@@ -650,6 +659,7 @@
     "items": {
       "pizzas": {
         "name": "Oficina de Pizzas",
+        "metaTitle": "Oficina de pizzas na vinícola",
         "description": "Sove, abra e monte a sua própria pizza, asse em forno tradicional e compartilhe recém-saída, com uma taça de vinho na mão.",
         "highlights": [
           "Massa do zero",
@@ -673,6 +683,7 @@
       },
       "pastas": {
         "name": "Oficina de Massas",
+        "metaTitle": "Oficina de massas na vinícola",
         "description": "Prepare a massa do zero, abra e corte em diferentes formatos, e compartilhe as massas recém-feitas com uma taça de vinho.",
         "tagline": "Da massa ao prato, com uma taça na mão",
         "intro": "Vamos preparar a massa do zero, sovar, abrir e cortar em diferentes formatos. Depois vamos cozinhar e compartilhar em grupo, aproveitando as massas recém-feitas com uma taça de vinho.",
@@ -690,6 +701,7 @@
       },
       "noquis": {
         "name": "Oficina de Nhoque",
+        "metaTitle": "Oficina de nhoque e jantar em grupo",
         "description": "Prepare a massa, dê forma ao nhoque e acompanhe com molhos caseiros para encerrar com um jantar compartilhado.",
         "tagline": "Modelar, cozinhar e encerrar com um jantar em grupo",
         "intro": "Vamos preparar a massa do zero, sovar, cortar e dar forma ao nhoque para depois cozinhá-lo e acompanhá-lo com molhos caseiros. No final, vamos compartilhar esse prato pronto em um jantar em grupo.",
@@ -707,6 +719,7 @@
       },
       "ombu": {
         "name": "Tour Ombú",
+        "metaTitle": "Tour Ombú: passeio pelo vinhedo e pela adega",
         "description": "Uma introdução ao mundo do vinho: percorra nossos vinhedos de Carménère, a adega e a sala de barricas, com uma degustação guiada.",
         "highlights": [
           "Taça de boas-vindas Berá Rosé",
@@ -735,6 +748,7 @@
       },
       "bera": {
         "name": "Tour Berá",
+        "metaTitle": "Tour Berá: degustação e vinho da barrica",
         "description": "Uma experiência mais profunda e técnica: diferentes expressões do Carménère, da barrica às nossas linhas mais complexas.",
         "highlights": [
           "Taça de boas-vindas Berá Rosé",
@@ -766,6 +780,7 @@
       },
       "carmenere": {
         "name": "Tour Carménère",
+        "metaTitle": "Tour Carménère: nossa cepa insígnia",
         "description": "Nossa experiência premium focada na cepa insígnia: sua origem, ampelografia e expressão em diferentes linhas de vinho.",
         "highlights": [
           "Taça de boas-vindas Berá Rosé",
@@ -801,6 +816,7 @@
       },
       "cosecha-tu-historia": {
         "name": "Colha a sua história",
+        "metaTitle": "Colha a sua história: faça o seu vinho",
         "description": "Você trabalha um conjunto definido de videiras durante todo o ciclo e acompanha a sua própria uva na adega até o engarrafamento.",
         "tagline": "A sua própria uva, da poda à garrafa",
         "intro": "Uma experiência única e personalizada em que você realiza trabalhos reais em um conjunto definido de videiras, da poda até a colheita. Depois acompanha a sua própria uva na adega, seguindo de perto a fermentação, o corte e o engarrafamento final. Uma conexão completa, rastreável e profundamente significativa com o vinho que você ajudou a criar.",
@@ -820,6 +836,7 @@
       },
       "enologo-por-un-dia": {
         "name": "Enólogo por um dia",
+        "metaTitle": "Enólogo por um dia: crie o seu corte",
         "description": "Guiado por um enólogo, você cria o seu próprio vinho, avalia às cegas e disputa o melhor corte do grupo.",
         "tagline": "Crie o seu corte, prove às cegas e dispute o melhor",
         "intro": "Uma experiência única em que cada participante vira enólogo por um dia, guiado por um enólogo. Você vai criar o seu próprio vinho, avaliá-lo às cegas e disputar o melhor corte. Diversão, aprendizado e espírito de equipe em um dia inesquecível.",
@@ -840,6 +857,7 @@
       },
       "mimbre": {
         "name": "Oficina de vime",
+        "metaTitle": "Oficina de vime com artesãos locais",
         "description": "Da preparação do vime até a tecelagem da sua própria peça, ao lado de artesãos da região.",
         "tagline": "Teça a sua própria peça ao lado de artesãos locais",
         "intro": "Uma experiência artesanal em que tradição e criatividade se entrelaçam. Acompanhados por artesãos locais, os participantes aprendem desde a preparação do vime até a tecelagem da própria peça, em um ambiente acolhedor e cheio de história. Um dia para reconectar com o feito à mão, provar sabores locais e levar uma lembrança tecida com raiz.",
@@ -866,6 +884,7 @@
       },
       "alpacas": {
         "name": "Tosquia de alpacas",
+        "metaTitle": "Tosquia de alpacas e fiação à mão",
         "description": "Você aprende o processo artesanal da lã de alpaca, da tosquia à fiação, e leva o seu próprio novelo.",
         "tagline": "Da tosquia ao novelo, com artesãs locais",
         "intro": "Uma experiência única em que você aprende o processo artesanal da lã de alpaca, da tosquia até a fiação final. Guiado por artesãs locais, você vive cada etapa com as próprias mãos e leva o seu próprio novelo como lembrança.",
@@ -884,6 +903,7 @@
       },
       "lagrimas-de-invierno": {
         "name": "Lágrimas de inverno",
+        "metaTitle": "Lágrimas de inverno: a poda da videira",
         "description": "Durante a poda tardia as videiras choram seiva cristalina: uma saída breve para ver de perto o início do ciclo.",
         "tagline": "O choro da videira que anuncia o novo ciclo",
         "intro": "Uma experiência natural e simbólica que celebra o despertar da vida. Durante a poda tardia, as videiras choram gotas de seiva cristalina, conhecidas como lágrimas de inverno, marcando o início de um novo ciclo na vinha.",
@@ -900,6 +920,7 @@
       },
       "apicultura": {
         "name": "Apicultura na Casa Acosta",
+        "metaTitle": "Apicultura: colmeia ao vivo e mel da vinícola",
         "description": "Com um apicultor local, você conhece o papel das abelhas, observa uma colmeia ao vivo e prova mel direto da origem.",
         "tagline": "Uma colmeia ao vivo e mel direto da origem",
         "intro": "Uma experiência imersiva que convida você a conhecer o fascinante mundo das abelhas. Com um apicultor local, você descobre o papel delas na natureza, observa uma colmeia ao vivo e prova mel direto da origem, em um ambiente natural e educativo.",
@@ -916,6 +937,7 @@
       },
       "yoga": {
         "name": "Yoga: respirar, alongar e compartilhar",
+        "metaTitle": "Yoga entre videiras, com brunch",
         "description": "Yoga ao ar livre entre as videiras, brunch saudável e produtores locais, em uma manhã tranquila.",
         "tagline": "Uma sessão entre as videiras, e um brunch para encerrar",
         "intro": "Uma experiência de bem-estar entre os vinhedos que convida a conectar corpo, mente e natureza. Combina uma sessão de yoga ao ar livre com um brunch saudável e a oportunidade de descobrir produtos locais em um ambiente tranquilo e harmonioso.",
@@ -932,6 +954,7 @@
       },
       "cena-sensorial": {
         "name": "Jantar Sensorial",
+        "metaTitle": "Jantar sensorial: cinco tempos com harmonização",
         "description": "Cinco tempos harmonizados com nossos rótulos, guiados pelo enólogo, pelo chef e pelo sommelier.",
         "tagline": "Cinco tempos, cada um com seu rótulo",
         "intro": "Uma experiência gastronômica que convida a descobrir o vinho com todos os sentidos: cinco tempos cuidadosamente pensados, cada um harmonizado com um de nossos rótulos, escolhidos especialmente para realçar cada preparo. Durante a noite, nosso enólogo, chef e sommelier guiam a mesa por um percurso de aromas, sabores e emoções que cada combinação desperta.",

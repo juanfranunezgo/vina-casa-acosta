@@ -1,34 +1,43 @@
 {
   "metadata": {
     "siteName": "Viña Casa Acosta",
-    "titleDefault": "Viña Casa Acosta — Tributo a la familia",
-    "titleTemplate": "%s · Viña Casa Acosta",
-    "description": "Viña boutique familiar en San Vicente de Tagua Tagua, Valle del Cachapoal. Vinos artesanales, tours y experiencias que celebran nuestras raíces.",
+    "titleDefault": "Viña Casa Acosta | Vinos, tours y talleres",
+    "titleTemplate": "%s | Viña Casa Acosta",
+    "description": "Viña familiar en San Vicente de Tagua Tagua, a 40 minutos de Rancagua y a menos de 2 horas de Santiago. Vinos artesanales, tours y talleres.",
     "ogTitle": "Viña Casa Acosta — Tributo a la familia",
     "ogDescription": "Viña boutique familiar en el Valle del Cachapoal. Vinos artesanales y experiencias enoturísticas.",
     "historia": {
-      "title": "Historia",
-      "description": "Tres generaciones de la familia Acosta en el Valle del Cachapoal. De Francia '98 al legado vitivinícola de hoy."
+      "title": "Nelson Acosta y el origen de la viña",
+      "description": "Nelson Acosta compró estas tierras antes del Mundial de Francia '98 y plantó los primeros viñedos. Tres generaciones de la familia en San Vicente de Tagua Tagua."
     },
     "staff": {
-      "title": "Staff",
+      "title": "El equipo de la viña",
       "description": "Conoce al equipo de Viña Casa Acosta: las personas que cuidan cada etapa, desde la tierra hasta la botella."
     },
     "vinos": {
-      "title": "Nuestros Vinos",
-      "description": "Colección completa de vinos de Viña Casa Acosta: Ombú, Lajau, Estación Francia, Berá, Guidaí y Yaráy Guá."
+      "title": "Nuestros vinos, del Carmenere al Tannat",
+      "description": "Carmenere, Cabernet Sauvignon, Tannat, ensamblajes de edición limitada, rosé, espumante y late harvest. Vinos artesanales de Viña Casa Acosta."
     },
     "tienda": {
-      "title": "Comprar vinos online",
+      "title": "Comprar vinos online con despacho",
       "description": "Compra los vinos de Viña Casa Acosta: Carmenere, Tannat, ensamblajes, rosé y espumante del Valle del Cachapoal. Arma tu pedido y coordinamos el despacho."
     },
     "actividades": {
-      "title": "Actividades",
-      "description": "Tours guiados por nuestros viñedos, experiencias estacionales y eventos privados en Viña Casa Acosta, Cachapoal."
+      "title": "Tours, talleres y vendimia en la viña",
+      "description": "Tours guiados por los viñedos, talleres de cocina, vendimia y eventos privados en San Vicente de Tagua Tagua, a menos de 2 horas de Santiago."
     },
     "contacto": {
-      "title": "Contacto",
-      "description": "Visítanos en San Vicente de Tagua Tagua, Valle del Cachapoal. Reserva tours, eventos o consulta sobre nuestros vinos."
+      "title": "Cómo llegar y reservar tu visita",
+      "description": "Estamos en Fundo El Llano, San Vicente de Tagua Tagua. Reserva tu visita, cotiza un evento o consulta por nuestros vinos."
+    },
+    "wineTitle": {
+      "blendRed": "ensamblaje tinto",
+      "byType": { "rosado": "vino rosé", "espumante": "espumante" },
+      "overrides": {
+        "guidai": "espumante rosado",
+        "yaray-gua-tinto": "late harvest dulce",
+        "yaray-gua-blanco": "late harvest"
+      }
     }
   },
   "notFound": {
@@ -650,6 +659,7 @@
     "items": {
       "pizzas": {
         "name": "Taller de Pizzas",
+        "metaTitle": "Taller de pizzas en la viña",
         "description": "Amasa, estira y arma tu propia pizza, cocínala en horno tradicional y compártela recién salida, con una copa de vino en la mano.",
         "highlights": [
           "Masa desde cero",
@@ -673,6 +683,7 @@
       },
       "pastas": {
         "name": "Taller de Pastas",
+        "metaTitle": "Taller de pastas en la viña",
         "description": "Prepara la masa desde cero, estírala y córtala en distintas formas, y comparte las pastas recién hechas con una copa de vino.",
         "tagline": "Del amasado al plato, con una copa en la mano",
         "intro": "Prepararemos la masa desde cero, la amasaremos, estiraremos y cortaremos en distintas formas. Luego cocinaremos y compartiremos en grupo, disfrutando las pastas recién hechas con una copa de vino.",
@@ -690,6 +701,7 @@
       },
       "noquis": {
         "name": "Taller de Ñoquis",
+        "metaTitle": "Taller de ñoquis y cena de grupo",
         "description": "Prepara la masa, dales forma a los ñoquis y acompáñalos con salsas caseras para cerrar con una cena compartida.",
         "tagline": "Formar, cocinar y cerrar con una cena de grupo",
         "intro": "Prepararemos la masa desde cero, la amasaremos, cortaremos y daremos forma a los ñoquis para luego cocinarlos y acompañarlos con salsas caseras. Finalmente, compartiremos este plato terminado en una cena grupal, disfrutando la experiencia.",
@@ -707,6 +719,7 @@
       },
       "ombu": {
         "name": "Tour Ombú",
+        "metaTitle": "Tour Ombú: recorrido por viñedo y bodega",
         "description": "Introducción al mundo del vino: recorre nuestros viñedos de Carménère, la bodega y la sala de barricas, junto a una degustación guiada.",
         "highlights": [
           "Copa de bienvenida Berá Rosé",
@@ -735,6 +748,7 @@
       },
       "bera": {
         "name": "Tour Berá",
+        "metaTitle": "Tour Berá: degustación y vino de barrica",
         "description": "Una experiencia más profunda y técnica: distintas expresiones del Carménère, desde la barrica hasta nuestras líneas más complejas.",
         "highlights": [
           "Copa de bienvenida Berá Rosé",
@@ -766,6 +780,7 @@
       },
       "carmenere": {
         "name": "Tour Carménère",
+        "metaTitle": "Tour Carménère: cata de nuestra cepa emblema",
         "description": "Nuestra experiencia premium enfocada en la cepa emblema: su origen, ampelografía y expresión en distintas líneas de vino.",
         "highlights": [
           "Copa de bienvenida Berá Rosé",
@@ -801,6 +816,7 @@
       },
       "cosecha-tu-historia": {
         "name": "Cosecha tu historia",
+        "metaTitle": "Cosecha tu historia: haz tu propio vino",
         "description": "Trabajas un grupo definido de parras durante todo el ciclo y acompañas tu propia uva en bodega hasta embotellarla.",
         "tagline": "Tu propia uva, desde la poda hasta la botella",
         "intro": "Una experiencia única y personalizada donde realizas labores reales en un grupo definido de parras, desde la poda hasta la vendimia. Luego, acompañas tu propia uva en bodega, siguiendo de cerca su fermentación, mezcla y embotellado final. Una conexión completa, trazable y profundamente significativa con el vino que tú mismo ayudaste a crear.",
@@ -820,6 +836,7 @@
       },
       "enologo-por-un-dia": {
         "name": "Enólogo por un día",
+        "metaTitle": "Enólogo por un día: crea tu ensamblaje",
         "description": "Guiado por un enólogo, creas tu propio vino, lo evalúas a ciegas y compites por el mejor ensamblaje del grupo.",
         "tagline": "Crea tu ensamblaje, cátalo a ciegas y compite por el mejor",
         "intro": "Una experiencia única donde cada participante se convierte en enólogo por un día, guiado por un enólogo. Crearás tu propio vino, lo evaluarás a ciegas y competirás por el mejor ensamblaje. Diversión, aprendizaje y espíritu de equipo en una jornada inolvidable.",
@@ -840,6 +857,7 @@
       },
       "mimbre": {
         "name": "Taller de mimbre",
+        "metaTitle": "Taller de mimbre con artesanos locales",
         "description": "Desde la preparación del mimbre hasta el tejido de tu propia pieza, acompañado por artesanos de la zona.",
         "tagline": "Tejer tu propia pieza junto a artesanos locales",
         "intro": "Una experiencia artesanal donde la tradición y la creatividad se entrelazan. Acompañados por artesanos locales, los participantes aprenderán desde la preparación del mimbre hasta el tejido de su propia pieza, en un entorno cálido y lleno de historia. Una jornada para reconectar con lo hecho a mano, disfrutar sabores locales y llevarse un recuerdo tejido con raíz.",
@@ -866,6 +884,7 @@
       },
       "alpacas": {
         "name": "Trasquilado de alpacas",
+        "metaTitle": "Trasquilado de alpacas e hilado a mano",
         "description": "Aprendes el proceso artesanal de la lana de alpaca, del trasquilado al hilado, y te llevas tu propio ovillo.",
         "tagline": "De la trasquila al ovillo, con artesanas locales",
         "intro": "Una experiencia única donde aprenderás el proceso artesanal de la lana de alpaca, desde el trasquilado hasta el hilado final. Guiado por artesanas locales, vivirás cada etapa con tus propias manos y te llevarás tu propio ovillo como recuerdo.",
@@ -884,6 +903,7 @@
       },
       "lagrimas-de-invierno": {
         "name": "Lágrimas de invierno",
+        "metaTitle": "Lágrimas de invierno: la poda de la parra",
         "description": "Durante la poda tardía las parras lloran savia cristalina: una salida breve para ver de cerca el inicio del ciclo.",
         "tagline": "El llanto de la parra que anuncia el ciclo nuevo",
         "intro": "Una experiencia natural y simbólica que celebra el despertar de la vida. Durante la poda tardía, las parras lloran gotas de savia cristalina, conocidas como lágrimas de invierno, marcando el inicio de un nuevo ciclo en la viña.",
@@ -900,6 +920,7 @@
       },
       "apicultura": {
         "name": "Apicultura en Casa Acosta",
+        "metaTitle": "Apicultura: colmena en vivo y miel de la viña",
         "description": "De la mano de un apicultor local, conoces el rol de las abejas, observas una colmena en vivo y pruebas miel recién sacada.",
         "tagline": "Una colmena en vivo y miel desde su origen",
         "intro": "Una experiencia inmersiva que te invita a conocer el fascinante mundo de las abejas. De la mano de un apicultor local, descubrirás su rol en la naturaleza, observarás una colmena en vivo y probarás miel directamente desde su origen, en un entorno natural y educativo.",
@@ -916,6 +937,7 @@
       },
       "yoga": {
         "name": "Yoga: respirar, estirar y compartir",
+        "metaTitle": "Yoga entre parras, con brunch",
         "description": "Yoga al aire libre entre viñedos, brunch saludable y productores locales, en una mañana tranquila.",
         "tagline": "Una sesión entre parras, y un brunch para cerrar",
         "intro": "Una experiencia de bienestar entre viñedos que invita a conectar cuerpo, mente y naturaleza. Combina una sesión de yoga al aire libre con un brunch saludable y la oportunidad de descubrir productos locales en un ambiente tranquilo y armonioso.",
@@ -932,6 +954,7 @@
       },
       "cena-sensorial": {
         "name": "Cena Sensorial",
+        "metaTitle": "Cena sensorial: cinco tiempos con maridaje",
         "description": "Cinco tiempos maridados con nuestras etiquetas, guiados por el enólogo, el chef y el sommelier.",
         "tagline": "Cinco tiempos, cada uno con su etiqueta",
         "intro": "Una experiencia gastronómica única que invita a descubrir el vino con todos los sentidos: cinco tiempos cuidadosamente diseñados, cada uno maridado con una de nuestras etiquetas, seleccionadas especialmente para realzar cada preparación. Durante la velada, nuestro enólogo, chef y sommelier guían a los comensales en un recorrido por los aromas, sabores y emociones que despierta cada combinación.",

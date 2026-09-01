@@ -200,7 +200,7 @@ export async function generateMetadata({
   const description = t("meta.description");
   // Open Graph no aplica la plantilla de `title`, así que el título completo va
   // escrito (misma nota que en la ficha y en la portada de vinos).
-  const ogTitle = `${title} · ${tMeta("siteName")}`;
+  const ogTitle = `${title} | ${tMeta("siteName")}`;
   const image = {
     url: "/images/actividades/hero-vendimia-1280.webp",
     width: 1280,

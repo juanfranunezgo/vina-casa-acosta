@@ -78,13 +78,27 @@ export async function generateMetadata({
   const tTour = await getTranslations({ locale, namespace: "activities.items" });
   const tMeta = await getTranslations({ locale, namespace: "metadata" });
   const name = tTour(`${slug}.name`);
+  // El nombre de la actividad y su título en el buscador son cosas distintas.
+  // «Lágrimas de invierno» es el nombre y no dice qué es: era lo único que se
+  // leía en Google, y ahí nadie busca por nombre propio. `metaTitle` agrega las
+  // palabras que sí se escriben («la poda de la parra») sin tocar la página, que
+  // sigue mostrando el nombre. Por el mismo motivo el og se queda con el nombre:
+  // quien recibe el link por WhatsApp ya sabe de qué viña le hablan.
+  //
+  // Se pregunta con `has` porque next-intl NO falla cuando falta una clave:
+  // devuelve la ruta como texto, y el título del resultado diría
+  // «activities.items.yoga.metaTitle». La paridad la cubre
+  // `tests/actividades-i18n-parity.test.mjs`; esto es el cinturón.
+  const searchTitle = tTour.has(`${slug}.metaTitle`)
+    ? tTour(`${slug}.metaTitle`)
+    : name;
   const description = tTour(`${slug}.tagline`);
   const path = activityPath(tour);
   // Ver la nota equivalente en vinos/[slug]: Open Graph no aplica la plantilla
   // de `title`, así que el título completo va escrito.
-  const ogTitle = `${name} · ${tMeta("siteName")}`;
+  const ogTitle = `${name} | ${tMeta("siteName")}`;
   return {
-    title: name,
+    title: searchTitle,
     description,
     alternates: alternatesFor(locale, path),
     openGraph: {

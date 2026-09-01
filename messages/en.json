@@ -1,34 +1,43 @@
 {
   "metadata": {
     "siteName": "Viña Casa Acosta",
-    "titleDefault": "Viña Casa Acosta — A tribute to family",
-    "titleTemplate": "%s · Viña Casa Acosta",
-    "description": "Family-owned boutique winery in San Vicente de Tagua Tagua, Cachapoal Valley, Chile. Handcrafted wines, vineyard tours and wine country experiences rooted in heritage.",
+    "titleDefault": "Viña Casa Acosta | Wines, tours and workshops",
+    "titleTemplate": "%s | Viña Casa Acosta",
+    "description": "Family winery in San Vicente de Tagua Tagua, Chile: 40 minutes from Rancagua, under two hours from Santiago. Handcrafted wines, tours and workshops.",
     "ogTitle": "Viña Casa Acosta — A tribute to family",
     "ogDescription": "Family-owned boutique winery in the Cachapoal Valley. Handcrafted wines and wine country experiences.",
     "historia": {
-      "title": "Our story",
-      "description": "Three generations of the Acosta family in the Cachapoal Valley. From France '98 to today's winemaking legacy."
+      "title": "Nelson Acosta and the origin of the winery",
+      "description": "Nelson Acosta bought this land before the France '98 World Cup and planted the first vines. Three generations of the family in San Vicente de Tagua Tagua."
     },
     "staff": {
-      "title": "Staff",
+      "title": "The team behind the winery",
       "description": "Meet the Viña Casa Acosta team: the people behind every stage, from the soil to the bottle."
     },
     "vinos": {
-      "title": "Our wines",
-      "description": "The complete Viña Casa Acosta collection: Ombú, Lajau, Estación Francia, Berá, Guidaí and Yaráy Guá."
+      "title": "Our wines, from Carmenere to Tannat",
+      "description": "Carmenere, Cabernet Sauvignon, Tannat, limited-edition blends, rosé, sparkling and late harvest. Handcrafted wines from Viña Casa Acosta."
     },
     "tienda": {
-      "title": "Buy wine online",
+      "title": "Buy wine online, with delivery",
       "description": "Shop the wines of Viña Casa Acosta: Carmenere, Tannat, blends, rosé and sparkling from Chile's Cachapoal Valley. Build your order and we arrange delivery."
     },
     "actividades": {
-      "title": "Experiences",
-      "description": "Guided vineyard tours, seasonal experiences and private events at Viña Casa Acosta in the Cachapoal Valley."
+      "title": "Tours, workshops and harvest at the winery",
+      "description": "Guided vineyard tours, cooking workshops, harvest days and private events in San Vicente de Tagua Tagua, under two hours from Santiago."
     },
     "contacto": {
-      "title": "Contact",
-      "description": "Visit us in San Vicente de Tagua Tagua, Cachapoal Valley. Book tours, events or ask about our wines."
+      "title": "How to get here and book your visit",
+      "description": "Find us at Fundo El Llano, San Vicente de Tagua Tagua. Book a visit, request a quote for an event or ask about our wines."
+    },
+    "wineTitle": {
+      "blendRed": "red blend",
+      "byType": { "rosado": "rosé", "espumante": "sparkling" },
+      "overrides": {
+        "guidai": "sparkling rosé",
+        "yaray-gua-tinto": "sweet late harvest",
+        "yaray-gua-blanco": "late harvest"
+      }
     }
   },
   "notFound": {
@@ -650,6 +659,7 @@
     "items": {
       "pizzas": {
         "name": "Pizza Workshop",
+        "metaTitle": "Pizza workshop at the winery",
         "description": "Knead, stretch and build your own pizza, bake it in a traditional oven and share it fresh out, glass of wine in hand.",
         "highlights": [
           "Dough from scratch",
@@ -673,6 +683,7 @@
       },
       "pastas": {
         "name": "Pasta Workshop",
+        "metaTitle": "Pasta workshop at the winery",
         "description": "Make the dough from scratch, roll it out and cut it into different shapes, then share the fresh pasta with a glass of wine.",
         "tagline": "From the dough to the plate, glass in hand",
         "intro": "We'll make the dough from scratch, knead it, roll it out and cut it into different shapes. Then we'll cook it and share it as a group, enjoying the fresh pasta with a glass of wine.",
@@ -690,6 +701,7 @@
       },
       "noquis": {
         "name": "Gnocchi Workshop",
+        "metaTitle": "Gnocchi workshop and group dinner",
         "description": "Make the dough, shape the gnocchi and pair them with homemade sauces to close with a shared dinner.",
         "tagline": "Shape it, cook it, and close with a group dinner",
         "intro": "We'll make the dough from scratch, knead it, cut it and shape the gnocchi, then cook them and pair them with homemade sauces. To finish, we'll share the finished dish over a group dinner.",
@@ -707,6 +719,7 @@
       },
       "ombu": {
         "name": "Ombú Tour",
+        "metaTitle": "Ombú Tour: vineyard and winery visit",
         "description": "An introduction to the world of wine: walk our Carménère vineyards, the cellar and the barrel room, with a guided tasting.",
         "highlights": [
           "Welcome glass of Berá Rosé",
@@ -735,6 +748,7 @@
       },
       "bera": {
         "name": "Berá Tour",
+        "metaTitle": "Berá Tour: tasting and wine from the barrel",
         "description": "A deeper, more technical experience: different expressions of Carménère, from the barrel to our most complex lines.",
         "highlights": [
           "Welcome glass of Berá Rosé",
@@ -766,6 +780,7 @@
       },
       "carmenere": {
         "name": "Carménère Tour",
+        "metaTitle": "Carménère Tour: our signature varietal",
         "description": "Our premium experience focused on our signature varietal: its origin, ampelography and expression across different wine lines.",
         "highlights": [
           "Welcome glass of Berá Rosé",
@@ -801,6 +816,7 @@
       },
       "cosecha-tu-historia": {
         "name": "Harvest Your Story",
+        "metaTitle": "Harvest Your Story: make your own wine",
         "description": "You work a defined set of vines through the whole cycle and follow your own grapes in the cellar until they're bottled.",
         "tagline": "Your own grapes, from pruning to bottle",
         "intro": "A one-of-a-kind, personal experience where you do real work on a defined set of vines, from pruning through harvest. Then you follow your own grapes into the cellar, watching their fermentation, blending and final bottling up close. A complete, traceable and deeply meaningful connection with the wine you helped create.",
@@ -820,6 +836,7 @@
       },
       "enologo-por-un-dia": {
         "name": "Winemaker for a Day",
+        "metaTitle": "Winemaker for a Day: build your own blend",
         "description": "Guided by a winemaker, you create your own wine, judge it blind and compete for the best blend of the group.",
         "tagline": "Build your blend, taste it blind, compete for the best",
         "intro": "A one-of-a-kind experience where every participant becomes a winemaker for a day, guided by a winemaker. You'll create your own wine, judge it blind and compete for the best blend. Fun, learning and team spirit in one unforgettable session.",
@@ -840,6 +857,7 @@
       },
       "mimbre": {
         "name": "Wicker Workshop",
+        "metaTitle": "Wicker workshop with local craftspeople",
         "description": "From preparing the wicker to weaving your own piece, alongside craftspeople from the area.",
         "tagline": "Weave your own piece alongside local craftspeople",
         "intro": "A craft experience where tradition and creativity come together. Alongside local artisans, you'll learn everything from preparing the wicker to weaving your own piece, in a warm setting full of history. A day to reconnect with what's made by hand, enjoy local flavours and take home a keepsake woven with roots.",
@@ -866,6 +884,7 @@
       },
       "alpacas": {
         "name": "Alpaca Shearing",
+        "metaTitle": "Alpaca shearing and hand spinning",
         "description": "You learn the craft of alpaca wool, from shearing to spinning, and take home your own ball of yarn.",
         "tagline": "From the shears to the yarn, with local artisans",
         "intro": "A one-of-a-kind experience where you'll learn the craft process behind alpaca wool, from shearing to the final spinning. Guided by local artisans, you'll go through every stage with your own hands and take home your own ball of yarn as a keepsake.",
@@ -884,6 +903,7 @@
       },
       "lagrimas-de-invierno": {
         "name": "Winter Tears",
+        "metaTitle": "Winter Tears: pruning in the vineyard",
         "description": "During late pruning the vines weep clear sap: a short outing to see the start of the cycle up close.",
         "tagline": "The weeping vine that announces a new cycle",
         "intro": "A natural, symbolic experience that celebrates life waking up. During late pruning the vines weep drops of clear sap — known as winter tears — marking the start of a new cycle in the vineyard.",
@@ -900,6 +920,7 @@
       },
       "apicultura": {
         "name": "Beekeeping at Casa Acosta",
+        "metaTitle": "Beekeeping: a live hive and honey tasting",
         "description": "With a local beekeeper, you learn the role of bees, watch a live hive and taste honey straight from the source.",
         "tagline": "A live hive, and honey straight from the source",
         "intro": "An immersive experience that invites you into the fascinating world of bees. With a local beekeeper, you'll discover their role in nature, observe a live hive and taste honey straight from its source, in a natural and educational setting.",
@@ -916,6 +937,7 @@
       },
       "yoga": {
         "name": "Yoga: breathe, stretch and share",
+        "metaTitle": "Yoga among the vines, with brunch",
         "description": "Outdoor yoga among the vines, a healthy brunch and local producers, in one unhurried morning.",
         "tagline": "A session among the vines, and a brunch to close",
         "intro": "A wellbeing experience among the vines that invites you to connect body, mind and nature. It combines an outdoor yoga session with a healthy brunch and the chance to discover local products in a calm, harmonious setting.",
@@ -932,6 +954,7 @@
       },
       "cena-sensorial": {
         "name": "Sensory Dinner",
+        "metaTitle": "Sensory dinner: five courses with wine pairing",
         "description": "Five courses paired with our labels, guided by the winemaker, the chef and the sommelier.",
         "tagline": "Five courses, each with its own label",
         "intro": "A dining experience that invites you to discover wine with every sense: five carefully designed courses, each paired with one of our labels, chosen to bring out the best in the dish. Through the evening, our winemaker, chef and sommelier guide the table across the aromas, flavours and feelings each pairing awakens.",

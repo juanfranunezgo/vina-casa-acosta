@@ -15,6 +15,11 @@ import { joinLabels, labelOr, translatedOr } from "@/lib/afeleia/copy";
 import { routing } from "@/i18n/routing";
 import { alternatesFor } from "@/lib/alternates";
 import { buildWineDetailJsonLd } from "@/lib/wineJsonLd";
+import {
+  wineMetaDescription,
+  wineSearchTitle,
+  type WineMetaDictionary,
+} from "@/lib/wineMeta";
 
 // El catálogo lo publica Afeleia: la ficha se reconstruye cada minuto en vez de
 // quedar congelada en el build. Un vino nuevo que no estaba al compilar se
@@ -39,19 +44,27 @@ export async function generateMetadata({
   // R1: la descripción es contenido del cliente y sale del catálogo, sin pasar
   // por next-intl. El repo del sitio guarda diseño; el texto del producto vive
   // en el panel y se edita ahí, no acá.
-  const description = wine.shortDescription || wine.description;
+  //
+  // Lo que sí pone el repo son las palabras genéricas del título («espumante
+  // rosado», «ensamblaje tinto»): el panel publica un solo idioma y esta ficha
+  // se sirve en tres. Ver `lib/wineMeta.ts` para la regla completa.
+  const searchTitle = wineSearchTitle(
+    wine,
+    tMeta.raw("wineTitle") as WineMetaDictionary,
+  );
+  const description = wineMetaDescription(wine);
   const path = `/vinos/${slug}`;
-  // El `title` recibe la plantilla del layout ("%s · Viña Casa Acosta"), pero
+  // El `title` recibe la plantilla del layout ("%s | Viña Casa Acosta"), pero
   // Open Graph no: hay que escribir el título completo a mano. Sin esto la ficha
   // heredaba el og del layout y compartir un vino por WhatsApp mostraba el
   // título y la foto genéricos del sitio en lugar de los del vino.
-  const ogTitle = `${wine.name} · ${tMeta("siteName")}`;
+  const ogTitle = `${wine.name} | ${tMeta("siteName")}`;
   // `image` es opcional desde que el catálogo descarta las entradas que este
   // sitio no puede renderizar (H-49). Sin el guard, un vino sin foto declararía
   // `og:image` en undefined, que es peor que no declarar la etiqueta.
   const ogImages = wine.image ? [{ url: wine.image, alt: wine.name }] : undefined;
   return {
-    title: wine.name,
+    title: searchTitle,
     description,
     alternates: alternatesFor(locale, path),
     openGraph: {
