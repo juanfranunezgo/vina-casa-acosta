@@ -4,6 +4,7 @@ import createNextIntlPlugin from "next-intl/plugin";
 // `tests/afeleia-image-config-parity.test.mjs` desde node pelado, que no resuelve
 // especificadores sin extensión.
 import { STORAGE_PUBLIC_PREFIX } from "./lib/afeleia/contract.ts";
+import { checkoutIniciarUrl } from "./lib/checkout.ts";
 
 const withNextIntl = createNextIntlPlugin("./i18n/request.ts");
 
@@ -49,6 +50,15 @@ function afeleiaOrigin(): string | null {
 }
 
 /**
+ * Origen del checkout de Afeleia, para `form-action` y `connect-src`. La URL se valida con la
+ * misma regla que usa el carrito (`lib/checkout.ts`): https y `/iniciar`, o http en localhost.
+ */
+function checkoutOrigin(): string | null {
+  const url = checkoutIniciarUrl(process.env.NEXT_PUBLIC_AFELEIA_CHECKOUT_URL);
+  return url ? new URL(url).origin : null;
+}
+
+/**
  * Content-Security-Policy del sitio.
  *
  * QUÉ CUBRE Y QUÉ NO — leer antes de tocarla:
@@ -64,7 +74,8 @@ function afeleiaOrigin(): string | null {
  * React ya escapa por defecto. Esta política es la segunda línea: acota lo que
  * un XSS podría HACER después (no puede cargar script externo, ni exfiltrar a
  * un host cualquiera, ni reescribir la base de las URLs relativas, ni embeber
- * plugins, ni enviar formularios afuera).
+ * plugins, ni enviar formularios afuera — salvo al checkout de Afeleia cuando
+ * `NEXT_PUBLIC_AFELEIA_CHECKOUT_URL` está definida: ver `checkoutOrigin`).
  *
  * Si algún día se acepta pagar render dinámico, el upgrade es nonce +
  * `'strict-dynamic'` y borrar `'unsafe-inline'` de `script-src`.
@@ -108,6 +119,13 @@ function contentSecurityPolicy(): string {
   if (afeleia) {
     directives["img-src"].push(afeleia);
     directives["connect-src"].push(afeleia);
+  }
+
+  const checkout = checkoutOrigin();
+  if (checkout) {
+    // El carrito hace `POST` al checkout: como formulario (form-action) y como fetch (connect-src).
+    directives["form-action"].push(checkout);
+    directives["connect-src"].push(checkout);
   }
 
   return Object.entries(directives)
