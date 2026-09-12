@@ -1097,6 +1097,11 @@
     "addAriaLabel": "Añadir {name} al carrito",
     "whatsappIntro": "Hola Casa Acosta, me interesa este pedido:",
     "whatsappTotal": "Total estimado: {total}",
-    "whatsappOutro": "¿Cómo puedo concretar la compra?"
+    "whatsappOutro": "¿Cómo puedo concretar la compra?",
+    "checkoutPay": "Pagar",
+    "checkoutPaying": "Abriendo el pago…",
+    "checkoutDisclaimerOnline": "Pago en línea con Mercado Pago. Te confirmamos cada pedido por correo.",
+    "checkoutFallbackNotice": "No pudimos abrir el pago en línea. Puedes concretar tu pedido por WhatsApp:",
+    "checkoutCartChanged": "Algunos vinos cambiaron de disponibilidad o de precio. Revisa tu carrito e inténtalo de nuevo."
   }
 }
