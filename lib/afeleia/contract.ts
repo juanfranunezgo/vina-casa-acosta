@@ -61,6 +61,16 @@ export type ApiCatalog = {
    * que funcionar sin ella.
    */
   definiciones_atributos?: AttributeDefinition[];
+  /**
+   * Clave agregada por la etapa E del checkout (DEC-7), opcional por la regla 3: el snapshot
+   * committeado no la trae hasta regenerarlo. `url` viaja solo con la tienda encendida.
+   */
+  checkout?: {
+    url?: string;
+    compra_minima_unidades?: number;
+    compra_minima_monto?: number;
+    whatsapp?: string;
+  };
   categorias: Array<{ slug: string; nombre: string; orden: number }>;
   productos: ApiProduct[];
 };
