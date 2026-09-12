@@ -254,13 +254,13 @@ test("cart sold-out source guard refreshes stock once per session and fails open
   // `contract.ts` existe para que el browser lea el contrato sin arrastrar el
   // snapshot de fallback. Un solo import puede meter ese JSON en el bundle.
   assert.doesNotMatch(contractSource, /^\s*import\s/m);
-  assert.match(drawerSource, /if \(!isOpen \|\| soldOutSlugs !== null\) return/);
-  assert.match(drawerSource, /catalogRequest \?\?= fetchSoldOutSlugs\(\)/);
-  assert.match(drawerSource, /if \(slugs === null\) catalogRequest = null/);
+  assert.match(drawerSource, /if \(!isOpen \|\| cartCatalog !== null\) return/);
+  assert.match(drawerSource, /catalogRequest \?\?= fetchCartCatalog\(\)/);
+  assert.match(drawerSource, /if \(catalog === null\) catalogRequest = null/);
   assert.match(drawerSource, /signal: AbortSignal\.timeout\(5_000\)/);
   assert.match(drawerSource, /if \(!response\.ok\) return null/);
   assert.match(drawerSource, /if \(!isValidCatalog\(payload\)\) return null/);
-  assert.match(drawerSource, /soldOutSlugs\?\.has\(item\.slug\) \?\? false/);
+  assert.match(drawerSource, /cartCatalog\?\.soldOut\.has\(item\.slug\) \?\? false/);
   assert.match(drawerSource, /\{t\("soldOut"\)\}/);
   assert.match(drawerSource, /disabled=\{isSoldOut\}/);
   assert.match(drawerSource, /aria-disabled=\{isSoldOut\}/);
