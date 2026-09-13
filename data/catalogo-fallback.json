@@ -1,7 +1,7 @@
 {
   "version": 1,
   "sitio": "vina-casa-acosta",
-  "generado_en": "2026-08-27T21:39:03.533Z",
+  "generado_en": "2026-09-13T22:17:12.833Z",
   "definiciones_atributos": [
     {
       "clave": "linea",
@@ -142,6 +142,10 @@
       "orden": 12
     }
   ],
+  "checkout": {
+    "compra_minima_unidades": 6,
+    "whatsapp": "+56966740633"
+  },
   "categorias": [
     {
       "slug": "vinos",
@@ -248,7 +252,7 @@
       "precio": 18800,
       "moneda": "CLP",
       "imagenes": [
-        "/vinos/estacion-francia-tannat.png"
+        "https://syvwfadxohizvytanjnx.supabase.co/storage/v1/object/public/assets/916911d8-d458-4722-a960-7c8617ad16a1/743b294f-114f-460c-98d9-63000daa4366/productos/2ba86483-3fec-49af-9cdf-fd0886dfafdb/1788117400740.png"
       ],
       "destacado": false,
       "categoria": "vinos",
@@ -381,7 +385,7 @@
       "precio": 9900,
       "moneda": "CLP",
       "imagenes": [
-        "/vinos/lajau-betum-yu.png"
+        "https://syvwfadxohizvytanjnx.supabase.co/storage/v1/object/public/assets/916911d8-d458-4722-a960-7c8617ad16a1/743b294f-114f-460c-98d9-63000daa4366/productos/b2a63d9e-139c-4278-8c1b-c0b7768bf340/1788117431665.png"
       ],
       "destacado": false,
       "categoria": "vinos",
