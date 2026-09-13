@@ -68,3 +68,11 @@ test("volver con Atrás desde el checkout suelta el envío en vuelo", () => {
   assert.match(fuente, /if \(event\.persisted\) setCheckoutAttempt\(null\);/);
   assert.match(fuente, /window\.removeEventListener\("pageshow", onPageShow\)/);
 });
+
+test("los avisos del pie leen el estado derivado, no el intento crudo", () => {
+  // Un aviso que mirara `checkoutAttempt.state` volvería a quedar pegado al cambiar el carrito, con
+  // el resto de los tests en verde: el estado derivado es el que lo suelta.
+  assert.match(fuente, /\{checkoutState === "fallback" && \(/);
+  assert.match(fuente, /\{checkoutState === "cart" && \(/);
+  assert.doesNotMatch(fuente, /checkoutAttempt\??\.state\s*[!=]==\s*"(cart|fallback)"/);
+});
