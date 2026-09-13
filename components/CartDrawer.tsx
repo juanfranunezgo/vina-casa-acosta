@@ -70,9 +70,19 @@ export default function CartDrawer() {
   const decrement = useCart((s) => s.decrement);
   const remove = useCart((s) => s.remove);
   const [cartCatalog, setCartCatalog] = useState<CartCatalog | null>(null);
-  const [checkoutState, setCheckoutState] = useState<"idle" | "sending" | "fallback" | "cart">(
-    "idle",
-  );
+  // El intento de pago recuerda el carrito que mandó: su aviso y su respaldo valen mientras el
+  // carrito sea ese, y al cambiarlo el cajón vuelve a ofrecer "Pagar". Se deriva en el render: un
+  // efecto que volviera a "idle" lo rechaza `react-hooks/set-state-in-effect`. El envío en vuelo
+  // no se suelta, para que cambiar el carrito mientras espera no habilite un segundo POST.
+  const [checkoutAttempt, setCheckoutAttempt] = useState<{
+    items: typeof items;
+    state: "sending" | "fallback" | "cart";
+  } | null>(null);
+  const checkoutState =
+    checkoutAttempt !== null &&
+    (checkoutAttempt.state === "sending" || checkoutAttempt.items === items)
+      ? checkoutAttempt.state
+      : "idle";
 
   const priceLocale = locale === "pt" ? "pt-BR" : locale === "en" ? "en-US" : "es-CL";
   const formatPrice = (amount: number) =>
@@ -147,7 +157,7 @@ export default function CartDrawer() {
   async function handleCheckoutSubmit(event: SubmitEvent<HTMLFormElement>) {
     if (!checkoutUrl) return;
     event.preventDefault();
-    setCheckoutState("sending");
+    setCheckoutAttempt({ items, state: "sending" });
     const resultado = await iniciarCheckout(checkoutUrl, carrito, { fetch: window.fetch.bind(window) });
     if (resultado.ok) {
       window.location.assign(resultado.url);
@@ -158,7 +168,7 @@ export default function CartDrawer() {
       forgetCartCatalog();
       setCartCatalog(null);
     }
-    setCheckoutState(resultado.motivo === "carrito" ? "cart" : "fallback");
+    setCheckoutAttempt({ items, state: resultado.motivo === "carrito" ? "cart" : "fallback" });
   }
 
   return (

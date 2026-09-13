@@ -42,3 +42,20 @@ test("el envío se tipa con SubmitEvent, no con FormEvent", () => {
   assert.match(fuente, /handleCheckoutSubmit\(event: SubmitEvent<HTMLFormElement>\)/);
   assert.doesNotMatch(fuente, /FormEvent/);
 });
+
+test("cambiar el carrito suelta el aviso y el respaldo del intento anterior", () => {
+  // Antes, "revisa tu carrito" y el modo respaldo quedaban pegados hasta recargar. El intento
+  // recuerda el carrito que mandó y el estado se deriva en el render: un efecto sobre `items` que
+  // volviera a "idle" lo rechaza `react-hooks/set-state-in-effect`. El envío en vuelo no se
+  // suelta, para que cambiar el carrito mientras espera no habilite un segundo POST.
+  assert.match(fuente, /setCheckoutAttempt\(\{ items, state: "sending" \}\)/);
+  assert.match(
+    fuente,
+    /setCheckoutAttempt\(\{ items, state: resultado\.motivo === "carrito" \? "cart" : "fallback" \}\)/,
+  );
+  assert.match(
+    fuente,
+    /checkoutAttempt !== null &&\s*\(checkoutAttempt\.state === "sending" \|\| checkoutAttempt\.items === items\)\s*\?\s*checkoutAttempt\.state\s*:\s*"idle"/,
+  );
+  assert.doesNotMatch(fuente, /setCheckoutState/);
+});
