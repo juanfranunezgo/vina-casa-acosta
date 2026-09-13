@@ -59,3 +59,12 @@ test("cambiar el carrito suelta el aviso y el respaldo del intento anterior", ()
   );
   assert.doesNotMatch(fuente, /setCheckoutState/);
 });
+
+test("volver con Atrás desde el checkout suelta el envío en vuelo", () => {
+  // Tras «Pagar» la página navega con el intento en "sending", que no se suelta al cambiar el
+  // carrito. Si el navegador la restaura desde su caché de historial, el estado vuelve tal cual:
+  // sin el reset en `pageshow` el botón quedaba en «Abriendo el pago…» hasta recargar.
+  assert.match(fuente, /window\.addEventListener\("pageshow", onPageShow\)/);
+  assert.match(fuente, /if \(event\.persisted\) setCheckoutAttempt\(null\);/);
+  assert.match(fuente, /window\.removeEventListener\("pageshow", onPageShow\)/);
+});

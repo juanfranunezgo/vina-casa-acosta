@@ -113,6 +113,18 @@ export default function CartDrawer() {
     };
   }, [isOpen, cartCatalog]);
 
+  // Tras «Pagar» la página navega al checkout con el intento en "sending". Si el comprador vuelve
+  // con Atrás y el navegador la restaura desde su caché de historial (`persisted`), el estado vuelve
+  // tal cual: sin este reset el botón quedaba en «Abriendo el pago…» hasta recargar. El `pageshow`
+  // de Next solo restaura el router, no el estado de los componentes.
+  useEffect(() => {
+    const onPageShow = (event: PageTransitionEvent) => {
+      if (event.persisted) setCheckoutAttempt(null);
+    };
+    window.addEventListener("pageshow", onPageShow);
+    return () => window.removeEventListener("pageshow", onPageShow);
+  }, []);
+
   const cartLines = items.map((item) => ({
     item,
     isSoldOut: cartCatalog?.soldOut.has(item.slug) ?? false,
