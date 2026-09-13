@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { type SubmitEvent, useEffect, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { X, Wine, Trash2, MessageCircle, CreditCard } from "lucide-react";
 import { MIN_BOTTLES, useCart } from "@/lib/cart";
@@ -144,7 +144,7 @@ export default function CartDrawer() {
   // respaldo: desde ahí el botón, su ícono y el aviso del pie hablan de WhatsApp.
   const payOnline = checkoutUrl !== null && checkoutState !== "fallback";
 
-  async function handleCheckoutSubmit(event: React.FormEvent<HTMLFormElement>) {
+  async function handleCheckoutSubmit(event: SubmitEvent<HTMLFormElement>) {
     if (!checkoutUrl) return;
     event.preventDefault();
     setCheckoutState("sending");

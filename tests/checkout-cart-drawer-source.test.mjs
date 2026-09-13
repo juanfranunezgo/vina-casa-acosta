@@ -33,3 +33,12 @@ test("en el respaldo, el pie deja de prometer el pago en línea", () => {
   assert.match(fuente, /\{payOnline \? t\("checkoutPay"\) : t\("checkout"\)\}/);
   assert.match(fuente, /\{payOnline \? t\("checkoutDisclaimerOnline"\) : t\("checkoutDisclaimer"\)\}/);
 });
+
+test("el envío se tipa con SubmitEvent, no con FormEvent", () => {
+  // En @types/react 19.2 el `@deprecated` está en la interfaz `FormEvent` misma, así que importarla
+  // de "react" en vez de escribir `React.FormEvent` no lo quita. `onSubmit` recibe un
+  // `SubmitEventHandler`: su evento es `SubmitEvent`.
+  assert.match(fuente, /import \{[^}]*\btype SubmitEvent\b[^}]*\} from "react";/);
+  assert.match(fuente, /handleCheckoutSubmit\(event: SubmitEvent<HTMLFormElement>\)/);
+  assert.doesNotMatch(fuente, /FormEvent/);
+});
