@@ -4,7 +4,10 @@ import { readFile } from "node:fs/promises";
 
 const fuente = await readFile(new URL("../components/CartDrawer.tsx", import.meta.url), "utf8");
 
-test("el cajón manda al checkout con un formulario POST que funciona sin JavaScript", () => {
+test("el envío del cajón no depende de JavaScript: un formulario POST con el carrito oculto", () => {
+  // Si el script falla después de dibujar el carrito, el POST plano igual llega. El carrito de este
+  // sitio sí necesita JavaScript para dibujarse (vive en localStorage): con JavaScript apagado desde
+  // la carga no hay formulario que enviar.
   assert.match(fuente, /<form[^>]*method="POST"[^>]*action=\{checkoutUrl\}/);
   assert.match(fuente, /<input type="hidden" name="carrito" value=\{carritoJson\}/);
 });
