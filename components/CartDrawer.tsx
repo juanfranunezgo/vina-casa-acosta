@@ -2,16 +2,24 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { type SubmitEvent, useEffect, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
-import { X, Wine, Trash2, MessageCircle } from "lucide-react";
+import { X, Wine, Trash2, MessageCircle, CreditCard } from "lucide-react";
 import { MIN_BOTTLES, useCart } from "@/lib/cart";
 import { CONTACT_WHATSAPP_URL } from "@/lib/contact";
 import { catalogEndpoint, isValidCatalog } from "@/lib/afeleia/contract";
+import {
+  carritoParaCheckout,
+  checkoutIniciarUrl,
+  iniciarCheckout,
+  minBottlesFrom,
+} from "@/lib/checkout";
 
-let catalogRequest: Promise<ReadonlySet<string> | null> | null = null;
+type CartCatalog = { soldOut: ReadonlySet<string>; minBottles: number };
 
-async function fetchSoldOutSlugs(): Promise<ReadonlySet<string> | null> {
+let catalogRequest: Promise<CartCatalog | null> | null = null;
+
+async function fetchCartCatalog(): Promise<CartCatalog | null> {
   const endpoint = catalogEndpoint();
   if (!endpoint) return null;
 
@@ -22,20 +30,35 @@ async function fetchSoldOutSlugs(): Promise<ReadonlySet<string> | null> {
     if (!response.ok) return null;
     const payload: unknown = await response.json();
     if (!isValidCatalog(payload)) return null;
-    return new Set(
-      payload.productos.filter((product) => product.agotado).map((product) => product.slug),
-    );
+    return {
+      soldOut: new Set(
+        payload.productos.filter((product) => product.agotado).map((product) => product.slug),
+      ),
+      minBottles: minBottlesFrom(payload, MIN_BOTTLES),
+    };
   } catch {
     return null;
   }
 }
 
-async function getSoldOutSlugs(): Promise<ReadonlySet<string> | null> {
-  catalogRequest ??= fetchSoldOutSlugs();
-  const slugs = await catalogRequest;
-  if (slugs === null) catalogRequest = null;
-  return slugs;
+async function getCartCatalog(): Promise<CartCatalog | null> {
+  catalogRequest ??= fetchCartCatalog();
+  const catalog = await catalogRequest;
+  if (catalog === null) catalogRequest = null;
+  return catalog;
 }
+
+/**
+ * El Worker vio otro stock, precio o mínimo: la próxima lectura va a la red. Vive fuera del
+ * componente porque reasignar `catalogRequest` desde adentro lo prohíbe `react-hooks/globals`,
+ * aunque quien llama sea un handler y no el render.
+ */
+function forgetCartCatalog(): void {
+  catalogRequest = null;
+}
+
+// Se lee una vez: `NEXT_PUBLIC_*` se incrusta en build. Sin variable, el cajón ofrece WhatsApp.
+const checkoutUrl = checkoutIniciarUrl(process.env.NEXT_PUBLIC_AFELEIA_CHECKOUT_URL);
 
 export default function CartDrawer() {
   const t = useTranslations("cart");
@@ -46,7 +69,20 @@ export default function CartDrawer() {
   const increment = useCart((s) => s.increment);
   const decrement = useCart((s) => s.decrement);
   const remove = useCart((s) => s.remove);
-  const [soldOutSlugs, setSoldOutSlugs] = useState<ReadonlySet<string> | null>(null);
+  const [cartCatalog, setCartCatalog] = useState<CartCatalog | null>(null);
+  // El intento de pago recuerda el carrito que mandó: su aviso y su respaldo valen mientras el
+  // carrito sea ese, y al cambiarlo el cajón vuelve a ofrecer "Pagar". Se deriva en el render: un
+  // efecto que volviera a "idle" lo rechaza `react-hooks/set-state-in-effect`. El envío en vuelo
+  // no se suelta, para que cambiar el carrito mientras espera no habilite un segundo POST.
+  const [checkoutAttempt, setCheckoutAttempt] = useState<{
+    items: typeof items;
+    state: "sending" | "fallback" | "cart";
+  } | null>(null);
+  const checkoutState =
+    checkoutAttempt !== null &&
+    (checkoutAttempt.state === "sending" || checkoutAttempt.items === items)
+      ? checkoutAttempt.state
+      : "idle";
 
   const priceLocale = locale === "pt" ? "pt-BR" : locale === "en" ? "en-US" : "es-CL";
   const formatPrice = (amount: number) =>
@@ -65,32 +101,45 @@ export default function CartDrawer() {
   }, [toggle]);
 
   useEffect(() => {
-    if (!isOpen || soldOutSlugs !== null) return;
+    if (!isOpen || cartCatalog !== null) return;
     let active = true;
 
-    void getSoldOutSlugs().then((slugs) => {
-      if (active && slugs !== null) setSoldOutSlugs(slugs);
+    void getCartCatalog().then((catalog) => {
+      if (active && catalog !== null) setCartCatalog(catalog);
     });
 
     return () => {
       active = false;
     };
-  }, [isOpen, soldOutSlugs]);
+  }, [isOpen, cartCatalog]);
+
+  // Tras «Pagar» la página navega al checkout con el intento en "sending". Si el comprador vuelve
+  // con Atrás y el navegador la restaura desde su caché de historial (`persisted`), el estado vuelve
+  // tal cual: sin este reset el botón quedaba en «Abriendo el pago…» hasta recargar. El `pageshow`
+  // de Next solo restaura el router, no el estado de los componentes.
+  useEffect(() => {
+    const onPageShow = (event: PageTransitionEvent) => {
+      if (event.persisted) setCheckoutAttempt(null);
+    };
+    window.addEventListener("pageshow", onPageShow);
+    return () => window.removeEventListener("pageshow", onPageShow);
+  }, []);
 
   const cartLines = items.map((item) => ({
     item,
-    isSoldOut: soldOutSlugs?.has(item.slug) ?? false,
+    isSoldOut: cartCatalog?.soldOut.has(item.slug) ?? false,
   }));
   const orderLines = cartLines.filter(({ isSoldOut }) => !isSoldOut);
   const orderTotalCLP = orderLines.reduce(
     (total, { item }) => total + item.priceCLP * item.quantity,
     0,
   );
-  const allSoldOut = soldOutSlugs !== null && items.length > 0 && orderLines.length === 0;
+  const allSoldOut = cartCatalog !== null && items.length > 0 && orderLines.length === 0;
   // Las botellas que se cuentan son las que se van a vender: una línea agotada
   // no suma al total y tampoco puede ayudar a alcanzar el mínimo.
   const orderBottles = orderLines.reduce((total, { item }) => total + item.quantity, 0);
-  const belowMinimum = orderBottles > 0 && orderBottles < MIN_BOTTLES;
+  const minBottles = cartCatalog?.minBottles ?? MIN_BOTTLES;
+  const belowMinimum = orderBottles > 0 && orderBottles < minBottles;
   const checkoutBlocked = allSoldOut || belowMinimum;
   const checkoutClassName =
     "w-full bg-primary text-on-primary py-3 rounded-md font-body font-semibold flex items-center justify-center gap-2 hover:bg-primary-container transition-colors shadow-[0_8px_24px_-8px_rgba(42,0,2,0.45)]";
@@ -108,6 +157,31 @@ export default function CartDrawer() {
       t("whatsappOutro"),
     ].join("\n"),
   );
+
+  const carrito = carritoParaCheckout(
+    orderLines.map(({ item }) => ({ slug: item.slug, quantity: item.quantity })),
+  );
+  const carritoJson = JSON.stringify(carrito);
+  // Con el checkout configurado se ofrece pagar en línea, salvo que el intento ya haya caído al
+  // respaldo: desde ahí el botón, su ícono y el aviso del pie hablan de WhatsApp.
+  const payOnline = checkoutUrl !== null && checkoutState !== "fallback";
+
+  async function handleCheckoutSubmit(event: SubmitEvent<HTMLFormElement>) {
+    if (!checkoutUrl) return;
+    event.preventDefault();
+    setCheckoutAttempt({ items, state: "sending" });
+    const resultado = await iniciarCheckout(checkoutUrl, carrito, { fetch: window.fetch.bind(window) });
+    if (resultado.ok) {
+      window.location.assign(resultado.url);
+      return;
+    }
+    if (resultado.motivo === "carrito") {
+      // El Worker vio algo distinto (agotado, precio, mínimo): se vuelve a pedir el catálogo.
+      forgetCartCatalog();
+      setCartCatalog(null);
+    }
+    setCheckoutAttempt({ items, state: resultado.motivo === "carrito" ? "cart" : "fallback" });
+  }
 
   return (
     <>
@@ -242,6 +316,11 @@ export default function CartDrawer() {
               <span>{t("totalLabel")}</span>
               <span className="font-semibold text-primary">{formatPrice(orderTotalCLP)}</span>
             </div>
+            {checkoutState === "fallback" && (
+              <p role="alert" className="text-center text-sm text-on-surface-variant font-body">
+                {t("checkoutFallbackNotice")}
+              </p>
+            )}
             {checkoutBlocked ? (
               <button
                 type="button"
@@ -249,9 +328,25 @@ export default function CartDrawer() {
                 aria-disabled="true"
                 className={`${checkoutClassName} cursor-not-allowed opacity-60`}
               >
-                <MessageCircle className="h-4 w-4" aria-hidden="true" />
-                {t("checkout")}
+                {payOnline ? (
+                  <CreditCard className="h-4 w-4" aria-hidden="true" />
+                ) : (
+                  <MessageCircle className="h-4 w-4" aria-hidden="true" />
+                )}
+                {payOnline ? t("checkoutPay") : t("checkout")}
               </button>
+            ) : payOnline ? (
+              <form method="POST" action={checkoutUrl} onSubmit={handleCheckoutSubmit}>
+                <input type="hidden" name="carrito" value={carritoJson} />
+                <button
+                  type="submit"
+                  disabled={checkoutState === "sending"}
+                  className={`${checkoutClassName} ${checkoutState === "sending" ? "opacity-60" : ""}`}
+                >
+                  <CreditCard className="h-4 w-4" aria-hidden="true" />
+                  {checkoutState === "sending" ? t("checkoutPaying") : t("checkoutPay")}
+                </button>
+              </form>
             ) : (
               <a
                 href={`${CONTACT_WHATSAPP_URL}?text=${whatsappMessage}`}
@@ -262,6 +357,11 @@ export default function CartDrawer() {
                 <MessageCircle className="h-4 w-4" aria-hidden="true" />
                 {t("checkout")}
               </a>
+            )}
+            {checkoutState === "cart" && (
+              <p role="alert" className="text-center text-sm text-on-surface-variant font-body">
+                {t("checkoutCartChanged")}
+              </p>
             )}
             {allSoldOut && (
               <p className="text-center text-sm text-on-surface-variant font-body">
@@ -278,14 +378,14 @@ export default function CartDrawer() {
                 <Wine className="mt-0.5 h-4 w-4 shrink-0 text-wine-accent" aria-hidden="true" />
                 <span>
                   {t("minimumNotice", {
-                    min: MIN_BOTTLES,
-                    missing: MIN_BOTTLES - orderBottles,
+                    min: minBottles,
+                    missing: minBottles - orderBottles,
                   })}
                 </span>
               </p>
             )}
             <p className="text-center text-xs text-on-surface-variant/80 font-body">
-              {t("checkoutDisclaimer")}
+              {payOnline ? t("checkoutDisclaimerOnline") : t("checkoutDisclaimer")}
             </p>
           </footer>
         )}

@@ -1097,6 +1097,11 @@
     "addAriaLabel": "Add {name} to cart",
     "whatsappIntro": "Hi Casa Acosta — I'm interested in this order:",
     "whatsappTotal": "Estimated total: {total}",
-    "whatsappOutro": "How can I complete the purchase?"
+    "whatsappOutro": "How can I complete the purchase?",
+    "checkoutPay": "Pay",
+    "checkoutPaying": "Opening payment…",
+    "checkoutDisclaimerOnline": "Online payment with Mercado Pago. We confirm every order by email.",
+    "checkoutFallbackNotice": "We couldn't open online payment. You can complete your order via WhatsApp:",
+    "checkoutCartChanged": "Some wines changed availability or price. Review your cart and try again."
   }
 }

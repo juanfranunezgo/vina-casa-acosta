@@ -61,6 +61,16 @@ export type ApiCatalog = {
    * que funcionar sin ella.
    */
   definiciones_atributos?: AttributeDefinition[];
+  /**
+   * Clave agregada por la etapa E del checkout (DEC-7), opcional por la regla 3: el snapshot
+   * committeado no la trae hasta regenerarlo. `url` viaja solo con la tienda encendida.
+   */
+  checkout?: {
+    url?: string;
+    compra_minima_unidades?: number;
+    compra_minima_monto?: number;
+    whatsapp?: string;
+  };
   categorias: Array<{ slug: string; nombre: string; orden: number }>;
   productos: ApiProduct[];
 };
@@ -79,7 +89,7 @@ export const STORAGE_PUBLIC_PREFIX = "/storage/v1/object/public/";
 /**
  * Carpeta de `public/` donde el snapshot deja las fotos de botella.
  *
- * El generador la escribe como `LOCAL_IMAGE_DIR` (`scripts/catalogo-snapshot.mjs`)
+ * El generador la escribe como `LOCAL_IMAGE_DIR` (`scripts/catalogo-imagenes.mjs`)
  * y es el ÚNICO prefijo local que el snapshot emite. El guard no acepta otro: una
  * ruta arbitraria del sitio termina siendo un fetch del optimizador de Next contra
  * el propio origen, y nada del catálogo necesita eso.

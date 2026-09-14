@@ -1,7 +1,7 @@
 {
   "version": 1,
   "sitio": "vina-casa-acosta",
-  "generado_en": "2026-08-27T21:39:03.533Z",
+  "generado_en": "2026-09-14T00:38:44.999Z",
   "definiciones_atributos": [
     {
       "clave": "linea",
@@ -142,6 +142,10 @@
       "orden": 12
     }
   ],
+  "checkout": {
+    "compra_minima_unidades": 6,
+    "whatsapp": "+56966740633"
+  },
   "categorias": [
     {
       "slug": "vinos",
