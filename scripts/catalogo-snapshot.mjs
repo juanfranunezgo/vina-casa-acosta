@@ -15,7 +15,6 @@
  * Sin flags toma `NEXT_PUBLIC_AFELEIA_API_URL` y `NEXT_PUBLIC_AFELEIA_SITIO`.
  */
 
-import { existsSync } from "node:fs";
 import { readFile } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
 import path from "node:path";
@@ -35,6 +34,7 @@ import {
   mensajeDeCuerpoIlegible,
   razonParaRechazar,
 } from "./catalogo-validacion.mjs";
+import { LOCAL_IMAGE_DIR, localizarImagenes } from "./catalogo-imagenes.mjs";
 import { catalogEndpointFor } from "../lib/afeleia/contract.ts";
 // `@next/env` es CommonJS: el named import no existe desde ESM.
 import entornoDeNext from "@next/env";
@@ -65,8 +65,6 @@ const TIMEOUT_MS = 15_000;
 
 const ROOT = path.join(path.dirname(fileURLToPath(import.meta.url)), "..");
 const OUTPUT = RUTA_SNAPSHOT;
-/** Carpeta de `public/` donde viven las fotos de botella committeadas. */
-const LOCAL_IMAGE_DIR = "/vinos";
 
 function readFlag(name) {
   const index = process.argv.indexOf(`--${name}`);
@@ -149,46 +147,17 @@ if (rechazo) {
   process.exit(1);
 }
 
-/**
- * Las imágenes del snapshot apuntan a `public/` y no al Storage de Afeleia.
- *
- * El snapshot se sirve justo cuando NO hay API, y una URL de Storage la resuelve
- * un host que en ese escenario puede ser el que se cayó — además de que la URL
- * generada en local (`http://127.0.0.1:54321/...`) no existe en producción y
- * `next/image` la rechazaría por no estar en `remotePatterns`. Las fotos de
- * botella ya viajan committeadas en `public/vinos/`, así que el modo degradado
- * usa esas: es lo que garantiza que el fallback se vea igual que el `wines.ts`
- * de siempre. Si alguna no está, se conserva la URL remota y se avisa.
- */
-function localizarImagenes(productos) {
-  const sinFotoLocal = [];
-  const duenoDe = new Map();
-  const colisiones = [];
-  for (const producto of productos) {
-    producto.imagenes = producto.imagenes.map((url) => {
-      const archivo = path.posix.basename(new URL(url, "http://local").pathname);
-      const rutaPublica = `${LOCAL_IMAGE_DIR}/${archivo}`;
-      if (!existsSync(path.join(ROOT, "public", LOCAL_IMAGE_DIR, archivo))) {
-        sinFotoLocal.push(`${producto.slug} → ${url}`);
-        return url;
-      }
-      // El mapeo es por nombre de archivo: dos productos cuyas fotos remotas
-      // terminan con el mismo basename quedan apuntando a la misma imagen local
-      // y en modo degradado se ven iguales, sin que nada lo diga. Con 13
-      // productos no pasa; es un bug de crecimiento.
-      const previo = duenoDe.get(rutaPublica);
-      if (previo !== undefined && previo !== producto.slug) {
-        colisiones.push(`${rutaPublica} ← ${previo} y ${producto.slug}`);
-      } else {
-        duenoDe.set(rutaPublica, producto.slug);
-      }
-      return rutaPublica;
-    });
-  }
-  return { sinFotoLocal, colisiones };
+// Las fotos del snapshot apuntan a `public/vinos/` y no al Storage. El porqué, y la
+// copia del producto cuando la foto del panel no tiene copia con su nombre, están en
+// `catalogo-imagenes.mjs`.
+const { sinFotoLocal, porSlug, colisiones } = localizarImagenes(payload.productos, {
+  publicDir: path.join(ROOT, "public"),
+});
+if (porSlug.length > 0) {
+  console.warn(
+    `Aviso: ${porSlug.length} foto(s) sin copia con su nombre en public${LOCAL_IMAGE_DIR}/ — el fallback usa la del producto, que puede ser anterior:\n  ${porSlug.join("\n  ")}`,
+  );
 }
-
-const { sinFotoLocal, colisiones } = localizarImagenes(payload.productos);
 if (sinFotoLocal.length > 0) {
   console.warn(
     `Aviso: ${sinFotoLocal.length} imagen(es) sin copia en public${LOCAL_IMAGE_DIR}/ — el fallback las pedirá al Storage:\n  ${sinFotoLocal.join("\n  ")}`,

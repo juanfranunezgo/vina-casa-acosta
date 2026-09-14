@@ -89,7 +89,7 @@ export const STORAGE_PUBLIC_PREFIX = "/storage/v1/object/public/";
 /**
  * Carpeta de `public/` donde el snapshot deja las fotos de botella.
  *
- * El generador la escribe como `LOCAL_IMAGE_DIR` (`scripts/catalogo-snapshot.mjs`)
+ * El generador la escribe como `LOCAL_IMAGE_DIR` (`scripts/catalogo-imagenes.mjs`)
  * y es el ÚNICO prefijo local que el snapshot emite. El guard no acepta otro: una
  * ruta arbitraria del sitio termina siendo un fetch del optimizador de Next contra
  * el propio origen, y nada del catálogo necesita eso.
