@@ -61,6 +61,23 @@ test("toda imagen del snapshot es dibujable por el guard del sitio", () => {
   }
 });
 
+test("toda imagen del snapshot se dibuja también sin API o con la API local", () => {
+  // El snapshot se sirve cuando la API no está, y `renderableImage` solo acepta URLs remotas del
+  // origen de la API configurada: sin API, o con la API local, una URL del Storage no se dibuja y
+  // el producto queda «sin foto». Pasó con dos fotos subidas desde el panel; lo encontró la review
+  // de Codex de la etapa E del checkout. La API vacía va explícita: `undefined` tomaría la variable
+  // de entorno de quien corre los tests.
+  for (const api of ["", "http://127.0.0.1:54321/functions/v1"]) {
+    for (const producto of snapshot.productos) {
+      if (producto.imagenes.length === 0) continue;
+      assert.ok(
+        renderableImage(producto.imagenes, api),
+        `${producto.slug}: su foto no se dibuja con la API «${api || "sin configurar"}»`,
+      );
+    }
+  }
+});
+
 test("con la copia actual los filtros salen de las definiciones publicadas", () => {
   const defs = sanitizeDefinitions(snapshot.definiciones_atributos);
   assert.ok(defs.length > 0, "el snapshot vigente ya viaja con definiciones");
