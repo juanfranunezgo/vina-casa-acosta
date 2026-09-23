@@ -19,6 +19,7 @@ export default function ContactForm() {
   const [status, setStatus] = useState<Status>("idle");
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
   const [subject, setSubject] = useState("");
   const [message, setMessage] = useState("");
   const [botField, setBotField] = useState("");
@@ -38,6 +39,9 @@ export default function ContactForm() {
       await submitToNetlifyForms("contacto", {
         nombre: name,
         email,
+        // Mismo nombre de campo que en la reserva: en el panel de Netlify el
+        // teléfono se llama igual en los dos formularios.
+        telefono: phone.trim(),
         asunto: t(`subjects.${subject || "other"}`),
         mensaje: message,
         idioma: locale,
@@ -51,6 +55,7 @@ export default function ContactForm() {
       });
       setName("");
       setEmail("");
+      setPhone("");
       setSubject("");
       setMessage("");
       setConsent(false);
@@ -106,6 +111,34 @@ export default function ContactForm() {
           value={email}
           onChange={(event) => setEmail(event.target.value)}
           placeholder={t("fields.emailPlaceholder")}
+          className="w-full border-0 border-b border-outline bg-transparent px-0 py-2 font-body text-body-md transition-colors focus:border-primary focus:outline-none"
+        />
+      </div>
+
+      {/* El celular se pide desde el 2026-09-22, a pedido de la viña, y es
+          obligatorio. El patrón pide entre 8 y 15 dígitos (el tope de E.164) y
+          deja pasar espacios, guiones, paréntesis y un "+" antes del primer
+          dígito —también "(+56)"—, así que acepta un número chileno escrito de
+          cualquier forma y también uno extranjero. Dentro de la clase todo va
+          escapado: los navegadores compilan `pattern` con el flag `v`, que
+          rechaza un "(" suelto ahí, y un patrón inválido se ignora sin avisar. */}
+      <div>
+        <label
+          htmlFor="contacto-celular"
+          className="mb-2 block font-body text-label-sm uppercase tracking-wider text-on-surface-variant"
+        >
+          {t("fields.phone")}
+        </label>
+        <input
+          id="contacto-celular"
+          required
+          type="tel"
+          autoComplete="tel"
+          pattern="[\s\(]*\+?(?:[\s\-\(\)]*\d){8,15}[\s\-\(\)]*"
+          title={t("fields.phoneHint")}
+          value={phone}
+          onChange={(event) => setPhone(event.target.value)}
+          placeholder={t("fields.phonePlaceholder")}
           className="w-full border-0 border-b border-outline bg-transparent px-0 py-2 font-body text-body-md transition-colors focus:border-primary focus:outline-none"
         />
       </div>

@@ -47,6 +47,10 @@ Solución provisoria mientras no haya backend. Plan Free: **100 envíos/mes**.
   anteriores **no se pierden**: quedan en el panel bajo el nombre viejo, en su propia
   lista. Si la notificación por correo estaba configurada sobre `reserva-tour`, hay que
   volver a configurarla para el nombre nuevo.
+- Desde el 2026-09-22 el formulario de **contacto** pide el celular, obligatorio, en el
+  campo `telefono` —el mismo nombre que usa la reserva—. Acepta de 8 a 15 dígitos con
+  espacios, guiones, paréntesis y "+"; lo cuida `tests/contacto-celular.test.mjs`, que
+  compila el `pattern` con el flag `v` como lo hace el navegador.
 
 ---
 
