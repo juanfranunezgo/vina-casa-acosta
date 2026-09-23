@@ -206,6 +206,16 @@ de las bandas de /vinos, con el desayuno primero y el asado segundo—, la galer
 cambió sus tres verticales por gente cosechando, y Dv7 estrena la gamela roja al pie de la
 parra. De la aérea sólo queda en pie `vendimia-grupo`, la apertura de la galería.
 
+**Tanda del fotógrafo, 2026-09-22.** Nueve fotos más. La 32 entró al carrusel de Dv4
+(ahora desayuno · cosecha · asado) y el resto a Dv6, que pasó a **filas de una sola
+proporción** declaradas en `data/vendimiaGallery.ts` —fuera de la página para que
+`tests/vendimia-galeria.test.mjs` las pueda leer— con una parte visible y el resto detrás
+de **"Ver más fotos"** (`components/ShowMore.tsx`: el bloque viene en el HTML con `hidden`,
+el botón sólo abre y pasa el foco al bloque). El recorte `vendimia-grupo` de la aérea dejó
+de usarse: sigue versionado y generándose, pero ninguna página lo pide. Dos de las fotos
+muestran niños con la cara visible; **falta confirmar con la viña que tiene la
+autorización de los padres** antes de mergear.
+
 `CollectionPhotos` acepta ahora `alt` como arreglo, una por foto. En /vinos todas las fotos
 de una banda son la misma colección y un `alt` común alcanza; acá son dos escenas distintas
 y prestarle a una el texto de la otra le describiría a quien no ve algo que no está en

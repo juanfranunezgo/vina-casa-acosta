@@ -15,6 +15,7 @@ import {
 import Reveal from "@/components/Reveal";
 import Button from "@/components/ui/Button";
 import CollectionPhotos from "@/components/CollectionPhotos";
+import ShowMore from "@/components/ShowMore";
 import ActivityBreadcrumbs from "@/components/ActivityBreadcrumbs";
 import ActivityReservationForm from "@/components/ActivityReservationForm";
 import VineyardYear from "@/components/VineyardYear";
@@ -27,6 +28,13 @@ import {
   activityPath,
   vendimiaRelatedActivities,
 } from "@/data/activities";
+import {
+  VENDIMIA_CARRUSEL,
+  VENDIMIA_FOTOS,
+  VENDIMIA_GALERIA,
+  type FilaGaleria,
+  type ProporcionFila,
+} from "@/data/vendimiaGallery";
 
 /**
  * Dv — Hub de Vendimia.
@@ -97,38 +105,43 @@ const HERO_FALLBACK = "/images/actividades/hero-vendimia-1920.webp";
 const HERO_SIZES = "(max-width: 768px) 78vh, (max-aspect-ratio: 5/4) 125vh, 100vw";
 
 /**
- * Las fotos de la vendimia son encuadres de la MISMA aérea, sacados del original
- * de 36 megapíxeles (`scripts/optimize-vendimia.mjs`). Es material real de la
- * jornada: rellenar la página con fotos de otras actividades habría dicho que
- * así se ve la vendimia, y no es cierto. Las que no salen de ahí —el asado, la
- * mesa puesta y el viñedo en reposo— son de la viña y su `alt` no afirma que
- * sean de una vendimia.
- *
- * **Ninguna se repite.** La versión anterior usaba `mesa` dos veces y ponía
- * `parras` de fondo tapada al 88% —se descargaba entera para no verse— mientras
- * la galería mostraba cuatro recortes de la aérea como si fueran cuatro momentos
- * distintos. Ahora cada archivo aparece una sola vez, en la sección cuyo texto
- * describe.
- *
- * Son provisorias: la viña todavía tiene que mandar las definitivas. Por eso las
- * ranuras declaran su proporción y el reemplazo es una línea acá.
+ * Las fotos, el carrusel y las filas de la galería viven en
+ * `data/vendimiaGallery.ts`, donde un test puede leerlos. Todas son de una
+ * vendimia de verdad salvo el asado del carrusel, que es de la viña y cuyo `alt`
+ * no afirma que sea de una vendimia.
  */
-const FOTO = {
-  grupo: "/images/actividades/vendimia-grupo.webp",
-  asado: "/images/contacto/asado.webp",
-  // Fotos propias de la jornada (2026-08-18). Las cinco primeras reemplazaron
-  // recortes de la aérea y fotos prestadas de otras actividades; son de una
-  // vendimia de verdad, así que sus `alt` describen lo que efectivamente pasa
-  // en cada una. Salen de `npm run fotos:vendimia` — ver docs/FOTOS.md.
-  mosto: "/images/actividades/vendimia-mosto.webp",
-  manoUva: "/images/actividades/vendimia-mano-uva.webp",
-  pisoneo: "/images/actividades/vendimia-pisoneo.webp",
-  desayuno: "/images/actividades/vendimia-desayuno.webp",
-  personas: "/images/actividades/vendimia-personas.webp",
-  bin: "/images/actividades/vendimia-bin.webp",
-  charla: "/images/actividades/vendimia-charla.webp",
-  formulario: "/images/actividades/vendimia-formulario.webp",
-} as const;
+const FOTO = VENDIMIA_FOTOS;
+
+/** Clase de proporción de cada fila. Escritas enteras para que Tailwind las vea. */
+const ASPECTO: Record<ProporcionFila, string> = {
+  "16/9": "aspect-[16/9]",
+  "3/2": "aspect-[3/2]",
+  "4/5": "aspect-[4/5]",
+};
+
+/** Columnas según cuántas fotos trae la fila. Ver `VENDIMIA_GALERIA`. */
+const COLUMNAS: Record<number, string> = {
+  1: "grid-cols-1",
+  2: "grid-cols-1 sm:grid-cols-2",
+  3: "grid-cols-2 md:grid-cols-3",
+  4: "grid-cols-2 md:grid-cols-4",
+};
+
+/**
+ * `sizes` de cada foto según la fila y su lugar en ella. En una fila de tres la
+ * última ocupa el ancho entero en móvil: pedirle 50vw como a las otras la
+ * dejaría borrosa justo en la foto más grande.
+ */
+function tamanos(total: number, index: number): string {
+  if (total === 1) return "(max-width: 1280px) 100vw, 1280px";
+  if (total === 2) return "(max-width: 640px) 100vw, 50vw";
+  if (total === 3) {
+    return index === total - 1
+      ? "(max-width: 768px) 100vw, 33vw"
+      : "(max-width: 768px) 50vw, 33vw";
+  }
+  return "(max-width: 768px) 50vw, 25vw";
+}
 
 /** Una etapa del ciclo de la vid, tal como viene de `messages`. */
 type CycleStep = { season: string; name: string; description: string };
@@ -242,6 +255,38 @@ export default async function VendimiaPage({
   const programSteps = t.raw("program.steps") as string[];
   const includes = t.raw("program.includes") as string[];
   const related = vendimiaRelatedActivities();
+
+  /**
+   * Una fila de la galería (Dv6). La foto ancha va sin el zoom al pasar el
+   * mouse, como la apertura de siempre: a ese tamaño el movimiento se nota más
+   * de lo que aporta. `conMargen` separa la fila de la anterior.
+   */
+  const filaDeGaleria = ({ proporcion, fotos }: FilaGaleria, conMargen: boolean) => (
+    <div
+      className={`grid gap-gutter ${COLUMNAS[fotos.length]} ${conMargen ? "mt-gutter" : ""}`}
+    >
+      {fotos.map((foto, index) => (
+        <div
+          key={foto}
+          className={`group relative overflow-hidden rounded-xl ${ASPECTO[proporcion]} ${
+            fotos.length === 3 ? "last:col-span-2 md:last:col-span-1" : ""
+          }`}
+        >
+          <Image
+            src={FOTO[foto]}
+            alt={t(`photos.${foto}`)}
+            fill
+            className={`object-cover ${
+              fotos.length > 1
+                ? "transition-transform duration-700 group-hover:scale-[1.04]"
+                : ""
+            }`}
+            sizes={tamanos(fotos.length, index)}
+          />
+        </div>
+      ))}
+    </div>
+  );
 
   // Los tres datos que la viña SÍ dio. No hay una cuarta casilla con el precio
   // ni con el mínimo de personas porque esos números todavía no existen.
@@ -573,17 +618,18 @@ export default async function VendimiaPage({
                     otra le describe a quien no ve algo que no está en pantalla.
                     Esa es la razón de que `CollectionPhotos` acepte un arreglo.
 
-                    Abre el desayuno, que es de una vendimia de verdad y además el
-                    primer hito del día; el asado —que viene de la galería de
-                    contacto— queda segundo. */}
+                    Van en el orden del día (`VENDIMIA_CARRUSEL`): el desayuno,
+                    el corte —el cosechero con la caja de la viña, de la tanda
+                    del fotógrafo— y el asado, que viene de la galería de
+                    contacto. */}
                 <div className="lg:sticky lg:top-28">
                   <CollectionPhotos
-                    photos={[FOTO.desayuno, FOTO.asado]}
-                    alt={[t("photos.desayuno"), t("photos.asado")]}
+                    photos={VENDIMIA_CARRUSEL.map((foto) => FOTO[foto])}
+                    alt={VENDIMIA_CARRUSEL.map((foto) => t(`photos.${foto}`))}
                     prevLabel={t("photos.prev")}
                     nextLabel={t("photos.next")}
-                    goToLabels={[1, 2].map((index) =>
-                      t("photos.goTo", { index, total: 2 }),
+                    goToLabels={VENDIMIA_CARRUSEL.map((_, index) =>
+                      t("photos.goTo", { index: index + 1, total: VENDIMIA_CARRUSEL.length }),
                     )}
                   />
                 </div>
@@ -636,15 +682,16 @@ export default async function VendimiaPage({
         </div>
       </section>
 
-      {/* Dv6 — Galería. Una imagen de apertura ancha y tres de apoyo, todas con
-          proporción declarada.
+      {/* Dv6 — Galería. Filas de una sola proporción cada una, declaradas en
+          `VENDIMIA_GALERIA`: al llegar se ven una apertura ancha y una fila de
+          tres; el resto queda detrás de "Ver más fotos" y cierra con la foto
+          grupal.
 
-          Las ranuras son deliberadamente genéricas y no están afinadas al
-          material de hoy: las fotos son provisorias —la viña tiene que mandar
-          las definitivas— así que diseñar el mosaico alrededor de estos
-          encuadres sería trabajo que hay que rehacer. Antes eran seis piezas
-          donde cuatro eran recortes de la misma aérea, y eso es lo que la hacía
-          ver armada con relleno. */}
+          Desde el 2026-09-22 son las fotos del fotógrafo de la vendimia. La
+          versión anterior abría con un recorte de la aérea del hero —el mismo
+          cuadro dos veces en la página— y antes de eso eran seis piezas donde
+          cuatro salían de esa aérea, que es lo que la hacía ver armada con
+          relleno. */}
       <section className="bg-surface-container-low py-section-gap px-margin-mobile md:px-margin-desktop">
         <div className="mx-auto max-w-(--container-max)">
           <Reveal className="mb-12">
@@ -656,40 +703,21 @@ export default async function VendimiaPage({
             </p>
           </Reveal>
 
-          <Reveal>
-            <div className="relative aspect-[16/9] overflow-hidden rounded-xl">
-              <Image
-                src={FOTO.grupo}
-                alt={t("photos.grupo")}
-                fill
-                className="object-cover"
-                sizes="(max-width: 1280px) 100vw, 1280px"
-              />
-            </div>
-          </Reveal>
+          {VENDIMIA_GALERIA.visibles.map((fila, index) => (
+            <Reveal key={fila.fotos[0]} delay={index * 100}>
+              {filaDeGaleria(fila, index > 0)}
+            </Reveal>
+          ))}
 
-          <Reveal delay={100}>
-            <div className="mt-gutter grid grid-cols-2 gap-gutter md:grid-cols-3">
-              {[
-                { src: FOTO.personas, alt: t("photos.personas") },
-                { src: FOTO.bin, alt: t("photos.bin") },
-                { src: FOTO.charla, alt: t("photos.charla") },
-              ].map(({ src, alt }) => (
-                <div
-                  key={src}
-                  className="group relative aspect-[4/5] overflow-hidden rounded-xl last:col-span-2 md:last:col-span-1"
-                >
-                  <Image
-                    src={src}
-                    alt={alt}
-                    fill
-                    className="object-cover transition-transform duration-700 group-hover:scale-[1.04]"
-                    sizes="(max-width: 768px) 50vw, 33vw"
-                  />
-                </div>
-              ))}
-            </div>
-          </Reveal>
+          <ShowMore
+            id="vendimia-mas-fotos"
+            label={t("gallery.more")}
+            regionLabel={t("gallery.moreLabel")}
+          >
+            {VENDIMIA_GALERIA.mas.map((fila) => (
+              <div key={fila.fotos[0]}>{filaDeGaleria(fila, true)}</div>
+            ))}
+          </ShowMore>
         </div>
       </section>
 

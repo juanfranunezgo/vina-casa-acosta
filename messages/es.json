@@ -565,7 +565,6 @@
         "audienceValue": "Niños y adultos"
       },
       "photos": {
-        "grupo": "El grupo de la vendimia con los brazos en alto, entre las hileras del viñedo",
         "asado": "Asado campestre humeando junto al viñedo",
         "mosto": "El mosto corre desde la canilla de la barrica hasta un balde de acero",
         "manoUva": "Una mano sostiene un racimo de uva tinta todavía colgado de la parra",
@@ -574,6 +573,15 @@
         "personas": "Tres participantes junto a las gamelas rotuladas Viña Casa Acosta, llenas de uva recién cortada",
         "bin": "Una participante vacía su gamela de uva en el bin, entre las hileras",
         "charla": "El equipo de la viña explica el trabajo junto al bin de uva, con la cordillera al fondo",
+        "cosecha": "Un cosechero con delantal carga la gamela de Viña Casa Acosta entre las parras de otoño",
+        "pisoneoBarricas": "Tres participantes pisan uva de pie dentro de barricas, frente al pendón de Viña Casa Acosta",
+        "desayunoDetalle": "Panes caseros, fruta, mermelada y jugo sobre la mesa de madera del desayuno",
+        "corte": "Participantes cortan racimos entre las hileras de parras de otoño, con la cordillera al fondo",
+        "despalillado": "Tres niños separan los granos del racimo en fuentes verdes, entre las parras",
+        "asadoJornada": "El asador da vuelta la carne en la parrilla, bajo una hilera de chorizos colgados",
+        "pisoneoNinos": "Tres niños pisan uva dentro de barricas, frente al pendón de la vendimia de Casa Acosta",
+        "almuerzo": "La mesa larga del almuerzo bajo el toldo, con los participantes sentados entre las parras",
+        "fotoGrupal": "Foto grupal de los participantes de la vendimia, con delantales y la cordillera al fondo",
         "prev": "Foto anterior de la jornada",
         "next": "Foto siguiente de la jornada",
         "goTo": "Ver foto {index} de {total} de la jornada",
@@ -581,7 +589,9 @@
       },
       "gallery": {
         "title": "La jornada en imágenes",
-        "note": "Fotos de la viña y de la última vendimia. Las de la próxima las sumamos apenas termine la jornada."
+        "note": "Fotos de la viña y de la última vendimia. Las de la próxima las sumamos apenas termine la jornada.",
+        "more": "Ver más fotos",
+        "moreLabel": "Más fotos de la vendimia"
       },
       "hero": {
         "eyebrow": "Abril · Mayo",

@@ -87,9 +87,9 @@ La ruta lleva la categoría: `/actividades/tours/ombu`, `/actividades/talleres/p
 | Dv1 | Hero + breadcrumbs |
 | Dv2 | Qué es la vendimia en Casa Acosta + los tres datos ciertos (temporada · duración · para quién) |
 | Dv3 | El año de la viña — banda de 12 meses con las 5 etapas del ciclo y la ventana de cosecha (`components/VineyardYear.tsx`) |
-| Dv4 | La jornada: corta, pisa y celebra — programa en `<ol>` con un ícono por paso + qué incluye |
+| Dv4 | La jornada: corta, pisa y celebra — programa en `<ol>` con un ícono por paso + qué incluye, y al lado un carrusel 4:5 con tres fotos en el orden del día (desayuno · cosecha · asado) |
 | Dv5 | Otras formas de vivir el ciclo (Cosecha tu historia · Lágrimas de invierno) |
-| Dv6 | Galería (apertura ancha + tres de apoyo) |
+| Dv6 | Galería en filas de una sola proporción: a la vista, apertura ancha 16:9 + fila de tres 3:2; detrás de **"Ver más fotos"** (`components/ShowMore.tsx`), fila de cuatro 4:5, par 3:2 y cierre 16:9 con la foto grupal. Las filas se declaran en `data/vendimiaGallery.ts`; lo cuida `tests/vendimia-galeria.test.mjs`. Desde el 2026-09-22 |
 | Dv7 | Consulta (formulario en modo temporada, sin mínimo de personas) |
 
 **El orden en pantalla es Dv1 · Dv2 · Dv4 · Dv3 · Dv6 · Dv7 · Dv5**, no el de la
