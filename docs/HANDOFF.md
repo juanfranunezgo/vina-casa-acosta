@@ -213,8 +213,10 @@ proporción** declaradas en `data/vendimiaGallery.ts` —fuera de la página par
 de **"Ver más fotos"** (`components/ShowMore.tsx`: el bloque viene en el HTML con `hidden`,
 el botón sólo abre y pasa el foco al bloque). El recorte `vendimia-grupo` de la aérea dejó
 de usarse: sigue versionado y generándose, pero ninguna página lo pide. Dos de las fotos
-muestran niños con la cara visible; **falta confirmar con la viña que tiene la
-autorización de los padres** antes de mergear.
+muestran niños con la cara visible (`vendimia-despalillado`, `vendimia-pisoneo-ninos`):
+**la viña confirmó el 2026-09-22 que tiene la autorización de los padres**. Si algún día
+hay que sacarlas, se quitan de su fila y de `VENDIMIA_FOTOS` en `data/vendimiaGallery.ts`;
+el test avisa si una queda declarada sin usar.
 
 `CollectionPhotos` acepta ahora `alt` como arreglo, una por foto. En /vinos todas las fotos
 de una banda son la misma colección y un `alt` común alcanza; acá son dos escenas distintas
