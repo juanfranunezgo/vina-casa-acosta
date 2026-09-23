@@ -565,7 +565,6 @@
         "audienceValue": "Children and adults"
       },
       "photos": {
-        "grupo": "The harvest group with their arms raised, between the vineyard rows",
         "asado": "A country asado smoking beside the vineyard",
         "mosto": "Must running from the barrel's tap into a steel bucket",
         "manoUva": "A hand holding a bunch of red grapes still on the vine",
@@ -574,6 +573,15 @@
         "personas": "Three guests beside crates marked Viña Casa Acosta, full of freshly picked grapes",
         "bin": "A guest tipping her crate of grapes into the bin, between the rows",
         "charla": "The winery team explaining the work beside the grape bin, with the mountains behind",
+        "cosecha": "A picker in an apron carrying a Viña Casa Acosta crate through the autumn vines",
+        "pisoneoBarricas": "Three guests treading grapes standing in barrels, in front of the Viña Casa Acosta banner",
+        "desayunoDetalle": "Homemade bread, fruit, jam and juice on the wooden breakfast table",
+        "corte": "Guests cutting grape bunches between rows of autumn vines, with the mountains behind",
+        "despalillado": "Three children pulling the grapes off the bunch into green tubs, among the vines",
+        "asadoJornada": "The grill master turning the meat on the grill, beneath a row of hanging chorizos",
+        "pisoneoNinos": "Three children treading grapes in barrels, in front of the Casa Acosta harvest banner",
+        "almuerzo": "The long lunch table under the awning, with the guests seated among the vines",
+        "fotoGrupal": "Group photo of the harvest guests in aprons, with the mountains behind",
         "prev": "Previous photo of the day",
         "next": "Next photo of the day",
         "goTo": "View photo {index} of {total} of the day",
@@ -581,7 +589,9 @@
       },
       "gallery": {
         "title": "The day in pictures",
-        "note": "Photos of the vineyard and of the last harvest. We'll add the next one's as soon as the day is over."
+        "note": "Photos of the vineyard and of the last harvest. We'll add the next one's as soon as the day is over.",
+        "more": "See more photos",
+        "moreLabel": "More photos from the harvest"
       },
       "hero": {
         "eyebrow": "April · May",
@@ -1057,6 +1067,9 @@
       "namePlaceholder": "Your name",
       "email": "Email",
       "emailPlaceholder": "you@email.com",
+      "phone": "Mobile phone",
+      "phonePlaceholder": "+56 9 1234 5678",
+      "phoneHint": "Enter your number with at least 8 digits, including the country code, e.g. +56 9 1234 5678.",
       "subject": "Subject",
       "subjectPlaceholder": "Choose a subject",
       "message": "Message",

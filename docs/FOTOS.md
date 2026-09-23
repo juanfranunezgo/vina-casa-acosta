@@ -15,7 +15,7 @@ npm run fotos:colecciones   # bandas de colección de /vinos (C2)
 npm run fotos:contacto      # galería de /contacto
 npm run foto:hero-vinos     # master horizontal del hero de /vinos
 npm run foto:heros          # los heros full-bleed y la capa de +18, desktop + móvil
-npm run fotos:vendimia      # los 4 encuadres del hub de Vendimia (Dv)
+npm run fotos:vendimia      # las fotos del hub de Vendimia (Dv): recortes de la aérea y fotos sueltas
 npm run fotos:mimbre        # las 8 fotos del Taller de mimbre (Dd)
 ```
 
@@ -135,6 +135,29 @@ bandeo se nota.
 | `vendimia-bin.jpg` | `vendimia-bin.webp` 1000×1250 | Dv6, galería | 4:5, `anchorY 0.6` |
 | `vendimia-charla.jpg` | `vendimia-charla.webp` 1000×1250 | Dv6, galería | 4:5, `anchorY 0.45` |
 | `vendimia-formulario.jpg` | `vendimia-formulario.webp` 1600×1067 | Dv7, junto al formulario | ninguno |
+
+### Tanda del fotógrafo (2026-09-22)
+
+Nueve fotos de la última vendimia, de cámara (3:2) salvo la grupal, que es de teléfono
+(4:3). Las fuentes llegaron con nombres de exportación (`viñacasaacosta-fotoenfoto (95).JPG`
+y parecidos) y se copiaron a `_fuentes-fotos/` con el nombre que espera el script. Las
+filas de la galería las declara `data/vendimiaGallery.ts`, y `tests/vendimia-galeria.test.mjs`
+falla si un archivo no tiene la proporción de su fila.
+
+| Fuente en `_fuentes-fotos/` | Sale como | Ranura | Recorte |
+|---|---|---|---|
+| `vendimia-cosecha.jpg` | `vendimia-cosecha.webp` 1100×1375 | Dv4, carrusel | 4:5, centrado |
+| `vendimia-pisoneo-barricas.jpg` | `vendimia-pisoneo-barricas.webp` 1600×900 | Dv6, apertura | 16:9, `anchorY 0.7` (salva las barricas) |
+| `vendimia-desayuno-detalle.jpg` | `vendimia-desayuno-detalle.webp` 1200×800 | Dv6, fila de tres | ninguno |
+| `vendimia-corte.jpg` | `vendimia-corte.webp` 1200×800 | Dv6, fila de tres | ninguno |
+| `vendimia-despalillado.jpg` | `vendimia-despalillado.webp` 1200×800 | Dv6, fila de tres | ninguno |
+| `vendimia-asado-jornada.jpg` | `vendimia-asado-jornada.webp` 1000×1250 | Dv6 "ver más", fila de cuatro | 4:5, `anchorY 0.15` (salva los chorizos) |
+| `vendimia-pisoneo-ninos.jpg` | `vendimia-pisoneo-ninos.webp` 1400×933 | Dv6 "ver más", par | ninguno |
+| `vendimia-almuerzo.jpg` | `vendimia-almuerzo.webp` 1400×933 | Dv6 "ver más", par | ninguno |
+| `vendimia-foto-grupal.jpg` | `vendimia-foto-grupal.webp` 1600×900 | Dv6 "ver más", cierre | 16:9, `anchorY 0.75` (sale cielo) |
+
+`personas`, `bin` y `charla` pasaron a la fila de cuatro de "ver más". El recorte
+`vendimia-grupo` de la aérea dejó de usarse: era un pedazo del mismo cuadro del hero.
 
 **`anchorY` es la fracción del sobrante que se saca por arriba** (0 conserva el borde
 superior, 1 el inferior). No es un valor por defecto que se pueda dejar en 0.5 y olvidar:

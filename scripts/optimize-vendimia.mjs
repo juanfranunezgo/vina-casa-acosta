@@ -23,6 +23,13 @@
 //    `.rotate()` se procesan acostadas y el recorte cae en cualquier parte. Las
 //    dimensiones para calcular la caja se toman ya rotadas.
 //
+//    El 2026-09-22 llegó la tanda del fotógrafo de la vendimia (nueve fotos, 3:2
+//    de cámara salvo la grupal, que es de teléfono). Desde entonces la galería
+//    (Dv6) no usa el recorte `vendimia-grupo` de la aérea: era un pedazo del
+//    mismo cuadro del hero, y ya hay una foto grupal de verdad. El recorte se
+//    sigue generando porque el archivo está versionado, pero ninguna página lo
+//    pide. Las ranuras de la galería las declara `data/vendimiaGallery.ts`.
+//
 // Uso: poner las fuentes en `web/_fuentes-fotos/` y correr el script. Las que
 // falten se saltan con un aviso; los .webp ya están versionados.
 
@@ -143,6 +150,81 @@ const FOTOS = [
     // foto hacia la izquierda porque ahí está la gamela.
     source: "vendimia-formulario.jpg",
     name: "vendimia-formulario",
+    width: 1600,
+  },
+
+  // --- Tanda del fotógrafo (2026-09-22) ---
+  {
+    // Dv4, carrusel — el cosechero con la caja de Viña Casa Acosta entre las
+    // parras. Vertical 2:3 a 4:5: el sombrero queda arriba con margen de sobra,
+    // así que se recorta parejo.
+    source: "vendimia-cosecha.jpg",
+    name: "vendimia-cosecha",
+    ratio: 4 / 5,
+    width: 1100,
+  },
+  {
+    // Dv6, apertura 16:9 — tres participantes pisando uva en las barricas frente
+    // al pendón de la viña. Lo que se va es mayormente cielo y pendón: se deja el
+    // ala del sombrero con aire y se salvan las barricas, que son la acción.
+    source: "vendimia-pisoneo-barricas.jpg",
+    name: "vendimia-pisoneo-barricas",
+    ratio: 16 / 9,
+    anchorY: 0.7,
+    width: 1600,
+  },
+  {
+    // Dv6, fila 3:2 — pan amasado, duraznos y jugo en la mesa del desayuno.
+    // Viene 3:2 de la cámara: no hay recorte.
+    source: "vendimia-desayuno-detalle.jpg",
+    name: "vendimia-desayuno-detalle",
+    ratio: 3 / 2,
+    width: 1200,
+  },
+  {
+    // Dv6, fila 3:2 — el corte de uva entre parras de otoño.
+    source: "vendimia-corte.jpg",
+    name: "vendimia-corte",
+    ratio: 3 / 2,
+    width: 1200,
+  },
+  {
+    // Dv6, fila 3:2 — tres niños despalillando en las bateas verdes.
+    source: "vendimia-despalillado.jpg",
+    name: "vendimia-despalillado",
+    ratio: 3 / 2,
+    width: 1200,
+  },
+  {
+    // Dv6 "ver más", fila 4:5 — el asador con los chorizos colgados. Vertical
+    // 2:3: se conservan los chorizos de arriba y el recorte sale de la parrilla.
+    source: "vendimia-asado-jornada.jpg",
+    name: "vendimia-asado-jornada",
+    ratio: 4 / 5,
+    anchorY: 0.15,
+    width: 1000,
+  },
+  {
+    // Dv6 "ver más", par 3:2 — niños pisando uva en las barricas.
+    source: "vendimia-pisoneo-ninos.jpg",
+    name: "vendimia-pisoneo-ninos",
+    ratio: 3 / 2,
+    width: 1400,
+  },
+  {
+    // Dv6 "ver más", par 3:2 — la mesa larga del almuerzo bajo el toldo.
+    source: "vendimia-almuerzo.jpg",
+    name: "vendimia-almuerzo",
+    ratio: 3 / 2,
+    width: 1400,
+  },
+  {
+    // Dv6 "ver más", cierre 16:9 — la foto grupal con la cordillera. Es 4:3 de
+    // teléfono: sobra cielo, y se saca de ahí para que quede suelo bajo los pies.
+    source: "vendimia-foto-grupal.jpg",
+    name: "vendimia-foto-grupal",
+    ratio: 16 / 9,
+    anchorY: 0.75,
     width: 1600,
   },
 ];

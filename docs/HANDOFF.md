@@ -47,6 +47,10 @@ Solución provisoria mientras no haya backend. Plan Free: **100 envíos/mes**.
   anteriores **no se pierden**: quedan en el panel bajo el nombre viejo, en su propia
   lista. Si la notificación por correo estaba configurada sobre `reserva-tour`, hay que
   volver a configurarla para el nombre nuevo.
+- Desde el 2026-09-22 el formulario de **contacto** pide el celular, obligatorio, en el
+  campo `telefono` —el mismo nombre que usa la reserva—. Acepta de 8 a 15 dígitos con
+  espacios, guiones, paréntesis y "+"; lo cuida `tests/contacto-celular.test.mjs`, que
+  compila el `pattern` con el flag `v` como lo hace el navegador.
 
 ---
 
@@ -201,6 +205,18 @@ reemplazó la única foto apaisada, Dv4 pasó a ser un carrusel —el mismo `Col
 de las bandas de /vinos, con el desayuno primero y el asado segundo—, la galería de Dv6
 cambió sus tres verticales por gente cosechando, y Dv7 estrena la gamela roja al pie de la
 parra. De la aérea sólo queda en pie `vendimia-grupo`, la apertura de la galería.
+
+**Tanda del fotógrafo, 2026-09-22.** Nueve fotos más. La 32 entró al carrusel de Dv4
+(ahora desayuno · cosecha · asado) y el resto a Dv6, que pasó a **filas de una sola
+proporción** declaradas en `data/vendimiaGallery.ts` —fuera de la página para que
+`tests/vendimia-galeria.test.mjs` las pueda leer— con una parte visible y el resto detrás
+de **"Ver más fotos"** (`components/ShowMore.tsx`: el bloque viene en el HTML con `hidden`,
+el botón sólo abre y pasa el foco al bloque). El recorte `vendimia-grupo` de la aérea dejó
+de usarse: sigue versionado y generándose, pero ninguna página lo pide. Dos de las fotos
+muestran niños con la cara visible (`vendimia-despalillado`, `vendimia-pisoneo-ninos`):
+**la viña confirmó el 2026-09-22 que tiene la autorización de los padres**. Si algún día
+hay que sacarlas, se quitan de su fila y de `VENDIMIA_FOTOS` en `data/vendimiaGallery.ts`;
+el test avisa si una queda declarada sin usar.
 
 `CollectionPhotos` acepta ahora `alt` como arreglo, una por foto. En /vinos todas las fotos
 de una banda son la misma colección y un `alt` común alcanza; acá son dos escenas distintas

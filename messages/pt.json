@@ -565,7 +565,6 @@
         "audienceValue": "Crianças e adultos"
       },
       "photos": {
-        "grupo": "O grupo da vindima de braços erguidos, entre as fileiras da vinha",
         "asado": "Assado campestre fumegando ao lado da vinha",
         "mosto": "O mosto escorre da torneira da barrica para um balde de aço",
         "manoUva": "Uma mão segura um cacho de uva tinta ainda preso à videira",
@@ -574,6 +573,15 @@
         "personas": "Três participantes ao lado das caixas com a marca Viña Casa Acosta, cheias de uva recém-colhida",
         "bin": "Uma participante despeja sua caixa de uva no bin, entre as fileiras",
         "charla": "A equipe da vinícola explica o trabalho ao lado do bin de uva, com a cordilheira ao fundo",
+        "cosecha": "Um colhedor de avental carrega a caixa da Viña Casa Acosta entre as videiras de outono",
+        "pisoneoBarricas": "Três participantes pisam uva em pé dentro de barricas, diante do banner da Viña Casa Acosta",
+        "desayunoDetalle": "Pães caseiros, frutas, geleia e suco na mesa de madeira do café da manhã",
+        "corte": "Participantes cortam cachos entre as fileiras de videiras de outono, com a cordilheira ao fundo",
+        "despalillado": "Três crianças separam as uvas do cacho em bacias verdes, entre as videiras",
+        "asadoJornada": "O assador vira a carne na grelha, sob uma fileira de linguiças penduradas",
+        "pisoneoNinos": "Três crianças pisam uva dentro de barricas, diante do banner da vindima da Casa Acosta",
+        "almuerzo": "A mesa comprida do almoço sob o toldo, com os participantes sentados entre as videiras",
+        "fotoGrupal": "Foto do grupo de participantes da vindima, de avental, com a cordilheira ao fundo",
         "prev": "Foto anterior da jornada",
         "next": "Próxima foto da jornada",
         "goTo": "Ver foto {index} de {total} da jornada",
@@ -581,7 +589,9 @@
       },
       "gallery": {
         "title": "A jornada em imagens",
-        "note": "Fotos da vinha e da última vindima. As da próxima entram assim que a jornada terminar."
+        "note": "Fotos da vinha e da última vindima. As da próxima entram assim que a jornada terminar.",
+        "more": "Ver mais fotos",
+        "moreLabel": "Mais fotos da vindima"
       },
       "hero": {
         "eyebrow": "Abril · Maio",
@@ -1057,6 +1067,9 @@
       "namePlaceholder": "Seu nome",
       "email": "E-mail",
       "emailPlaceholder": "voce@email.com",
+      "phone": "Celular",
+      "phonePlaceholder": "+56 9 1234 5678",
+      "phoneHint": "Digite seu número com pelo menos 8 dígitos, incluindo o código do país, por exemplo +56 9 1234 5678.",
       "subject": "Assunto",
       "subjectPlaceholder": "Selecione um assunto",
       "message": "Mensagem",
