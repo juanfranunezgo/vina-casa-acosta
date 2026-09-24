@@ -50,17 +50,46 @@ export type ActivityPhotos = {
   gallery?: { wide: ActivityPhoto; portraits: ActivityPhoto[] };
 };
 
+/**
+ * De qué está hecha una etapa del horario. La ficha la pinta con un color de la
+ * paleta —la mañana del yoga va del agua saborizada al vino— y por eso se
+ * declara acá como dato y no se deduce del orden: un programa que arranca con
+ * la cata no tiene por qué empezar en verde.
+ */
+export type ScheduleTone = "agua" | "parra" | "mesa" | "vino";
+
+/** Una etapa del programa con horario. Título y texto viven en messages. */
+export type ScheduleStage = { minutes: number; tone: ScheduleTone };
+
+/**
+ * Campos que el formulario de reserva pide además de los de siempre.
+ *
+ * - `segundaFecha` — una fecha alternativa, por si la primera no está libre.
+ * - `eleccion` — lo que el grupo elige del menú (en el yoga, los sándwiches).
+ *   El rótulo cambia con la actividad, así que sale de
+ *   `activities.items.{slug}.form.choice*`.
+ * - `restricciones` — alergias y restricciones alimentarias.
+ */
+export type BookingField = "segundaFecha" | "eleccion" | "restricciones";
+
 export type Activity = {
   /** Único en todo el catálogo. Es la clave en messages y el segmento de URL. */
   slug: string;
   category: ActivityCategory;
   /**
    * CLP por persona. Ausente = la ficha muestra "precio a consultar" y el
-   * formulario pasa a modo cotización. No se inventan cifras: hoy sólo los
-   * tours y los talleres tienen precio confirmado por el cliente; las
-   * experiencias siguen a pedido.
+   * formulario pasa a modo cotización. No se inventan cifras: hoy tienen
+   * precio confirmado por el cliente los tours, los talleres y el yoga; el
+   * resto de las experiencias sigue a pedido.
    */
   priceCLP?: number;
+  /**
+   * Valor neto, sin IVA. Si se declara, `priceCLP` es el precio CON IVA y la
+   * ficha lo dice ("IVA incluido") y muestra el neto en chico para empresas y
+   * agencias. Ausente = la ficha no afirma nada sobre el IVA, porque el cliente
+   * no lo dijo. `tests/yoga-entre-vinas` exige que neto × 1,19 dé el precio.
+   */
+  priceNetCLP?: number;
   /** Piso de personas por reserva. */
   minPeople: number;
   /**
@@ -78,6 +107,21 @@ export type Activity = {
    * La duración que se LEE en pantalla vive en messages, no acá.
    */
   durationISO?: string;
+  /**
+   * Programa con horario: minutos y tono de cada etapa, en orden. Si está, la
+   * ficha dibuja la regla de la jornada en vez de la lista numerada de
+   * `program`, y el copy va en `activities.items.{slug}.schedule`. Las etapas
+   * tienen que sumar `durationISO`: lo exige `tests/yoga-entre-vinas`.
+   */
+  schedule?: ScheduleStage[];
+  /** Campos extra del formulario de reserva. Ver `BookingField`. */
+  bookingFields?: readonly BookingField[];
+  /**
+   * El precio y los dos botones de reserva van también en el hero, para que en
+   * celular se vean sin bajar. Por ahora sólo el yoga: lo pidió la viña en su
+   * documento y Juan Francisco decidió no extenderlo a las otras fichas.
+   */
+  heroBooking?: boolean;
   /** Dd1 — hero de la ficha, y la miniatura en toda grilla que la liste. */
   image: string;
   photos?: ActivityPhotos;
@@ -283,13 +327,28 @@ export const activities: Activity[] = [
     image: CATEGORY_IMAGE.experiencias,
   },
   {
+    // Contenido final de la viña, "Contenido web de la experiencia Yoga entre
+    // Viñas" (septiembre 2026): precio, duración, programa, brunch y preguntas.
+    // Es la primera experiencia con precio publicado.
     slug: "yoga",
     category: "experiencias",
+    priceCLP: 47481,
+    priceNetCLP: 39900,
     minPeople: 8,
     // Pedido de la viña (2026-09-23): el yoga se reserva con 5 días de aviso.
+    // El documento de septiembre no lo menciona, pero tampoco lo contradice.
     minAdvanceDays: 5,
     months: TODO_EL_ANO,
-    durationISO: "PT3H",
+    durationISO: "PT3H15M",
+    // Recepción con agua saborizada · yoga entre las parras · brunch · cata.
+    schedule: [
+      { minutes: 15, tone: "agua" },
+      { minutes: 60, tone: "parra" },
+      { minutes: 60, tone: "mesa" },
+      { minutes: 60, tone: "vino" },
+    ],
+    bookingFields: ["segundaFecha", "eleccion", "restricciones"],
+    heroBooking: true,
     image: CATEGORY_IMAGE.experiencias,
   },
   {

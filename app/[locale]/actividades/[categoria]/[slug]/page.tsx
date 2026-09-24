@@ -20,12 +20,17 @@ import {
   Leaf,
   Warehouse,
   Pipette,
+  MessageCircle,
   type LucideIcon,
 } from "lucide-react";
 import Reveal from "@/components/Reveal";
 import Button from "@/components/ui/Button";
 import ActivityBreadcrumbs from "@/components/ActivityBreadcrumbs";
 import ActivityProgram from "@/components/ActivityProgram";
+import ActivitySchedule, { type ScheduleStageView } from "@/components/ActivitySchedule";
+import ActivityFaq, { type FaqEntry } from "@/components/ActivityFaq";
+import type { MenuCopy } from "@/components/ActivityMenu";
+import { CONTACT_WHATSAPP_URL } from "@/lib/contact";
 import ActivityRowCard from "@/components/ActivityRowCard";
 import GalleryPlaceholder from "@/components/GalleryPlaceholder";
 import ActivityGallery from "@/components/ActivityGallery";
@@ -92,7 +97,12 @@ export async function generateMetadata({
   const searchTitle = tTour.has(`${slug}.metaTitle`)
     ? tTour(`${slug}.metaTitle`)
     : name;
-  const description = tTour(`${slug}.tagline`);
+  // Lo mismo con la descripción: la bajada del hero es una frase para leer
+  // bajo el título, no un resumen para el buscador. Donde la actividad trae
+  // una propia (el yoga, desde el documento de la viña), manda esa.
+  const description = tTour.has(`${slug}.metaDescription`)
+    ? tTour(`${slug}.metaDescription`)
+    : tTour(`${slug}.tagline`);
   const path = activityPath(tour);
   // Ver la nota equivalente en vinos/[slug]: Open Graph no aplica la plantilla
   // de `title`, así que el título completo va escrito.
@@ -135,7 +145,45 @@ export default async function ActivityDetailPage({
   const duration = tTour(`${slug}.duration`);
   const groupFrom = tTour(`${slug}.groupFrom`);
   const reservationNote = tTour(`${slug}.reservationNote`);
-  const closing = tTour(`${slug}.closing`);
+
+  /**
+   * Textos que sólo algunas actividades traen. Se pregunta con `has` antes de
+   * pedirlos por lo mismo que en `asList` (más abajo): una clave ausente no
+   * lanza, pero devuelve la ruta como texto y deja un MISSING_MESSAGE por
+   * página en el build.
+   *
+   * `closing` era de todas hasta el yoga: su programa termina en la cata, y un
+   * "al cierre" debajo repetía el último paso con otras palabras.
+   */
+  const optional = (key: string) =>
+    tTour.has(`${slug}.${key}`) ? tTour(`${slug}.${key}`) : undefined;
+  const eyebrow = optional("eyebrow");
+  const introMore = optional("introMore");
+  const closing = optional("closing");
+  const priceNote = optional("priceNote");
+  // "Consultar disponibilidad" en el yoga; el resto sigue con "Reserva".
+  const cta = optional("cta") ?? t("nav.reserve");
+  const formCopy = {
+    title: optional("form.title"),
+    subtitle: optional("form.subtitle"),
+    submit: optional("cta"),
+    waIntro: optional("form.waIntro"),
+  };
+  const choiceCopy = tTour.has(`${slug}.form.choiceLabel`)
+    ? {
+        label: tTour(`${slug}.form.choiceLabel`),
+        placeholder: tTour(`${slug}.form.choicePlaceholder`),
+        hint: tTour(`${slug}.form.choiceHint`),
+      }
+    : undefined;
+
+  /**
+   * El mensaje con que abre WhatsApp desde el hero y desde las preguntas. Es
+   * el del formulario sin los datos del grupo, que ahí todavía no existen.
+   */
+  const whatsappHref = `${CONTACT_WHATSAPP_URL}?text=${encodeURIComponent(
+    formCopy.waIntro ?? t("form.waIntro", { activity: name }),
+  )}`;
 
   /**
    * Tres formas de contar lo mismo, y el catálogo del cliente las distingue:
@@ -176,11 +224,27 @@ export default async function ActivityDetailPage({
   const program = asList("program");
 
   /**
+   * El programa con horario: minutos y tono desde `data/`, título, texto y
+   * carta desde messages, emparejados por posición. Que los dos lados tengan el
+   * mismo largo lo cuida `tests/yoga-entre-vinas`.
+   */
+  const scheduleCopy = tour.schedule
+    ? (tTour.raw(`${slug}.schedule`) as { title: string; text: string; menu?: MenuCopy }[])
+    : [];
+  const schedule: ScheduleStageView[] = (tour.schedule ?? []).map((stage, index) => ({
+    ...stage,
+    ...scheduleCopy[index],
+  }));
+
+  const faq = tTour.has(`${slug}.faq`) ? (tTour.raw(`${slug}.faq`) as FaqEntry[]) : [];
+  const extraConditions = asList("conditions");
+
+  /**
    * Cena Sensorial no trae inclusiones ni programa: el catálogo describe cinco
    * tiempos y no los enumera. Sin este cruce, la ficha dibuja "¿Qué incluye?"
    * seguido de nada — un encabezado que promete una lista inexistente.
    */
-  const hasDetail = includes.length > 0 || program.length > 0;
+  const hasDetail = includes.length > 0 || program.length > 0 || schedule.length > 0;
 
   /**
    * Las fotos de las tres ranuras fijas, ya resueltas: la propia de la
@@ -221,16 +285,24 @@ export default async function ActivityDetailPage({
     : undefined;
 
   const priceLocale = locale === "pt" ? "pt-BR" : locale === "en" ? "en-US" : "es-CL";
+  const clp = new Intl.NumberFormat(priceLocale, {
+    style: "currency",
+    currency: "CLP",
+    maximumFractionDigits: 0,
+  });
   // Undefined cuando la actividad no publica precio. La tarjeta de reserva
   // decide qué mostrar en ese caso.
-  const priceFormatted =
-    tour.priceCLP === undefined
+  const priceFormatted = tour.priceCLP === undefined ? undefined : clp.format(tour.priceCLP);
+  // "por persona · IVA incluido" sólo si la actividad declaró su neto: es la
+  // única forma de saber que la cifra lleva IVA. Ver `priceNetCLP`.
+  const perPerson =
+    tour.priceNetCLP === undefined
+      ? t("perPerson")
+      : `${t("perPerson")} · ${t("vatIncluded")}`;
+  const netPrice =
+    tour.priceNetCLP === undefined
       ? undefined
-      : new Intl.NumberFormat(priceLocale, {
-          style: "currency",
-          currency: "CLP",
-          maximumFractionDigits: 0,
-        }).format(tour.priceCLP);
+      : t("netPrice", { price: clp.format(tour.priceNetCLP) });
 
   const ficha = [
     { icon: MapPin, label: t("placeLabel"), value: t("placeValue") },
@@ -239,10 +311,13 @@ export default async function ActivityDetailPage({
     { icon: CalendarDays, label: t("reservationsLabel"), value: reservationNote },
   ];
 
+  // Las propias de la actividad van antes de la ley de alcoholes, que cierra
+  // la lista en todas las fichas.
   const conditions = [
     `${t("durationLabel")}: ${duration}`,
     groupFrom,
     reservationNote,
+    ...extraConditions,
     t("conditionMinors"),
   ];
 
@@ -273,9 +348,16 @@ export default async function ActivityDetailPage({
         )}
       />
 
-      {/* Dd1 — Hero */}
+      {/* Dd1 — Hero. Con `heroBooking` es más alto: suma el precio y los
+          botones, y en celular esos 120px salían de la foto. */}
       <section className="relative">
-        <div className="relative h-[52svh] min-h-[400px] w-full overflow-hidden md:h-[58vh] md:min-h-[460px]">
+        <div
+          className={`relative w-full overflow-hidden ${
+            tour.heroBooking
+              ? "h-[72svh] min-h-[540px] md:h-[68vh] md:min-h-[560px]"
+              : "h-[52svh] min-h-[400px] md:h-[58vh] md:min-h-[460px]"
+          }`}
+        >
           <Image
             src={tour.image}
             alt={name}
@@ -305,6 +387,15 @@ export default async function ActivityDetailPage({
                   </span>
                 </div>
               )}
+              {/* La categoría del documento de la viña ("Bienestar entre
+                  viñas"), en la cursiva de Crimson con que el sitio marca los
+                  antetítulos. No es el nombre de la viña que se sacó de acá:
+                  dice qué clase de experiencia es. */}
+              {eyebrow && (
+                <p className="mb-3 font-accent text-xl font-light italic text-white/85 md:text-2xl">
+                  {eyebrow}
+                </p>
+              )}
               <h1
                 className="font-display text-white leading-[1.05] mb-3 drop-shadow-[0_2px_16px_rgba(0,0,0,0.35)]"
                 style={{ fontSize: "clamp(2.5rem, 6vw, 4.5rem)" }}
@@ -312,6 +403,48 @@ export default async function ActivityDetailPage({
                 {name}
               </h1>
               <p className="font-body text-body-lg text-white/85 max-w-2xl">{tagline}</p>
+
+              {/* Precio y reserva sin bajar. El documento del yoga pide que en
+                  celular el precio y el botón aparezcan antes del primer
+                  desplazamiento largo, y la tarjeta de precio queda tres
+                  pantallas más abajo. La duración no se repite: es la primera
+                  casilla de la ficha rápida, justo debajo.
+
+                  Los mismos dos botones que la portada del sitio —primario y
+                  vidrio— sobre la misma clase de foto. En celular el de
+                  WhatsApp queda como ícono: con su texto, los dos no caben en
+                  una fila de 327px y apilados empujan la ficha fuera de la
+                  pantalla. El texto sigue ahí para el lector de pantalla. */}
+              {tour.heroBooking && priceFormatted && (
+                <div className="mt-7 flex flex-col gap-4 md:mt-9 md:flex-row md:items-center md:gap-10">
+                  <p className="font-body text-[15px] text-white/80">
+                    <span className="mr-2 font-display text-[2rem] leading-none tabular-nums text-white">
+                      {priceFormatted}
+                    </span>
+                    {perPerson}
+                  </p>
+                  <div className="flex gap-2.5 sm:gap-3">
+                    <Button
+                      href="#reserva"
+                      variant="primary"
+                      iconRight={<ArrowRight className="h-4 w-4" />}
+                      className="flex-1 sm:flex-none"
+                    >
+                      {cta}
+                    </Button>
+                    <Button
+                      href={whatsappHref}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      variant="glass"
+                      iconLeft={<MessageCircle className="h-4 w-4" />}
+                      className="w-11 shrink-0 !gap-0 !px-0 sm:w-auto sm:!gap-2 sm:!px-6"
+                    >
+                      <span className="sr-only sm:not-sr-only">{t("form.whatsapp")}</span>
+                    </Button>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -387,6 +520,14 @@ export default async function ActivityDetailPage({
                 <p className="font-display text-xl leading-relaxed text-on-surface/90 md:text-3xl">
                   {intro}
                 </p>
+                {/* El segundo párrafo, cuando lo hay, en Work Sans y más chico:
+                    dos párrafos en Caslon de 30px eran un muro. El contraste de
+                    escala es el mismo recurso del hub de Vendimia (Dv2). */}
+                {introMore && (
+                  <p className="mt-6 max-w-[58ch] font-body text-[17px] leading-[1.7] text-on-surface-variant">
+                    {introMore}
+                  </p>
+                )}
               </div>
               <Reveal delay={120}>
                 <div className="relative aspect-[4/3] rounded-2xl overflow-hidden ambient-shadow-lg ring-1 ring-outline-variant/30">
@@ -462,9 +603,14 @@ export default async function ActivityDetailPage({
                   <h2 className="font-display text-headline-h2 text-primary mb-6">
                     {t("whatIncludes")}
                   </h2>
-                  <p className="font-body text-body-md text-on-surface-variant mb-4">
-                    {t("duringExperience")}
-                  </p>
+                  {/* "Durante la experiencia disfrutarás de:" anuncia una
+                      lista. Encima de la regla con horario era un tercer
+                      encabezado apilado antes del contenido. */}
+                  {schedule.length === 0 && (
+                    <p className="font-body text-body-md text-on-surface-variant mb-4">
+                      {t("duringExperience")}
+                    </p>
+                  )}
                 </>
               )}
               {/* La lista de abajo son los tickets de la reserva: se canjean el
@@ -477,8 +623,19 @@ export default async function ActivityDetailPage({
                 </p>
               )}
 
-              {program.length > 0 && (
-                <ActivityProgram steps={program} title={t("programTitle")} />
+              {/* Con horario manda `schedule`; si no, la lista numerada. Una
+                  actividad no trae los dos: el test del yoga exige que el
+                  `program` viejo se haya ido. */}
+              {schedule.length > 0 ? (
+                <ActivitySchedule
+                  stages={schedule}
+                  title={t("programTitle")}
+                  locale={locale}
+                />
+              ) : (
+                program.length > 0 && (
+                  <ActivityProgram steps={program} title={t("programTitle")} />
+                )
               )}
               {/* overflow-hidden: el ítem destacado pinta fondo y borde hasta el
                   filo, y sin esto se sale de las esquinas redondeadas. */}
@@ -540,23 +697,28 @@ export default async function ActivityDetailPage({
                 </>
               )}
 
-              {/* Callout: el maridaje solo lo tienen los tours; el cierre, todas. */}
-              <div className="rounded-xl bg-primary/5 border border-primary/12 p-6 space-y-4">
-                {isTour && (
-                  <p className="flex items-start gap-3 font-body text-body-md text-on-surface">
-                    <Utensils className="h-5 w-5 text-wine-accent mt-0.5 shrink-0" aria-hidden="true" />
-                    <span>
-                      <span className="font-semibold">{t("pairingLabel")}:</span> {pairing}
-                    </span>
-                  </p>
-                )}
-                <p className="flex items-start gap-3 font-body text-body-md text-on-surface">
-                  <Wine className="h-5 w-5 text-wine-accent mt-0.5 shrink-0" aria-hidden="true" />
-                  <span>
-                    <span className="font-semibold">{t("atCloseLabel")}:</span> {closing}
-                  </span>
-                </p>
-              </div>
+              {/* Callout: el maridaje solo lo tienen los tours; el cierre, las
+                  que lo traen. Sin ninguno de los dos, la caja no se dibuja. */}
+              {(isTour || closing) && (
+                <div className="rounded-xl bg-primary/5 border border-primary/12 p-6 space-y-4">
+                  {isTour && (
+                    <p className="flex items-start gap-3 font-body text-body-md text-on-surface">
+                      <Utensils className="h-5 w-5 text-wine-accent mt-0.5 shrink-0" aria-hidden="true" />
+                      <span>
+                        <span className="font-semibold">{t("pairingLabel")}:</span> {pairing}
+                      </span>
+                    </p>
+                  )}
+                  {closing && (
+                    <p className="flex items-start gap-3 font-body text-body-md text-on-surface">
+                      <Wine className="h-5 w-5 text-wine-accent mt-0.5 shrink-0" aria-hidden="true" />
+                      <span>
+                        <span className="font-semibold">{t("atCloseLabel")}:</span> {closing}
+                      </span>
+                    </p>
+                  )}
+                </div>
+              )}
             </Reveal>
           </div>
 
@@ -596,11 +758,25 @@ export default async function ActivityDetailPage({
                       </span>
                     </div>
                     <p className="font-body text-body-md text-on-surface-variant mt-2">
-                      {t("perPerson")}
+                      {perPerson}
                     </p>
+                    {/* El neto, para quien cotiza como empresa o agencia. En
+                        chico y debajo: el precio que paga una persona es el de
+                        arriba, y dos cifras del mismo tamaño harían dudar
+                        cuál es. */}
+                    {netPrice && (
+                      <p className="mt-1 font-body text-[13px] tabular-nums text-on-surface-variant/80">
+                        {netPrice}
+                      </p>
+                    )}
                   </>
                 )}
                 <span className="block h-0.5 w-14 bg-primary/70 mt-5" />
+                {priceNote && (
+                  <p className="mt-5 font-body text-[15px] leading-relaxed text-on-surface-variant">
+                    {priceNote}
+                  </p>
+                )}
 
                 <ul className="space-y-3.5 my-7">
                   <li className="flex items-center gap-3 font-body text-body-md text-on-surface">
@@ -614,7 +790,7 @@ export default async function ActivityDetailPage({
                 </ul>
 
                 <Button href="#reserva" variant="primary" fullWidth iconRight={<ArrowRight className="h-4 w-4" />}>
-                  {t("nav.reserve")}
+                  {cta}
                 </Button>
               </div>
 
@@ -661,6 +837,28 @@ export default async function ActivityDetailPage({
         </div>
       </section>
 
+      {/* Dd6b — Preguntas frecuentes, sólo si la actividad las trae. En papel
+          como la galería, separadas de ella por un filete; el formulario de
+          abajo ya va en el gris de las secciones de trámite. */}
+      {faq.length > 0 && (
+        <section
+          id="preguntas"
+          className="bg-surface border-t border-outline-variant/30 py-section-gap px-margin-mobile md:px-margin-desktop scroll-mt-24"
+        >
+          <div className="max-w-(--container-max) mx-auto">
+            <Reveal>
+              <ActivityFaq
+                title={t("faqTitle")}
+                entries={faq}
+                more={t("faqMore")}
+                whatsappLabel={t("faqWhatsapp")}
+                whatsappHref={whatsappHref}
+              />
+            </Reveal>
+          </div>
+        </section>
+      )}
+
       {/* Dd6 — Reserva */}
       <section
         id="reserva"
@@ -674,6 +872,9 @@ export default async function ActivityDetailPage({
                 minPeople={tour.minPeople}
                 minAdvanceDays={tour.minAdvanceDays}
                 mode={tour.priceCLP === undefined ? "cotizacion" : "reserva"}
+                copy={formCopy}
+                extraFields={tour.bookingFields}
+                choiceCopy={choiceCopy}
               />
             </div>
             <div className="relative order-first min-h-[260px] lg:order-none">

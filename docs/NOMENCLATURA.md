@@ -71,12 +71,13 @@ La ruta lleva la categoría: `/actividades/tours/ombu`, `/actividades/talleres/p
 
 | ID | Sección |
 |---|---|
-| Dd1 | Hero + breadcrumbs + ficha rápida (Lugar · Duración · Participantes · Reservas + intro) |
+| Dd1 | Hero + breadcrumbs + ficha rápida (Lugar · Duración · Participantes · Reservas + intro). Con `heroBooking` (hoy sólo el yoga) el hero suma el precio y los dos botones de reserva, para que en celular se vean sin bajar |
 | Dd2 | Sub-nav ancla (Detalle · Galería · Reserva) |
 | Dd3 | Estacionalidad (franja de 12 meses) |
-| Dd4 | Detalle — tickets (tours) o programa de la jornada (talleres · experiencias) |
-| Dd5 | Tarjeta de reserva: precio **o** "a consultar", más condiciones |
+| Dd4 | Detalle — tickets (tours) o programa de la jornada (talleres · experiencias). Si la actividad declara `schedule`, el programa va con horario: una regla proporcional de la mañana y cada etapa con sus minutos (`components/ActivitySchedule.tsx`); una etapa puede traer su carta (`components/ActivityMenu.tsx`) |
+| Dd5 | Tarjeta de reserva: precio **o** "a consultar", más condiciones. Con `priceNetCLP` el precio dice "IVA incluido" y muestra el neto en chico |
 | Dd6 | Galería (placeholder hasta tener fotos) |
+| Dd6b | Preguntas frecuentes (`components/ActivityFaq.tsx`). Sólo si la actividad trae `faq` en messages; hoy, el yoga. Sin marcado `FAQPage`: Google lo limita a sitios de gobierno y salud desde 2023 |
 | Dd7 | Reserva o cotización (formulario Netlify Forms + botón WhatsApp con prefill) |
 | Dd8 | Otras actividades de la misma categoría |
 

@@ -85,6 +85,17 @@ export function buildActivityJsonLd(
             "@type": "Offer",
             price: activity.priceCLP,
             priceCurrency: "CLP",
+            // Sólo cuando la ficha dice "IVA incluido", que es cuando la
+            // actividad declara su neto. Sin neto el cliente no dijo si la
+            // cifra lleva IVA, y el marcado no lo afirma por él.
+            ...(activity.priceNetCLP !== undefined && {
+              priceSpecification: {
+                "@type": "UnitPriceSpecification",
+                price: activity.priceCLP,
+                priceCurrency: "CLP",
+                valueAddedTaxIncluded: true,
+              },
+            }),
             availability: "https://schema.org/InStock",
             url,
             seller: { "@id": WINERY_ID },
