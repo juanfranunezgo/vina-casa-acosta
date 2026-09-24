@@ -320,10 +320,26 @@ export default async function ActivityDetailPage({
       {/* Dd1 — Ficha rápida (spec bar elevada) + intro + Dd2 sub-nav */}
       <section className="bg-surface">
         <div className="px-margin-mobile md:px-margin-desktop max-w-(--container-max) mx-auto">
+          {/* Una columna en celular, dos desde `sm` y cuatro desde `lg`. En
+              celular iban dos columnas con el ícono en su círculo de 40px, y al
+              texto le quedaban ~90px: "Sujeto a disponibilidad — coordinamos
+              la fecha contigo" se partía en seis líneas.
+
+              Los filetes van por celda y por punto de corte, no con `divide-*`:
+              `divide-x` pinta el borde izquierdo de toda celda que no sea la
+              primera, y con dos columnas eso dibujaba una raya en el borde de
+              la tarjeta de la segunda fila. */}
           <div className="relative z-10 -mt-10 md:-mt-14 bg-surface rounded-xl ambient-shadow-lg ring-1 ring-outline-variant/40 border-t-2 border-primary/70">
-            <div className="grid grid-cols-2 lg:grid-cols-4 divide-y divide-x divide-outline-variant/25 lg:divide-y-0">
-              {ficha.map(({ icon: Icon, label, value }) => (
-                <div key={label} className="flex items-start gap-3 p-4 md:gap-3.5 md:p-7">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
+              {ficha.map(({ icon: Icon, label, value }, index) => (
+                <div
+                  key={label}
+                  className={`flex items-start gap-3 border-outline-variant/25 px-5 py-4 sm:p-4 md:gap-3.5 md:p-7 ${
+                    index > 0 ? "border-t" : ""
+                  } ${index < 2 ? "sm:border-t-0" : ""} ${
+                    index % 2 === 1 ? "sm:border-l" : ""
+                  } lg:border-t-0 ${index > 0 ? "lg:border-l" : ""}`}
+                >
                   <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-wine-accent/10 md:h-11 md:w-11">
                     <Icon className="h-5 w-5 text-wine-accent" aria-hidden="true" />
                   </div>
