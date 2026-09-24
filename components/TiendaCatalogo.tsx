@@ -412,8 +412,11 @@ export default function TiendaCatalogo({
                       )}
                     </Link>
                     <div className="p-6 flex flex-col flex-grow bg-surface-container-lowest">
+                      {/* La línea en vino (`wine-accent`, 9,9:1 sobre el blanco
+                          de la tarjeta), no en el gris de las etiquetas: es la
+                          colección, lo primero que distingue un vino de otro. */}
                       {wine.line && (
-                        <span className="font-body text-label-sm text-on-surface-variant uppercase tracking-widest mb-2">
+                        <span className="font-body text-label-sm text-wine-accent uppercase tracking-widest mb-2">
                           {wine.line}
                         </span>
                       )}

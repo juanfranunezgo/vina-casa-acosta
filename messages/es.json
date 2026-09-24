@@ -514,6 +514,7 @@
         "date": "Fecha",
         "datePlaceholder": "--/--/26",
         "dateHint": "Elige el día de tu visita — puedes cambiarlo cuando quieras.",
+        "dateHintAdvance": "Elige el día de tu visita, con al menos {days, plural, one {# día} other {# días}} de anticipación.",
         "dateOpen": "Abrir calendario y elegir fecha",
         "note": "Nota adicional",
         "notePlaceholder": "¿Algo que debamos saber? (opcional)",
@@ -953,7 +954,7 @@
         "intro": "Una experiencia de bienestar entre viñedos que invita a conectar cuerpo, mente y naturaleza. Combina una sesión de yoga al aire libre con un brunch saludable y la oportunidad de descubrir productos locales en un ambiente tranquilo y armonioso.",
         "duration": "3 horas + cierre",
         "groupFrom": "Grupos desde 8 personas",
-        "reservationNote": "Sujeto a disponibilidad — coordinamos la fecha contigo",
+        "reservationNote": "Con al menos 5 días de anticipación — coordinamos la fecha contigo",
         "program": [
           "Sesión de yoga",
           "Brunch saludable",

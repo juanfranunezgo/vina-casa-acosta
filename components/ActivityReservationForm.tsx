@@ -2,11 +2,13 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
-import { Loader2, Check, Send, MessageCircle, CalendarDays, Users } from "lucide-react";
+import { Check, Send, MessageCircle, CalendarDays, Users } from "lucide-react";
+import Button from "@/components/ui/Button";
 import { CONTACT_WHATSAPP_URL } from "@/lib/contact";
 import { submitToNetlifyForms } from "@/lib/netlifyForms";
 import PrivacyConsent from "@/components/PrivacyConsent";
 import { PRIVACIDAD_VERSION, TERMINOS_VERSION } from "@/lib/legal";
+import { primeraFechaReservable } from "@/lib/fechaReserva";
 
 type Status = "idle" | "submitting" | "success" | "error";
 
@@ -20,6 +22,12 @@ type Props = {
    * rellenar el hueco afirmaría un mínimo que el cliente no dio.
    */
   minPeople?: number;
+  /**
+   * Días de anticipación con que se reserva (`minAdvanceDays` en
+   * data/activities.ts). El calendario no deja elegir antes de hoy + N, y la
+   * ayuda del campo lo dice. Ausente = desde hoy.
+   */
+  minAdvanceDays?: number;
   /**
    * Qué le está pidiendo el visitante a la viña. Cambia los textos y el campo
    * `tipo` del envío; los datos que se piden son casi los mismos, porque son los
@@ -40,7 +48,12 @@ const inputClass =
 const labelClass =
   "font-body text-label-sm text-on-surface-variant uppercase tracking-wider block mb-2";
 
-export default function ActivityReservationForm({ activityName, minPeople, mode }: Props) {
+export default function ActivityReservationForm({
+  activityName,
+  minPeople,
+  minAdvanceDays,
+  mode,
+}: Props) {
   const t = useTranslations("activities.labels.form");
   const locale = useLocale();
   // Sufijo de las claves de copy: `title`, `titleQuote`, `titleSeason`. Una sola
@@ -71,11 +84,13 @@ export default function ActivityReservationForm({ activityName, minPeople, mode 
     peopleCount < minPeople;
 
   // El mínimo de fecha se pone al montar: calcularlo en el render rompería la
-  // hidratación (la página es estática y se genera en el build).
+  // hidratación (la página es estática y se genera en el build, así que un
+  // `min` escrito en el HTML sería el del día del deploy). "Hoy" es el de Chile:
+  // ver lib/fechaReserva.ts.
   useEffect(() => {
     const input = dateRef.current;
-    if (input) input.min = new Date().toISOString().slice(0, 10);
-  }, []);
+    if (input) input.min = primeraFechaReservable(minAdvanceDays ?? 0);
+  }, [minAdvanceDays]);
 
   /** Abre el calendario nativo desde el ícono. */
   const openDatePicker = () => {
@@ -289,8 +304,13 @@ export default function ActivityReservationForm({ activityName, minPeople, mode 
               <CalendarDays className="h-4 w-4" aria-hidden="true" />
             </button>
           </div>
+          {/* Con anticipación, la ayuda dice por qué los próximos días no se
+              pueden elegir: un calendario que los bloquea sin explicar parece
+              roto. */}
           <p id="tour-date-hint" className="mt-2 font-body text-xs text-on-surface-variant/80">
-            {t("dateHint")}
+            {minAdvanceDays
+              ? t("dateHintAdvance", { days: minAdvanceDays })
+              : t("dateHint")}
           </p>
         </div>
         )}
@@ -312,32 +332,51 @@ export default function ActivityReservationForm({ activityName, minPeople, mode 
         onChange={setConsent}
       />
 
-      <div className="flex flex-col sm:flex-row gap-3 pt-2">
-        <button
+      {/* Una acción principal y una alternativa. Antes eran dos cajas del mismo
+          peso —relleno oscuro y contorno, las dos en negrita y a lo ancho— y la
+          de WhatsApp partía el texto en dos líneas dentro del marco en las
+          tarjetas angostas. Ahora el envío es el `Button` del sitio y WhatsApp
+          va como enlace subrayado (`link`), centrado bajo el botón en celular:
+          no compite con el que manda la solicitud. No va en `ghost` porque su
+          relleno lateral no deja caber "Consultar por WhatsApp" en una tarjeta
+          de 320px (medido: 217px de contenido en 208 de caja), y `Button` no
+          deja partir el texto. Por lo mismo va a 14px en celular: a 16px el
+          enlace medía 225px y sobresalía del botón de arriba.
+
+          `disabled` va explícito y no sólo `loading`: `Button` esparce `rest`
+          después de calcular el suyo, así que el de acá es el que manda. */}
+      <div className="flex flex-col gap-5 pt-2 sm:flex-row sm:items-center sm:gap-7">
+        <Button
           type="submit"
+          variant="primary"
+          fullWidth
+          className="sm:w-auto"
+          loading={status === "submitting"}
           disabled={status === "submitting" || status === "success"}
-          className="group inline-flex items-center justify-center gap-2 h-11 px-7 rounded-md font-body font-semibold text-body-md bg-primary text-on-primary shadow-[0_8px_24px_-8px_rgba(42,0,2,0.45)] hover:bg-primary-container hover:shadow-[0_12px_28px_-8px_rgba(42,0,2,0.55)] hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200 disabled:opacity-70 disabled:pointer-events-none"
+          iconRight={
+            status === "success" ? (
+              <Check className="h-4 w-4" />
+            ) : (
+              <Send className="h-4 w-4" />
+            )
+          }
         >
-          {status === "submitting" && <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />}
-          {status === "success" && <Check className="h-4 w-4" aria-hidden="true" />}
-          {(status === "idle" || status === "error") && (
-            <Send className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-0.5" aria-hidden="true" />
-          )}
           {status === "idle" && t(`submitIdle${suffix}`)}
           {status === "submitting" && t("submitting")}
           {status === "success" && t("success")}
           {status === "error" && t("error")}
-        </button>
+        </Button>
 
-        <a
+        <Button
           href={whatsappUrl()}
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-flex items-center justify-center gap-2 h-11 px-7 rounded-md font-body font-semibold text-body-md border border-primary text-primary hover:bg-primary/5 transition-all duration-200"
+          variant="link"
+          className="self-center text-[14px] sm:self-auto sm:text-body-md"
+          iconLeft={<MessageCircle className="h-4 w-4" />}
         >
-          <MessageCircle className="h-4 w-4" aria-hidden="true" />
           {t(`whatsapp${suffix}`)}
-        </a>
+        </Button>
       </div>
 
       <p aria-live="polite" className="font-body text-body-md">

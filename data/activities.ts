@@ -63,6 +63,13 @@ export type Activity = {
   priceCLP?: number;
   /** Piso de personas por reserva. */
   minPeople: number;
+  /**
+   * Días de anticipación con que se reserva. El calendario del formulario no
+   * deja elegir antes de hoy + N (en hora de Chile). Ausente = desde hoy.
+   * Si se declara, el `reservationNote` de la actividad tiene que decir el
+   * mismo número en los tres idiomas: lo exige `tests/reserva-anticipacion`.
+   */
+  minAdvanceDays?: number;
   /** Meses en que se realiza, 1-12. Los doce = todo el año. */
   months: number[];
   /**
@@ -279,6 +286,8 @@ export const activities: Activity[] = [
     slug: "yoga",
     category: "experiencias",
     minPeople: 8,
+    // Pedido de la viña (2026-09-23): el yoga se reserva con 5 días de aviso.
+    minAdvanceDays: 5,
     months: TODO_EL_ANO,
     durationISO: "PT3H",
     image: CATEGORY_IMAGE.experiencias,
