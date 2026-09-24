@@ -514,6 +514,7 @@
         "date": "Date",
         "datePlaceholder": "--/--/26",
         "dateHint": "Pick the day of your visit — you can change it anytime.",
+        "dateHintAdvance": "Pick the day of your visit, at least {days, plural, one {# day} other {# days}} in advance.",
         "dateOpen": "Open the calendar and pick a date",
         "note": "Additional note",
         "notePlaceholder": "Anything we should know? (optional)",
@@ -953,7 +954,7 @@
         "intro": "A wellbeing experience among the vines that invites you to connect body, mind and nature. It combines an outdoor yoga session with a healthy brunch and the chance to discover local products in a calm, harmonious setting.",
         "duration": "3 hours + closing",
         "groupFrom": "Groups from 8 people",
-        "reservationNote": "Subject to availability — we arrange the date with you",
+        "reservationNote": "At least 5 days in advance — we arrange the date with you",
         "program": [
           "Yoga session",
           "Healthy brunch",

@@ -656,6 +656,7 @@ export default async function ActivityDetailPage({
               <ActivityReservationForm
                 activityName={name}
                 minPeople={tour.minPeople}
+                minAdvanceDays={tour.minAdvanceDays}
                 mode={tour.priceCLP === undefined ? "cotizacion" : "reserva"}
               />
             </div>

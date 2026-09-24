@@ -7,6 +7,7 @@ import { CONTACT_WHATSAPP_URL } from "@/lib/contact";
 import { submitToNetlifyForms } from "@/lib/netlifyForms";
 import PrivacyConsent from "@/components/PrivacyConsent";
 import { PRIVACIDAD_VERSION, TERMINOS_VERSION } from "@/lib/legal";
+import { primeraFechaReservable } from "@/lib/fechaReserva";
 
 type Status = "idle" | "submitting" | "success" | "error";
 
@@ -20,6 +21,12 @@ type Props = {
    * rellenar el hueco afirmaría un mínimo que el cliente no dio.
    */
   minPeople?: number;
+  /**
+   * Días de anticipación con que se reserva (`minAdvanceDays` en
+   * data/activities.ts). El calendario no deja elegir antes de hoy + N, y la
+   * ayuda del campo lo dice. Ausente = desde hoy.
+   */
+  minAdvanceDays?: number;
   /**
    * Qué le está pidiendo el visitante a la viña. Cambia los textos y el campo
    * `tipo` del envío; los datos que se piden son casi los mismos, porque son los
@@ -40,7 +47,12 @@ const inputClass =
 const labelClass =
   "font-body text-label-sm text-on-surface-variant uppercase tracking-wider block mb-2";
 
-export default function ActivityReservationForm({ activityName, minPeople, mode }: Props) {
+export default function ActivityReservationForm({
+  activityName,
+  minPeople,
+  minAdvanceDays,
+  mode,
+}: Props) {
   const t = useTranslations("activities.labels.form");
   const locale = useLocale();
   // Sufijo de las claves de copy: `title`, `titleQuote`, `titleSeason`. Una sola
@@ -71,11 +83,13 @@ export default function ActivityReservationForm({ activityName, minPeople, mode 
     peopleCount < minPeople;
 
   // El mínimo de fecha se pone al montar: calcularlo en el render rompería la
-  // hidratación (la página es estática y se genera en el build).
+  // hidratación (la página es estática y se genera en el build, así que un
+  // `min` escrito en el HTML sería el del día del deploy). "Hoy" es el de Chile:
+  // ver lib/fechaReserva.ts.
   useEffect(() => {
     const input = dateRef.current;
-    if (input) input.min = new Date().toISOString().slice(0, 10);
-  }, []);
+    if (input) input.min = primeraFechaReservable(minAdvanceDays ?? 0);
+  }, [minAdvanceDays]);
 
   /** Abre el calendario nativo desde el ícono. */
   const openDatePicker = () => {
@@ -289,8 +303,13 @@ export default function ActivityReservationForm({ activityName, minPeople, mode 
               <CalendarDays className="h-4 w-4" aria-hidden="true" />
             </button>
           </div>
+          {/* Con anticipación, la ayuda dice por qué los próximos días no se
+              pueden elegir: un calendario que los bloquea sin explicar parece
+              roto. */}
           <p id="tour-date-hint" className="mt-2 font-body text-xs text-on-surface-variant/80">
-            {t("dateHint")}
+            {minAdvanceDays
+              ? t("dateHintAdvance", { days: minAdvanceDays })
+              : t("dateHint")}
           </p>
         </div>
         )}
