@@ -150,6 +150,55 @@ pone rojo hasta que la lista las reconozca.
   ciclo completo de poda a embotellado. Se transcribió tal cual; probablemente sean las
   horas de cada jornada.
 
+### Reservas con anticipación y hora de Chile (PR #6, 2026-09-23)
+
+- `minAdvanceDays` en `data/activities.ts`: el calendario del formulario no deja elegir
+  antes de hoy + N. Hoy sólo el yoga, con 5 días. Si una actividad lo declara, su
+  `reservationNote` tiene que decir el mismo número en los tres idiomas
+  (`tests/reserva-anticipacion.test.mjs`).
+- "Hoy" es el de Chile, no el UTC del navegador: `lib/fechaReserva.ts`. Antes, de noche
+  el calendario de todas las actividades dejaba elegir el día anterior.
+- La ficha rápida (Dd1) va en una columna en celular, y los botones del formulario son el
+  `Button` primario + WhatsApp como enlace.
+
+### Yoga entre Viñas — el contenido final de la viña (2026-09-24)
+
+La viña mandó el contenido definitivo ("Contenido web de la experiencia Yoga entre Viñas",
+septiembre 2026). Es la primera experiencia con **precio publicado** y la que estrenó
+cuatro piezas de la ficha, todas activadas por dato — una ficha sin esos datos queda
+exactamente como estaba:
+
+- **`priceNetCLP`** — el neto sin IVA. Si está, `priceCLP` es el precio con IVA y la
+  ficha dice "IVA incluido", muestra el neto en chico ("Empresas y agencias: $39.900 +
+  IVA") y el `Offer` del JSON-LD lleva `valueAddedTaxIncluded`. Sin neto, la ficha no
+  afirma nada sobre el IVA, porque el cliente no lo dijo. **Pendiente de preguntar:** los
+  talleres cuestan 39.900, la misma cifra que el neto del yoga; no sabemos si ese precio
+  lleva IVA.
+- **`schedule`** — programa con horario: minutos y tono de cada etapa en `data/`, título,
+  texto y carta en messages. La ficha dibuja una regla proporcional de la mañana
+  (`components/ActivitySchedule.tsx`); los tonos van del agua al vino con colores de la
+  paleta. Las etapas tienen que sumar `durationISO`. Una etapa puede traer su carta
+  (`components/ActivityMenu.tsx`).
+- **`faq`** en messages → sección Dd6b (`components/ActivityFaq.tsx`), con `<details>`
+  nativo y sin `FAQPage`.
+- **`bookingFields`** — campos extra del formulario: `segundaFecha`, `eleccion` (el rótulo
+  sale de `items.{slug}.form.choice*`) y `restricciones`. Van a Netlify como `fecha2`,
+  `eleccion` y `restricciones`, declarados en `public/__forms.html`; las demás
+  actividades los mandan vacíos.
+- **`heroBooking`** — precio y botones también en el hero. Sólo el yoga, por decisión de
+  Juan Francisco: el documento lo pedía para esta ficha.
+
+Textos opcionales por actividad, todos preguntados con `has`: `eyebrow`, `introMore`,
+`metaDescription`, `cta`, `priceNote`, `conditions` (se suman a las de siempre) y
+`form.{title,subtitle,waIntro}`. `closing` pasó a ser opcional: el yoga no lo trae.
+
+Del documento **no** se publicaron dos párrafos que repetían, casi palabra por palabra, lo
+que ya dice el programa ("Texto detallado de la degustación" y "Alternativa en caso de
+clima adverso": la lluvia ya está en la etapa del yoga, en las condiciones y en las
+preguntas). Tampoco hay fotos del yoga todavía: la ficha sigue con las de categoría.
+El nombre en EN y PT ("Yoga among the Vines", "Yoga entre Vinhedos") es traducción
+nuestra, sin validar.
+
 ## Hub de Vendimia (`/actividades/vendimia`)
 
 Existe desde el 2026-08-16. Es una **página informativa**, no una ficha: cuenta qué es la
