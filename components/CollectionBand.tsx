@@ -16,7 +16,6 @@ type CollectionBandProps = {
   photoNextLabel: string;
   photoGoToLabels: string[];
   wines: CollectionWine[];
-  altBackground?: boolean;
   flip?: boolean;
   priorityImage?: boolean;
 };
@@ -38,7 +37,6 @@ export default function CollectionBand({
   photoNextLabel,
   photoGoToLabels,
   wines,
-  altBackground = false,
   flip = false,
   priorityImage = false,
 }: CollectionBandProps) {
@@ -52,7 +50,7 @@ export default function CollectionBand({
     <section
       id={id}
       aria-labelledby={titleId}
-      className={`scroll-mt-24 ${altBackground ? "bg-surface-container-low" : "bg-surface"}`}
+      className="scroll-mt-24 bg-surface"
     >
       <div className="mx-auto max-w-(--container-max) px-margin-mobile py-14 md:px-margin-desktop lg:py-20">
         <header className="max-w-3xl">

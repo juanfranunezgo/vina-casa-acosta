@@ -521,7 +521,7 @@ export default async function VendimiaPage({
           van `aria-hidden` porque el texto de al lado ya nombra el paso. */}
       <section
         id="jornada"
-        className="scroll-mt-24 bg-surface-container-low py-section-gap px-margin-mobile md:px-margin-desktop"
+        className="scroll-mt-24 bg-surface py-section-gap px-margin-mobile md:px-margin-desktop"
       >
         <div className="mx-auto max-w-(--container-max)">
           {/* El encabezado va a todo el ancho y no dentro de la columna de 7:
@@ -692,7 +692,7 @@ export default async function VendimiaPage({
           cuadro dos veces en la página— y antes de eso eran seis piezas donde
           cuatro salían de esa aérea, que es lo que la hacía ver armada con
           relleno. */}
-      <section className="bg-surface-container-low py-section-gap px-margin-mobile md:px-margin-desktop">
+      <section className="bg-surface py-section-gap px-margin-mobile md:px-margin-desktop">
         <div className="mx-auto max-w-(--container-max)">
           <Reveal className="mb-12">
             <h2 className="font-display text-[2rem] leading-[1.12] text-primary md:text-[2.6rem]">
@@ -739,7 +739,7 @@ export default async function VendimiaPage({
           del ciclo tapada al 88% — se descargaba entera para no verse. */}
       <section
         id="consulta"
-        className="scroll-mt-24 border-t border-outline-variant/30 bg-surface-container-low py-section-gap px-margin-mobile md:px-margin-desktop"
+        className="scroll-mt-24 border-t border-outline-variant/30 bg-surface py-section-gap px-margin-mobile md:px-margin-desktop"
       >
         <div className="mx-auto max-w-(--container-max)">
           <div className="grid grid-cols-1 overflow-hidden rounded-2xl bg-surface ambient-shadow-lg ring-1 ring-outline-variant/40 lg:grid-cols-[1.1fr_0.9fr]">

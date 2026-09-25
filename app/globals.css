@@ -29,11 +29,13 @@
   --color-on-tertiary: #ffffff;
   --color-on-tertiary-container: #a38761;
 
-  --color-background: #fbf9f8;
+  /* Blanco puro desde el 2026-09-24 (pedido de Juan Francisco). Era el
+     "papel" #FBF9F8; las bandas grises de página se fueron con él. */
+  --color-background: #ffffff;
   --color-on-background: #1b1c1c;
 
-  --color-surface: #fbf9f8;
-  --color-surface-bright: #fbf9f8;
+  --color-surface: #ffffff;
+  --color-surface-bright: #ffffff;
   --color-surface-dim: #dcd9d9;
   --color-surface-variant: #e4e2e1;
   --color-surface-container-lowest: #ffffff;

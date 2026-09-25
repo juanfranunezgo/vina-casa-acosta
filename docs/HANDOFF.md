@@ -232,9 +232,16 @@ catorce fichas (es la misma plantilla):
   `tests/enfasis.test.mjs` exige que cierren y que las preguntas del yoga destaquen lo
   mismo en los tres idiomas. Donde el texto se usa fuera de pantalla (WhatsApp,
   metadatos) hay que pasarlo por `sinEnfasis`.
-- **Fondo blanco puro** en la ficha (`surface-container-lowest`). El resto del sitio
-  sigue en papel (#FBF9F8); pasarlo entero a blanco es cambiar `--color-background` y
-  `--color-surface` en `globals.css`, y hay que revisar portada, Vendimia y tienda.
+- **Plus Jakarta Sans sólo en las fichas** (la letra de Quorum): la página redefine
+  `--font-body` en cada bloque de primer nivel (`FUENTE_FICHA`), no en un envoltorio,
+  porque el Navbar busca el hero como `main > section`. `tests/ficha-tipografia`.
+- **Todo el sitio en blanco**: `--color-background` y `--color-surface` pasaron de
+  #FBF9F8 a #FFFFFF, y las bandas grises de página a `bg-surface`. `CollectionBand`
+  perdió `altBackground`.
+- **Trampa pagada:** un cambio de valor dentro de `@theme` en `globals.css` **no** llega
+  al servidor de desarrollo aunque se reinicie: la caché en disco de Turbopack
+  (`.next/dev`) sigue sirviendo el CSS viejo. Borrar `.next/dev` y levantar de nuevo.
+  El build de producción no tiene el problema.
 
 ## Hub de Vendimia (`/actividades/vendimia`)
 

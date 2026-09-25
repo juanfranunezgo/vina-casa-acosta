@@ -2,6 +2,7 @@ import Image from "next/image";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
+import { Plus_Jakarta_Sans } from "next/font/google";
 import {
   ArrowRight,
   MapPin,
@@ -64,6 +65,25 @@ const includeIcons: Record<string, LucideIcon[]> = {
   // copa de bienvenida · ampelografía · bodega y barricas · desde barrica · cata
   "carmenere": [Wine, Leaf, Warehouse, Pipette, Grape],
 };
+
+/**
+ * Plus Jakarta Sans para el texto de las fichas —no para los títulos, que
+ * siguen en Libre Caslon—. Pedido de Juan Francisco del 2026-09-24 sobre la
+ * lectura de Quorum Legal, y sólo acá: menú, pie y el resto del sitio siguen en
+ * Work Sans.
+ *
+ * Se aplica redefiniendo `--font-body` en cada bloque de primer nivel de la
+ * ficha, así que todo `font-body` de adentro —componentes incluidos— cambia
+ * sin tocarlos. No va en un `div` que envuelva la página porque el Navbar busca
+ * el hero como `main > section` (components/Navbar.tsx) y un envoltorio lo
+ * escondería. Si la ficha gana un bloque de primer nivel, lleva esta clase.
+ */
+const jakarta = Plus_Jakarta_Sans({
+  variable: "--font-jakarta",
+  subsets: ["latin"],
+  display: "swap",
+});
+const FUENTE_FICHA = `${jakarta.variable} font-body [--font-body:var(--font-jakarta)]`;
 
 /**
  * Parte "Con al menos 5 días de anticipación — coordinamos la fecha contigo" en
@@ -384,7 +404,7 @@ export default async function ActivityDetailPage({
           baja más) y el texto va centrado: pedido de Juan Francisco. Sin
           antetítulo: la categoría del documento de la viña ("Bienestar entre
           viñas") salía encima del título y se sacó por el mismo pedido. */}
-      <section className="relative">
+      <section className={`relative ${FUENTE_FICHA}`}>
         <div
           className={`relative w-full overflow-hidden ${
             tour.heroBooking
@@ -479,7 +499,7 @@ export default async function ActivityDetailPage({
           ficha rápida. Van sobre blanco y no sobre la foto: arriba eran cuatro
           niveles en blanco que en 375px se partían en dos líneas. Siguen siendo
           la vuelta a la categoría y lo que hace honesto el `BreadcrumbList`. */}
-      <section className="bg-surface-container-lowest px-margin-mobile pt-7 md:px-margin-desktop md:pt-9">
+      <section className={`bg-surface-container-lowest px-margin-mobile pt-7 md:px-margin-desktop md:pt-9 ${FUENTE_FICHA}`}>
         <div className="mx-auto max-w-(--container-max)">
           <ActivityBreadcrumbs
             tone="papel"
@@ -502,7 +522,7 @@ export default async function ActivityDetailPage({
           El `div` existe por ella: un `sticky` sólo se pega dentro de su
           contenedor, y éste abarca de la introducción a la reserva. Al llegar
           a "otras actividades" la píldora se va con el resto. */}
-      <div className="relative bg-surface-container-lowest">
+      <div className={`relative bg-surface-container-lowest ${FUENTE_FICHA}`}>
         <ActivitySectionNav
           items={[
             { id: "detalle", label: t("nav.detail") },
@@ -905,7 +925,7 @@ export default async function ActivityDetailPage({
 
       {/* Dd7 — Otros tours */}
       {otherTours.length > 0 && (
-        <section className="bg-surface-container-lowest py-section-gap px-margin-mobile md:px-margin-desktop">
+        <section className={`bg-surface-container-lowest py-section-gap px-margin-mobile md:px-margin-desktop ${FUENTE_FICHA}`}>
           <div className="max-w-(--container-max) mx-auto">
             <Reveal className="mb-10">
               <span className="block h-px w-12 bg-wine-accent/60 mb-5" />

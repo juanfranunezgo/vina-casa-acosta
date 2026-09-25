@@ -83,14 +83,17 @@ La ruta lleva la categoría: `/actividades/tours/ombu`, `/actividades/talleres/p
 
 **Tipografía de la ficha:** Libre Caslon sólo en los títulos y en la cita de la
 introducción; el resto —datos de la ficha rápida, etapas, carta, preguntas y precios— va
-en la sans del sitio, con negrita para destacar. Los destacados se marcan con `**así**` en
+en **Plus Jakarta Sans** (sólo en las fichas; el resto del sitio sigue en Work Sans), con
+negrita para destacar. Los destacados se marcan con `**así**` en
 messages y los dibuja `components/Emphasis.tsx` (`lib/enfasis.ts`).
 
 **La ficha va en blanco puro** desde el 2026-09-24 (pedido de Juan Francisco): todas
 sus secciones y tarjetas usan `surface-container-lowest` (#FFFFFF) en vez del papel
 (#FBF9F8) y las bandas grises, y se separan por aire, sin filetes. Lo único gris que
-queda es la franja de condiciones dentro de la tarjeta de precio. El resto del sitio
-sigue en papel.
+queda es la franja de condiciones dentro de la tarjeta de precio. Desde el mismo día
+**todo el sitio** va en blanco: el token `--color-background` / `--color-surface` pasó de
+#FBF9F8 a #FFFFFF y las bandas grises de página (portada, vinos, Vendimia, Historia,
+pie) pasaron a `bg-surface`. Las tarjetas grises dentro de las páginas se quedan.
 
 ## Dv — Hub de Vendimia (`app/[locale]/actividades/vendimia/page.tsx`)
 

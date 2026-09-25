@@ -215,7 +215,6 @@ export default async function VinosPage({ params }: PageProps<"/[locale]/vinos">
               t("photoGoTo", { index: idx + 1, total: meta.photos.length, line }),
             )}
             wines={cards}
-            altBackground={lineIdx % 2 === 1}
             flip={lineIdx % 2 === 1}
             priorityImage={lineIdx === 0}
           />
@@ -230,7 +229,7 @@ export default async function VinosPage({ params }: PageProps<"/[locale]/vinos">
           markup, el aviso de agotado viaja con ella y `CollectionBand` no se
           toca, así que el layout editorial vivo queda intacto. */}
       {otherWines.length > 0 && (
-        <section className="bg-surface-container-low py-section-gap px-margin-mobile md:px-margin-desktop">
+        <section className="bg-surface py-section-gap px-margin-mobile md:px-margin-desktop">
           <div className="mx-auto max-w-(--container-max)">
             <Reveal className="mb-12">
               <h2 className="font-display text-headline-h2 text-primary">{t("otherLine.title")}</h2>

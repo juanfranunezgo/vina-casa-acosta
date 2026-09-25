@@ -327,7 +327,7 @@ export default async function WinePage({
       </section>
 
       {related.length > 0 && (
-        <section className="bg-surface-container-low py-section-gap px-margin-mobile md:px-margin-desktop">
+        <section className="bg-surface py-section-gap px-margin-mobile md:px-margin-desktop">
           <div className="max-w-(--container-max) mx-auto">
             <Reveal className="mb-12 flex items-end justify-between gap-4 flex-wrap">
               <h2 className="font-display text-headline-h2 text-primary">

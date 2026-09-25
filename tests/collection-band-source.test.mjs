@@ -26,13 +26,14 @@ test("footer links its Facebook icon to the official profile", async () => {
   assert.doesNotMatch(footerSource, /"https:\/\/maps\.app\.goo\.gl/);
   assert.match(footerSource, /https:\/\/ligts\.cl/);
   assert.match(footerSource, /developedBy/);
-  // El pie cierra la pagina con el papel de A3 y un filete, no con un bloque de
+  // Desde el 2026-09-24 el sitio entero va en blanco, el pie tambien.
+  // El pie cierra la pagina con el fondo de pagina y un filete, no con un bloque de
   // color: sobre `primary` entraba a sangre debajo de la tarjeta oscura del CTA
   // de la home y se leia como un telon. Si vuelve a oscurecerse alguna vez, que
   // sea una decision tomada y no un arrastre.
   assert.match(
     footerSource,
-    /<footer className="w-full border-t border-outline-variant\/40 bg-surface-container-low"/,
+    /<footer className="w-full border-t border-outline-variant\/40 bg-surface"/,
   );
   // Talleres no tiene seccion propia en el indice de actividades. Enlazarlo
   // seria una etiqueta que no aterriza donde dice.

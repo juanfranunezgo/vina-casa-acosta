@@ -40,7 +40,7 @@ export default async function HistoriaTimeline() {
   return (
     <section
       aria-labelledby="timeline-title"
-      className="bg-surface-container-low py-section-gap px-margin-mobile md:px-margin-desktop"
+      className="bg-surface py-section-gap px-margin-mobile md:px-margin-desktop"
     >
       <div className="max-w-(--container-max) mx-auto">
         <Reveal className="text-center mb-16 md:mb-24">

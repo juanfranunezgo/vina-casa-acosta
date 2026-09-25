@@ -379,7 +379,7 @@ export default async function ActividadesPage({
       </section>
 
       {/* EXPERIENCIAS */}
-      <section id="experiencias" className="bg-surface-container-low py-section-gap px-margin-mobile md:px-margin-desktop scroll-mt-48">
+      <section id="experiencias" className="bg-surface py-section-gap px-margin-mobile md:px-margin-desktop scroll-mt-48">
         <div className="max-w-(--container-max) mx-auto">
           <Reveal className="text-center mb-12">
             <span
