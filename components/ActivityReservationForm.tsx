@@ -9,6 +9,7 @@ import { submitToNetlifyForms } from "@/lib/netlifyForms";
 import PrivacyConsent from "@/components/PrivacyConsent";
 import { PRIVACIDAD_VERSION, TERMINOS_VERSION } from "@/lib/legal";
 import { primeraFechaReservable } from "@/lib/fechaReserva";
+import type { BookingField } from "@/data/activities";
 
 type Status = "idle" | "submitting" | "success" | "error";
 
@@ -41,18 +42,125 @@ type Props = {
    *   eso el formulario esconde el campo de fecha — no hay día que elegir.
    */
   mode: "reserva" | "cotizacion" | "temporada";
+  /**
+   * Textos propios de la actividad que pisan a los genéricos del modo. El yoga
+   * trae los del documento de la viña ("¿Listos para vivir Yoga entre
+   * Viñas?", "Consultar disponibilidad"); el resto de las fichas no manda nada.
+   */
+  copy?: { title?: string; subtitle?: string; submit?: string; waIntro?: string };
+  /** Campos que la actividad pide además de los de siempre. */
+  extraFields?: readonly BookingField[];
+  /**
+   * Rótulo, ejemplo y ayuda del campo `eleccion`. Cambian con la actividad —en
+   * el yoga es el sándwich—, así que llegan con ella y no desde este bundle.
+   */
+  choiceCopy?: { label: string; placeholder: string; hint: string };
 };
 
 const inputClass =
   "w-full bg-transparent border-0 border-b border-outline focus:border-primary focus:outline-none px-0 py-2 font-body text-body-md transition-colors";
 const labelClass =
   "font-body text-label-sm text-on-surface-variant uppercase tracking-wider block mb-2";
+const hintClass = "mt-2 font-body text-xs text-on-surface-variant/80";
+
+type DateFieldProps = {
+  id: string;
+  label: string;
+  hint: string;
+  value: string;
+  onChange: (value: string) => void;
+  required: boolean;
+  /** Ausente = desde hoy. */
+  minAdvanceDays?: number;
+  placeholder: string;
+  openLabel: string;
+};
+
+/**
+ * Un campo de fecha del formulario. Está aparte porque el yoga pide dos —la
+ * preferida y una segunda posible— y cada uno necesita su propio `ref` para
+ * abrir el calendario y para ponerle el mínimo.
+ */
+function DateField({
+  id,
+  label,
+  hint,
+  value,
+  onChange,
+  required,
+  minAdvanceDays,
+  placeholder,
+  openLabel,
+}: DateFieldProps) {
+  const ref = useRef<HTMLInputElement>(null);
+
+  // El mínimo de fecha se pone al montar: calcularlo en el render rompería la
+  // hidratación (la página es estática y se genera en el build, así que un
+  // `min` escrito en el HTML sería el del día del deploy). "Hoy" es el de Chile:
+  // ver lib/fechaReserva.ts.
+  useEffect(() => {
+    const input = ref.current;
+    if (input) input.min = primeraFechaReservable(minAdvanceDays ?? 0);
+  }, [minAdvanceDays]);
+
+  /** Abre el calendario nativo desde el ícono. */
+  const openDatePicker = () => {
+    const input = ref.current;
+    if (!input) return;
+    if (typeof input.showPicker === "function") input.showPicker();
+    else input.focus();
+  };
+
+  return (
+    <div>
+      <label className={labelClass} htmlFor={id}>
+        {label}
+      </label>
+      {/* Sin fecha por defecto: se muestra un placeholder propio y un
+          calendario clickeable para que se lea como campo editable. */}
+      <div className="relative">
+        <input
+          id={id}
+          ref={ref}
+          required={required}
+          type="date"
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          aria-describedby={`${id}-hint`}
+          className={`${inputClass} tabular-nums pr-10 ${value ? "" : "text-transparent"} [&::-webkit-calendar-picker-indicator]:absolute [&::-webkit-calendar-picker-indicator]:inset-0 [&::-webkit-calendar-picker-indicator]:h-full [&::-webkit-calendar-picker-indicator]:w-full [&::-webkit-calendar-picker-indicator]:cursor-pointer [&::-webkit-calendar-picker-indicator]:opacity-0`}
+        />
+        {!value && (
+          <span
+            aria-hidden="true"
+            className="pointer-events-none absolute left-0 top-1/2 -translate-y-1/2 font-body text-body-md tabular-nums text-on-surface-variant/60"
+          >
+            {placeholder}
+          </span>
+        )}
+        <button
+          type="button"
+          onClick={openDatePicker}
+          aria-label={openLabel}
+          className="absolute right-0 top-1/2 inline-flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-full text-primary transition-colors hover:bg-primary/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50"
+        >
+          <CalendarDays className="h-4 w-4" aria-hidden="true" />
+        </button>
+      </div>
+      <p id={`${id}-hint`} className={hintClass}>
+        {hint}
+      </p>
+    </div>
+  );
+}
 
 export default function ActivityReservationForm({
   activityName,
   minPeople,
   minAdvanceDays,
   mode,
+  copy,
+  extraFields = [],
+  choiceCopy,
 }: Props) {
   const t = useTranslations("activities.labels.form");
   const locale = useLocale();
@@ -61,16 +169,23 @@ export default function ActivityReservationForm({
   // pueden desincronizar.
   const suffix = mode === "reserva" ? "" : mode === "cotizacion" ? "Quote" : "Season";
   const pideFecha = mode !== "temporada";
+  const pideSegundaFecha = pideFecha && extraFields.includes("segundaFecha");
+  // Sin rótulo no hay campo: un input de "elección" sin decir de qué sería
+  // una pregunta vacía.
+  const pideEleccion = extraFields.includes("eleccion") && choiceCopy !== undefined;
+  const pideRestricciones = extraFields.includes("restricciones");
   const [status, setStatus] = useState<Status>("idle");
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [people, setPeople] = useState(minPeople === undefined ? "" : String(minPeople));
   const [date, setDate] = useState("");
+  const [date2, setDate2] = useState("");
+  const [choice, setChoice] = useState("");
+  const [dietary, setDietary] = useState("");
   const [note, setNote] = useState("");
   const [botField, setBotField] = useState("");
   const [consent, setConsent] = useState(false);
-  const dateRef = useRef<HTMLInputElement>(null);
 
   // Grupo por debajo del mínimo publicado. El campo dejó de corregir el número
   // hacia arriba a propósito: si lo sube solo, la persona nunca puede declarar
@@ -82,23 +197,6 @@ export default function ActivityReservationForm({
     Number.isFinite(peopleCount) &&
     peopleCount > 0 &&
     peopleCount < minPeople;
-
-  // El mínimo de fecha se pone al montar: calcularlo en el render rompería la
-  // hidratación (la página es estática y se genera en el build, así que un
-  // `min` escrito en el HTML sería el del día del deploy). "Hoy" es el de Chile:
-  // ver lib/fechaReserva.ts.
-  useEffect(() => {
-    const input = dateRef.current;
-    if (input) input.min = primeraFechaReservable(minAdvanceDays ?? 0);
-  }, [minAdvanceDays]);
-
-  /** Abre el calendario nativo desde el ícono. */
-  const openDatePicker = () => {
-    const input = dateRef.current;
-    if (!input) return;
-    if (typeof input.showPicker === "function") input.showPicker();
-    else input.focus();
-  };
 
   /**
    * La solicitud va a Netlify Forms: queda en el panel del proyecto y dispara
@@ -119,6 +217,12 @@ export default function ActivityReservationForm({
         telefono: phone,
         personas: people,
         fecha: date,
+        // Los tres campos extra van siempre, vacíos en las actividades que no
+        // los piden: así la declaración de `__forms.html` es una sola y el
+        // panel de Netlify muestra las mismas columnas para todas.
+        fecha2: date2,
+        eleccion: choice,
+        restricciones: dietary,
         nota: note,
         idioma: locale,
         // Qué ediciones se aceptaron, no sólo que se aceptaron: cuando salga
@@ -136,6 +240,9 @@ export default function ActivityReservationForm({
         setPhone("");
         setPeople(minPeople === undefined ? "" : String(minPeople));
         setDate("");
+        setDate2("");
+        setChoice("");
+        setDietary("");
         setNote("");
         setConsent(false);
         setStatus("idle");
@@ -145,12 +252,18 @@ export default function ActivityReservationForm({
     }
   };
 
+  // Con segunda fecha, la primera deja de ser "la" fecha: es la preferida.
+  const dateLabel = pideSegundaFecha ? t("datePreferred") : t("date");
+
   const whatsappUrl = () => {
     const lines = [
-      t(`waIntro${suffix}`, { activity: activityName }),
+      copy?.waIntro ?? t(`waIntro${suffix}`, { activity: activityName }),
       name && `${t("name")}: ${name}`,
       people && `${t("people")}: ${people}`,
-      date && `${t("date")}: ${date}`,
+      date && `${dateLabel}: ${date}`,
+      date2 && `${t("secondDate")}: ${date2}`,
+      choice && choiceCopy && `${choiceCopy.label}: ${choice}`,
+      dietary && `${t("dietary")}: ${dietary}`,
       note && `${t("note")}: ${note}`,
     ].filter(Boolean);
     return `${CONTACT_WHATSAPP_URL}?text=${encodeURIComponent(lines.join("\n"))}`;
@@ -159,8 +272,12 @@ export default function ActivityReservationForm({
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       <div>
-        <h2 className="font-display text-3xl text-primary mb-2">{t(`title${suffix}`)}</h2>
-        <p className="font-body text-body-md text-on-surface-variant">{t(`subtitle${suffix}`)}</p>
+        <h2 className="font-display text-3xl text-primary mb-2">
+          {copy?.title ?? t(`title${suffix}`)}
+        </h2>
+        <p className="font-body text-body-md text-on-surface-variant">
+          {copy?.subtitle ?? t(`subtitle${suffix}`)}
+        </p>
       </div>
 
       {/* Honeypot: invisible para personas, tentador para bots. Si llega con
@@ -270,49 +387,73 @@ export default function ActivityReservationForm({
             campo `required` con `display:none` bloquea el envío sin poder
             mostrar dónde está el error. */}
         {pideFecha && (
-        <div className="sm:col-span-2">
-          <label className={labelClass} htmlFor="tour-date">
-            {t("date")}
-          </label>
-          {/* Sin fecha por defecto: se muestra un placeholder propio y un
-              calendario clickeable para que se lea como campo editable. */}
-          <div className="relative">
-            <input
+          <div className={pideSegundaFecha ? "" : "sm:col-span-2"}>
+            {/* Con anticipación, la ayuda dice por qué los próximos días no se
+                pueden elegir: un calendario que los bloquea sin explicar parece
+                roto. */}
+            <DateField
               id="tour-date"
-              ref={dateRef}
-              required
-              type="date"
+              label={dateLabel}
+              hint={
+                minAdvanceDays
+                  ? t("dateHintAdvance", { days: minAdvanceDays })
+                  : t("dateHint")
+              }
               value={date}
-              onChange={(e) => setDate(e.target.value)}
-              aria-describedby="tour-date-hint"
-              className={`${inputClass} tabular-nums pr-10 ${date ? "" : "text-transparent"} [&::-webkit-calendar-picker-indicator]:absolute [&::-webkit-calendar-picker-indicator]:inset-0 [&::-webkit-calendar-picker-indicator]:h-full [&::-webkit-calendar-picker-indicator]:w-full [&::-webkit-calendar-picker-indicator]:cursor-pointer [&::-webkit-calendar-picker-indicator]:opacity-0`}
+              onChange={setDate}
+              required
+              minAdvanceDays={minAdvanceDays}
+              placeholder={t("datePlaceholder")}
+              openLabel={t("dateOpen")}
             />
-            {!date && (
-              <span
-                aria-hidden="true"
-                className="pointer-events-none absolute left-0 top-1/2 -translate-y-1/2 font-body text-body-md tabular-nums text-on-surface-variant/60"
-              >
-                {t("datePlaceholder")}
-              </span>
-            )}
-            <button
-              type="button"
-              onClick={openDatePicker}
-              aria-label={t("dateOpen")}
-              className="absolute right-0 top-1/2 inline-flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-full text-primary transition-colors hover:bg-primary/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50"
-            >
-              <CalendarDays className="h-4 w-4" aria-hidden="true" />
-            </button>
           </div>
-          {/* Con anticipación, la ayuda dice por qué los próximos días no se
-              pueden elegir: un calendario que los bloquea sin explicar parece
-              roto. */}
-          <p id="tour-date-hint" className="mt-2 font-body text-xs text-on-surface-variant/80">
-            {minAdvanceDays
-              ? t("dateHintAdvance", { days: minAdvanceDays })
-              : t("dateHint")}
-          </p>
-        </div>
+        )}
+        {pideSegundaFecha && (
+          <DateField
+            id="tour-date-2"
+            label={t("secondDate")}
+            hint={t("secondDateHint")}
+            value={date2}
+            onChange={setDate2}
+            required={false}
+            minAdvanceDays={minAdvanceDays}
+            placeholder={t("datePlaceholder")}
+            openLabel={t("dateOpen")}
+          />
+        )}
+        {pideEleccion && (
+          <div className="sm:col-span-2">
+            <label className={labelClass} htmlFor="tour-choice">
+              {choiceCopy.label}
+            </label>
+            <input
+              id="tour-choice"
+              type="text"
+              value={choice}
+              onChange={(e) => setChoice(e.target.value)}
+              placeholder={choiceCopy.placeholder}
+              aria-describedby="tour-choice-hint"
+              className={inputClass}
+            />
+            <p id="tour-choice-hint" className={hintClass}>
+              {choiceCopy.hint}
+            </p>
+          </div>
+        )}
+        {pideRestricciones && (
+          <div className="sm:col-span-2">
+            <label className={labelClass} htmlFor="tour-dietary">
+              {t("dietary")}
+            </label>
+            <input
+              id="tour-dietary"
+              type="text"
+              value={dietary}
+              onChange={(e) => setDietary(e.target.value)}
+              placeholder={t("dietaryPlaceholder")}
+              className={inputClass}
+            />
+          </div>
         )}
         <div className="sm:col-span-2">
           <label className={labelClass}>{t("note")}</label>
@@ -361,7 +502,7 @@ export default function ActivityReservationForm({
             )
           }
         >
-          {status === "idle" && t(`submitIdle${suffix}`)}
+          {status === "idle" && (copy?.submit ?? t(`submitIdle${suffix}`))}
           {status === "submitting" && t("submitting")}
           {status === "success" && t("success")}
           {status === "error" && t("error")}

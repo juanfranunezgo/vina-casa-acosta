@@ -23,15 +23,15 @@ const socialLinks = [
 ];
 
 /**
- * Pie del sitio: cuatro columnas sobre el papel de la página.
+ * Pie del sitio: cuatro columnas sobre el fondo blanco de la página.
  *
  * **Por qué claro.** Estuvo un día sobre `primary` —el vino casi negro— y en la
  * home entraba a sangre justo debajo de la tarjeta-foto del CTA, que ya es
  * oscura: dos masas oscuras pegadas, separadas por una franja fina de papel, y
- * el pie leyéndose como un telón en vez de como un cierre. El fondo es
- * `surface-container-low`, el mismo de la banda A3 (Líneas Destacadas) y un
- * punto por debajo del papel del cuerpo. Cerrar la página lo hace el filete de
- * arriba, no un bloque de color.
+ * el pie leyéndose como un telón en vez de como un cierre. Fue
+ * `surface-container-low` hasta el 2026-09-24; desde entonces el sitio entero va
+ * en blanco (pedido de Juan Francisco) y el pie usa el mismo fondo de la
+ * página. Cerrar la página lo hace el filete de arriba, no un bloque de color.
  *
  * **Por qué una fila de cuatro y no dos bandas.** La versión oscura repartía la
  * banda de arriba en 5/3/4 de doce y la de abajo en tres tercios: ni una columna
@@ -124,7 +124,7 @@ export default async function Footer() {
     "text-on-surface-variant transition-colors hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 rounded-sm";
 
   return (
-    <footer className="w-full border-t border-outline-variant/40 bg-surface-container-low">
+    <footer className="w-full border-t border-outline-variant/40 bg-surface">
       {/* El `pb-24` de móvil y el `md:pr-20` de la fila de cierre no son
           estética: el botón flotante del carrito es `fixed` y, con la página al
           fondo, se apoya sobre la esquina inferior derecha. Sin esa reserva
@@ -181,7 +181,11 @@ export default async function Footer() {
 
           {/* ── Visítanos ──────────────────────────────────────────────── */}
           <div className="md:col-span-3">
-            <h2 className={`${rotuloClass} mb-5`}>{t("columns.visit")}</h2>
+            {/* Rótulo y no H2: el pie se repite en todas las páginas y sus
+                columnas no son secciones del contenido. Como H2 sumaban tres
+                encabezados iguales a la estructura de cada página (ver la nota
+                en tests/encabezados-globales.test.mjs). */}
+            <p className={`${rotuloClass} mb-5`}>{t("columns.visit")}</p>
             <ul className="space-y-3.5 font-body text-[15px]">
               <li className="flex items-start gap-2.5">
                 <MapPin className="mt-1 h-4 w-4 shrink-0 text-primary" aria-hidden="true" />
@@ -238,7 +242,7 @@ export default async function Footer() {
           >
             {columnas.map(({ title, links }) => (
               <div key={title}>
-                <h2 className={`${rotuloClass} mb-5`}>{title}</h2>
+                <p className={`${rotuloClass} mb-5`}>{title}</p>
                 <ul className="space-y-3 font-body text-[15px]">
                   {links.map(({ label, href }) => (
                     <li key={href}>

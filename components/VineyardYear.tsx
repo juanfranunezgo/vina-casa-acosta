@@ -33,14 +33,14 @@ type Props = {
  * invierno es junio. Un año calendario partiría la historia al medio y dejaría
  * la cosecha en la mitad de la línea en vez de en su remate.
  *
- * No usa `SeasonStrip`: ese componente es de las fichas (Dd3), donde la franja
- * responde "¿lo puedo hacer en julio?" y nada más. Acá el dato de temporada es
- * el desenlace del ciclo, no una casilla suelta. Tocar `SeasonStrip` para servir
- * a los dos casos habría empeorado el suyo.
+ * Las fichas tenían su propia franja de meses (`SeasonStrip`, Dd3) hasta el
+ * 2026-09-24, cuando se sacó: en once de catorce decía "Todo el año", y la
+ * temporada de las demás es hoy una línea de sus condiciones
+ * (`lib/temporada.ts`). Esta banda es otra cosa: acá el dato de temporada es el
+ * desenlace del ciclo, no una casilla suelta.
  *
  * Accesibilidad: la banda de meses va `aria-hidden` y el dato viaja en la frase
- * de abajo — doce abreviaturas leídas en voz alta no dicen nada. Es el mismo
- * criterio que ya aplica `SeasonStrip`.
+ * de abajo — doce abreviaturas leídas en voz alta no dicen nada.
  */
 
 /**
@@ -58,7 +58,7 @@ export default function VineyardYear({
   labels,
 }: Props) {
   // Los nombres de mes salen de `Intl` y no de `messages`: son doce strings por
-  // idioma que el navegador ya sabe (mismo criterio que `SeasonStrip`). El año
+  // idioma que el navegador ya sabe (mismo criterio que `lib/temporada.ts`). El año
   // de referencia da igual, solo se usa para pedir el nombre.
   const short = new Intl.DateTimeFormat(locale, { month: "short" });
   const long = new Intl.DateTimeFormat(locale, { month: "long" });

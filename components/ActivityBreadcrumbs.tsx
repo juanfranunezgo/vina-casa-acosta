@@ -15,6 +15,8 @@ type Props = {
    * montando sobre su hero.
    */
   tone?: Tone;
+  /** Centrada bajo el hero en las fichas (2026-09-24); a la izquierda en Vendimia. */
+  align?: "start" | "center";
 };
 
 /**
@@ -32,7 +34,12 @@ type Props = {
  * solo, en blanco y sobre una foto cualquiera. Pintarla clara sobre papel la
  * dejaría ilegible, así que el tono viaja con el lugar.
  */
-export default function ActivityBreadcrumbs({ items, aria, tone = "foto" }: Props) {
+export default function ActivityBreadcrumbs({
+  items,
+  aria,
+  tone = "foto",
+  align = "start",
+}: Props) {
   const sobreFoto = tone === "foto";
 
   const listaClass = sobreFoto
@@ -47,7 +54,9 @@ export default function ActivityBreadcrumbs({ items, aria, tone = "foto" }: Prop
   return (
     <nav aria-label={aria}>
       <ol
-        className={`flex flex-wrap items-center gap-x-1.5 gap-y-1 font-body text-label-sm ${listaClass}`}
+        className={`flex flex-wrap items-center gap-x-1.5 gap-y-1 font-body text-label-sm ${
+          align === "center" ? "justify-center" : ""
+        } ${listaClass}`}
       >
         {items.map((item, index) => {
           const isLast = index === items.length - 1;

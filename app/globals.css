@@ -29,11 +29,13 @@
   --color-on-tertiary: #ffffff;
   --color-on-tertiary-container: #a38761;
 
-  --color-background: #fbf9f8;
+  /* Blanco puro desde el 2026-09-24 (pedido de Juan Francisco). Era el
+     "papel" #FBF9F8; las bandas grises de página se fueron con él. */
+  --color-background: #ffffff;
   --color-on-background: #1b1c1c;
 
-  --color-surface: #fbf9f8;
-  --color-surface-bright: #fbf9f8;
+  --color-surface: #ffffff;
+  --color-surface-bright: #ffffff;
   --color-surface-dim: #dcd9d9;
   --color-surface-variant: #e4e2e1;
   --color-surface-container-lowest: #ffffff;
@@ -393,4 +395,34 @@ html[data-age-gate="pendiente"] #age-gate {
 }
 html[data-age-gate="pendiente"] body {
   overflow: hidden;
+}
+
+/* Preguntas frecuentes de las fichas (Dd6b) — ver components/ActivityFaq.tsx.
+
+   La respuesta se despliega en vez de aparecer de golpe. Animar hasta `auto`
+   sólo es posible donde el navegador conoce `interpolate-size` y el
+   pseudo-elemento ::details-content (Chrome 131+); en el resto el @supports no
+   aplica y la tarjeta abre como cualquier <details>, sin nada roto.
+
+   `interpolate-size` va en la tarjeta y no en :root: en :root cambiaría cómo
+   se anima cualquier transición a `auto` del sitio entero. */
+@supports (interpolate-size: allow-keywords) {
+  .faq-item {
+    interpolate-size: allow-keywords;
+  }
+  .faq-item::details-content {
+    block-size: 0;
+    overflow-y: clip;
+    transition:
+      block-size 380ms cubic-bezier(0.22, 1, 0.36, 1),
+      content-visibility 380ms allow-discrete;
+  }
+  .faq-item[open]::details-content {
+    block-size: auto;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .faq-item::details-content {
+    transition: none;
+  }
 }

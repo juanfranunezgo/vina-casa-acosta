@@ -17,6 +17,7 @@ npm run foto:hero-vinos     # master horizontal del hero de /vinos
 npm run foto:heros          # los heros full-bleed y la capa de +18, desktop + móvil
 npm run fotos:vendimia      # las fotos del hub de Vendimia (Dv): recortes de la aérea y fotos sueltas
 npm run fotos:mimbre        # las 8 fotos del Taller de mimbre (Dd)
+npm run fotos:yoga          # las 8 fotos de Yoga entre Viñas (Dd)
 ```
 
 Si falta un archivo fuente, el script lo salta con un aviso y procesa el resto.
@@ -225,6 +226,38 @@ El cableado está en `data/activities.ts` (`photos` de la actividad) y los `alt`
 tres bundles, bajo `activities.items.mimbre.photos`. `tests/actividades-fotos.test.mjs`
 cruza las tres cosas: que el archivo exista, que el `alt` esté en es/en/pt y que la
 proporción del `.webp` sea la de la ranura.
+## Fotos de Yoga entre Viñas (2026-09-24)
+
+`npm run fotos:yoga` procesa ocho de las nueve fotos de sesiones reales que mandó la
+viña. **Llegaron por WhatsApp**: 960×1280 las verticales y 1280×960 la única apaisada.
+Alcanzan para las ranuras chicas, pero el hero en escritorio se estira 1,5 veces y
+se nota blando. El script no agranda nada (`withoutEnlargement`): **si la viña consigue
+los originales de la cámara**, se reemplazan en `_fuentes-fotos/` con el mismo nombre
+y se corre de nuevo, sin tocar código.
+
+Van a `quality: 76`: a 82 el webp pesaba lo mismo que el JPEG de WhatsApp, porque
+conserva su ruido. A diferencia del mimbre, varias no se recortan sólo por la
+proporción —hay que sacar un ventilador o bolsos del primer plano—, así que cada una
+declara su caja en píxeles del original (`box`), anotada en el script.
+
+| Fuente en `_fuentes-fotos/` | Original | Sale como | Ranura | Recorte |
+|---|---|---|---|---|
+| `yoga-hero.jpg` | yoga1 | `yoga-hero.webp` 960×1280 | Dd1, hero (y `og:image`) | ninguno; en escritorio `heroPosition: 50% 58%` |
+| `yoga-grupo.jpg` | yoga 3 | `yoga-grupo.webp` 800×600 | Dd1, junto a la introducción | 4:3 sin el ventilador de la izquierda |
+| `yoga-mesa.jpg` | yoga 8 | `yoga-mesa.webp` 960×600 | Dd5, tarjeta de precio ("¿Qué incluye?") | 16:10, la mesa del brunch |
+| `yoga-brunch.jpg` | yoga 9 | `yoga-brunch-grupo.webp` 1280×960 | Dd7, junto al formulario | ninguno; `position: 15% 50%` corre el encuadre a las caras |
+| `yoga-brunch.jpg` | yoga 9 | `yoga-brunch.webp` 1280×720 | Dd6, apertura de galería | 16:9 centrado |
+| `yoga-parras.jpg` | yoga 5 | `yoga-parras.webp` 853×1280 | Dd6, mosaico | 2:3, conserva la derecha |
+| `yoga-relajacion.jpg` | yoga 7 | `yoga-relajacion.webp` 640×960 | Dd6, mosaico | 2:3 sin los bolsos del primer plano |
+| `yoga-instructora.jpg` | yoga 2 | `yoga-instructora.webp` 853×1280 | Dd6, mosaico | 2:3, conserva la barrica |
+
+No entran `yoga-bailarin.jpg` (yoga 4: la mitad de abajo es tierra) ni `yoga-toldo.jpg`
+(yoga 6). Juan Francisco pidió la mesa del brunch en "¿Qué incluye?" y el grupo
+sonriendo junto al formulario: es la misma foto que abre la galería, repetida a
+propósito, pero entera (4:3) en vez del recorte 16:9, porque el panel es alto. Los `alt` están en los tres bundles bajo
+`activities.items.yoga.photos`, incluido el del hero (`photos.hero`), que lleva el
+lugar porque también es SEO.
+
 ## Otros pipelines (no usan `_fuentes-fotos/`)
 
 - `npm run fotos` lee de `sitio-web/_fotos-input/<Letra>/` con nombres por slot

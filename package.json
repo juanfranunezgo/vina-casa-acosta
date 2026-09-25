@@ -20,7 +20,8 @@
     "fotos:contacto": "node scripts/optimize-contact-gallery.mjs",
     "foto:heros": "node scripts/optimize-heros.mjs",
     "fotos:vendimia": "node scripts/optimize-vendimia.mjs",
-    "fotos:mimbre": "node scripts/optimize-mimbre.mjs"
+    "fotos:mimbre": "node scripts/optimize-mimbre.mjs",
+    "fotos:yoga": "node scripts/optimize-yoga.mjs"
   },
   "dependencies": {
     "@next/env": "16.2.6",

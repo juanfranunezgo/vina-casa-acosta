@@ -150,6 +150,127 @@ pone rojo hasta que la lista las reconozca.
   ciclo completo de poda a embotellado. Se transcribió tal cual; probablemente sean las
   horas de cada jornada.
 
+### Reservas con anticipación y hora de Chile (PR #6, 2026-09-23)
+
+- `minAdvanceDays` en `data/activities.ts`: el calendario del formulario no deja elegir
+  antes de hoy + N. Hoy sólo el yoga, con 5 días. Si una actividad lo declara, su
+  `reservationNote` tiene que decir el mismo número en los tres idiomas
+  (`tests/reserva-anticipacion.test.mjs`).
+- "Hoy" es el de Chile, no el UTC del navegador: `lib/fechaReserva.ts`. Antes, de noche
+  el calendario de todas las actividades dejaba elegir el día anterior.
+- La ficha rápida (Dd1) va en una columna en celular, y los botones del formulario son el
+  `Button` primario + WhatsApp como enlace.
+
+### Yoga entre Viñas — el contenido final de la viña (2026-09-24)
+
+La viña mandó el contenido definitivo ("Contenido web de la experiencia Yoga entre Viñas",
+septiembre 2026). Es la primera experiencia con **precio publicado** y la que estrenó
+cuatro piezas de la ficha, todas activadas por dato — una ficha sin esos datos queda
+exactamente como estaba:
+
+- **`priceNetCLP`** — el neto sin IVA. Si está, `priceCLP` es el precio con IVA y la
+  ficha dice "IVA incluido", muestra el neto en chico ("Empresas y agencias: $39.900 +
+  IVA") y el `Offer` del JSON-LD lleva `valueAddedTaxIncluded`. Sin neto, la ficha no
+  afirma nada sobre el IVA, porque el cliente no lo dijo. **Pendiente de preguntar:** los
+  talleres cuestan 39.900, la misma cifra que el neto del yoga; no sabemos si ese precio
+  lleva IVA.
+- **`schedule`** — programa con horario: minutos y tono de cada etapa en `data/`, título,
+  texto y carta en messages. La ficha dibuja una regla proporcional de la mañana
+  (`components/ActivitySchedule.tsx`); los tonos van del agua al vino con colores de la
+  paleta. Las etapas tienen que sumar `durationISO`. Una etapa puede traer su carta
+  (`components/ActivityMenu.tsx`).
+- **`faq`** en messages → sección Dd6b (`components/ActivityFaq.tsx`), con `<details>`
+  nativo y sin `FAQPage`.
+- **`bookingFields`** — campos extra del formulario: `segundaFecha`, `eleccion` (el rótulo
+  sale de `items.{slug}.form.choice*`) y `restricciones`. Van a Netlify como `fecha2`,
+  `eleccion` y `restricciones`, declarados en `public/__forms.html`; las demás
+  actividades los mandan vacíos.
+- **`heroBooking`** — precio y botones también en el hero. Sólo el yoga, por decisión de
+  Juan Francisco: el documento lo pedía para esta ficha.
+
+Textos opcionales por actividad, todos preguntados con `has`: `eyebrow`, `introMore`,
+`metaDescription`, `cta`, `priceNote`, `conditions` (se suman a las de siempre) y
+`form.{title,subtitle,waIntro}`. `closing` pasó a ser opcional: el yoga no lo trae.
+
+Del documento **no** se publicaron dos párrafos que repetían, casi palabra por palabra, lo
+que ya dice el programa ("Texto detallado de la degustación" y "Alternativa en caso de
+clima adverso": la lluvia ya está en la etapa del yoga, en las condiciones y en las
+preguntas). Tampoco hay fotos del yoga todavía: la ficha sigue con las de categoría.
+El nombre en EN y PT ("Yoga among the Vines", "Yoga entre Vinhedos") es traducción
+nuestra, sin validar.
+
+### Yoga: fotos y SEO local (2026-09-24)
+
+- **Fotos reales** (`npm run fotos:yoga`, detalle en [`FOTOS.md`](FOTOS.md)). Llegaron
+  por WhatsApp a 960px: el hero en escritorio se ve blando. Pedirle a la viña los
+  originales y volver a correr el script.
+- `heroPosition` (`data/activities.ts`): `object-position` del hero, para cuando el
+  centro de la foto cae bajo el título en escritorio.
+- **SEO local**, pedido de Juan Francisco ("yoga cerca de San Fernando"). El
+  autocompletado de Google en Chile confirma "yoga rancagua", "yoga san fernando" y
+  "yoga en san vicente de tagua tagua"; "yoga en viña" lo domina Viña del Mar. Van al
+  título ("Yoga entre Viñas cerca de Rancagua y San Fernando"), a la descripción, a
+  una pregunta nueva ("¿Dónde queda Viña Casa Acosta?", con la dirección) y al `alt`
+  del hero. `metaKeywords` va como etiqueta `keywords` sólo en esta ficha, porque se
+  pidió; Google no la usa.
+- **Distancias:** para San Fernando las fuentes no coinciden (23 a 40 minutos), así
+  que la página dice "cerca de San Fernando" sin minutos. Los "40 minutos de
+  Rancagua" son los que el sitio ya publicaba con el texto de la viña.
+- Las preguntas frecuentes son `<h3>` dentro del `<summary>`, bajo el `<h2>`. El
+  `Product` del JSON-LD declara las ocho fotos y la meta descripción.
+- **Encabezados globales fuera.** Pie, carrito y capa de +18 sumaban cinco `<h2>` a
+  todas las páginas ("Visítanos", "Actividades", "La viña", "Tu selección", "¿Eres
+  mayor de 18 años?") y el carrito un `<h3>` por vino. Ahora son `<p>` con el mismo
+  estilo; los diálogos conservan su nombre por `aria-label` / `aria-labelledby`.
+  `tests/encabezados-globales.test.mjs` impide que vuelvan. Era el punto 3 del
+  diagnóstico SEO del 2026-09-22.
+- `photos.*.position` (`object-position` por ranura): la usa el panel del formulario
+  del yoga, con la foto del grupo en el brunch entera y corrida hacia las caras.
+
+### Rediseño de la ficha (2026-09-24, pedido de Juan Francisco)
+
+Sobre referencias de Quorum Legal, para que la ficha deje de verse plana. Aplica a las
+catorce fichas (es la misma plantilla):
+
+- **Ficha rápida** — tarjeta blanca flotante debajo del hero, ya no montada sobre la
+  foto (`-mt-14`). Lleva `relative z-10` porque sin posición la sección siguiente le
+  pinta encima la sombra. El aviso de reservas se parte en la raya (`splitNote`): el
+  dato destacado y la aclaración debajo.
+- **`components/ui/IconBadge.tsx`** — el único fondo de ícono del sitio: círculo vino
+  sólido con degradado, ícono blanco. Reemplazó al círculo vino al 10% en la ficha, el
+  índice de actividades y los números de `ActivityProgram`.
+  `tests/icon-badge-source.test.mjs` falla si alguien vuelve a escribir el círculo
+  teñido a mano.
+- **`components/ActivitySectionNav.tsx`** — la píldora de secciones, pegada bajo el
+  navbar al bajar (celular y escritorio) con scroll-spy y una pastilla que se desliza.
+  El `sticky` necesita que la página envuelva desde la intro hasta la reserva en un
+  `div` con fondo blanco; si la ficha gana una sección, va dentro de ese `div` y se
+  suma a `items`. La altura del navbar (88/96px) está escrita en el componente y en
+  `ActivitiesTabs`; si el navbar cambia, cambian los dos. Las secciones usan
+  `scroll-mt-40 md:scroll-mt-44` para que el ancla no quede debajo de la píldora.
+- **Preguntas** — tarjetas con sombra, "Expandir todo" y apertura animada en CSS
+  (`.faq-item` en `globals.css`, sólo donde el navegador soporta `interpolate-size`).
+- **Se fue la caja "¿Cuándo se hace?"** (`SeasonStrip`, borrado). En las tres
+  actividades de temporada los meses pasan a las condiciones con `lib/temporada.ts`
+  (`tests/temporada.test.mjs`).
+- **Orden bajo el hero:** migas centradas → píldora → ficha rápida (sin bordes, flota
+  por la sombra) → intro. El hero va centrado y sin antetítulo.
+- **Tipografía:** Caslon sólo en títulos y en la cita de la intro; lo demás en sans con
+  negrita. Los destacados van en messages como `**frase**` y los dibuja `Emphasis`;
+  `tests/enfasis.test.mjs` exige que cierren y que las preguntas del yoga destaquen lo
+  mismo en los tres idiomas. Donde el texto se usa fuera de pantalla (WhatsApp,
+  metadatos) hay que pasarlo por `sinEnfasis`.
+- **Plus Jakarta Sans sólo en las fichas** (la letra de Quorum): la página redefine
+  `--font-body` en cada bloque de primer nivel (`FUENTE_FICHA`), no en un envoltorio,
+  porque el Navbar busca el hero como `main > section`. `tests/ficha-tipografia`.
+- **Todo el sitio en blanco**: `--color-background` y `--color-surface` pasaron de
+  #FBF9F8 a #FFFFFF, y las bandas grises de página a `bg-surface`. `CollectionBand`
+  perdió `altBackground`.
+- **Trampa pagada:** un cambio de valor dentro de `@theme` en `globals.css` **no** llega
+  al servidor de desarrollo aunque se reinicie: la caché en disco de Turbopack
+  (`.next/dev`) sigue sirviendo el CSS viejo. Borrar `.next/dev` y levantar de nuevo.
+  El build de producción no tiene el problema.
+
 ## Hub de Vendimia (`/actividades/vendimia`)
 
 Existe desde el 2026-08-16. Es una **página informativa**, no una ficha: cuenta qué es la

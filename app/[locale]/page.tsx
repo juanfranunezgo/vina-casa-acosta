@@ -247,7 +247,7 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
       />
 
       {/* LÍNEAS DESTACADAS (A3) */}
-      <section className="bg-surface-container-low py-section-gap px-margin-mobile md:px-margin-desktop">
+      <section className="bg-surface py-section-gap px-margin-mobile md:px-margin-desktop">
         <div className="max-w-(--container-max) mx-auto">
           <Reveal className="text-center mb-12 md:mb-16">
             <span
@@ -330,7 +330,7 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
       </section>
 
       {/* CTA CONTACTO */}
-      <section className="bg-surface-container-low py-section-gap px-margin-mobile md:px-margin-desktop">
+      <section className="bg-surface py-section-gap px-margin-mobile md:px-margin-desktop">
         <div className="max-w-(--container-max) mx-auto relative bg-primary text-on-primary rounded-xl px-8 md:px-16 py-16 md:py-24 text-center ambient-shadow overflow-hidden">
           {/* Foto de fondo (parras del viñedo) */}
           <Image

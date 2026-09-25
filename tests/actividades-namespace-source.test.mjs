@@ -60,7 +60,7 @@ test("el detector reconoce el error que este test cuida", () => {
 
   const bueno = [
     'const tLabels = await getTranslations("activities.labels");',
-    'const titulo = tLabels("seasonTitle");',
+    'const titulo = tLabels("placeLabel");',
     'const tItems = await getTranslations("activities.items");',
     "const duration = tItems(`${slug}.duration`);",
   ].join("\n");

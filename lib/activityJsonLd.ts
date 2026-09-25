@@ -44,7 +44,8 @@ const WEBSITE_ID = `${SITE_URL}/#website`;
 
 const absolute = (url: string) => (url.startsWith("http") ? url : `${SITE_URL}${url}`);
 
-type Copy = { name: string; description: string; image: string };
+/** `image` acepta varias: el Product del yoga declara todas sus fotos. */
+type Copy = { name: string; description: string; image: string | string[] };
 
 /**
  * Los textos de la miga llegan traducidos desde la página y no se escriben acá:
@@ -66,7 +67,7 @@ export function buildActivityJsonLd(
     "@id": `${url}#activity`,
     name: copy.name,
     description: copy.description,
-    image: absolute(copy.image),
+    image: Array.isArray(copy.image) ? copy.image.map(absolute) : absolute(copy.image),
     url,
   };
 
@@ -85,6 +86,17 @@ export function buildActivityJsonLd(
             "@type": "Offer",
             price: activity.priceCLP,
             priceCurrency: "CLP",
+            // Sólo cuando la ficha dice "IVA incluido", que es cuando la
+            // actividad declara su neto. Sin neto el cliente no dijo si la
+            // cifra lleva IVA, y el marcado no lo afirma por él.
+            ...(activity.priceNetCLP !== undefined && {
+              priceSpecification: {
+                "@type": "UnitPriceSpecification",
+                price: activity.priceCLP,
+                priceCurrency: "CLP",
+                valueAddedTaxIncluded: true,
+              },
+            }),
             availability: "https://schema.org/InStock",
             url,
             seller: { "@id": WINERY_ID },
@@ -134,7 +146,8 @@ export function buildActivityJsonLd(
  */
 export function buildVendimiaJsonLd(
   locale: string,
-  copy: Copy,
+  // Una sola imagen: es la `primaryImageOfPage`.
+  copy: { name: string; description: string; image: string },
   crumbLabels: { home: string; activities: string; vendimia: string },
 ) {
   const url = `${SITE_URL}/${locale}${VENDIMIA_HUB ?? "/actividades/vendimia"}`;

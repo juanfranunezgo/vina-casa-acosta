@@ -6,6 +6,7 @@ import { Check, CheckCircle2, Clock, CalendarDays, MessageCircle, ArrowUpRight, 
 import InstagramIcon from "@/components/icons/InstagramIcon";
 import Reveal from "@/components/Reveal";
 import Button from "@/components/ui/Button";
+import IconBadge from "@/components/ui/IconBadge";
 import ActivitiesTabs from "@/components/ActivitiesTabs";
 import CategoryChooserCard from "@/components/CategoryChooserCard";
 import {
@@ -321,9 +322,9 @@ export default async function ActividadesPage({
             <div className="grid grid-cols-1 md:grid-cols-3 divide-y divide-outline-variant/40 md:divide-y-0 md:divide-x">
               {/* Horarios */}
               <div className="flex items-start gap-4 p-6 md:p-7">
-                <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-wine-accent/10 text-wine-accent">
-                  <Clock className="h-5 w-5" aria-hidden="true" />
-                </span>
+                <IconBadge>
+                  <Clock />
+                </IconBadge>
                 <div>
                   <h3 className="font-body font-semibold text-label-sm uppercase tracking-wider text-primary mb-1.5">
                     {t("tours.scheduleTitle")}
@@ -335,9 +336,9 @@ export default async function ActividadesPage({
 
               {/* Domingos y feriados */}
               <div className="flex items-start gap-4 p-6 md:p-7">
-                <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-wine-accent/10 text-wine-accent">
-                  <CalendarDays className="h-5 w-5" aria-hidden="true" />
-                </span>
+                <IconBadge>
+                  <CalendarDays />
+                </IconBadge>
                 <div>
                   <h3 className="font-body font-semibold text-label-sm uppercase tracking-wider text-primary mb-1.5">
                     {t("tours.weekendTitle")}
@@ -353,9 +354,11 @@ export default async function ActividadesPage({
                 rel="noopener noreferrer"
                 className="group flex items-start gap-4 p-6 md:p-7 transition-colors hover:bg-primary/5 focus-visible:bg-primary/5 focus-visible:outline-none"
               >
-                <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-wine-accent/10 text-wine-accent transition-colors group-hover:bg-wine-accent group-hover:text-on-primary">
-                  <MessageCircle className="h-5 w-5" aria-hidden="true" />
-                </span>
+                {/* Ya es vino sólido: al pasar el mouse sube un poco en vez de
+                    llenarse, que era lo que antes lo distinguía. */}
+                <IconBadge className="transition-transform duration-200 group-hover:-translate-y-0.5">
+                  <MessageCircle />
+                </IconBadge>
                 <div>
                   <h3 className="font-body font-semibold text-label-sm uppercase tracking-wider text-primary mb-1.5">
                     {t("tours.reservationsTitle")}
@@ -376,7 +379,7 @@ export default async function ActividadesPage({
       </section>
 
       {/* EXPERIENCIAS */}
-      <section id="experiencias" className="bg-surface-container-low py-section-gap px-margin-mobile md:px-margin-desktop scroll-mt-48">
+      <section id="experiencias" className="bg-surface py-section-gap px-margin-mobile md:px-margin-desktop scroll-mt-48">
         <div className="max-w-(--container-max) mx-auto">
           <Reveal className="text-center mb-12">
             <span
@@ -465,9 +468,9 @@ export default async function ActividadesPage({
               rel="noopener noreferrer"
               className="group inline-flex items-center gap-3 rounded-full border border-outline-variant/40 bg-surface-container-lowest px-5 py-3 text-center transition-colors hover:border-wine-accent/40 hover:bg-wine-accent/5"
             >
-              <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-wine-accent/10 text-wine-accent transition-colors group-hover:bg-wine-accent group-hover:text-on-primary">
-                <InstagramIcon className="h-4 w-4" aria-hidden="true" />
-              </span>
+              <IconBadge size="sm" className="transition-transform duration-200 group-hover:-translate-y-0.5">
+                <InstagramIcon />
+              </IconBadge>
               <span className="font-body text-body-md text-on-surface">
                 {t("experiences.stayTunedLead")}{" "}
                 <span className="font-semibold text-primary">{t("experiences.stayTunedCta")}</span>

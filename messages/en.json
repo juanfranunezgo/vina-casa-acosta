@@ -468,16 +468,16 @@
       "reserveImageAlt": "Couple on a swing among the vineyard vines",
       "placeLabel": "Location",
       "placeValue": "Viña Casa Acosta",
+      "placeNote": "San Vicente de Tagua Tagua, Cachapoal Valley",
       "durationLabel": "Duration",
       "participantsLabel": "Participants",
       "reservationsLabel": "Reservations",
-      "seasonTitle": "When does it run?",
-      "seasonAllYear": "All year round",
       "seasonAvailableIn": "Available in {months}.",
       "seasonAria": "Months when this activity runs",
       "nav": {
         "detail": "Details",
         "gallery": "Gallery",
+        "faq": "FAQ",
         "reserve": "Booking",
         "aria": "Tour sections"
       },
@@ -494,6 +494,13 @@
       "perPerson": "per person",
       "conditionsTitle": "Conditions",
       "conditionMinors": "Tasting not available to under-18s · Law No. 19.925",
+      "vatIncluded": "VAT included",
+      "netPrice": "Companies and agencies: {price} + VAT",
+      "faqTitle": "Frequently asked questions",
+      "faqMore": "Have another question?",
+      "faqWhatsapp": "Message us on WhatsApp",
+      "faqExpandAll": "Expand all",
+      "faqCollapseAll": "Collapse all",
       "galleryTitle": "Gallery",
       "galleryComing": "We're putting together the photo gallery for this experience.",
       "otherInCategory": "Other activities you might like",
@@ -529,6 +536,11 @@
         "whatsappQuote": "Ask on WhatsApp",
         "waIntro": "Hi 👋 I'd like to book the {activity}.",
         "waIntroQuote": "Hi 👋 I'd like a quote for the {activity}.",
+        "datePreferred": "Preferred date",
+        "secondDate": "Second possible date",
+        "secondDateHint": "Optional, in case the first one isn't available.",
+        "dietary": "Dietary restrictions or allergies",
+        "dietaryPlaceholder": "E.g.: one guest is coeliac",
         "titleSeason": "Save your spot for the next date",
         "subtitleSeason": "Leave us your details and we'll let you know as soon as the season's dates are confirmed. No commitment.",
         "submitIdleSeason": "Let me know when it is",
@@ -947,21 +959,131 @@
         "closing": "You leave with the taste of honey straight from the hive, and the bees seen up close."
       },
       "yoga": {
-        "name": "Yoga: breathe, stretch and share",
-        "metaTitle": "Yoga among the vines, with brunch",
-        "description": "Outdoor yoga among the vines, a healthy brunch and local producers, in one unhurried morning.",
-        "tagline": "A session among the vines, and a brunch to close",
-        "intro": "A wellbeing experience among the vines that invites you to connect body, mind and nature. It combines an outdoor yoga session with a healthy brunch and the chance to discover local products in a calm, harmonious setting.",
-        "duration": "3 hours + closing",
+        "name": "Yoga among the Vines",
+        "metaTitle": "Vineyard Yoga near Santiago, Chile",
+        "metaDescription": "Vineyard yoga in San Vicente de Tagua Tagua, under 2 hours from Santiago, Chile: a guided practice among the vines, full brunch and a tasting of three wines.",
+        "metaKeywords": "vineyard yoga, yoga among the vines, outdoor yoga Chile, yoga near Santiago Chile, yoga near Rancagua, yoga San Fernando Chile, Cachapoal Valley, O'Higgins Region, wine tasting Chile, vineyard brunch, group activities Chile, wellness experience Chile, Viña Casa Acosta",
+        "description": "Outdoor yoga among the vineyards, a full brunch and a tasting of three wines at Casa Acosta.",
+        "tagline": "A morning to breathe, move and share in the heart of the Cachapoal Valley",
+        "intro": "Yoga among the Vines invites you to start the day differently: breathing among the vines, connecting with your surroundings and sharing the flavours of Casa Acosta. The experience combines a guided yoga and relaxation session, a brunch to enjoy at an unhurried pace and a tasting of three selected labels from different lines of the winery.",
+        "introMore": "The day unfolds in an intimate, natural setting, surrounded by the landscape of the Cachapoal Valley. It is designed for **private groups of 8 or more** and is arranged by advance booking.",
+        "duration": "3 hours 15 minutes",
         "groupFrom": "Groups from 8 people",
         "reservationNote": "At least 5 days in advance — we arrange the date with you",
-        "program": [
-          "Yoga session",
-          "Healthy brunch",
-          "Local producers",
-          "Closing and wine sales"
+        "cta": "Check availability",
+        "priceNote": "A complete experience of wellbeing, brunch and wine at Casa Acosta. Gather your group, check availability and let's find a date to spend a different kind of morning among the vines of the Cachapoal Valley.",
+        "schedule": [
+          {
+            "title": "Welcome",
+            "text": "We greet the group with **water infused with lemon, mint and cucumber**. A first moment to arrive, take in the surroundings and get ready for the practice."
+          },
+          {
+            "title": "Yoga among the vines",
+            "text": "The session includes **45 minutes of guided practice and 15 minutes of relaxation**. It can draw on traditional, integral, Ashtanga and Vinyasa yoga, adapting to the group's pace. It takes place **outdoors among the vines** and, if the weather calls for it, inside the winery, among the barrels."
+          },
+          {
+            "title": "Brunch",
+            "text": "After the practice, the group shares a **full brunch** with sweet and savoury dishes, freshly ground coffee, tea, herbal infusions and infused water.",
+            "menu": {
+              "title": "The menu",
+              "lead": "Each guest **chooses one of the two sandwich options** and receives all the accompaniments included.",
+              "groups": [
+                {
+                  "label": "Your choice",
+                  "or": "or",
+                  "items": [
+                    "Sourdough ciabatta with chicken and avocado",
+                    "Sourdough ciabatta with serrano ham, cream cheese and rocket"
+                  ]
+                },
+                {
+                  "label": "Accompaniments",
+                  "items": [
+                    "Natural yoghurt with granola and strawberries",
+                    "Seasonal fruit salad",
+                    "Chickpea hummus with carrot and celery sticks"
+                  ]
+                },
+                {
+                  "label": "To drink",
+                  "items": [
+                    "Freshly ground coffee, tea and herbal infusions",
+                    "Water infused with lemon, mint and cucumber"
+                  ]
+                }
+              ],
+              "note": "Sandwich options are chosen when the booking is confirmed. Dietary restrictions and allergies must be communicated in advance."
+            }
+          },
+          {
+            "title": "Wine tasting",
+            "text": "A guided tasting of **three selected labels** from different Casa Acosta lines. A journey through their aromas and styles, alongside the family's story and the winery's origins in the Cachapoal Valley."
+          }
         ],
-        "closing": "You leave loose, and with the morning well started."
+        "conditions": [
+          "Available all year round.",
+          "The yoga session takes place outdoors or, if the weather calls for it, in the winery among the barrels.",
+          "Dietary restrictions and allergies must be communicated when confirming the booking."
+        ],
+        "faq": [
+          {
+            "q": "Do I need previous yoga experience?",
+            "a": "**No.** The session is designed for groups and can be adapted to different levels of experience."
+          },
+          {
+            "q": "Where does the class take place?",
+            "a": "Mainly **outdoors, among the Casa Acosta vines**. If the weather doesn't allow it, the session moves to the winery, among the barrels."
+          },
+          {
+            "q": "Where is Viña Casa Acosta?",
+            "a": "In **San Vicente de Tagua Tagua**, in the Cachapoal Valley (O'Higgins Region): Fundo El Llano, lote 6. We are close to **San Fernando**, **40 minutes from Rancagua** and less than 2 hours from Santiago."
+          },
+          {
+            "q": "What does the brunch include?",
+            "a": "**A sourdough ciabatta of your choice**, natural yoghurt with granola and strawberries, seasonal fruit salad, hummus with carrot and celery sticks, freshly ground coffee, tea, herbal infusions and infused water."
+          },
+          {
+            "q": "What does the tasting include?",
+            "a": "**Three selected labels** from different Casa Acosta lines, presented in a guided tasting that explores aromas, styles and the family story behind the winery."
+          },
+          {
+            "q": "How many people can take part?",
+            "a": "The experience is for groups of **8 participants or more**. For larger groups, please check availability."
+          },
+          {
+            "q": "Can we book any day?",
+            "a": "The experience requires advance booking, **at least 5 days ahead**. The date and time are confirmed subject to availability."
+          },
+          {
+            "q": "What happens if the weather changes?",
+            "a": "The activity has an alternative **inside the winery, among the barrels**, so the experience continues in a sheltered and inviting space."
+          },
+          {
+            "q": "Can the brunch be adapted for allergies or dietary restrictions?",
+            "a": "Dietary needs must be communicated **when confirming the booking** so the available alternatives can be reviewed."
+          },
+          {
+            "q": "Can minors take part?",
+            "a": "The wine tasting is for **adults aged 18 and over** only. Any alternative for minors must be discussed before booking."
+          }
+        ],
+        "form": {
+          "title": "Ready for Yoga among the Vines?",
+          "subtitle": "Let's set a date for your group. Tell us how many people you are and what date you have in mind. We'll reply to confirm availability.",
+          "waIntro": "Hi, I'd like to check availability for the Yoga among the Vines experience.",
+          "choiceLabel": "Sandwich choice",
+          "choicePlaceholder": "E.g.: 5 chicken, 3 ham",
+          "choiceHint": "If you don't know yet, you can choose when the booking is confirmed."
+        },
+        "photos": {
+          "hero": "A yoga pose on the wooden walkway between the vines at Viña Casa Acosta, in San Vicente de Tagua Tagua, with the mountains behind",
+          "grupo": "A group seated on their mats stretches their arms overhead, seen from behind, among the vines",
+          "mesa": "Brunch served at the long table under the canopy, with ciabattas, glasses of infused water and flowers",
+          "brunch": "The group smiles around the brunch table after the practice",
+          "parras": "A yoga pose beneath the vine leaves, with the grape clusters in view",
+          "relajacion": "Participants during the relaxation of Yoga among the Vines, lying on their mats under the canopy",
+          "instructora": "The instructor guides the group beside a barrel with hydrangeas"
+        }
       },
       "cena-sensorial": {
         "name": "Sensory Dinner",

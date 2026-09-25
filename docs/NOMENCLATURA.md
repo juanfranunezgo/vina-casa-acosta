@@ -71,14 +71,29 @@ La ruta lleva la categoría: `/actividades/tours/ombu`, `/actividades/talleres/p
 
 | ID | Sección |
 |---|---|
-| Dd1 | Hero + breadcrumbs + ficha rápida (Lugar · Duración · Participantes · Reservas + intro) |
-| Dd2 | Sub-nav ancla (Detalle · Galería · Reserva) |
-| Dd3 | Estacionalidad (franja de 12 meses) |
-| Dd4 | Detalle — tickets (tours) o programa de la jornada (talleres · experiencias) |
-| Dd5 | Tarjeta de reserva: precio **o** "a consultar", más condiciones |
+| Dd1 | Hero con el texto centrado y sin antetítulo → migas centradas → (Dd2) → ficha rápida → intro. La ficha rápida (Lugar · Duración · Participantes · Reservas) es una tarjeta blanca sin bordes que flota sólo por su sombra, con íconos `IconBadge` (2026-09-24). Con `heroBooking` (hoy sólo el yoga) el hero suma el precio y los dos botones de reserva, para que en celular se vean sin bajar |
+| Dd2 | Píldora de secciones (Detalle · Galería · Preguntas, si hay · **Reserva** en vino) entre las migas y la ficha rápida. Al bajar queda pegada bajo el navbar, en celular y escritorio, y una pastilla oscura se desliza a la sección en pantalla (`components/ActivitySectionNav.tsx`). Acompaña hasta el final de la reserva |
+| ~~Dd3~~ | Retirada el 2026-09-24: la caja "¿Cuándo se hace?" con la franja de 12 meses decía "Todo el año" en once de catorce fichas. En las de temporada, los meses pasan a las condiciones de Dd5 (`lib/temporada.ts`). El ID no se reasigna |
+| Dd4 | Detalle — tickets (tours) o programa de la jornada (talleres · experiencias). Si la actividad declara `schedule`, el programa va con horario: una regla proporcional de la mañana y cada etapa con sus minutos (`components/ActivitySchedule.tsx`); una etapa puede traer su carta (`components/ActivityMenu.tsx`) |
+| Dd5 | Tarjeta de reserva: precio **o** "a consultar", más condiciones. Con `priceNetCLP` el precio dice "IVA incluido" y muestra el neto en chico |
 | Dd6 | Galería (placeholder hasta tener fotos) |
+| Dd6b | Preguntas frecuentes (`components/ActivityFaq.tsx`): una tarjeta con sombra por pregunta y "Expandir todo". Sólo si la actividad trae `faq` en messages; hoy, el yoga. Sin marcado `FAQPage`: Google lo limita a sitios de gobierno y salud desde 2023 |
 | Dd7 | Reserva o cotización (formulario Netlify Forms + botón WhatsApp con prefill) |
 | Dd8 | Otras actividades de la misma categoría |
+
+**Tipografía de la ficha:** Libre Caslon sólo en los títulos y en la cita de la
+introducción; el resto —datos de la ficha rápida, etapas, carta, preguntas y precios— va
+en **Plus Jakarta Sans** (sólo en las fichas; el resto del sitio sigue en Work Sans), con
+negrita para destacar. Los destacados se marcan con `**así**` en
+messages y los dibuja `components/Emphasis.tsx` (`lib/enfasis.ts`).
+
+**La ficha va en blanco puro** desde el 2026-09-24 (pedido de Juan Francisco): todas
+sus secciones y tarjetas usan `surface-container-lowest` (#FFFFFF) en vez del papel
+(#FBF9F8) y las bandas grises, y se separan por aire, sin filetes. Lo único gris que
+queda es la franja de condiciones dentro de la tarjeta de precio. Desde el mismo día
+**todo el sitio** va en blanco: el token `--color-background` / `--color-surface` pasó de
+#FBF9F8 a #FFFFFF y las bandas grises de página (portada, vinos, Vendimia, Historia,
+pie) pasaron a `bg-surface`. Las tarjetas grises dentro de las páginas se quedan.
 
 ## Dv — Hub de Vendimia (`app/[locale]/actividades/vendimia/page.tsx`)
 
@@ -105,10 +120,8 @@ La página **no publica fechas exactas, precio ni mínimo de personas** — ver
 Dv3. Separadas decían lo mismo dos veces: cinco etapas por un lado y doce
 casillas por el otro. `VineyardYear` las dibuja como una sola línea del año que
 arranca en junio —el copy dice que la historia empieza en invierno, y en el
-hemisferio sur eso es junio— con el tramo del visitante teñido al final. Dv3 es
-la única sección del hub que no usa `SeasonStrip`: ese componente sigue siendo de
-las fichas (`Dd3`), donde la franja responde "¿lo puedo hacer en julio?" y nada
-más.
+hemisferio sur eso es junio— con el tramo del visitante teñido al final. La franja
+de meses de las fichas (`SeasonStrip`, Dd3) ya no existe: se retiró el 2026-09-24.
 
 **Registro visual del hub: almanaque, no landing.** Toda la página va en papel
 —no hay bandas en penumbra— y el contenido no va en cajas: lo que separa un
