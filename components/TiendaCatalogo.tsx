@@ -1,15 +1,74 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { useTranslations, useLocale } from "next-intl";
-import { Filter, X } from "lucide-react";
+import { Check, ChevronDown, Filter, X } from "lucide-react";
 import Reveal from "@/components/Reveal";
 import AddToCartButton from "@/components/AddToCartButton";
 import WineBottleImage from "@/components/WineBottleImage";
 import { matchesWineType } from "@/data/wines";
 import type { CatalogWine } from "@/lib/afeleia/catalog";
 import { joinLabels, labelOr, translatedOr } from "@/lib/afeleia/copy";
+import { FUENTE_FICHA } from "@/lib/fuenteFicha";
+
+/**
+ * La sombra de las tarjetas que flotan: la misma de las fichas (ficha rápida
+ * de actividades, tarjeta de compra del vino). Sin borde: lo que las separa
+ * del blanco es sólo la sombra.
+ */
+const SOMBRA_FLOTANTE =
+  "shadow-[0_36px_70px_-30px_rgba(74,14,14,0.30),0_10px_30px_-14px_rgba(74,14,14,0.12)]";
+/** La de las tarjetas de vino, más corta: son muchas y van en grilla. */
+const SOMBRA_TARJETA =
+  "shadow-[0_14px_34px_-22px_rgba(74,14,14,0.30),0_2px_6px_-2px_rgba(74,14,14,0.05)]";
+
+/**
+ * Un grupo de filtros como pastillas. Reemplazan a las casillas nativas
+ * (2026-09-25): la lista de casillas medía unos 1.100px de alto para quince
+ * opciones y se veía de formulario. Cada pastilla es un toggle, y
+ * `aria-pressed` es lo que un lector de pantalla anuncia de ella.
+ */
+function GrupoFiltro({
+  titulo,
+  opciones,
+  elegidas,
+  etiqueta,
+  onToggle,
+}: {
+  titulo: string;
+  opciones: readonly string[];
+  elegidas: ReadonlySet<string>;
+  etiqueta: (opcion: string) => string;
+  onToggle: (opcion: string) => void;
+}) {
+  return (
+    <div role="group" aria-label={titulo}>
+      <h3 className="mb-3 font-body text-[13px] text-on-surface-variant">{titulo}</h3>
+      <div className="flex flex-wrap gap-2">
+        {opciones.map((opcion) => {
+          const prendida = elegidas.has(opcion);
+          return (
+            <button
+              key={opcion}
+              type="button"
+              aria-pressed={prendida}
+              onClick={() => onToggle(opcion)}
+              className={`inline-flex items-center gap-1.5 rounded-full border px-3.5 py-1.5 font-body text-[14px] font-medium transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 ${
+                prendida
+                  ? "border-primary bg-primary text-on-primary shadow-[0_6px_14px_-6px_rgba(74,14,14,0.55)]"
+                  : "border-outline-variant/70 bg-surface-container-lowest text-on-surface hover:border-primary/50 hover:text-primary"
+              }`}
+            >
+              {prendida && <Check className="h-3.5 w-3.5" aria-hidden="true" />}
+              {etiqueta(opcion)}
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
 
 /**
  * Vitrina de la tienda: filtros, orden y grilla.
@@ -28,11 +87,17 @@ export default function TiendaCatalogo({
   tipos,
   lineas,
   cepas,
+  pagoEnLinea,
+  confianza,
 }: {
   wines: CatalogWine[];
   tipos: readonly string[];
   lineas: readonly string[];
   cepas: readonly string[];
+  /** Si el checkout está configurado: decide el aviso del pie. */
+  pagoEnLinea: boolean;
+  /** La franja "Compra segura" bajo el encabezado, armada en el servidor. */
+  confianza: ReactNode;
 }) {
   const t = useTranslations("tienda");
   const tVinos = useTranslations("vinos");
@@ -128,128 +193,56 @@ export default function TiendaCatalogo({
 
   const filtersPanel = (
     <>
-      <div className="flex items-center justify-between mb-6">
+      <div className="mb-6 flex items-center justify-between gap-4">
         <h2 className="font-display text-2xl text-primary">{t("filters.title")}</h2>
         {filterCount > 0 && (
           <button
+            type="button"
             onClick={clearFilters}
-            className="text-label-sm font-body uppercase tracking-wider text-on-surface-variant hover:text-primary transition-colors"
+            className="rounded-full px-3 py-1.5 font-body text-[13px] font-medium text-on-surface-variant transition-colors hover:bg-primary/5 hover:text-primary"
           >
             {t("filters.clear", { count: filterCount })}
           </button>
         )}
       </div>
 
-      <div className="mb-8">
-        <h3 className="font-body text-label-sm uppercase tracking-wider text-on-surface-variant mb-4">
-          {t("filters.type")}
-        </h3>
-        <div className="space-y-2.5">
-          {tipos.map((type) => {
-            const checked = selectedTypes.has(type);
-            return (
-              <label
-                key={type}
-                className={`flex items-center gap-3 cursor-pointer group rounded-md px-2 -mx-2 py-1.5 transition-colors ${
-                  checked ? "bg-primary/5" : "hover:bg-surface-container-low"
-                }`}
-              >
-                <input
-                  type="checkbox"
-                  checked={checked}
-                  onChange={() => toggleType(type)}
-                  className="h-4 w-4 accent-primary rounded-sm"
-                />
-                <span
-                  className={`font-body text-body-md transition-colors ${
-                    checked
-                      ? "text-primary font-semibold"
-                      : "text-on-surface group-hover:text-primary"
-                  }`}
-                >
-                  {labelOr(tVinos, "types", type)}
-                </span>
-              </label>
-            );
-          })}
-        </div>
-      </div>
-
-      <div className="mb-8">
-        <h3 className="font-body text-label-sm uppercase tracking-wider text-on-surface-variant mb-4">
-          {t("filters.line")}
-        </h3>
-        <div className="space-y-2.5">
-          {lineas.map((line) => {
-            const checked = selectedLines.has(line);
-            return (
-              <label
-                key={line}
-                className={`flex items-center gap-3 cursor-pointer group rounded-md px-2 -mx-2 py-1.5 transition-colors ${
-                  checked ? "bg-primary/5" : "hover:bg-surface-container-low"
-                }`}
-              >
-                <input
-                  type="checkbox"
-                  checked={checked}
-                  onChange={() => toggleLine(line)}
-                  className="h-4 w-4 accent-primary rounded-sm"
-                />
-                <span
-                  className={`font-body text-body-md transition-colors ${
-                    checked
-                      ? "text-primary font-semibold"
-                      : "text-on-surface group-hover:text-primary"
-                  }`}
-                >
-                  {line}
-                </span>
-              </label>
-            );
-          })}
-        </div>
-      </div>
-
-      <div>
-        <h3 className="font-body text-label-sm uppercase tracking-wider text-on-surface-variant mb-4">
-          {t("filters.cepa")}
-        </h3>
-        <div className="space-y-2.5">
-          {cepas.map((cepa) => {
-            const checked = selectedCepas.has(cepa);
-            return (
-              <label
-                key={cepa}
-                className={`flex items-center gap-3 cursor-pointer group rounded-md px-2 -mx-2 py-1.5 transition-colors ${
-                  checked ? "bg-primary/5" : "hover:bg-surface-container-low"
-                }`}
-              >
-                <input
-                  type="checkbox"
-                  checked={checked}
-                  onChange={() => toggleCepa(cepa)}
-                  className="h-4 w-4 accent-primary rounded-sm"
-                />
-                <span
-                  className={`font-body text-body-md transition-colors ${
-                    checked
-                      ? "text-primary font-semibold"
-                      : "text-on-surface group-hover:text-primary"
-                  }`}
-                >
-                  {labelOr(tVinos, "cepaGroups", cepa)}
-                </span>
-              </label>
-            );
-          })}
-        </div>
+      <div className="space-y-7">
+        <GrupoFiltro
+          titulo={t("filters.type")}
+          opciones={tipos}
+          elegidas={selectedTypes}
+          etiqueta={(type) => labelOr(tVinos, "types", type)}
+          onToggle={toggleType}
+        />
+        <GrupoFiltro
+          titulo={t("filters.line")}
+          opciones={lineas}
+          elegidas={selectedLines}
+          etiqueta={(line) => line}
+          onToggle={toggleLine}
+        />
+        <GrupoFiltro
+          titulo={t("filters.cepa")}
+          opciones={cepas}
+          elegidas={selectedCepas}
+          etiqueta={(cepa) => labelOr(tVinos, "cepaGroups", cepa)}
+          onToggle={toggleCepa}
+        />
       </div>
     </>
   );
 
+  const contador =
+    filtered.length === 1
+      ? t("countSingular", { count: filtered.length })
+      : t("countPlural", { count: filtered.length });
+
   return (
     <>
-      <section className="pt-32 pb-10 px-margin-mobile md:px-margin-desktop max-w-(--container-max) mx-auto">
+      {/* F1 — Encabezado y franja de confianza. Cada sección lleva la letra de
+          las fichas (`FUENTE_FICHA`): la tienda y la ficha de vino van y
+          vienen, y tienen que sentirse una. */}
+      <section className={`pt-32 pb-10 px-margin-mobile md:px-margin-desktop max-w-(--container-max) mx-auto ${FUENTE_FICHA}`}>
         <Reveal>
           <p className="mb-2 font-accent text-xl font-light italic text-primary md:text-2xl">
             {t("hero.eyebrow")}
@@ -263,17 +256,20 @@ export default function TiendaCatalogo({
           >
             {t("hero.title")}
           </h1>
-          <p className="font-body text-body-md text-on-surface-variant max-w-2xl">
+          <p className="font-body text-body-lg text-on-surface-variant max-w-2xl">
             {t("hero.subtitle")}
           </p>
+          <div className="mt-7">{confianza}</div>
         </Reveal>
       </section>
 
-      <section className="pb-section-gap px-margin-mobile md:px-margin-desktop max-w-(--container-max) mx-auto">
+      {/* F2 — Catálogo. */}
+      <section className={`pb-section-gap px-margin-mobile md:px-margin-desktop max-w-(--container-max) mx-auto ${FUENTE_FICHA}`}>
         <div className="flex flex-col md:flex-row gap-10">
-          {/* Desktop sidebar */}
+          {/* Filtros de escritorio: tarjeta blanca que flota por la sombra,
+              sin borde, como las de las fichas. */}
           <aside className="hidden md:block w-1/4 shrink-0">
-            <div className="sticky top-28 bg-surface-container-lowest p-6 rounded-xl border border-outline-variant/30 ambient-shadow">
+            <div className={`sticky top-28 rounded-[28px] bg-surface-container-lowest p-6 ${SOMBRA_FLOTANTE}`}>
               {filtersPanel}
             </div>
           </aside>
@@ -281,8 +277,9 @@ export default function TiendaCatalogo({
           {/* Mobile filter trigger */}
           <div className="md:hidden flex items-center justify-between -mt-2">
             <button
+              type="button"
               onClick={() => setMobileFiltersOpen(true)}
-              className="inline-flex items-center gap-2 h-10 px-4 rounded-full border border-outline-variant bg-surface-container-low font-body text-body-md font-semibold"
+              className={`inline-flex h-11 items-center gap-2 rounded-full bg-surface-container-lowest px-5 font-body text-body-md font-semibold text-primary ${SOMBRA_TARJETA}`}
             >
               <Filter className="h-4 w-4" aria-hidden="true" />
               {t("filters.title")}
@@ -306,28 +303,26 @@ export default function TiendaCatalogo({
               aria-hidden="true"
             />
             <aside
-              className={`absolute left-0 right-0 bottom-0 bg-surface rounded-t-2xl p-6 max-h-[85vh] overflow-y-auto transition-transform duration-300 ${
+              className={`absolute left-0 right-0 bottom-0 bg-surface rounded-t-[28px] p-6 max-h-[85vh] overflow-y-auto transition-transform duration-300 ${
                 mobileFiltersOpen ? "translate-y-0" : "translate-y-full"
               }`}
             >
               <div className="flex justify-between items-center mb-6 pb-4 border-b border-outline-variant/30">
                 <button
+                  type="button"
                   onClick={() => setMobileFiltersOpen(false)}
                   className="text-on-surface-variant"
                   aria-label={t("filters.close")}
                 >
                   <X className="h-5 w-5" aria-hidden="true" />
                 </button>
-                <span className="font-body text-body-md text-on-surface-variant">
-                  {filtered.length === 1
-                    ? t("countSingular", { count: filtered.length })
-                    : t("countPlural", { count: filtered.length })}
-                </span>
+                <span className="font-body text-body-md text-on-surface-variant">{contador}</span>
               </div>
               {filtersPanel}
               <button
+                type="button"
                 onClick={() => setMobileFiltersOpen(false)}
-                className="mt-8 w-full inline-flex items-center justify-center h-12 rounded-md bg-primary text-on-primary font-body font-semibold shadow-[0_8px_24px_-8px_rgba(42,0,2,0.45)]"
+                className="mt-8 w-full inline-flex items-center justify-center h-12 rounded-full bg-primary text-on-primary font-body font-semibold shadow-[0_8px_24px_-8px_rgba(42,0,2,0.45)]"
               >
                 {t("filters.apply")}
               </button>
@@ -335,25 +330,30 @@ export default function TiendaCatalogo({
           </div>
 
           <div className="w-full md:w-3/4">
-            <div className="flex justify-between items-center mb-6">
-              <p className="font-body text-body-md text-on-surface-variant tabular-nums">
-                {filtered.length === 1
-                  ? t("countSingular", { count: filtered.length })
-                  : t("countPlural", { count: filtered.length })}
-              </p>
-              <select
-                value={sort}
-                onChange={(e) => {
-                  startFiltering();
-                  setSort(e.target.value as typeof sort);
-                }}
-                className="bg-surface-container-low border border-outline-variant/40 rounded px-3 py-2 font-body text-body-md text-on-surface focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
-                aria-label={t("sort.label")}
-              >
-                <option value="featured">{t("sort.featured")}</option>
-                <option value="price-asc">{t("sort.priceAsc")}</option>
-                <option value="price-desc">{t("sort.priceDesc")}</option>
-              </select>
+            <div className="flex justify-between items-center gap-4 mb-6">
+              <p className="font-body text-body-md text-on-surface-variant tabular-nums">{contador}</p>
+              {/* El orden sigue siendo un `<select>` nativo —teclado, lector de
+                  pantalla y la rueda del celular funcionan como siempre—; la
+                  pastilla y la flecha son sólo el estilo. */}
+              <div className="relative">
+                <select
+                  value={sort}
+                  onChange={(e) => {
+                    startFiltering();
+                    setSort(e.target.value as typeof sort);
+                  }}
+                  className={`h-11 cursor-pointer appearance-none rounded-full bg-surface-container-lowest pl-5 pr-11 font-body text-[14px] font-medium text-on-surface focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 ${SOMBRA_TARJETA}`}
+                  aria-label={t("sort.label")}
+                >
+                  <option value="featured">{t("sort.featured")}</option>
+                  <option value="price-asc">{t("sort.priceAsc")}</option>
+                  <option value="price-desc">{t("sort.priceDesc")}</option>
+                </select>
+                <ChevronDown
+                  className="pointer-events-none absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-primary"
+                  aria-hidden="true"
+                />
+              </div>
             </div>
 
             {isFiltering ? (
@@ -361,7 +361,7 @@ export default function TiendaCatalogo({
                 {Array.from({ length: 6 }).map((_, i) => (
                   <div
                     key={i}
-                    className="bg-surface-container-low rounded-lg overflow-hidden flex flex-col"
+                    className={`flex flex-col overflow-hidden rounded-[28px] bg-surface-container-lowest ${SOMBRA_TARJETA}`}
                   >
                     <div className="h-[320px] skeleton" />
                     <div className="p-6 space-y-3">
@@ -377,11 +377,12 @@ export default function TiendaCatalogo({
                 ))}
               </div>
             ) : filtered.length === 0 ? (
-              <div className="text-center py-20 bg-surface-container-low rounded-xl border border-outline-variant/20">
+              <div className={`rounded-[28px] bg-surface-container-lowest py-20 text-center ${SOMBRA_TARJETA}`}>
                 <p className="font-body text-body-lg text-on-surface-variant">
                   {t("empty.title")}
                 </p>
                 <button
+                  type="button"
                   onClick={clearFilters}
                   className="mt-4 text-primary font-body font-semibold underline underline-offset-4"
                 >
@@ -393,11 +394,14 @@ export default function TiendaCatalogo({
                 {filtered.map((wine) => (
                   <article
                     key={wine.slug}
-                    className="group bg-surface-container-low rounded-xl overflow-hidden flex flex-col hover:-translate-y-1 hover:shadow-[0_24px_48px_-12px_rgba(74,14,14,0.12)] transition-all duration-300"
+                    className={`group flex flex-col overflow-hidden rounded-[28px] bg-surface-container-lowest transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_28px_56px_-24px_rgba(74,14,14,0.34),0_4px_12px_-4px_rgba(74,14,14,0.08)] ${SOMBRA_TARJETA}`}
                   >
+                    {/* El degradado claro del panel de la botella en la ficha,
+                        no el gris `surface-container-highest` de antes, que
+                        sobre el sitio blanco se leía sucio. */}
                     <Link
                       href={`/${locale}/vinos/${wine.slug}`}
-                      className="relative h-[320px] w-full bg-gradient-to-br from-surface-container-highest to-surface-container p-8 flex items-center justify-center"
+                      className="relative h-[320px] w-full bg-gradient-to-br from-surface-container-low to-surface-container p-8 flex items-center justify-center"
                     >
                       <WineBottleImage
                         src={wine.image}
@@ -411,7 +415,7 @@ export default function TiendaCatalogo({
                         </span>
                       )}
                     </Link>
-                    <div className="p-6 flex flex-col flex-grow bg-surface-container-lowest">
+                    <div className="p-6 flex flex-col flex-grow">
                       {/* La línea en vino (`wine-accent`, 9,9:1 sobre el blanco
                           de la tarjeta), no en el gris de las etiquetas: es la
                           colección, lo primero que distingue un vino de otro. */}
@@ -432,8 +436,9 @@ export default function TiendaCatalogo({
                           labelOr(tVinos, "varieties", wine.variety),
                         )}
                       </p>
+                      {/* El precio como en la ficha de vino: Jakarta en negrita. */}
                       <div className="flex items-center justify-between pt-4 border-t border-outline-variant/30">
-                        <span className="font-display text-xl text-primary tabular-nums">
+                        <span className="font-body text-xl font-bold tracking-tight text-primary tabular-nums">
                           {formatPrice(wine.priceCLP)}
                         </span>
                         <AddToCartButton
@@ -457,8 +462,10 @@ export default function TiendaCatalogo({
               </div>
             )}
 
+            {/* Dice cómo se paga de verdad: con el checkout configurado, Mercado
+                Pago; sin él, WhatsApp. */}
             <p className="mt-10 text-center text-xs text-on-surface-variant/70 font-body">
-              {t("disclaimer")}
+              {pagoEnLinea ? t("disclaimerOnline") : t("disclaimer")}
             </p>
           </div>
         </div>

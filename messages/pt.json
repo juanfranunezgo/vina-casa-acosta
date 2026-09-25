@@ -1143,7 +1143,8 @@
       "title": "Nenhum vinho corresponde aos filtros.",
       "cta": "Limpar filtros"
     },
-    "disclaimer": "Pagamento online em breve · Por ora confirmamos cada pedido via WhatsApp. Beba com moderação · Lei chilena N° 19.925."
+    "disclaimer": "Confirmamos cada pedido via WhatsApp. Beba com moderação · Lei chilena N° 19.925.",
+    "disclaimerOnline": "Pagamento online com Mercado Pago · Confirmamos cada pedido por e-mail. Beba com moderação · Lei chilena N° 19.925."
   },
   "contacto": {
     "hero": {

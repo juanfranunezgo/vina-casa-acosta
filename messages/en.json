@@ -1143,7 +1143,8 @@
       "title": "No wines match the selected filters.",
       "cta": "Clear filters"
     },
-    "disclaimer": "Online checkout coming soon · For now we confirm each order via WhatsApp. Please drink responsibly · Chilean Law N° 19.925."
+    "disclaimer": "We confirm each order via WhatsApp. Please drink responsibly · Chilean Law N° 19.925.",
+    "disclaimerOnline": "Online payment with Mercado Pago · We confirm every order by email. Please drink responsibly · Chilean Law N° 19.925."
   },
   "contacto": {
     "hero": {

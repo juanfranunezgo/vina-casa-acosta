@@ -3,10 +3,10 @@ import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 
 /**
- * Plus Jakarta Sans es la letra de texto de las fichas, y sólo de ellas:
- * decisión de Juan Francisco del 2026-09-24 para las de actividad, extendida
- * a la ficha de vino el 2026-09-25. El resto del sitio sigue en Work Sans. Los
- * títulos siguen en Libre Caslon.
+ * Plus Jakarta Sans es la letra de texto de las fichas: decisión de Juan
+ * Francisco del 2026-09-24 para las de actividad, extendida el 2026-09-25 a la
+ * ficha de vino y a la vitrina de la tienda (lo cuida `tienda-vitrina`). El
+ * resto del sitio sigue en Work Sans. Los títulos siguen en Libre Caslon.
  */
 
 const raiz = new URL("../", import.meta.url);

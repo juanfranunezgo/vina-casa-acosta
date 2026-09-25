@@ -1143,7 +1143,8 @@
       "title": "Ningún vino coincide con los filtros.",
       "cta": "Limpiar filtros"
     },
-    "disclaimer": "Pago online disponible próximamente · Por ahora coordinamos cada pedido por WhatsApp. Beber con moderación · Ley N° 19.925."
+    "disclaimer": "Coordinamos cada pedido por WhatsApp. Beber con moderación · Ley N° 19.925.",
+    "disclaimerOnline": "Pago en línea con Mercado Pago · Te confirmamos cada pedido por correo. Beber con moderación · Ley N° 19.925."
   },
   "contacto": {
     "hero": {

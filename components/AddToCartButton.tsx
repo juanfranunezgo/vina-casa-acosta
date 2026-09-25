@@ -31,6 +31,9 @@ export default function AddToCartButton({
     setTimeout(() => setPulse(false), 600);
   };
 
+  // El círculo de las tarjetas de la tienda: el mismo de `IconBadge` —degradado
+  // vino y filete de luz— y no un contorno, que junto a las tarjetas blancas se
+  // perdía (2026-09-25).
   if (variant === "icon") {
     return (
       <button
@@ -42,9 +45,9 @@ export default function AddToCartButton({
         className={`group relative flex h-11 items-center justify-center rounded-full border transition-all duration-200 ${
           agotado
             ? "cursor-not-allowed border-outline-variant bg-surface-container-highest px-3 text-on-surface-variant"
-            : "w-11 border-primary text-primary hover:bg-primary hover:text-on-primary active:scale-95"
+            : "w-11 border-transparent bg-gradient-to-b from-wine-accent to-primary-container text-on-primary shadow-[0_6px_14px_-6px_rgba(74,14,14,0.55),inset_0_1px_0_rgba(255,255,255,0.22)] hover:-translate-y-0.5 hover:shadow-[0_10px_20px_-8px_rgba(74,14,14,0.6),inset_0_1px_0_rgba(255,255,255,0.22)] active:translate-y-0 active:scale-95"
         } ${
-          pulse && !agotado ? "bg-primary text-on-primary scale-110" : ""
+          pulse && !agotado ? "scale-110" : ""
         }`}
       >
         {agotado ? (
