@@ -168,23 +168,24 @@ septiembre 2026). Es la primera experiencia con **precio publicado** y la que es
 cuatro piezas de la ficha, todas activadas por dato — una ficha sin esos datos queda
 exactamente como estaba:
 
-- **`priceNetCLP`** — el neto sin IVA. Si está, `priceCLP` es el precio con IVA y la
-  ficha dice "IVA incluido", muestra el neto en chico ("Empresas y agencias: $39.900 +
-  IVA") y el `Offer` del JSON-LD lleva `valueAddedTaxIncluded`. Sin neto, la ficha no
-  afirma nada sobre el IVA, porque el cliente no lo dijo. **Pendiente de preguntar:** los
-  talleres cuestan 39.900, la misma cifra que el neto del yoga; no sabemos si ese precio
-  lleva IVA.
+- **`priceExcludesVAT`** — `priceCLP` es neto: la ficha dice "$39.900 + IVA" en el hero
+  y en la tarjeta, y el `Offer` del JSON-LD lleva `valueAddedTaxIncluded: false`. Sin
+  la marca, la ficha no afirma nada sobre el IVA, porque el cliente no lo dijo. Hasta
+  el 25-09 era `priceNetCLP` ($47.481 IVA incluido + "Empresas y agencias: $39.900 +
+  IVA" en chico); la viña pidió un solo precio, el neto. **Pendiente de preguntar:** los
+  talleres cuestan 39.900, la misma cifra que el yoga; no sabemos si ese precio lleva IVA.
 - **`schedule`** — programa con horario: minutos y tono de cada etapa en `data/`, título,
   texto y carta en messages. La ficha dibuja una regla proporcional de la mañana
   (`components/ActivitySchedule.tsx`); los tonos van del agua al vino con colores de la
   paleta. Las etapas tienen que sumar `durationISO`. Una etapa puede traer su carta
   (`components/ActivityMenu.tsx`).
 - **`faq`** en messages → sección Dd6b (`components/ActivityFaq.tsx`), con `<details>`
-  nativo y sin `FAQPage`.
-- **`bookingFields`** — campos extra del formulario: `segundaFecha`, `eleccion` (el rótulo
-  sale de `items.{slug}.form.choice*`) y `restricciones`. Van a Netlify como `fecha2`,
-  `eleccion` y `restricciones`, declarados en `public/__forms.html`; las demás
-  actividades los mandan vacíos.
+  nativo y sin `FAQPage`. Una línea en blanco (`\n\n`) dentro de una respuesta la parte
+  en dos párrafos.
+- **`bookingFields`** — campos extra del formulario: `eleccion` (el rótulo sale de
+  `items.{slug}.form.choice*`) y `restricciones`. Van a Netlify con esos nombres,
+  declarados en `public/__forms.html`; las demás actividades los mandan vacíos. Hubo
+  una segunda fecha (`segundaFecha` → `fecha2`) que la viña sacó el 25-09.
 - **`heroBooking`** — precio y botones también en el hero. Sólo el yoga, por decisión de
   Juan Francisco: el documento lo pedía para esta ficha.
 

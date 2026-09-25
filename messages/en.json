@@ -494,8 +494,7 @@
       "perPerson": "per person",
       "conditionsTitle": "Conditions",
       "conditionMinors": "Tasting not available to under-18s · Law No. 19.925",
-      "vatIncluded": "VAT included",
-      "netPrice": "Companies and agencies: {price} + VAT",
+      "plusVat": "+ VAT",
       "faqTitle": "Frequently asked questions",
       "faqMore": "Have another question?",
       "faqWhatsapp": "Message us on WhatsApp",
@@ -536,9 +535,6 @@
         "whatsappQuote": "Ask on WhatsApp",
         "waIntro": "Hi 👋 I'd like to book the {activity}.",
         "waIntroQuote": "Hi 👋 I'd like a quote for the {activity}.",
-        "datePreferred": "Preferred date",
-        "secondDate": "Second possible date",
-        "secondDateHint": "Optional, in case the first one isn't available.",
         "dietary": "Dietary restrictions or allergies",
         "dietaryPlaceholder": "E.g.: one guest is coeliac",
         "titleSeason": "Save your spot for the next date",
@@ -1012,7 +1008,7 @@
                   ]
                 }
               ],
-              "note": "Sandwich options are chosen when the booking is confirmed. Dietary restrictions and allergies must be communicated in advance."
+              "note": "Sandwich options are chosen when the booking is confirmed. Allergies and dietary restrictions are noted in the booking form."
             }
           },
           {
@@ -1023,7 +1019,7 @@
         "conditions": [
           "Available all year round.",
           "The yoga session takes place outdoors or, if the weather calls for it, in the winery among the barrels.",
-          "Dietary restrictions and allergies must be communicated when confirming the booking."
+          "Allergies and dietary restrictions are noted in the booking form, along with how many people they apply to."
         ],
         "faq": [
           {
@@ -1036,7 +1032,7 @@
           },
           {
             "q": "Where is Viña Casa Acosta?",
-            "a": "In **San Vicente de Tagua Tagua**, in the Cachapoal Valley (O'Higgins Region): Fundo El Llano, lote 6. We are close to **San Fernando**, **40 minutes from Rancagua** and less than 2 hours from Santiago."
+            "a": "We are in **San Vicente de Tagua Tagua**, in the heart of the Cachapoal Valley, about **1 hour and 40 minutes from Santiago**, 40 minutes from Rancagua and very close to San Fernando.\n\nOur address is Fundo El Llano, lote 6, O'Higgins Region. To find us easily, search for “Viña Casa Acosta” on **Waze or Google Maps**."
           },
           {
             "q": "What does the brunch include?",
@@ -1044,15 +1040,15 @@
           },
           {
             "q": "What does the tasting include?",
-            "a": "**Three selected labels** from different Casa Acosta lines, presented in a guided tasting that explores aromas, styles and the family story behind the winery."
+            "a": "**Three selected labels** from different Casa Acosta lines, such as Ombú, Lajau and Estación Francia. During the guided tasting you'll discover their aromas, styles and our winery's family story.\n\nLabels may vary depending on availability."
           },
           {
             "q": "How many people can take part?",
-            "a": "The experience is for groups of **8 participants or more**. For larger groups, please check availability."
+            "a": "The experience is for groups **from 8 participants, with no maximum**. When booking, just tell us how many people are coming."
           },
           {
             "q": "Can we book any day?",
-            "a": "The experience requires advance booking, **at least 5 days ahead**. The date and time are confirmed subject to availability."
+            "a": "Yes, you can book for **any day of the week**, including Saturdays, Sundays and public holidays, as long as you book **at least 5 days in advance**. The date and time will be confirmed subject to availability."
           },
           {
             "q": "What happens if the weather changes?",
@@ -1060,11 +1056,11 @@
           },
           {
             "q": "Can the brunch be adapted for allergies or dietary restrictions?",
-            "a": "Dietary needs must be communicated **when confirming the booking** so the available alternatives can be reviewed."
+            "a": "**Yes.** When you fill in the booking form, tell us about any allergies or dietary restrictions and how many people they apply to. With that information we can adapt the brunch to your needs."
           },
           {
             "q": "Can minors take part?",
-            "a": "The wine tasting is for **adults aged 18 and over** only. Any alternative for minors must be discussed before booking."
+            "a": "**Yes**, minors are welcome to take part in the experience. We are a family winery and we want everyone to enjoy the visit. The wine tasting is for **adults aged 18 and over** only, so we offer minors 100% natural juices."
           }
         ],
         "form": {

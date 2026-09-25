@@ -108,9 +108,16 @@ export default function ActivityFaq({
                   <ChevronDown className="h-5 w-5 motion-safe:transition-transform motion-safe:duration-300 group-open:rotate-180" />
                 </span>
               </summary>
-              <p className="max-w-[62ch] px-5 pb-6 font-body text-[17px] leading-[1.7] text-on-surface-variant md:px-7 md:pb-7">
-                <Emphasis text={a} />
-              </p>
+              {/* Una línea en blanco en el mensaje separa párrafos: la
+                  ubicación y la degustación traen un segundo párrafo en el
+                  texto de la viña. */}
+              <div className="max-w-[62ch] space-y-3 px-5 pb-6 font-body text-[17px] leading-[1.7] text-on-surface-variant md:px-7 md:pb-7">
+                {a.split("\n\n").map((parrafo) => (
+                  <p key={parrafo}>
+                    <Emphasis text={parrafo} />
+                  </p>
+                ))}
+              </div>
             </details>
           ))}
         </div>

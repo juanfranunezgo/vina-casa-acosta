@@ -494,8 +494,7 @@
       "perPerson": "por persona",
       "conditionsTitle": "Condiciones",
       "conditionMinors": "Degustación no apta para menores de 18 años · Ley N° 19.925",
-      "vatIncluded": "IVA incluido",
-      "netPrice": "Empresas y agencias: {price} + IVA",
+      "plusVat": "+ IVA",
       "faqTitle": "Preguntas frecuentes",
       "faqMore": "¿Tienes otra pregunta?",
       "faqWhatsapp": "Escríbenos por WhatsApp",
@@ -536,9 +535,6 @@
         "whatsappQuote": "Consultar por WhatsApp",
         "waIntro": "Hola 👋 Me gustaría reservar el {activity}.",
         "waIntroQuote": "Hola 👋 Me gustaría cotizar el {activity}.",
-        "datePreferred": "Fecha preferida",
-        "secondDate": "Segunda fecha posible",
-        "secondDateHint": "Opcional, por si la primera no está disponible.",
         "dietary": "Restricciones alimentarias o alergias",
         "dietaryPlaceholder": "Ej.: una persona celíaca",
         "titleSeason": "Guarda tu lugar para la próxima fecha",
@@ -1012,7 +1008,7 @@
                   ]
                 }
               ],
-              "note": "Las alternativas de sándwich se eligen al confirmar la reserva. Las restricciones alimentarias y alergias deben informarse con anticipación."
+              "note": "Las alternativas de sándwich se eligen al confirmar la reserva. Las alergias y restricciones alimentarias se informan en el formulario de reserva."
             }
           },
           {
@@ -1023,7 +1019,7 @@
         "conditions": [
           "Actividad disponible durante todo el año.",
           "La sesión de yoga se realiza al aire libre o, si el clima lo requiere, en la bodega entre las barricas.",
-          "Las restricciones alimentarias y alergias deben informarse al confirmar la reserva."
+          "Las alergias y restricciones alimentarias se informan en el formulario de reserva, indicando a cuántas personas corresponden."
         ],
         "faq": [
           {
@@ -1036,7 +1032,7 @@
           },
           {
             "q": "¿Dónde queda Viña Casa Acosta?",
-            "a": "En **San Vicente de Tagua Tagua**, en el Valle del Cachapoal (región de O'Higgins): Fundo El Llano, lote 6. Estamos cerca de **San Fernando**, a **40 minutos de Rancagua** y a menos de 2 horas de Santiago."
+            "a": "Estamos en **San Vicente de Tagua Tagua**, en pleno Valle del Cachapoal, a aproximadamente **1 hora y 40 minutos de Santiago**, a 40 minutos de Rancagua y muy cerca de San Fernando.\n\nNuestra dirección es Fundo El Llano, lote 6, Región de O'Higgins. Para llegar fácilmente, puedes buscarnos como “Viña Casa Acosta” en **Waze o Google Maps**."
           },
           {
             "q": "¿Qué incluye el brunch?",
@@ -1044,15 +1040,15 @@
           },
           {
             "q": "¿Qué incluye la degustación?",
-            "a": "Incluye **tres etiquetas seleccionadas** de distintas líneas de Casa Acosta, presentadas en una degustación guiada que recorre aromas, estilos y la historia familiar de la viña."
+            "a": "Incluye **tres etiquetas seleccionadas** de distintas líneas de Casa Acosta, como Ombú, Lajau y Estación Francia. Durante la degustación guiada conocerás sus aromas, estilos y la historia familiar de nuestra viña.\n\nLas etiquetas pueden variar según disponibilidad."
           },
           {
             "q": "¿Cuántas personas pueden participar?",
-            "a": "La experiencia se realiza para grupos **desde 8 participantes**. Para grupos más numerosos se debe consultar disponibilidad."
+            "a": "La experiencia se realiza para grupos **desde 8 participantes, sin límite máximo**. Al momento de reservar, solo debes indicar el número de asistentes."
           },
           {
             "q": "¿Se puede reservar cualquier día?",
-            "a": "La experiencia funciona con reserva previa, con **al menos 5 días de anticipación**. La fecha y el horario se confirman según disponibilidad."
+            "a": "Sí, puedes reservar para **cualquier día de la semana**, incluidos sábados, domingos y festivos, siempre que lo hagas con **al menos 5 días de anticipación**. La fecha y el horario se confirmarán según disponibilidad."
           },
           {
             "q": "¿Qué ocurre si cambia el clima?",
@@ -1060,11 +1056,11 @@
           },
           {
             "q": "¿Pueden adaptar el brunch por alergias o restricciones alimentarias?",
-            "a": "Las necesidades alimentarias deben informarse **al confirmar la reserva** para revisar las alternativas disponibles."
+            "a": "**Sí.** Al completar el formulario de reserva, indícanos las alergias o restricciones alimentarias y a cuántas personas corresponden. Con esa información podremos adaptar el brunch a sus necesidades."
           },
           {
             "q": "¿Los menores de edad pueden participar?",
-            "a": "La degustación de vinos es exclusiva para **mayores de 18 años**. Cualquier alternativa para menores debe consultarse antes de reservar."
+            "a": "**Sí**, los menores de edad pueden participar de la experiencia. Somos una viña familiar y queremos que todos puedan disfrutar la visita. La degustación de vinos es exclusiva para **mayores de 18 años**, por lo que a los menores les ofrecemos jugos 100 % naturales."
           }
         ],
         "form": {

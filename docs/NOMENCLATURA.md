@@ -75,7 +75,7 @@ La ruta lleva la categoría: `/actividades/tours/ombu`, `/actividades/talleres/p
 | Dd2 | Píldora de secciones (Detalle · Galería · Preguntas, si hay · **Reserva** en vino) entre las migas y la ficha rápida. Al bajar queda pegada bajo el navbar, en celular y escritorio, y una pastilla oscura se desliza a la sección en pantalla (`components/ActivitySectionNav.tsx`). Acompaña hasta el final de la reserva |
 | ~~Dd3~~ | Retirada el 2026-09-24: la caja "¿Cuándo se hace?" con la franja de 12 meses decía "Todo el año" en once de catorce fichas. En las de temporada, los meses pasan a las condiciones de Dd5 (`lib/temporada.ts`). El ID no se reasigna |
 | Dd4 | Detalle — tickets (tours) o programa de la jornada (talleres · experiencias). Si la actividad declara `schedule`, el programa va con horario: una regla proporcional de la mañana y cada etapa con sus minutos (`components/ActivitySchedule.tsx`); una etapa puede traer su carta (`components/ActivityMenu.tsx`) |
-| Dd5 | Tarjeta de reserva: precio **o** "a consultar", más condiciones. Con `priceNetCLP` el precio dice "IVA incluido" y muestra el neto en chico |
+| Dd5 | Tarjeta de reserva: precio **o** "a consultar", más condiciones. Con `priceExcludesVAT` el precio dice "+ IVA" junto a la cifra |
 | Dd6 | Galería (placeholder hasta tener fotos) |
 | Dd6b | Preguntas frecuentes (`components/ActivityFaq.tsx`): una tarjeta con sombra por pregunta y "Expandir todo". Sólo si la actividad trae `faq` en messages; hoy, el yoga. Sin marcado `FAQPage`: Google lo limita a sitios de gobierno y salud desde 2023 |
 | Dd7 | Reserva o cotización (formulario Netlify Forms + botón WhatsApp con prefill) |
