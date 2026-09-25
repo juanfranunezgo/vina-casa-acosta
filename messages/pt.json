@@ -20,7 +20,8 @@
     },
     "tienda": {
       "title": "Comprar vinhos online com entrega",
-      "description": "Compre os vinhos da Viña Casa Acosta: Carmenere, Tannat, blends, rosé e espumante do Vale do Cachapoal, no Chile. Monte seu pedido e combinamos a entrega."
+      "description": "Compre os vinhos da Viña Casa Acosta: Carmenere, Tannat, blends, rosé e espumante do Vale do Cachapoal, no Chile. Monte seu pedido e combinamos a entrega.",
+      "descriptionOnline": "Compre os vinhos da Viña Casa Acosta: Carmenere, Tannat, blends, rosé e espumante do Cachapoal. Pagamento seguro com Mercado Pago e entrega combinada."
     },
     "actividades": {
       "title": "Tours, oficinas e vindima na vinícola",

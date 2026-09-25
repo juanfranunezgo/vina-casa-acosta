@@ -20,7 +20,8 @@
     },
     "tienda": {
       "title": "Comprar vinos online con despacho",
-      "description": "Compra los vinos de Viña Casa Acosta: Carmenere, Tannat, ensamblajes, rosé y espumante del Valle del Cachapoal. Arma tu pedido y coordinamos el despacho."
+      "description": "Compra los vinos de Viña Casa Acosta: Carmenere, Tannat, ensamblajes, rosé y espumante del Valle del Cachapoal. Arma tu pedido y coordinamos el despacho.",
+      "descriptionOnline": "Compra los vinos de Viña Casa Acosta: Carmenere, Tannat, ensamblajes, rosé y espumante del Cachapoal. Pago seguro con Mercado Pago y despacho coordinado."
     },
     "actividades": {
       "title": "Tours, talleres y vendimia en la viña",

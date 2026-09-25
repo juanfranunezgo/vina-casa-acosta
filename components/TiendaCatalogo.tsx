@@ -44,7 +44,9 @@ function GrupoFiltro({
 }) {
   return (
     <div role="group" aria-label={titulo}>
-      <h3 className="mb-3 font-body text-[13px] text-on-surface-variant">{titulo}</h3>
+      {/* Texto y no h3: los encabezados de la página son los vinos. El grupo
+          ya se anuncia por su `aria-label`. */}
+      <p className="mb-3 font-body text-[13px] text-on-surface-variant">{titulo}</p>
       <div className="flex flex-wrap gap-2">
         {opciones.map((opcion) => {
           const prendida = elegidas.has(opcion);
@@ -194,7 +196,10 @@ export default function TiendaCatalogo({
   const filtersPanel = (
     <>
       <div className="mb-6 flex items-center justify-between gap-4">
-        <h2 className="font-display text-2xl text-primary">{t("filters.title")}</h2>
+        {/* Texto y no h2 (2026-09-25): el panel está dos veces en el HTML —el
+            de escritorio y la hoja del celular— y sus títulos eran los únicos
+            encabezados bajo el h1, repetidos. Los encabezados son los vinos. */}
+        <p className="font-display text-2xl text-primary">{t("filters.title")}</p>
         {filterCount > 0 && (
           <button
             type="button"
@@ -424,12 +429,16 @@ export default function TiendaCatalogo({
                           {wine.line}
                         </span>
                       )}
-                      <Link
-                        href={`/${locale}/vinos/${wine.slug}`}
-                        className="font-display text-xl text-primary mb-1 hover:underline underline-offset-4"
-                      >
-                        {wine.name}
-                      </Link>
+                      {/* El nombre es el encabezado de la tarjeta: bajo el h1
+                          de la tienda, cada vino es un h2. */}
+                      <h2 className="mb-1 font-display text-xl font-normal text-primary">
+                        <Link
+                          href={`/${locale}/vinos/${wine.slug}`}
+                          className="hover:underline underline-offset-4"
+                        >
+                          {wine.name}
+                        </Link>
+                      </h2>
                       <p className="font-body text-body-md text-on-surface-variant mb-4 flex-grow">
                         {joinLabels(
                           labelOr(tVinos, "types", wine.type),

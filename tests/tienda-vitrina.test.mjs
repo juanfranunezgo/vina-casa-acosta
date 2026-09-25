@@ -73,6 +73,42 @@ test("la vitrina usa la letra de las fichas en cada sección", () => {
   }
 });
 
+test("los encabezados de la tienda son el título y los vinos, no los filtros", () => {
+  // Hasta el 2026-09-25 los únicos encabezados bajo el h1 eran "Filtros",
+  // "Tipo", "Línea" y "Cepa", y dos veces (el panel de escritorio y la hoja
+  // del celular están los dos en el HTML). Los nombres de los vinos, que es
+  // lo que la página ofrece, no eran encabezados. Mismo criterio que sacó los
+  // h2 del pie el 2026-09-24.
+  assert.doesNotMatch(vitrina, /<h3/);
+  const h2 = vitrina.match(/<h2/g) ?? [];
+  assert.equal(h2.length, 1, "un solo h2: el nombre del vino en su tarjeta");
+  assert.match(vitrina, /<h2[^>]*>\s*<Link[\s\S]*?\{wine\.name\}[\s\S]*?<\/Link>\s*<\/h2>/);
+});
+
+test("la meta descripción nombra Mercado Pago sólo con el pago en línea encendido", async () => {
+  // La misma regla que la franja y el pie: el resultado de Google tampoco
+  // puede prometer un pago que el carrito no ofrece.
+  const layout = await leer("app/[locale]/tienda/layout.tsx");
+  assert.match(layout, /checkoutIniciarUrl\(process\.env\.NEXT_PUBLIC_AFELEIA_CHECKOUT_URL\) !== null/);
+  assert.match(layout, /t\(pagoEnLinea \? "descriptionOnline" : "description"\)/);
+  for (const locale of LOCALES) {
+    const meta = bundles[locale].metadata.tienda;
+    assert.match(meta.descriptionOnline, /Mercado Pago/, locale);
+    assert.doesNotMatch(meta.description, /Mercado Pago/, locale);
+    for (const texto of [meta.description, meta.descriptionOnline]) {
+      assert.ok(texto.length <= 160, `${locale}: ${texto.length} caracteres`);
+      assert.ok(texto.length >= 110, `${locale}: ${texto.length} caracteres`);
+    }
+  }
+});
+
+test("la tienda declara sus vinos como lista, además de la página como colección", () => {
+  // El mismo ItemList de `/vinos` (lib/wineJsonLd) y un CollectionPage propio.
+  assert.match(pagina, /buildWinesItemListJsonLd\(catalog,/);
+  assert.match(pagina, /buildTiendaJsonLd\(locale,/);
+  assert.equal((pagina.match(/<JsonLd data=/g) ?? []).length, 2);
+});
+
 test("el botón de carrito de la tarjeta es un círculo vino, no un contorno", () => {
   // El mismo círculo de `IconBadge`: degradado vino y filete de luz.
   assert.match(boton, /from-wine-accent to-primary-container/);
