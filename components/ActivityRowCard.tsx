@@ -24,7 +24,7 @@ export default function ActivityRowCard({ href, image, name, description, cta }:
   return (
     <Link
       href={href}
-      className="group flex gap-5 overflow-hidden rounded-xl border border-outline-variant/25 bg-surface ambient-shadow transition-all duration-300 hover:-translate-y-1 hover:ambient-shadow-lg"
+      className="group flex gap-5 overflow-hidden rounded-xl border border-outline-variant/25 bg-surface-container-lowest ambient-shadow transition-all duration-300 hover:-translate-y-1 hover:ambient-shadow-lg"
     >
       <div className="relative w-32 shrink-0 overflow-hidden sm:w-44">
         <Image

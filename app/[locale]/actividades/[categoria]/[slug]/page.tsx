@@ -11,9 +11,7 @@ import {
   Check,
   Wine,
   Utensils,
-  Images,
   Grape,
-  ListChecks,
   Star,
   Ticket,
   Footprints,
@@ -34,8 +32,10 @@ import { CONTACT_WHATSAPP_URL } from "@/lib/contact";
 import ActivityRowCard from "@/components/ActivityRowCard";
 import GalleryPlaceholder from "@/components/GalleryPlaceholder";
 import ActivityGallery from "@/components/ActivityGallery";
-import SeasonStrip from "@/components/SeasonStrip";
+import ActivitySectionNav from "@/components/ActivitySectionNav";
+import IconBadge from "@/components/ui/IconBadge";
 import ActivityReservationForm from "@/components/ActivityReservationForm";
+import { mesesDeTemporada } from "@/lib/temporada";
 import {
   activities,
   activitiesByCategory,
@@ -63,6 +63,20 @@ const includeIcons: Record<string, LucideIcon[]> = {
   // copa de bienvenida · ampelografía · bodega y barricas · desde barrica · cata
   "carmenere": [Wine, Leaf, Warehouse, Pipette, Grape],
 };
+
+/**
+ * Parte "Con al menos 5 días de anticipación — coordinamos la fecha contigo" en
+ * el dato y su aclaración, para la ficha rápida: el dato va destacado y lo que
+ * sigue a la raya, debajo y más chico. Todos los `reservationNote` del catálogo
+ * tienen esa forma en los tres idiomas; uno sin raya queda entero como dato.
+ */
+function splitNote(text: string): { value: string; note?: string } {
+  const [value, ...rest] = text.split(" — ");
+  const note = rest.join(" — ");
+  return note
+    ? { value, note: note.charAt(0).toLocaleUpperCase() + note.slice(1) }
+    : { value: text };
+}
 
 export async function generateStaticParams() {
   return routing.locales.flatMap((locale) =>
@@ -305,11 +319,27 @@ export default async function ActivityDetailPage({
       : t("netPrice", { price: clp.format(tour.priceNetCLP) });
 
   const ficha = [
-    { icon: MapPin, label: t("placeLabel"), value: t("placeValue") },
+    { icon: MapPin, label: t("placeLabel"), value: t("placeValue"), note: t("placeNote") },
     { icon: Clock, label: t("durationLabel"), value: duration },
     { icon: Users, label: t("participantsLabel"), value: groupFrom },
-    { icon: CalendarDays, label: t("reservationsLabel"), value: reservationNote },
+    { icon: CalendarDays, label: t("reservationsLabel"), ...splitNote(reservationNote) },
   ];
+
+  /**
+   * La temporada, sólo cuando no es todo el año. Vivía en su propia caja
+   * ("¿Cuándo se hace?") que en once de catorce fichas decía "Todo el año";
+   * Juan Francisco la sacó el 2026-09-24. En las tres de temporada el dato sí
+   * importa y pasa a ser una condición más.
+   *
+   * `t.raw` y no `t`: el mensaje trae `{months}` y la enumeración la arma
+   * `mesesDeTemporada` con Intl. Con `t()` next-intl parsea el ICU, no
+   * encuentra el argumento y devuelve la ruta de la clave como texto.
+   */
+  const season = mesesDeTemporada(tour.months, locale);
+  const seasonCondition =
+    season === undefined
+      ? []
+      : [(t.raw("seasonAvailableIn") as string).replace("{months}", season)];
 
   // Las propias de la actividad van antes de la ley de alcoholes, que cierra
   // la lista en todas las fichas.
@@ -317,6 +347,7 @@ export default async function ActivityDetailPage({
     `${t("durationLabel")}: ${duration}`,
     groupFrom,
     reservationNote,
+    ...seasonCondition,
     ...extraConditions,
     t("conditionMinors"),
   ];
@@ -349,12 +380,14 @@ export default async function ActivityDetailPage({
       />
 
       {/* Dd1 — Hero. Con `heroBooking` es más alto: suma el precio y los
-          botones, y en celular esos 120px salían de la foto. */}
+          botones, y en celular esos 120px salían de la foto. Desde que la
+          ficha rápida dejó de montarse sobre la foto, el texto baja hasta el
+          borde: ya no hay que dejarle lugar a una tarjeta encima. */}
       <section className="relative">
         <div
           className={`relative w-full overflow-hidden ${
             tour.heroBooking
-              ? "h-[72svh] min-h-[540px] md:h-[68vh] md:min-h-[560px]"
+              ? "h-[66svh] min-h-[520px] md:h-[64vh] md:min-h-[540px]"
               : "h-[52svh] min-h-[400px] md:h-[58vh] md:min-h-[460px]"
           }`}
         >
@@ -369,7 +402,7 @@ export default async function ActivityDetailPage({
           {/* Vignette vino oscuro para profundidad y legibilidad */}
           <div className="absolute inset-0 bg-gradient-to-t from-[#1a0203]/85 via-[#1a0203]/40 to-[#1a0203]/15" />
 
-          <div className="absolute inset-x-0 bottom-0 px-margin-mobile md:px-margin-desktop pb-16 md:pb-24">
+          <div className="absolute inset-x-0 bottom-0 px-margin-mobile md:px-margin-desktop pb-10 md:pb-16">
             {/* data-hero-text: el Navbar lo usa para encender su velo cuando el
                 título pasa por detrás (ver components/Navbar.tsx). */}
             <div data-hero-text className="max-w-(--container-max) mx-auto">
@@ -450,141 +483,127 @@ export default async function ActivityDetailPage({
         </div>
       </section>
 
-      {/* Dd1 — Ficha rápida (spec bar elevada) + intro + Dd2 sub-nav */}
-      <section className="bg-surface">
-        <div className="px-margin-mobile md:px-margin-desktop max-w-(--container-max) mx-auto">
-          {/* Una columna en celular, dos desde `sm` y cuatro desde `lg`. En
-              celular iban dos columnas con el ícono en su círculo de 40px, y al
-              texto le quedaban ~90px: "Sujeto a disponibilidad — coordinamos
-              la fecha contigo" se partía en seis líneas.
+      {/* Dd1 — Ficha rápida. Tarjeta blanca flotante DEBAJO del hero, ya no
+          montada sobre la foto: pedido de Juan Francisco del 2026-09-24 sobre
+          la referencia de Quorum Legal. Montada (-mt-14) le tapaba el pie a la
+          foto y competía con el título; separada, la foto termina entera y la
+          tarjeta se lee como lo que es, el resumen de la actividad.
 
-              Los filetes van por celda y por punto de corte, no con `divide-*`:
-              `divide-x` pinta el borde izquierdo de toda celda que no sea la
-              primera, y con dos columnas eso dibujaba una raya en el borde de
-              la tarjeta de la segunda fila. */}
-          <div className="relative z-10 -mt-10 md:-mt-14 bg-surface rounded-xl ambient-shadow-lg ring-1 ring-outline-variant/40 border-t-2 border-primary/70">
+          Una columna en celular, dos desde `sm` y cuatro desde `lg`. En celular
+          iban dos columnas y "Sujeto a disponibilidad — coordinamos la fecha
+          contigo" se partía en seis líneas.
+
+          Los filetes son pseudo-elementos por celda, con aire en las puntas
+          como en la referencia: el horizontal (`before`) separa filas y el
+          vertical (`after`) columnas, cada uno encendido sólo donde hay una
+          celda al lado. `divide-*` los pinta de borde a borde y, con dos
+          columnas, dibujaba una raya en el filo de la segunda fila.
+
+          `relative z-10`: la sombra de la tarjeta cae sobre el bloque de
+          abajo, y sin posición ese bloque —que viene después y tiene fondo—
+          la pinta encima y la corta en seco. */}
+      <section className="bg-surface-container-lowest px-margin-mobile pt-8 md:px-margin-desktop md:pt-12">
+        <div className="mx-auto max-w-(--container-max)">
+          <div className="relative z-10 rounded-[28px] bg-surface-container-lowest shadow-[0_32px_64px_-32px_rgba(74,14,14,0.30),0_8px_24px_-16px_rgba(74,14,14,0.12)] ring-1 ring-outline-variant/30">
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
-              {ficha.map(({ icon: Icon, label, value }, index) => (
+              {ficha.map(({ icon: Icon, label, value, note }, index) => (
                 <div
                   key={label}
-                  className={`flex items-start gap-3 border-outline-variant/25 px-5 py-4 sm:p-4 md:gap-3.5 md:p-7 ${
-                    index > 0 ? "border-t" : ""
-                  } ${index < 2 ? "sm:border-t-0" : ""} ${
-                    index % 2 === 1 ? "sm:border-l" : ""
-                  } lg:border-t-0 ${index > 0 ? "lg:border-l" : ""}`}
+                  className={`relative flex items-start gap-4 px-5 py-5 sm:p-6 lg:p-8 before:absolute before:inset-x-5 before:top-0 before:h-px before:bg-outline-variant/50 sm:before:inset-x-6 lg:before:hidden after:absolute after:inset-y-6 after:left-0 after:hidden after:w-px after:bg-outline-variant/50 lg:after:inset-y-8 ${
+                    index === 0 ? "before:hidden" : ""
+                  } ${index === 1 ? "sm:before:hidden" : ""} ${
+                    index % 2 === 1 ? "sm:after:block" : ""
+                  } ${index > 0 ? "lg:after:block" : ""}`}
                 >
-                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-wine-accent/10 md:h-11 md:w-11">
-                    <Icon className="h-5 w-5 text-wine-accent" aria-hidden="true" />
-                  </div>
-                  <div>
-                    <p className="font-body text-label-sm uppercase tracking-wider text-outline mb-1">
-                      {label}
+                  <IconBadge>
+                    <Icon />
+                  </IconBadge>
+                  <div className="min-w-0 pt-0.5">
+                    <p className="font-body text-[13px] text-on-surface-variant">{label}</p>
+                    <p className="mt-1 font-display text-[1.15rem] leading-snug text-primary md:text-[1.2rem]">
+                      {value}
                     </p>
-                    <p className="font-body text-body-md leading-snug text-on-surface">{value}</p>
+                    {note && (
+                      <p className="mt-1.5 font-body text-[14px] leading-snug text-on-surface-variant">
+                        {note}
+                      </p>
+                    )}
                   </div>
                 </div>
               ))}
             </div>
           </div>
+        </div>
+      </section>
 
-          {/* La miga, sobre papel y no sobre la foto. Arriba eran cuatro
-              niveles en blanco que en 375px se partían en dos líneas, con el
-              nombre de la actividad colgando solo sobre una foto cualquiera.
-              Va debajo de la ficha rápida y no pegada al hero porque la tarjeta
-              se monta sobre la foto (-mt-14) y ahí no hay aire donde ponerla.
-              Sigue siendo la vuelta a la categoría y lo que hace honesto el
-              `BreadcrumbList` del JSON-LD. */}
-          <div className="mt-8 md:mt-12">
-            <ActivityBreadcrumbs
-              tone="papel"
-              aria={t("breadcrumbAria")}
-              items={[
-                { href: `/${locale}`, label: crumbLabels.home },
-                { href: `/${locale}/actividades`, label: crumbLabels.activities },
-                {
-                  href: categoryIndexHref(locale, tour.category),
-                  label: crumbLabels.category,
-                },
-                { href: `/${locale}${activityPath(tour)}`, label: name },
-              ]}
-            />
-          </div>
+      {/* Desde acá hasta el formulario acompaña la píldora de secciones (Dd2).
+          El `div` existe por ella: un `sticky` sólo se pega dentro de su
+          contenedor, y éste abarca de la introducción a la reserva. Al llegar
+          a "otras actividades" la píldora se va con el resto. */}
+      <div className="relative bg-surface-container-lowest">
+        <ActivitySectionNav
+          items={[
+            { id: "detalle", label: t("nav.detail") },
+            { id: "galeria", label: t("nav.gallery") },
+            ...(faq.length > 0 ? [{ id: "preguntas", label: t("nav.faq") }] : []),
+          ]}
+          cta={{ id: "reserva", label: t("nav.reserve") }}
+          aria={t("nav.aria")}
+        />
 
-          <div className="py-10 md:py-16">
-            <div className="grid grid-cols-1 items-center gap-8 lg:grid-cols-2 lg:gap-16">
-              <div className="relative pl-6 border-l-2 border-primary/25">
-                <Grape
-                  className="absolute -left-[13px] top-1 h-6 w-6 text-wine-accent bg-surface rounded-full p-0.5"
-                  aria-hidden="true"
-                />
-                <p className="font-display text-xl leading-relaxed text-on-surface/90 md:text-3xl">
-                  {intro}
-                </p>
-                {/* El segundo párrafo, cuando lo hay, en Work Sans y más chico:
-                    dos párrafos en Caslon de 30px eran un muro. El contraste de
-                    escala es el mismo recurso del hub de Vendimia (Dv2). */}
-                {introMore && (
-                  <p className="mt-6 max-w-[58ch] font-body text-[17px] leading-[1.7] text-on-surface-variant">
-                    {introMore}
-                  </p>
-                )}
-              </div>
-              <Reveal delay={120}>
-                <div className="relative aspect-[4/3] rounded-2xl overflow-hidden ambient-shadow-lg ring-1 ring-outline-variant/30">
-                  <Image
-                    src={photos.intro.src}
-                    alt={photos.intro.alt}
-                    fill
-                    className="object-cover"
-                    sizes="(max-width: 1024px) 100vw, 50vw"
-                  />
-                </div>
-              </Reveal>
-            </div>
+      {/* Introducción, con la miga arriba. La miga va sobre papel y no sobre la
+          foto: arriba eran cuatro niveles en blanco que en 375px se partían en
+          dos líneas. Sigue siendo la vuelta a la categoría y lo que hace
+          honesto el `BreadcrumbList` del JSON-LD.
 
-            {/* Dd2 — Sub-nav ancla (misma pastilla flotante del resto del sitio) */}
-            <div className="mt-10 flex justify-center md:mt-12">
-              <nav
-                aria-label={t("nav.aria")}
-                className="grid w-full max-w-md grid-cols-3 gap-1 rounded-full border border-outline-variant/40 bg-surface p-1 ambient-shadow"
-              >
-                {[
-                  { href: "#detalle", label: t("nav.detail"), Icon: ListChecks },
-                  { href: "#galeria", label: t("nav.gallery"), Icon: Images },
-                  { href: "#reserva", label: t("nav.reserve"), Icon: CalendarDays },
-                ].map(({ href, label, Icon }) => (
-                  <a
-                    key={href}
-                    href={href}
-                    className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full px-2 py-2 text-center font-body text-[10px] font-semibold uppercase tracking-[0.12em] text-on-surface-variant transition-colors duration-200 hover:bg-primary hover:text-on-primary sm:text-label-sm sm:tracking-wider md:px-5"
-                  >
-                    <Icon className="hidden h-4 w-4 shrink-0 md:block" aria-hidden="true" />
-                    {label}
-                  </a>
-                ))}
-              </nav>
-            </div>
+          La caja "¿Cuándo se hace?" (Dd3) que cerraba esta sección se fue el
+          2026-09-24: en once de catorce fichas decía "Todo el año". En las de
+          temporada el dato pasó a las condiciones de la tarjeta de precio. */}
+      <section className="bg-surface-container-lowest px-margin-mobile pb-16 pt-4 md:px-margin-desktop md:pb-24 md:pt-6">
+        <div className="mx-auto max-w-(--container-max)">
+          <ActivityBreadcrumbs
+            tone="papel"
+            aria={t("breadcrumbAria")}
+            items={[
+              { href: `/${locale}`, label: crumbLabels.home },
+              { href: `/${locale}/actividades`, label: crumbLabels.activities },
+              {
+                href: categoryIndexHref(locale, tour.category),
+                label: crumbLabels.category,
+              },
+              { href: `/${locale}${activityPath(tour)}`, label: name },
+            ]}
+          />
 
-            {/* Dd3 — Estacionalidad. Va antes del detalle a propósito: si la
-                actividad no se hace en la fecha de quien lee, el resto del
-                contenido no le sirve. */}
-            <div className="mt-10 md:mt-12">
-              <SeasonStrip
-                months={tour.months}
-                locale={locale}
-                labels={{
-                  title: t("seasonTitle"),
-                  allYear: t("seasonAllYear"),
-                  // `t.raw` y no `t`: este mensaje lleva `{months}` y la
-                  // enumeración la arma SeasonStrip con Intl.ListFormat, que
-                  // sabe el locale. Con `t()`, next-intl parsea el ICU, no
-                  // encuentra el argumento y devuelve la ruta de la clave como
-                  // texto — la ficha imprime "activities.labels.seasonAvailableIn".
-                  availableIn: t.raw("seasonAvailableIn"),
-                  aria: t("seasonAria"),
-                }}
+          <div className="mt-10 grid grid-cols-1 items-center gap-8 md:mt-14 lg:grid-cols-2 lg:gap-16">
+            <div className="relative pl-6 border-l-2 border-primary/25">
+              <Grape
+                className="absolute -left-[13px] top-1 h-6 w-6 text-wine-accent bg-surface-container-lowest rounded-full p-0.5"
+                aria-hidden="true"
               />
+              <p className="font-display text-xl leading-relaxed text-on-surface/90 md:text-3xl">
+                {intro}
+              </p>
+              {/* El segundo párrafo, cuando lo hay, en Work Sans y más chico:
+                  dos párrafos en Caslon de 30px eran un muro. El contraste de
+                  escala es el mismo recurso del hub de Vendimia (Dv2). */}
+              {introMore && (
+                <p className="mt-6 max-w-[58ch] font-body text-[17px] leading-[1.7] text-on-surface-variant">
+                  {introMore}
+                </p>
+              )}
             </div>
+            <Reveal delay={120}>
+              <div className="relative aspect-[4/3] rounded-2xl overflow-hidden ambient-shadow-lg ring-1 ring-outline-variant/30">
+                <Image
+                  src={photos.intro.src}
+                  alt={photos.intro.alt}
+                  fill
+                  className="object-cover"
+                  sizes="(max-width: 1024px) 100vw, 50vw"
+                />
+              </div>
+            </Reveal>
           </div>
         </div>
       </section>
@@ -592,7 +611,7 @@ export default async function ActivityDetailPage({
       {/* Dd3 — Detalle / ¿Qué incluye? */}
       <section
         id="detalle"
-        className="bg-surface-container-low border-t border-outline-variant/30 py-section-gap px-margin-mobile md:px-margin-desktop scroll-mt-24"
+        className="bg-surface-container-lowest py-section-gap px-margin-mobile md:px-margin-desktop scroll-mt-40 md:scroll-mt-44"
       >
         <div className="max-w-(--container-max) mx-auto grid grid-cols-1 lg:grid-cols-3 gap-10 lg:gap-14">
           <div className="lg:col-span-2">
@@ -640,7 +659,7 @@ export default async function ActivityDetailPage({
               {/* overflow-hidden: el ítem destacado pinta fondo y borde hasta el
                   filo, y sin esto se sale de las esquinas redondeadas. */}
               {includes.length > 0 && (
-              <ul className="mb-10 overflow-hidden rounded-xl bg-surface border border-outline-variant/25 ambient-shadow divide-y divide-outline-variant/20">
+              <ul className="mb-10 overflow-hidden rounded-xl bg-surface-container-lowest border border-outline-variant/25 ambient-shadow divide-y divide-outline-variant/20">
                 {includes.map((item, i) => {
                   const Icon = includeIcons[slug]?.[i] ?? Check;
                   return (
@@ -648,9 +667,9 @@ export default async function ActivityDetailPage({
                       key={item}
                       className="flex items-start gap-3.5 px-5 py-4 font-body text-body-md text-on-surface"
                     >
-                      <span className="h-7 w-7 rounded-full bg-wine-accent/10 flex items-center justify-center shrink-0 mt-0.5">
-                        <Icon className="h-4 w-4 text-wine-accent" aria-hidden="true" />
-                      </span>
+                      <IconBadge size="sm" className="mt-0.5">
+                        <Icon />
+                      </IconBadge>
                       {item}
                     </li>
                   );
@@ -666,9 +685,9 @@ export default async function ActivityDetailPage({
                   // por el fondo, el filete y la negrita; con el círculo en vino
                   // sólido eran cuatro énfasis para un mismo renglón.
                   <li className="flex items-start gap-3.5 bg-wine-accent/8 border-l-[3px] border-wine-accent pl-[17px] pr-5 py-4 font-body text-body-md font-semibold text-on-surface">
-                    <span className="h-7 w-7 rounded-full bg-wine-accent/10 flex items-center justify-center shrink-0 mt-0.5">
-                      <Utensils className="h-4 w-4 text-wine-accent" aria-hidden="true" />
-                    </span>
+                    <IconBadge size="sm" className="mt-0.5">
+                      <Utensils />
+                    </IconBadge>
                     {includesHighlight}
                   </li>
                 )}
@@ -687,7 +706,7 @@ export default async function ActivityDetailPage({
                     {wines.map((w) => (
                       <li
                         key={w}
-                        className="flex items-start gap-3 bg-surface rounded-md pl-4 pr-5 py-3.5 border-l-[3px] border-primary/70 shadow-[0_2px_10px_-6px_rgba(74,14,14,0.15)] font-body text-body-md text-on-surface"
+                        className="flex items-start gap-3 bg-surface-container-lowest rounded-md pl-4 pr-5 py-3.5 border-l-[3px] border-primary/70 shadow-[0_2px_10px_-6px_rgba(74,14,14,0.15)] font-body text-body-md text-on-surface"
                       >
                         <Grape className="h-4 w-4 text-wine-accent mt-1 shrink-0" aria-hidden="true" />
                         {w}
@@ -724,7 +743,7 @@ export default async function ActivityDetailPage({
 
           {/* Dd3/Dd4 — Tarjeta de reserva (precio + condiciones) + imagen */}
           <Reveal delay={120} className="order-first lg:order-none lg:col-span-1">
-            <div className="overflow-hidden rounded-2xl bg-surface ambient-shadow-lg ring-1 ring-outline-variant/40 lg:sticky lg:top-28">
+            <div className="overflow-hidden rounded-2xl bg-surface-container-lowest ambient-shadow-lg ring-1 ring-outline-variant/40 lg:sticky lg:top-28">
               <div className="relative aspect-[16/8] md:aspect-[16/10]">
                 <Image
                   src={photos.card.src}
@@ -820,7 +839,7 @@ export default async function ActivityDetailPage({
           de diseño y el aviso de que están por llegar. Ver ActivityGallery. */}
       <section
         id="galeria"
-        className="bg-surface py-section-gap px-margin-mobile md:px-margin-desktop scroll-mt-24"
+        className="bg-surface-container-lowest py-section-gap px-margin-mobile md:px-margin-desktop scroll-mt-40 md:scroll-mt-44"
       >
         <div className="max-w-(--container-max) mx-auto">
           <Reveal>
@@ -843,7 +862,7 @@ export default async function ActivityDetailPage({
       {faq.length > 0 && (
         <section
           id="preguntas"
-          className="bg-surface border-t border-outline-variant/30 py-section-gap px-margin-mobile md:px-margin-desktop scroll-mt-24"
+          className="bg-surface-container-lowest py-section-gap px-margin-mobile md:px-margin-desktop scroll-mt-40 md:scroll-mt-44"
         >
           <div className="max-w-(--container-max) mx-auto">
             <Reveal>
@@ -853,6 +872,8 @@ export default async function ActivityDetailPage({
                 more={t("faqMore")}
                 whatsappLabel={t("faqWhatsapp")}
                 whatsappHref={whatsappHref}
+                expandAll={t("faqExpandAll")}
+                collapseAll={t("faqCollapseAll")}
               />
             </Reveal>
           </div>
@@ -862,10 +883,10 @@ export default async function ActivityDetailPage({
       {/* Dd6 — Reserva */}
       <section
         id="reserva"
-        className="bg-surface-container-low border-t border-outline-variant/30 py-section-gap px-margin-mobile md:px-margin-desktop scroll-mt-24"
+        className="bg-surface-container-lowest py-section-gap px-margin-mobile md:px-margin-desktop scroll-mt-40 md:scroll-mt-44"
       >
         <div className="max-w-(--container-max) mx-auto">
-          <div className="grid grid-cols-1 lg:grid-cols-[1.1fr_0.9fr] overflow-hidden rounded-2xl bg-surface ambient-shadow-lg ring-1 ring-outline-variant/40">
+          <div className="grid grid-cols-1 lg:grid-cols-[1.1fr_0.9fr] overflow-hidden rounded-2xl bg-surface-container-lowest ambient-shadow-lg ring-1 ring-outline-variant/40">
             <div className="p-8 md:p-12">
               <ActivityReservationForm
                 activityName={name}
@@ -890,9 +911,11 @@ export default async function ActivityDetailPage({
         </div>
       </section>
 
+      </div>
+
       {/* Dd7 — Otros tours */}
       {otherTours.length > 0 && (
-        <section className="bg-surface py-section-gap px-margin-mobile md:px-margin-desktop">
+        <section className="bg-surface-container-lowest py-section-gap px-margin-mobile md:px-margin-desktop">
           <div className="max-w-(--container-max) mx-auto">
             <Reveal className="mb-10">
               <span className="block h-px w-12 bg-wine-accent/60 mb-5" />

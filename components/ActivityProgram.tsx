@@ -1,3 +1,5 @@
+import IconBadge from "@/components/ui/IconBadge";
+
 type Props = {
   /** Pasos en el orden del catálogo. El orden ES la información. */
   steps: string[];
@@ -35,12 +37,12 @@ export default function ActivityProgram({ steps, title }: Props) {
                   className="absolute bottom-1 left-[15px] top-9 w-px bg-wine-accent/25"
                 />
               )}
-              <span
-                aria-hidden="true"
-                className="relative z-10 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-wine-accent/10 font-body text-label-sm font-bold tabular-nums text-wine-accent ring-1 ring-wine-accent/25"
-              >
+              {/* El mismo círculo vino de los íconos del sitio (IconBadge), con
+                  el número en blanco: eran el mismo círculo teñido y quedaban
+                  como la única pieza del estilo viejo. */}
+              <IconBadge size="step" className="relative z-10">
                 {index + 1}
-              </span>
+              </IconBadge>
               <p className="pt-1 font-body text-body-md leading-relaxed text-on-surface">
                 {step}
               </p>

@@ -199,6 +199,36 @@ preguntas). Tampoco hay fotos del yoga todavía: la ficha sigue con las de categ
 El nombre en EN y PT ("Yoga among the Vines", "Yoga entre Vinhedos") es traducción
 nuestra, sin validar.
 
+### Rediseño de la ficha (2026-09-24, pedido de Juan Francisco)
+
+Sobre referencias de Quorum Legal, para que la ficha deje de verse plana. Aplica a las
+catorce fichas (es la misma plantilla):
+
+- **Ficha rápida** — tarjeta blanca flotante debajo del hero, ya no montada sobre la
+  foto (`-mt-14`). Lleva `relative z-10` porque sin posición la sección siguiente le
+  pinta encima la sombra. El aviso de reservas se parte en la raya (`splitNote`): el
+  dato destacado y la aclaración debajo.
+- **`components/ui/IconBadge.tsx`** — el único fondo de ícono del sitio: círculo vino
+  sólido con degradado, ícono blanco. Reemplazó al círculo vino al 10% en la ficha, el
+  índice de actividades y los números de `ActivityProgram`.
+  `tests/icon-badge-source.test.mjs` falla si alguien vuelve a escribir el círculo
+  teñido a mano.
+- **`components/ActivitySectionNav.tsx`** — la píldora de secciones, pegada bajo el
+  navbar al bajar (celular y escritorio) con scroll-spy y una pastilla que se desliza.
+  El `sticky` necesita que la página envuelva desde la intro hasta la reserva en un
+  `div` con fondo blanco; si la ficha gana una sección, va dentro de ese `div` y se
+  suma a `items`. La altura del navbar (88/96px) está escrita en el componente y en
+  `ActivitiesTabs`; si el navbar cambia, cambian los dos. Las secciones usan
+  `scroll-mt-40 md:scroll-mt-44` para que el ancla no quede debajo de la píldora.
+- **Preguntas** — tarjetas con sombra, "Expandir todo" y apertura animada en CSS
+  (`.faq-item` en `globals.css`, sólo donde el navegador soporta `interpolate-size`).
+- **Se fue la caja "¿Cuándo se hace?"** (`SeasonStrip`, borrado). En las tres
+  actividades de temporada los meses pasan a las condiciones con `lib/temporada.ts`
+  (`tests/temporada.test.mjs`).
+- **Fondo blanco puro** en la ficha (`surface-container-lowest`). El resto del sitio
+  sigue en papel (#FBF9F8); pasarlo entero a blanco es cambiar `--color-background` y
+  `--color-surface` en `globals.css`, y hay que revisar portada, Vendimia y tienda.
+
 ## Hub de Vendimia (`/actividades/vendimia`)
 
 Existe desde el 2026-08-16. Es una **página informativa**, no una ficha: cuenta qué es la
