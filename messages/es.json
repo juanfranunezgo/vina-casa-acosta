@@ -960,8 +960,9 @@
       },
       "yoga": {
         "name": "Yoga entre Viñas",
-        "metaTitle": "Yoga entre Viñas en el Valle del Cachapoal",
-        "metaDescription": "Vive Yoga entre Viñas en Casa Acosta: práctica entre parras, brunch completo y degustación de tres vinos. Grupos desde 8 personas.",
+        "metaTitle": "Yoga entre Viñas cerca de Rancagua y San Fernando",
+        "metaDescription": "Yoga en viñedos en San Vicente de Tagua Tagua, cerca de Rancagua y San Fernando: práctica guiada entre parras, brunch completo y cata de tres vinos.",
+        "metaKeywords": "yoga entre viñas, yoga en viñedos, yoga en viñedo Chile, yoga al aire libre, yoga en San Vicente de Tagua Tagua, yoga cerca de San Fernando, yoga San Fernando, yoga cerca de Rancagua, yoga Rancagua, yoga región de O'Higgins, yoga Valle del Cachapoal, panoramas cerca de San Fernando, panoramas cerca de Rancagua, brunch en viñedo, degustación de vinos, actividades para grupos, bienestar en viña, Viña Casa Acosta",
         "description": "Yoga al aire libre entre viñedos, brunch completo y degustación de tres vinos en Casa Acosta.",
         "tagline": "Una mañana para respirar, moverse y compartir en el corazón del Valle del Cachapoal",
         "intro": "Yoga entre Viñas invita a comenzar el día de una manera diferente: respirando entre las parras, conectando con el entorno y compartiendo los sabores de Casa Acosta. La experiencia combina una sesión guiada de yoga y relajación, un brunch preparado para disfrutar sin prisa y una degustación de tres etiquetas seleccionadas de distintas líneas de la viña.",
@@ -1034,6 +1035,10 @@
             "a": "Principalmente **al aire libre, entre las parras** de Casa Acosta. Si el clima no lo permite, la sesión se traslada a la bodega, entre las barricas."
           },
           {
+            "q": "¿Dónde queda Viña Casa Acosta?",
+            "a": "En **San Vicente de Tagua Tagua**, en el Valle del Cachapoal (región de O'Higgins): Fundo El Llano, lote 6. Estamos cerca de **San Fernando**, a **40 minutos de Rancagua** y a menos de 2 horas de Santiago."
+          },
+          {
             "q": "¿Qué incluye el brunch?",
             "a": "Incluye **una ciabatta de masa madre a elección**, yogurt natural con granola y frutillas, ensalada de frutas de estación, hummus con bastones de zanahoria y apio, café de grano, té, infusiones y agua saborizada."
           },
@@ -1069,6 +1074,16 @@
           "choiceLabel": "Alternativa de sándwich",
           "choicePlaceholder": "Ej.: 5 de ave, 3 de jamón",
           "choiceHint": "Si todavía no lo saben, se elige al confirmar la reserva."
+        },
+        "photos": {
+          "hero": "Postura de yoga sobre el pasillo de madera entre las parras de Viña Casa Acosta, en San Vicente de Tagua Tagua, con la cordillera al fondo",
+          "grupo": "Un grupo sentado sobre las esteras estira los brazos hacia arriba, de espaldas, entre las parras",
+          "toldo": "Clase de yoga al aire libre entre las parras de Viña Casa Acosta, bajo el toldo blanco",
+          "mesa": "El brunch servido en la mesa larga bajo el toldo, con ciabattas, copas de agua saborizada y flores",
+          "brunch": "El grupo sonríe alrededor de la mesa del brunch después de la práctica",
+          "parras": "Una postura de yoga bajo las hojas de la parra, con los racimos a la vista",
+          "relajacion": "Participantes en el momento de relajación de Yoga entre Viñas, tendidas sobre sus esteras bajo el toldo",
+          "instructora": "La instructora guía al grupo junto a una barrica con hortensias"
         }
       },
       "cena-sensorial": {

@@ -960,8 +960,9 @@
       },
       "yoga": {
         "name": "Yoga among the Vines",
-        "metaTitle": "Yoga among the Vines in the Cachapoal Valley",
-        "metaDescription": "Experience Yoga among the Vines at Casa Acosta: practice among the vines, a full brunch and a tasting of three wines. Groups from 8 people.",
+        "metaTitle": "Vineyard Yoga near Santiago, Chile",
+        "metaDescription": "Vineyard yoga in San Vicente de Tagua Tagua, under 2 hours from Santiago, Chile: a guided practice among the vines, full brunch and a tasting of three wines.",
+        "metaKeywords": "vineyard yoga, yoga among the vines, outdoor yoga Chile, yoga near Santiago Chile, yoga near Rancagua, yoga San Fernando Chile, Cachapoal Valley, O'Higgins Region, wine tasting Chile, vineyard brunch, group activities Chile, wellness experience Chile, Viña Casa Acosta",
         "description": "Outdoor yoga among the vineyards, a full brunch and a tasting of three wines at Casa Acosta.",
         "tagline": "A morning to breathe, move and share in the heart of the Cachapoal Valley",
         "intro": "Yoga among the Vines invites you to start the day differently: breathing among the vines, connecting with your surroundings and sharing the flavours of Casa Acosta. The experience combines a guided yoga and relaxation session, a brunch to enjoy at an unhurried pace and a tasting of three selected labels from different lines of the winery.",
@@ -1034,6 +1035,10 @@
             "a": "Mainly **outdoors, among the Casa Acosta vines**. If the weather doesn't allow it, the session moves to the winery, among the barrels."
           },
           {
+            "q": "Where is Viña Casa Acosta?",
+            "a": "In **San Vicente de Tagua Tagua**, in the Cachapoal Valley (O'Higgins Region): Fundo El Llano, lote 6. We are close to **San Fernando**, **40 minutes from Rancagua** and less than 2 hours from Santiago."
+          },
+          {
             "q": "What does the brunch include?",
             "a": "**A sourdough ciabatta of your choice**, natural yoghurt with granola and strawberries, seasonal fruit salad, hummus with carrot and celery sticks, freshly ground coffee, tea, herbal infusions and infused water."
           },
@@ -1069,6 +1074,16 @@
           "choiceLabel": "Sandwich choice",
           "choicePlaceholder": "E.g.: 5 chicken, 3 ham",
           "choiceHint": "If you don't know yet, you can choose when the booking is confirmed."
+        },
+        "photos": {
+          "hero": "A yoga pose on the wooden walkway between the vines at Viña Casa Acosta, in San Vicente de Tagua Tagua, with the mountains behind",
+          "grupo": "A group seated on their mats stretches their arms overhead, seen from behind, among the vines",
+          "toldo": "Outdoor yoga class among the vines at Viña Casa Acosta, under the white canopy",
+          "mesa": "Brunch served at the long table under the canopy, with ciabattas, glasses of infused water and flowers",
+          "brunch": "The group smiles around the brunch table after the practice",
+          "parras": "A yoga pose beneath the vine leaves, with the grape clusters in view",
+          "relajacion": "Participants during the relaxation of Yoga among the Vines, lying on their mats under the canopy",
+          "instructora": "The instructor guides the group beside a barrel with hydrangeas"
         }
       },
       "cena-sensorial": {

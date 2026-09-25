@@ -138,6 +138,15 @@ export async function generateMetadata({
   const description = tTour.has(`${slug}.metaDescription`)
     ? tTour(`${slug}.metaDescription`)
     : tTour(`${slug}.tagline`);
+  // `keywords` propias sólo donde la actividad las trae (el yoga, pedido de
+  // Juan Francisco). Google no usa esta etiqueta para posicionar; lo que
+  // posiciona "yoga cerca de San Fernando" es el título, la descripción y el
+  // texto visible, que llevan las mismas palabras. Sin ellas manda la lista
+  // general del layout.
+  const keywords = tTour.has(`${slug}.metaKeywords`)
+    ? tTour(`${slug}.metaKeywords`)
+    : undefined;
+  const heroAlt = tTour.has(`${slug}.photos.hero`) ? tTour(`${slug}.photos.hero`) : name;
   const path = activityPath(tour);
   // Ver la nota equivalente en vinos/[slug]: Open Graph no aplica la plantilla
   // de `title`, así que el título completo va escrito.
@@ -145,13 +154,14 @@ export async function generateMetadata({
   return {
     title: searchTitle,
     description,
+    ...(keywords && { keywords }),
     alternates: alternatesFor(locale, path),
     openGraph: {
       type: "website",
       title: ogTitle,
       description,
       url: `/${locale}${path}`,
-      images: [{ url: tour.image, alt: name }],
+      images: [{ url: tour.image, alt: heroAlt }],
     },
     twitter: {
       card: "summary_large_image",
@@ -193,6 +203,21 @@ export default async function ActivityDetailPage({
   const optional = (key: string) =>
     tTour.has(`${slug}.${key}`) ? tTour(`${slug}.${key}`) : undefined;
   const introMore = optional("introMore");
+  // El `alt` del hero: una descripción de la foto donde la actividad la trae
+  // (con el lugar, que también es SEO); si no, el nombre.
+  const heroAlt = optional("photos.hero") ?? name;
+  // Para el JSON-LD: la meta descripción dice qué es y dónde; la bajada es una
+  // frase para leer bajo el título.
+  const seoDescription = optional("metaDescription") ?? tagline;
+  // Todas las fotos propias, para el `image` del Product: Google prefiere
+  // varias. Sin fotos propias queda sólo el hero, como antes.
+  const seoImages = [
+    tour.image,
+    ...[tour.photos?.intro, tour.photos?.card, tour.photos?.reserve, tour.photos?.gallery?.wide]
+      .concat(tour.photos?.gallery?.portraits ?? [])
+      .filter((photo): photo is ActivityPhoto => photo !== undefined)
+      .map((photo) => photo.src),
+  ];
   const closing = optional("closing");
   const priceNote = optional("priceNote");
   // "Consultar disponibilidad" en el yoga; el resto sigue con "Reserva".
@@ -394,7 +419,7 @@ export default async function ActivityDetailPage({
         data={buildActivityJsonLd(
           locale,
           tour,
-          { name, description: tagline, image: tour.image },
+          { name, description: seoDescription, image: seoImages },
           crumbLabels,
         )}
       />
@@ -414,14 +439,22 @@ export default async function ActivityDetailPage({
         >
           <Image
             src={tour.image}
-            alt={name}
+            alt={heroAlt}
             fill
             priority
             className="object-cover motion-safe:animate-[heroZoom_1.4s_cubic-bezier(0.16,1,0.3,1)_both]"
+            style={tour.heroPosition ? { objectPosition: tour.heroPosition } : undefined}
             sizes="100vw"
           />
           {/* Vignette vino oscuro para profundidad y legibilidad */}
           <div className="absolute inset-0 bg-gradient-to-t from-[#1a0203]/85 via-[#1a0203]/40 to-[#1a0203]/15" />
+          {/* Y uno arriba, para el menú. Con fotos de cielo abierto —la del
+              yoga— el 15% de arriba no alcanzaba y los enlaces en blanco se
+              perdían en las nubes. Es el mismo del hub de Vendimia (Dv1). */}
+          <div
+            aria-hidden="true"
+            className="absolute inset-x-0 top-0 h-40 bg-gradient-to-b from-[#1a0203]/55 to-transparent"
+          />
 
           <div className="absolute inset-x-0 bottom-0 px-margin-mobile pb-12 md:px-margin-desktop md:pb-20">
             {/* data-hero-text: el Navbar lo usa para encender su velo cuando el

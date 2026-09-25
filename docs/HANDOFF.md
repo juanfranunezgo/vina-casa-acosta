@@ -199,6 +199,26 @@ preguntas). Tampoco hay fotos del yoga todavía: la ficha sigue con las de categ
 El nombre en EN y PT ("Yoga among the Vines", "Yoga entre Vinhedos") es traducción
 nuestra, sin validar.
 
+### Yoga: fotos y SEO local (2026-09-24)
+
+- **Fotos reales** (`npm run fotos:yoga`, detalle en [`FOTOS.md`](FOTOS.md)). Llegaron
+  por WhatsApp a 960px: el hero en escritorio se ve blando. Pedirle a la viña los
+  originales y volver a correr el script.
+- `heroPosition` (`data/activities.ts`): `object-position` del hero, para cuando el
+  centro de la foto cae bajo el título en escritorio.
+- **SEO local**, pedido de Juan Francisco ("yoga cerca de San Fernando"). El
+  autocompletado de Google en Chile confirma "yoga rancagua", "yoga san fernando" y
+  "yoga en san vicente de tagua tagua"; "yoga en viña" lo domina Viña del Mar. Van al
+  título ("Yoga entre Viñas cerca de Rancagua y San Fernando"), a la descripción, a
+  una pregunta nueva ("¿Dónde queda Viña Casa Acosta?", con la dirección) y al `alt`
+  del hero. `metaKeywords` va como etiqueta `keywords` sólo en esta ficha, porque se
+  pidió; Google no la usa.
+- **Distancias:** para San Fernando las fuentes no coinciden (23 a 40 minutos), así
+  que la página dice "cerca de San Fernando" sin minutos. Los "40 minutos de
+  Rancagua" son los que el sitio ya publicaba con el texto de la viña.
+- Las preguntas frecuentes son `<h3>` dentro del `<summary>`, bajo el `<h2>`. El
+  `Product` del JSON-LD declara las ocho fotos y la meta descripción.
+
 ### Rediseño de la ficha (2026-09-24, pedido de Juan Francisco)
 
 Sobre referencias de Quorum Legal, para que la ficha deje de verse plana. Aplica a las

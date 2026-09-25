@@ -124,6 +124,13 @@ export type Activity = {
   heroBooking?: boolean;
   /** Dd1 — hero de la ficha, y la miniatura en toda grilla que la liste. */
   image: string;
+  /**
+   * `object-position` del hero, cuando el centro de la foto no es el punto
+   * que importa. En escritorio el hero es apaisado y muestra sólo una franja
+   * de una foto vertical; el título, centrado abajo, tapa lo que cae ahí.
+   * Ausente = centro.
+   */
+  heroPosition?: string;
   photos?: ActivityPhotos;
   premium?: boolean;
 };
@@ -349,7 +356,27 @@ export const activities: Activity[] = [
     ],
     bookingFields: ["segundaFecha", "eleccion", "restricciones"],
     heroBooking: true,
-    image: CATEGORY_IMAGE.experiencias,
+    // Fotos de sesiones reales, mandadas por la viña el 2026-09-24. Salen de
+    // `npm run fotos:yoga`, cada una recortada a su ranura: ver
+    // scripts/optimize-yoga.mjs y docs/FOTOS.md.
+    image: "/images/actividades/yoga-hero.webp",
+    // La franja del escritorio baja un poco: centrada, el título caía sobre
+    // las piernas de la postura. En celular la foto entra casi entera y esto
+    // no se nota.
+    heroPosition: "50% 58%",
+    photos: {
+      intro: { src: "/images/actividades/yoga-grupo.webp", alt: "grupo" },
+      card: { src: "/images/actividades/yoga-mesa.webp", alt: "mesa" },
+      reserve: { src: "/images/actividades/yoga-toldo.webp", alt: "toldo" },
+      gallery: {
+        wide: { src: "/images/actividades/yoga-brunch.webp", alt: "brunch" },
+        portraits: [
+          { src: "/images/actividades/yoga-parras.webp", alt: "parras" },
+          { src: "/images/actividades/yoga-relajacion.webp", alt: "relajacion" },
+          { src: "/images/actividades/yoga-instructora.webp", alt: "instructora" },
+        ],
+      },
+    },
   },
   {
     slug: "cena-sensorial",

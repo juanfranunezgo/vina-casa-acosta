@@ -94,9 +94,13 @@ export default function ActivityFaq({
               className="faq-item group rounded-2xl border border-outline-variant/50 bg-surface-container-lowest shadow-[0_14px_34px_-22px_rgba(74,14,14,0.30),0_2px_6px_-2px_rgba(74,14,14,0.05)] transition-[border-color,box-shadow] duration-300 open:border-wine-accent/30 open:shadow-[0_22px_44px_-24px_rgba(74,14,14,0.38),0_2px_6px_-2px_rgba(74,14,14,0.06)] hover:border-wine-accent/30"
             >
               <summary className="flex cursor-pointer list-none items-center justify-between gap-5 rounded-2xl px-5 py-5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 md:px-7 md:py-6 [&::-webkit-details-marker]:hidden">
-                <span className="font-body text-[1rem] font-semibold leading-snug text-primary md:text-[1.08rem]">
+                {/* Cada pregunta es un H3 bajo el H2 de la sección: así la
+                    leen como pregunta → respuesta Google y los buscadores con
+                    IA, que citan este tipo de bloque tal cual. `<summary>`
+                    admite un encabezado adentro. */}
+                <h3 className="font-body text-[1rem] font-semibold leading-snug text-primary md:text-[1.08rem]">
                   {q}
-                </span>
+                </h3>
                 <span
                   aria-hidden="true"
                   className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-wine-accent transition-colors duration-300 group-open:bg-wine-accent group-open:text-on-primary"

@@ -126,11 +126,13 @@ test("la carta del brunch tiene sus dos sándwiches a elección en los tres idio
   }
 });
 
-test("el yoga trae las nueve preguntas frecuentes en los tres idiomas", () => {
+test("el yoga trae sus diez preguntas frecuentes en los tres idiomas", () => {
+  // Nueve del documento de la viña y una de ubicación, agregada por SEO local
+  // el 2026-09-24 (ver el test de abajo).
   for (const locale of LOCALES) {
     const faq = bundles[locale].activities.items.yoga.faq;
     assert.ok(Array.isArray(faq), locale);
-    assert.equal(faq.length, 9, locale);
+    assert.equal(faq.length, 10, locale);
     for (const { q, a } of faq) {
       assert.ok(q.trim().endsWith("?"), `${locale}: "${q}"`);
       assert.ok(a.length > 0, `${locale}: "${q}"`);
@@ -149,6 +151,30 @@ test("la ficha del yoga se llama como el documento y tiene su propia meta descri
     assert.ok(item.metaDescription.length <= 160, `${locale}: ${item.metaDescription.length}`);
     assert.ok(item.metaDescription.length >= 110, `${locale}: ${item.metaDescription.length}`);
   }
+});
+
+test("la ficha del yoga nombra las ciudades que se buscan, en texto visible", () => {
+  // Pedido de Juan Francisco: posicionar búsquedas como "yoga cerca de San
+  // Fernando". El autocompletado de Google en Chile confirma "yoga rancagua",
+  // "yoga san fernando" y "yoga en san vicente de tagua tagua". Lo que Google
+  // lee para eso es el título y el texto visible; la etiqueta `keywords` la
+  // ignora, y va igual porque se pidió.
+  const es = bundles.es.activities.items.yoga;
+  assert.match(es.metaTitle, /Rancagua/);
+  assert.match(es.metaTitle, /San Fernando/);
+  assert.match(es.metaDescription, /San Vicente de Tagua Tagua/);
+  const ubicacion = es.faq.find(({ q }) => /Dónde queda/.test(q));
+  assert.ok(ubicacion, "falta la pregunta de ubicación");
+  for (const lugar of ["San Vicente de Tagua Tagua", "San Fernando", "Rancagua"]) {
+    assert.match(ubicacion.a, new RegExp(lugar), lugar);
+  }
+  for (const locale of LOCALES) {
+    const item = bundles[locale].activities.items.yoga;
+    assert.equal(typeof item.metaKeywords, "string", locale);
+    assert.ok(item.metaKeywords.split(",").length >= 10, locale);
+    assert.ok(item.metaTitle.length <= 50, `${locale}: título de ${item.metaTitle.length}`);
+  }
+  assert.match(es.metaKeywords, /yoga cerca de San Fernando/);
 });
 
 test("los campos extra del formulario del yoga tienen su texto", () => {
