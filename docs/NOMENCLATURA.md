@@ -71,8 +71,8 @@ La ruta lleva la categoría: `/actividades/tours/ombu`, `/actividades/talleres/p
 
 | ID | Sección |
 |---|---|
-| Dd1 | Hero + ficha rápida + breadcrumbs e intro. La ficha rápida (Lugar · Duración · Participantes · Reservas) es una tarjeta blanca flotante **debajo** del hero, no montada sobre la foto, con íconos `IconBadge` y filetes verticales (2026-09-24). Con `heroBooking` (hoy sólo el yoga) el hero suma el precio y los dos botones de reserva, para que en celular se vean sin bajar |
-| Dd2 | Píldora de secciones (Detalle · Galería · Preguntas, si hay · **Reserva** en vino) bajo la ficha rápida. Al bajar queda pegada bajo el navbar, en celular y escritorio, y una pastilla oscura se desliza a la sección en pantalla (`components/ActivitySectionNav.tsx`). Acompaña hasta el final de la reserva |
+| Dd1 | Hero con el texto centrado y sin antetítulo → migas centradas → (Dd2) → ficha rápida → intro. La ficha rápida (Lugar · Duración · Participantes · Reservas) es una tarjeta blanca sin bordes que flota sólo por su sombra, con íconos `IconBadge` (2026-09-24). Con `heroBooking` (hoy sólo el yoga) el hero suma el precio y los dos botones de reserva, para que en celular se vean sin bajar |
+| Dd2 | Píldora de secciones (Detalle · Galería · Preguntas, si hay · **Reserva** en vino) entre las migas y la ficha rápida. Al bajar queda pegada bajo el navbar, en celular y escritorio, y una pastilla oscura se desliza a la sección en pantalla (`components/ActivitySectionNav.tsx`). Acompaña hasta el final de la reserva |
 | ~~Dd3~~ | Retirada el 2026-09-24: la caja "¿Cuándo se hace?" con la franja de 12 meses decía "Todo el año" en once de catorce fichas. En las de temporada, los meses pasan a las condiciones de Dd5 (`lib/temporada.ts`). El ID no se reasigna |
 | Dd4 | Detalle — tickets (tours) o programa de la jornada (talleres · experiencias). Si la actividad declara `schedule`, el programa va con horario: una regla proporcional de la mañana y cada etapa con sus minutos (`components/ActivitySchedule.tsx`); una etapa puede traer su carta (`components/ActivityMenu.tsx`) |
 | Dd5 | Tarjeta de reserva: precio **o** "a consultar", más condiciones. Con `priceNetCLP` el precio dice "IVA incluido" y muestra el neto en chico |
@@ -80,6 +80,11 @@ La ruta lleva la categoría: `/actividades/tours/ombu`, `/actividades/talleres/p
 | Dd6b | Preguntas frecuentes (`components/ActivityFaq.tsx`): una tarjeta con sombra por pregunta y "Expandir todo". Sólo si la actividad trae `faq` en messages; hoy, el yoga. Sin marcado `FAQPage`: Google lo limita a sitios de gobierno y salud desde 2023 |
 | Dd7 | Reserva o cotización (formulario Netlify Forms + botón WhatsApp con prefill) |
 | Dd8 | Otras actividades de la misma categoría |
+
+**Tipografía de la ficha:** Libre Caslon sólo en los títulos y en la cita de la
+introducción; el resto —datos de la ficha rápida, etapas, carta, preguntas y precios— va
+en la sans del sitio, con negrita para destacar. Los destacados se marcan con `**así**` en
+messages y los dibuja `components/Emphasis.tsx` (`lib/enfasis.ts`).
 
 **La ficha va en blanco puro** desde el 2026-09-24 (pedido de Juan Francisco): todas
 sus secciones y tarjetas usan `surface-container-lowest` (#FFFFFF) en vez del papel

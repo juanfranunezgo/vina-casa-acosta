@@ -960,13 +960,12 @@
       },
       "yoga": {
         "name": "Yoga among the Vines",
-        "eyebrow": "Wellbeing among the vines",
         "metaTitle": "Yoga among the Vines in the Cachapoal Valley",
         "metaDescription": "Experience Yoga among the Vines at Casa Acosta: practice among the vines, a full brunch and a tasting of three wines. Groups from 8 people.",
         "description": "Outdoor yoga among the vineyards, a full brunch and a tasting of three wines at Casa Acosta.",
         "tagline": "A morning to breathe, move and share in the heart of the Cachapoal Valley",
         "intro": "Yoga among the Vines invites you to start the day differently: breathing among the vines, connecting with your surroundings and sharing the flavours of Casa Acosta. The experience combines a guided yoga and relaxation session, a brunch to enjoy at an unhurried pace and a tasting of three selected labels from different lines of the winery.",
-        "introMore": "The day unfolds in an intimate, natural setting, surrounded by the landscape of the Cachapoal Valley. It is designed for private groups of 8 or more and is arranged by advance booking.",
+        "introMore": "The day unfolds in an intimate, natural setting, surrounded by the landscape of the Cachapoal Valley. It is designed for **private groups of 8 or more** and is arranged by advance booking.",
         "duration": "3 hours 15 minutes",
         "groupFrom": "Groups from 8 people",
         "reservationNote": "At least 5 days in advance — we arrange the date with you",
@@ -975,18 +974,18 @@
         "schedule": [
           {
             "title": "Welcome",
-            "text": "We greet the group with water infused with lemon, mint and cucumber. A first moment to arrive, take in the surroundings and get ready for the practice."
+            "text": "We greet the group with **water infused with lemon, mint and cucumber**. A first moment to arrive, take in the surroundings and get ready for the practice."
           },
           {
             "title": "Yoga among the vines",
-            "text": "The session includes 45 minutes of guided practice and 15 minutes of relaxation. It can draw on traditional, integral, Ashtanga and Vinyasa yoga, adapting to the group's pace. It takes place outdoors among the vines and, if the weather calls for it, inside the winery, among the barrels."
+            "text": "The session includes **45 minutes of guided practice and 15 minutes of relaxation**. It can draw on traditional, integral, Ashtanga and Vinyasa yoga, adapting to the group's pace. It takes place **outdoors among the vines** and, if the weather calls for it, inside the winery, among the barrels."
           },
           {
             "title": "Brunch",
-            "text": "After the practice, the group shares a full brunch with sweet and savoury dishes, freshly ground coffee, tea, herbal infusions and infused water.",
+            "text": "After the practice, the group shares a **full brunch** with sweet and savoury dishes, freshly ground coffee, tea, herbal infusions and infused water.",
             "menu": {
               "title": "The menu",
-              "lead": "Each guest chooses one of the two sandwich options and receives all the accompaniments included.",
+              "lead": "Each guest **chooses one of the two sandwich options** and receives all the accompaniments included.",
               "groups": [
                 {
                   "label": "Your choice",
@@ -1017,7 +1016,7 @@
           },
           {
             "title": "Wine tasting",
-            "text": "A guided tasting of three selected labels from different Casa Acosta lines. A journey through their aromas and styles, alongside the family's story and the winery's origins in the Cachapoal Valley."
+            "text": "A guided tasting of **three selected labels** from different Casa Acosta lines. A journey through their aromas and styles, alongside the family's story and the winery's origins in the Cachapoal Valley."
           }
         ],
         "conditions": [
@@ -1028,39 +1027,39 @@
         "faq": [
           {
             "q": "Do I need previous yoga experience?",
-            "a": "No. The session is designed for groups and can be adapted to different levels of experience."
+            "a": "**No.** The session is designed for groups and can be adapted to different levels of experience."
           },
           {
             "q": "Where does the class take place?",
-            "a": "Mainly outdoors, among the Casa Acosta vines. If the weather doesn't allow it, the session moves to the winery, among the barrels."
+            "a": "Mainly **outdoors, among the Casa Acosta vines**. If the weather doesn't allow it, the session moves to the winery, among the barrels."
           },
           {
             "q": "What does the brunch include?",
-            "a": "A sourdough ciabatta of your choice, natural yoghurt with granola and strawberries, seasonal fruit salad, hummus with carrot and celery sticks, freshly ground coffee, tea, herbal infusions and infused water."
+            "a": "**A sourdough ciabatta of your choice**, natural yoghurt with granola and strawberries, seasonal fruit salad, hummus with carrot and celery sticks, freshly ground coffee, tea, herbal infusions and infused water."
           },
           {
             "q": "What does the tasting include?",
-            "a": "Three selected labels from different Casa Acosta lines, presented in a guided tasting that explores aromas, styles and the family story behind the winery."
+            "a": "**Three selected labels** from different Casa Acosta lines, presented in a guided tasting that explores aromas, styles and the family story behind the winery."
           },
           {
             "q": "How many people can take part?",
-            "a": "The experience is for groups of 8 participants or more. For larger groups, please check availability."
+            "a": "The experience is for groups of **8 participants or more**. For larger groups, please check availability."
           },
           {
             "q": "Can we book any day?",
-            "a": "The experience requires advance booking, at least 5 days ahead. The date and time are confirmed subject to availability."
+            "a": "The experience requires advance booking, **at least 5 days ahead**. The date and time are confirmed subject to availability."
           },
           {
             "q": "What happens if the weather changes?",
-            "a": "The activity has an alternative inside the winery, among the barrels, so the experience continues in a sheltered and inviting space."
+            "a": "The activity has an alternative **inside the winery, among the barrels**, so the experience continues in a sheltered and inviting space."
           },
           {
             "q": "Can the brunch be adapted for allergies or dietary restrictions?",
-            "a": "Dietary needs must be communicated when confirming the booking so the available alternatives can be reviewed."
+            "a": "Dietary needs must be communicated **when confirming the booking** so the available alternatives can be reviewed."
           },
           {
             "q": "Can minors take part?",
-            "a": "The wine tasting is for adults aged 18 and over only. Any alternative for minors must be discussed before booking."
+            "a": "The wine tasting is for **adults aged 18 and over** only. Any alternative for minors must be discussed before booking."
           }
         ],
         "form": {

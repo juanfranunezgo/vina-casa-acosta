@@ -141,7 +141,9 @@ test("el yoga trae las nueve preguntas frecuentes en los tres idiomas", () => {
 test("la ficha del yoga se llama como el documento y tiene su propia meta descripción", () => {
   const es = bundles.es.activities.items.yoga;
   assert.equal(es.name, "Yoga entre Viñas");
-  assert.equal(es.eyebrow, "Bienestar entre viñas");
+  // Sin antetítulo desde el 2026-09-24: la categoría del documento salía
+  // encima del título y Juan Francisco la sacó.
+  assert.equal(es.eyebrow, undefined);
   for (const locale of LOCALES) {
     const item = bundles[locale].activities.items.yoga;
     assert.ok(item.metaDescription.length <= 160, `${locale}: ${item.metaDescription.length}`);

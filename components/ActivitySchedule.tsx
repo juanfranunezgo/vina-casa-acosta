@@ -1,4 +1,5 @@
 import ActivityMenu, { type MenuCopy } from "@/components/ActivityMenu";
+import Emphasis from "@/components/Emphasis";
 import type { ScheduleTone } from "@/data/activities";
 
 export type ScheduleStageView = {
@@ -124,11 +125,11 @@ export default function ActivitySchedule({ stages, title, locale }: Props) {
               </p>
             </div>
             <div>
-              <h4 className="font-display text-[1.4rem] leading-snug text-primary md:text-[1.55rem]">
+              <h4 className="font-body text-[1.15rem] font-bold leading-snug tracking-[-0.01em] text-primary md:text-[1.25rem]">
                 {stage.title}
               </h4>
               <p className="mt-2.5 max-w-[60ch] font-body text-[17px] leading-[1.7] text-on-surface-variant">
-                {stage.text}
+                <Emphasis text={stage.text} />
               </p>
               {stage.menu && <ActivityMenu {...stage.menu} />}
             </div>

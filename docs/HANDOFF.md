@@ -225,6 +225,13 @@ catorce fichas (es la misma plantilla):
 - **Se fue la caja "¿Cuándo se hace?"** (`SeasonStrip`, borrado). En las tres
   actividades de temporada los meses pasan a las condiciones con `lib/temporada.ts`
   (`tests/temporada.test.mjs`).
+- **Orden bajo el hero:** migas centradas → píldora → ficha rápida (sin bordes, flota
+  por la sombra) → intro. El hero va centrado y sin antetítulo.
+- **Tipografía:** Caslon sólo en títulos y en la cita de la intro; lo demás en sans con
+  negrita. Los destacados van en messages como `**frase**` y los dibuja `Emphasis`;
+  `tests/enfasis.test.mjs` exige que cierren y que las preguntas del yoga destaquen lo
+  mismo en los tres idiomas. Donde el texto se usa fuera de pantalla (WhatsApp,
+  metadatos) hay que pasarlo por `sinEnfasis`.
 - **Fondo blanco puro** en la ficha (`surface-container-lowest`). El resto del sitio
   sigue en papel (#FBF9F8); pasarlo entero a blanco es cambiar `--color-background` y
   `--color-surface` en `globals.css`, y hay que revisar portada, Vendimia y tienda.

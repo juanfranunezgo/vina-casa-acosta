@@ -960,13 +960,12 @@
       },
       "yoga": {
         "name": "Yoga entre Vinhedos",
-        "eyebrow": "Bem-estar entre vinhedos",
         "metaTitle": "Yoga entre Vinhedos no Vale do Cachapoal",
         "metaDescription": "Viva o Yoga entre Vinhedos na Casa Acosta: prática entre as videiras, brunch completo e degustação de três vinhos. Grupos a partir de 8 pessoas.",
         "description": "Yoga ao ar livre entre os vinhedos, brunch completo e degustação de três vinhos na Casa Acosta.",
         "tagline": "Uma manhã para respirar, se movimentar e compartilhar no coração do Vale do Cachapoal",
         "intro": "O Yoga entre Vinhedos convida a começar o dia de um jeito diferente: respirando entre as videiras, conectando-se com o entorno e compartilhando os sabores da Casa Acosta. A experiência combina uma sessão guiada de yoga e relaxamento, um brunch preparado para aproveitar sem pressa e uma degustação de três rótulos selecionados de diferentes linhas da vinícola.",
-        "introMore": "A jornada acontece em um ambiente íntimo e natural, cercado pela paisagem do Vale do Cachapoal. É pensada para grupos privados a partir de 8 pessoas e é combinada com reserva antecipada.",
+        "introMore": "A jornada acontece em um ambiente íntimo e natural, cercado pela paisagem do Vale do Cachapoal. É pensada para **grupos privados a partir de 8 pessoas** e é combinada com reserva antecipada.",
         "duration": "3 horas e 15 minutos",
         "groupFrom": "Grupos a partir de 8 pessoas",
         "reservationNote": "Com pelo menos 5 dias de antecedência — combinamos a data com você",
@@ -975,18 +974,18 @@
         "schedule": [
           {
             "title": "Recepção",
-            "text": "Recebemos o grupo com água saborizada de limão, hortelã e pepino. É um primeiro momento para chegar, reconhecer o entorno e se preparar para a prática."
+            "text": "Recebemos o grupo com **água saborizada de limão, hortelã e pepino**. É um primeiro momento para chegar, reconhecer o entorno e se preparar para a prática."
           },
           {
             "title": "Yoga entre as videiras",
-            "text": "A sessão inclui 45 minutos de prática guiada e 15 minutos de relaxamento. Pode integrar yoga tradicional, integral, Ashtanga e Vinyasa, adaptando-se ao ritmo do grupo. Acontece ao ar livre entre as videiras e, se o clima exigir, dentro da adega, entre as barricas."
+            "text": "A sessão inclui **45 minutos de prática guiada e 15 minutos de relaxamento**. Pode integrar yoga tradicional, integral, Ashtanga e Vinyasa, adaptando-se ao ritmo do grupo. Acontece **ao ar livre entre as videiras** e, se o clima exigir, dentro da adega, entre as barricas."
           },
           {
             "title": "Brunch",
-            "text": "Depois da prática, o grupo compartilha um brunch completo com preparações doces e salgadas, café moído na hora, chá, infusões e água saborizada.",
+            "text": "Depois da prática, o grupo compartilha um **brunch completo** com preparações doces e salgadas, café moído na hora, chá, infusões e água saborizada.",
             "menu": {
               "title": "O cardápio",
-              "lead": "Cada participante escolhe uma das duas opções de sanduíche e recebe todos os acompanhamentos incluídos.",
+              "lead": "Cada participante **escolhe uma das duas opções de sanduíche** e recebe todos os acompanhamentos incluídos.",
               "groups": [
                 {
                   "label": "À escolha",
@@ -1017,7 +1016,7 @@
           },
           {
             "title": "Degustação de vinhos",
-            "text": "Degustação guiada de três rótulos selecionados de diferentes linhas da Casa Acosta. Um percurso por seus aromas e estilos, acompanhado pela história da família e pela origem da vinícola no Vale do Cachapoal."
+            "text": "Degustação guiada de **três rótulos selecionados** de diferentes linhas da Casa Acosta. Um percurso por seus aromas e estilos, acompanhado pela história da família e pela origem da vinícola no Vale do Cachapoal."
           }
         ],
         "conditions": [
@@ -1028,39 +1027,39 @@
         "faq": [
           {
             "q": "Preciso ter experiência prévia em yoga?",
-            "a": "Não. A sessão é pensada para ser feita em grupo e pode se adaptar a diferentes níveis de experiência."
+            "a": "**Não.** A sessão é pensada para ser feita em grupo e pode se adaptar a diferentes níveis de experiência."
           },
           {
             "q": "Onde acontece a aula?",
-            "a": "Principalmente ao ar livre, entre as videiras da Casa Acosta. Se o clima não permitir, a sessão passa para a adega, entre as barricas."
+            "a": "Principalmente **ao ar livre, entre as videiras** da Casa Acosta. Se o clima não permitir, a sessão passa para a adega, entre as barricas."
           },
           {
             "q": "O que inclui o brunch?",
-            "a": "Inclui uma ciabatta de fermentação natural à escolha, iogurte natural com granola e morangos, salada de frutas da estação, homus com palitos de cenoura e salsão, café moído na hora, chá, infusões e água saborizada."
+            "a": "Inclui **uma ciabatta de fermentação natural à escolha**, iogurte natural com granola e morangos, salada de frutas da estação, homus com palitos de cenoura e salsão, café moído na hora, chá, infusões e água saborizada."
           },
           {
             "q": "O que inclui a degustação?",
-            "a": "Inclui três rótulos selecionados de diferentes linhas da Casa Acosta, apresentados em uma degustação guiada que percorre aromas, estilos e a história da família por trás da vinícola."
+            "a": "Inclui **três rótulos selecionados** de diferentes linhas da Casa Acosta, apresentados em uma degustação guiada que percorre aromas, estilos e a história da família por trás da vinícola."
           },
           {
             "q": "Quantas pessoas podem participar?",
-            "a": "A experiência é realizada para grupos a partir de 8 participantes. Para grupos maiores, é preciso consultar a disponibilidade."
+            "a": "A experiência é realizada para grupos **a partir de 8 participantes**. Para grupos maiores, é preciso consultar a disponibilidade."
           },
           {
             "q": "Posso reservar qualquer dia?",
-            "a": "A experiência funciona com reserva antecipada, com pelo menos 5 dias de antecedência. A data e o horário são confirmados conforme a disponibilidade."
+            "a": "A experiência funciona com reserva antecipada, com **pelo menos 5 dias de antecedência**. A data e o horário são confirmados conforme a disponibilidade."
           },
           {
             "q": "O que acontece se o clima mudar?",
-            "a": "A atividade conta com uma alternativa dentro da adega, entre as barricas, para manter a experiência em um espaço protegido e acolhedor."
+            "a": "A atividade conta com uma alternativa **dentro da adega, entre as barricas**, para manter a experiência em um espaço protegido e acolhedor."
           },
           {
             "q": "É possível adaptar o brunch para alergias ou restrições alimentares?",
-            "a": "As necessidades alimentares devem ser informadas ao confirmar a reserva para revisarmos as alternativas disponíveis."
+            "a": "As necessidades alimentares devem ser informadas **ao confirmar a reserva** para revisarmos as alternativas disponíveis."
           },
           {
             "q": "Menores de idade podem participar?",
-            "a": "A degustação de vinhos é exclusiva para maiores de 18 anos. Qualquer alternativa para menores deve ser consultada antes de reservar."
+            "a": "A degustação de vinhos é exclusiva para **maiores de 18 anos**. Qualquer alternativa para menores deve ser consultada antes de reservar."
           }
         ],
         "form": {

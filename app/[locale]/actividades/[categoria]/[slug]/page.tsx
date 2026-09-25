@@ -27,6 +27,7 @@ import ActivityBreadcrumbs from "@/components/ActivityBreadcrumbs";
 import ActivityProgram from "@/components/ActivityProgram";
 import ActivitySchedule, { type ScheduleStageView } from "@/components/ActivitySchedule";
 import ActivityFaq, { type FaqEntry } from "@/components/ActivityFaq";
+import Emphasis from "@/components/Emphasis";
 import type { MenuCopy } from "@/components/ActivityMenu";
 import { CONTACT_WHATSAPP_URL } from "@/lib/contact";
 import ActivityRowCard from "@/components/ActivityRowCard";
@@ -171,7 +172,6 @@ export default async function ActivityDetailPage({
    */
   const optional = (key: string) =>
     tTour.has(`${slug}.${key}`) ? tTour(`${slug}.${key}`) : undefined;
-  const eyebrow = optional("eyebrow");
   const introMore = optional("introMore");
   const closing = optional("closing");
   const priceNote = optional("priceNote");
@@ -380,15 +380,16 @@ export default async function ActivityDetailPage({
       />
 
       {/* Dd1 — Hero. Con `heroBooking` es más alto: suma el precio y los
-          botones, y en celular esos 120px salían de la foto. Desde que la
-          ficha rápida dejó de montarse sobre la foto, el texto baja hasta el
-          borde: ya no hay que dejarle lugar a una tarjeta encima. */}
+          botones. Desde el 2026-09-24 es más alto en todas las fichas (la foto
+          baja más) y el texto va centrado: pedido de Juan Francisco. Sin
+          antetítulo: la categoría del documento de la viña ("Bienestar entre
+          viñas") salía encima del título y se sacó por el mismo pedido. */}
       <section className="relative">
         <div
           className={`relative w-full overflow-hidden ${
             tour.heroBooking
-              ? "h-[66svh] min-h-[520px] md:h-[64vh] md:min-h-[540px]"
-              : "h-[52svh] min-h-[400px] md:h-[58vh] md:min-h-[460px]"
+              ? "h-[78svh] min-h-[580px] md:h-[76vh] md:min-h-[600px]"
+              : "h-[64svh] min-h-[460px] md:h-[68vh] md:min-h-[520px]"
           }`}
         >
           <Image
@@ -402,10 +403,10 @@ export default async function ActivityDetailPage({
           {/* Vignette vino oscuro para profundidad y legibilidad */}
           <div className="absolute inset-0 bg-gradient-to-t from-[#1a0203]/85 via-[#1a0203]/40 to-[#1a0203]/15" />
 
-          <div className="absolute inset-x-0 bottom-0 px-margin-mobile md:px-margin-desktop pb-10 md:pb-16">
+          <div className="absolute inset-x-0 bottom-0 px-margin-mobile pb-12 md:px-margin-desktop md:pb-20">
             {/* data-hero-text: el Navbar lo usa para encender su velo cuando el
                 título pasa por detrás (ver components/Navbar.tsx). */}
-            <div data-hero-text className="max-w-(--container-max) mx-auto">
+            <div data-hero-text className="mx-auto flex max-w-(--container-max) flex-col items-center text-center">
               {/* El nombre de la viña salía acá en versalitas, encima del título
                   de cada tour: la misma marca repetida en el hero de un sitio
                   que ya es de la viña. El dato sigue disponible abajo, en la
@@ -413,50 +414,40 @@ export default async function ActivityDetailPage({
                   distingue un tour de otro — y con él la fila, para que sin
                   sello no reste un margen vacío sobre el título. */}
               {tour.premium && (
-                <div className="flex items-center gap-3 mb-4">
+                <div className="mb-4 flex items-center gap-3">
                   <span className="inline-flex items-center gap-1.5 rounded-full border border-white/30 px-2.5 py-0.5 font-body text-[10px] font-medium uppercase tracking-[0.16em] text-white/90">
                     <Star className="h-3 w-3 shrink-0" aria-hidden="true" />
                     {t("premium")}
                   </span>
                 </div>
               )}
-              {/* La categoría del documento de la viña ("Bienestar entre
-                  viñas"), en la cursiva de Crimson con que el sitio marca los
-                  antetítulos. No es el nombre de la viña que se sacó de acá:
-                  dice qué clase de experiencia es. */}
-              {eyebrow && (
-                <p className="mb-3 font-accent text-xl font-light italic text-white/85 md:text-2xl">
-                  {eyebrow}
-                </p>
-              )}
               <h1
-                className="font-display text-white leading-[1.05] mb-3 drop-shadow-[0_2px_16px_rgba(0,0,0,0.35)]"
+                className="font-display text-white leading-[1.05] mb-3 text-balance drop-shadow-[0_2px_16px_rgba(0,0,0,0.35)]"
                 style={{ fontSize: "clamp(2.5rem, 6vw, 4.5rem)" }}
               >
                 {name}
               </h1>
-              <p className="font-body text-body-lg text-white/85 max-w-2xl">{tagline}</p>
+              <p className="max-w-2xl text-balance font-body text-body-lg text-white/85">{tagline}</p>
 
               {/* Precio y reserva sin bajar. El documento del yoga pide que en
                   celular el precio y el botón aparezcan antes del primer
                   desplazamiento largo, y la tarjeta de precio queda tres
-                  pantallas más abajo. La duración no se repite: es la primera
-                  casilla de la ficha rápida, justo debajo.
+                  pantallas más abajo.
 
                   Los mismos dos botones que la portada del sitio —primario y
                   vidrio— sobre la misma clase de foto. En celular el de
                   WhatsApp queda como ícono: con su texto, los dos no caben en
-                  una fila de 327px y apilados empujan la ficha fuera de la
-                  pantalla. El texto sigue ahí para el lector de pantalla. */}
+                  una fila de 327px. El texto sigue ahí para el lector de
+                  pantalla. */}
               {tour.heroBooking && priceFormatted && (
-                <div className="mt-7 flex flex-col gap-4 md:mt-9 md:flex-row md:items-center md:gap-10">
+                <div className="mt-7 flex w-full flex-col items-center gap-4 md:mt-9 md:w-auto md:flex-row md:gap-10">
                   <p className="font-body text-[15px] text-white/80">
-                    <span className="mr-2 font-display text-[2rem] leading-none tabular-nums text-white">
+                    <span className="mr-2 font-body text-[1.9rem] font-bold leading-none tracking-tight tabular-nums text-white">
                       {priceFormatted}
                     </span>
                     {perPerson}
                   </p>
-                  <div className="flex gap-2.5 sm:gap-3">
+                  <div className="flex w-full justify-center gap-2.5 sm:w-auto sm:gap-3">
                     <Button
                       href="#reserva"
                       variant="primary"
@@ -483,56 +474,27 @@ export default async function ActivityDetailPage({
         </div>
       </section>
 
-      {/* Dd1 — Ficha rápida. Tarjeta blanca flotante DEBAJO del hero, ya no
-          montada sobre la foto: pedido de Juan Francisco del 2026-09-24 sobre
-          la referencia de Quorum Legal. Montada (-mt-14) le tapaba el pie a la
-          foto y competía con el título; separada, la foto termina entera y la
-          tarjeta se lee como lo que es, el resumen de la actividad.
-
-          Una columna en celular, dos desde `sm` y cuatro desde `lg`. En celular
-          iban dos columnas y "Sujeto a disponibilidad — coordinamos la fecha
-          contigo" se partía en seis líneas.
-
-          Los filetes son pseudo-elementos por celda, con aire en las puntas
-          como en la referencia: el horizontal (`before`) separa filas y el
-          vertical (`after`) columnas, cada uno encendido sólo donde hay una
-          celda al lado. `divide-*` los pinta de borde a borde y, con dos
-          columnas, dibujaba una raya en el filo de la segunda fila.
-
-          `relative z-10`: la sombra de la tarjeta cae sobre el bloque de
-          abajo, y sin posición ese bloque —que viene después y tiene fondo—
-          la pinta encima y la corta en seco. */}
-      <section className="bg-surface-container-lowest px-margin-mobile pt-8 md:px-margin-desktop md:pt-12">
+      {/* Dd1 — Migas, centradas bajo el hero. Pedido de Juan Francisco del
+          2026-09-24: primero dónde estás, después la píldora y recién ahí la
+          ficha rápida. Van sobre blanco y no sobre la foto: arriba eran cuatro
+          niveles en blanco que en 375px se partían en dos líneas. Siguen siendo
+          la vuelta a la categoría y lo que hace honesto el `BreadcrumbList`. */}
+      <section className="bg-surface-container-lowest px-margin-mobile pt-7 md:px-margin-desktop md:pt-9">
         <div className="mx-auto max-w-(--container-max)">
-          <div className="relative z-10 rounded-[28px] bg-surface-container-lowest shadow-[0_32px_64px_-32px_rgba(74,14,14,0.30),0_8px_24px_-16px_rgba(74,14,14,0.12)] ring-1 ring-outline-variant/30">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
-              {ficha.map(({ icon: Icon, label, value, note }, index) => (
-                <div
-                  key={label}
-                  className={`relative flex items-start gap-4 px-5 py-5 sm:p-6 lg:p-8 before:absolute before:inset-x-5 before:top-0 before:h-px before:bg-outline-variant/50 sm:before:inset-x-6 lg:before:hidden after:absolute after:inset-y-6 after:left-0 after:hidden after:w-px after:bg-outline-variant/50 lg:after:inset-y-8 ${
-                    index === 0 ? "before:hidden" : ""
-                  } ${index === 1 ? "sm:before:hidden" : ""} ${
-                    index % 2 === 1 ? "sm:after:block" : ""
-                  } ${index > 0 ? "lg:after:block" : ""}`}
-                >
-                  <IconBadge>
-                    <Icon />
-                  </IconBadge>
-                  <div className="min-w-0 pt-0.5">
-                    <p className="font-body text-[13px] text-on-surface-variant">{label}</p>
-                    <p className="mt-1 font-display text-[1.15rem] leading-snug text-primary md:text-[1.2rem]">
-                      {value}
-                    </p>
-                    {note && (
-                      <p className="mt-1.5 font-body text-[14px] leading-snug text-on-surface-variant">
-                        {note}
-                      </p>
-                    )}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
+          <ActivityBreadcrumbs
+            tone="papel"
+            align="center"
+            aria={t("breadcrumbAria")}
+            items={[
+              { href: `/${locale}`, label: crumbLabels.home },
+              { href: `/${locale}/actividades`, label: crumbLabels.activities },
+              {
+                href: categoryIndexHref(locale, tour.category),
+                label: crumbLabels.category,
+              },
+              { href: `/${locale}${activityPath(tour)}`, label: name },
+            ]}
+          />
         </div>
       </section>
 
@@ -551,31 +513,59 @@ export default async function ActivityDetailPage({
           aria={t("nav.aria")}
         />
 
-      {/* Introducción, con la miga arriba. La miga va sobre papel y no sobre la
-          foto: arriba eran cuatro niveles en blanco que en 375px se partían en
-          dos líneas. Sigue siendo la vuelta a la categoría y lo que hace
-          honesto el `BreadcrumbList` del JSON-LD.
+      {/* Dd1 — Ficha rápida, después de las migas y la píldora. Tarjeta blanca
+          flotante fuera del hero, ya no
+          montada sobre la foto: pedido de Juan Francisco del 2026-09-24 sobre
+          la referencia de Quorum Legal. Montada (-mt-14) le tapaba el pie a la
+          foto y competía con el título; separada, la foto termina entera y la
+          tarjeta se lee como lo que es, el resumen de la actividad.
+
+          Sin bordes, también por pedido suyo: ni el contorno de la tarjeta ni
+          los filetes entre casillas. Lo que la separa del fondo blanco es sólo
+          la sombra —de ahí que flote— y lo que separa las casillas es el aire.
+
+          Una columna en celular, dos desde `sm` y cuatro desde `lg`. En celular
+          iban dos columnas y "Sujeto a disponibilidad — coordinamos la fecha
+          contigo" se partía en seis líneas.
+
+          `relative z-10`: la sombra de la tarjeta cae sobre el bloque de
+          abajo, y sin posición ese bloque —que viene después y tiene fondo—
+          la pinta encima y la corta en seco. */}
+      <section className="bg-surface-container-lowest px-margin-mobile pt-3 md:px-margin-desktop md:pt-5">
+        <div className="mx-auto max-w-(--container-max)">
+          <div className="relative z-10 rounded-[28px] bg-surface-container-lowest px-1 py-2 shadow-[0_36px_70px_-30px_rgba(74,14,14,0.30),0_10px_30px_-14px_rgba(74,14,14,0.12)] sm:p-2 lg:py-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
+              {ficha.map(({ icon: Icon, label, value, note }) => (
+                <div key={label} className="flex items-start gap-4 px-5 py-4 sm:p-5 lg:p-6">
+                  <IconBadge>
+                    <Icon />
+                  </IconBadge>
+                  <div className="min-w-0 pt-0.5">
+                    <p className="font-body text-[13px] text-on-surface-variant">{label}</p>
+                    <p className="mt-0.5 font-body text-[1.05rem] font-semibold leading-snug text-primary md:text-[1.1rem]">
+                      {value}
+                    </p>
+                    {note && (
+                      <p className="mt-1.5 font-body text-[14px] leading-snug text-on-surface-variant">
+                        {note}
+                      </p>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Introducción. Las migas que la abrían subieron bajo el hero.
 
           La caja "¿Cuándo se hace?" (Dd3) que cerraba esta sección se fue el
           2026-09-24: en once de catorce fichas decía "Todo el año". En las de
           temporada el dato pasó a las condiciones de la tarjeta de precio. */}
-      <section className="bg-surface-container-lowest px-margin-mobile pb-16 pt-4 md:px-margin-desktop md:pb-24 md:pt-6">
+      <section className="bg-surface-container-lowest px-margin-mobile pb-16 pt-14 md:px-margin-desktop md:pb-24 md:pt-20">
         <div className="mx-auto max-w-(--container-max)">
-          <ActivityBreadcrumbs
-            tone="papel"
-            aria={t("breadcrumbAria")}
-            items={[
-              { href: `/${locale}`, label: crumbLabels.home },
-              { href: `/${locale}/actividades`, label: crumbLabels.activities },
-              {
-                href: categoryIndexHref(locale, tour.category),
-                label: crumbLabels.category,
-              },
-              { href: `/${locale}${activityPath(tour)}`, label: name },
-            ]}
-          />
-
-          <div className="mt-10 grid grid-cols-1 items-center gap-8 md:mt-14 lg:grid-cols-2 lg:gap-16">
+          <div className="grid grid-cols-1 items-center gap-8 lg:grid-cols-2 lg:gap-16">
             <div className="relative pl-6 border-l-2 border-primary/25">
               <Grape
                 className="absolute -left-[13px] top-1 h-6 w-6 text-wine-accent bg-surface-container-lowest rounded-full p-0.5"
@@ -589,7 +579,7 @@ export default async function ActivityDetailPage({
                   escala es el mismo recurso del hub de Vendimia (Dv2). */}
               {introMore && (
                 <p className="mt-6 max-w-[58ch] font-body text-[17px] leading-[1.7] text-on-surface-variant">
-                  {introMore}
+                  <Emphasis text={introMore} />
                 </p>
               )}
             </div>
@@ -762,7 +752,7 @@ export default async function ActivityDetailPage({
                     depende, en vez de dejar el hueco donde iba la cifra. */}
                 {priceFormatted === undefined ? (
                   <>
-                    <p className="font-display text-3xl leading-tight text-primary md:text-4xl">
+                    <p className="font-body text-2xl font-bold leading-tight tracking-tight text-primary md:text-3xl">
                       {t("priceOnRequest")}
                     </p>
                     <p className="font-body text-body-md text-on-surface-variant mt-2">
@@ -772,7 +762,7 @@ export default async function ActivityDetailPage({
                 ) : (
                   <>
                     <div className="flex items-baseline gap-2">
-                      <span className="font-display text-4xl leading-none tabular-nums text-primary md:text-5xl">
+                      <span className="font-body text-4xl font-bold leading-none tracking-tight tabular-nums text-primary md:text-[2.75rem]">
                         {priceFormatted}
                       </span>
                     </div>

@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { ChevronDown, ChevronsUpDown, MessageCircle } from "lucide-react";
 import Button from "@/components/ui/Button";
+import Emphasis from "@/components/Emphasis";
 
 export type FaqEntry = { q: string; a: string };
 
@@ -93,7 +94,7 @@ export default function ActivityFaq({
               className="faq-item group rounded-2xl border border-outline-variant/50 bg-surface-container-lowest shadow-[0_14px_34px_-22px_rgba(74,14,14,0.30),0_2px_6px_-2px_rgba(74,14,14,0.05)] transition-[border-color,box-shadow] duration-300 open:border-wine-accent/30 open:shadow-[0_22px_44px_-24px_rgba(74,14,14,0.38),0_2px_6px_-2px_rgba(74,14,14,0.06)] hover:border-wine-accent/30"
             >
               <summary className="flex cursor-pointer list-none items-center justify-between gap-5 rounded-2xl px-5 py-5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 md:px-7 md:py-6 [&::-webkit-details-marker]:hidden">
-                <span className="font-display text-[1.12rem] leading-snug text-primary md:text-[1.3rem]">
+                <span className="font-body text-[1rem] font-semibold leading-snug text-primary md:text-[1.08rem]">
                   {q}
                 </span>
                 <span
@@ -104,7 +105,7 @@ export default function ActivityFaq({
                 </span>
               </summary>
               <p className="max-w-[62ch] px-5 pb-6 font-body text-[17px] leading-[1.7] text-on-surface-variant md:px-7 md:pb-7">
-                {a}
+                <Emphasis text={a} />
               </p>
             </details>
           ))}
