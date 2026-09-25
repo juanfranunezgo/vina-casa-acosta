@@ -11,8 +11,12 @@ todavía y qué trampas ya se pagaron.
 ## En una línea
 
 El sitio está **completo como pieza visual y casi vacío como software**: 74 páginas SSG en
-tres idiomas, sin backend propio, sin base de datos y sin pagos. Los dos formularios ya
-llegan a la viña vía Netlify Forms; el carrito sigue derivando a WhatsApp sin cobro.
+tres idiomas, sin backend propio y sin base de datos. Los dos formularios ya llegan a la
+viña vía Netlify Forms. **El carrito cobra**: en producción está definida
+`NEXT_PUBLIC_AFELEIA_CHECKOUT_URL` (`checkout.vinacasaacosta.cl`, verificado el 2026-09-25 en
+la CSP del sitio publicado) y el cajón ofrece "Pagar" con Mercado Pago a través del
+checkout de Afeleia; WhatsApp queda de respaldo. La ficha de vino muestra el sello "Pago
+seguro con Mercado Pago" con esa misma condición (`components/CompraSegura.tsx`).
 
 ---
 
@@ -24,7 +28,7 @@ Esto es lo primero que hay que saber, porque no se nota mirando la interfaz:
 |---|---|
 | Reserva de tours (`components/TourReservationForm.tsx`) | Envía a **Netlify Forms** (`reserva-tour`). Al lado hay un botón de WhatsApp que sí funciona. |
 | Contacto (`components/ContactForm.tsx`) | Envía a **Netlify Forms** (`contacto`). Antes era un `mailto:` que se perdía si el visitante no tenía cliente de correo. |
-| Carrito (`components/CartDrawer.tsx`) | El "checkout" arma un mensaje de WhatsApp con el pedido. **No hay cobro.** |
+| Carrito (`components/CartDrawer.tsx`) | Con `NEXT_PUBLIC_AFELEIA_CHECKOUT_URL` (definida en producción) ofrece **"Pagar"**: un POST al checkout de Afeleia, que cobra con Mercado Pago. Sin la variable, o si el checkout no responde, arma un mensaje de WhatsApp con el pedido. |
 
 ### Netlify Forms — cómo está armado
 

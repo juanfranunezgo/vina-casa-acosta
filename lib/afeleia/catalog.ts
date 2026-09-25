@@ -43,6 +43,8 @@ import {
   type AttributeValue,
   type TechnicalRow,
 } from "@/lib/afeleia/contract";
+import { minBottlesFrom } from "@/lib/checkout";
+import { MIN_BOTTLES } from "@/lib/compraMinima";
 
 /**
  * Catálogo servido por la API pública de Afeleia (contrato v1).
@@ -509,6 +511,16 @@ export async function getCatalogMeta(): Promise<CatalogMeta> {
     sitio: catalog.sitio,
     products: catalog.productos.length,
   };
+}
+
+/**
+ * Botellas mínimas por pedido, del mismo catálogo que lee el carrito y con el
+ * mismo respaldo (`CartDrawer` hace `minBottlesFrom(payload, MIN_BOTTLES)`):
+ * lo que la ficha anuncia es lo que el cajón después exige.
+ */
+export async function getMinBottles(): Promise<number> {
+  const { catalog } = await loadCatalog();
+  return minBottlesFrom(catalog, MIN_BOTTLES);
 }
 
 /** Un vino por slug, o `null` si el catálogo no lo trae. */

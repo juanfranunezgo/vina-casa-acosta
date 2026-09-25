@@ -51,7 +51,7 @@ Sistema de IDs para referirse a páginas y secciones del sitio de forma rápida 
 
 | ID | Sección |
 |---|---|
-| Cd1 | Producto (imagen + info + `ProductPurchase` con stepper) |
+| Cd1 | Producto. Desde el 2026-09-25, con el tratamiento de las fichas de actividad (Plus Jakarta Sans, tarjetas que flotan por la sombra, `IconBadge`): la botella queda fija en escritorio y, a la derecha, nombre → **tarjeta de compra** (precio, `ProductPurchase` con stepper y el sello `CompraSegura`: Mercado Pago sólo con el pago en línea encendido, compra directa a la viña, mínimo de botellas) → descripción → notas de cata → maridaje → ficha técnica en tarjeta, con el PDF al pie. Antes la compra iba al final, después de la ficha técnica |
 | Cd2 | Vinos relacionados de la misma línea |
 
 ## D — Actividades (`app/[locale]/actividades/page.tsx`)

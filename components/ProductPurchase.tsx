@@ -29,8 +29,10 @@ export default function ProductPurchase({ item, agotado }: Props) {
     }, 900);
   };
 
+  // A lo ancho de la tarjeta de compra de la ficha: el botón crece y el
+  // selector de cantidad queda a su medida.
   return (
-    <div className="flex items-stretch gap-3">
+    <div className="flex w-full items-stretch gap-3">
       {/* Quantity stepper */}
       <div
         className="inline-flex items-center border border-outline-variant rounded-md bg-surface overflow-hidden"
@@ -69,7 +71,7 @@ export default function ProductPurchase({ item, agotado }: Props) {
         onClick={handleAdd}
         disabled={agotado}
         aria-disabled={agotado}
-        className={`group inline-flex h-11 min-w-40 items-center justify-center gap-2 whitespace-nowrap rounded-md bg-primary px-6 font-body text-body-md font-semibold text-on-primary shadow-[0_8px_24px_-8px_rgba(42,0,2,0.45)] transition-all duration-200 hover:-translate-y-0.5 hover:bg-primary-container hover:shadow-[0_12px_28px_-8px_rgba(42,0,2,0.55)] active:translate-y-0 ${
+        className={`group inline-flex h-11 min-w-40 flex-1 items-center justify-center gap-2 whitespace-nowrap rounded-md bg-primary px-6 font-body text-body-md font-semibold text-on-primary shadow-[0_8px_24px_-8px_rgba(42,0,2,0.45)] transition-all duration-200 hover:-translate-y-0.5 hover:bg-primary-container hover:shadow-[0_12px_28px_-8px_rgba(42,0,2,0.55)] active:translate-y-0 ${
           agotado
             ? "cursor-not-allowed bg-surface-container-highest text-on-surface-variant shadow-none hover:translate-y-0 hover:bg-surface-container-highest hover:shadow-none"
             : pulse

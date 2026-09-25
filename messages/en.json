@@ -405,8 +405,16 @@
     "tastingNotes": "Tasting notes",
     "pairing": "Food pairing",
     "technicalSheet": "Technical sheet (PDF)",
-    "currency": "CLP",
-    "youMayAlsoLike": "You may also like"
+    "priceLabel": "Price in Chilean pesos",
+    "youMayAlsoLike": "You may also like",
+    "trust": {
+      "securePayment": "Secure payment with",
+      "securePaymentNote": "You pay on Mercado Pago: your banking details never go through this store.",
+      "direct": "Buy direct from the winery",
+      "directNote": "Wines from our cellar in San Vicente de Tagua Tagua, with no middlemen.",
+      "minimum": "Minimum order of {min, plural, one {# bottle} other {# bottles}}",
+      "minimumNote": "Mix and match across all our wines. We arrange delivery with you."
+    }
   },
   "actividades": {
     "hero": {

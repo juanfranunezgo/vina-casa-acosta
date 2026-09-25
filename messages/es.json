@@ -405,8 +405,16 @@
     "tastingNotes": "Notas de cata",
     "pairing": "Maridaje",
     "technicalSheet": "Ficha técnica (PDF)",
-    "currency": "CLP",
-    "youMayAlsoLike": "También te puede interesar"
+    "priceLabel": "Precio en pesos chilenos",
+    "youMayAlsoLike": "También te puede interesar",
+    "trust": {
+      "securePayment": "Pago seguro con",
+      "securePaymentNote": "El pago se hace en Mercado Pago: tus datos bancarios no pasan por esta tienda.",
+      "direct": "Compra directa a la viña",
+      "directNote": "Vinos de nuestra bodega en San Vicente de Tagua Tagua, sin intermediarios.",
+      "minimum": "Compra mínima de {min, plural, one {# botella} other {# botellas}}",
+      "minimumNote": "Combinables entre todos nuestros vinos. Coordinamos el despacho contigo."
+    }
   },
   "actividades": {
     "hero": {

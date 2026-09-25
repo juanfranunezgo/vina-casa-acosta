@@ -2,7 +2,6 @@ import Image from "next/image";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
-import { Plus_Jakarta_Sans } from "next/font/google";
 import {
   ArrowRight,
   MapPin,
@@ -38,6 +37,7 @@ import ActivitySectionNav from "@/components/ActivitySectionNav";
 import IconBadge from "@/components/ui/IconBadge";
 import ActivityReservationForm from "@/components/ActivityReservationForm";
 import { mesesDeTemporada } from "@/lib/temporada";
+import { FUENTE_FICHA } from "@/lib/fuenteFicha";
 import {
   activities,
   activitiesByCategory,
@@ -66,24 +66,6 @@ const includeIcons: Record<string, LucideIcon[]> = {
   "carmenere": [Wine, Leaf, Warehouse, Pipette, Grape],
 };
 
-/**
- * Plus Jakarta Sans para el texto de las fichas —no para los títulos, que
- * siguen en Libre Caslon—. Pedido de Juan Francisco del 2026-09-24 sobre la
- * lectura de Quorum Legal, y sólo acá: menú, pie y el resto del sitio siguen en
- * Work Sans.
- *
- * Se aplica redefiniendo `--font-body` en cada bloque de primer nivel de la
- * ficha, así que todo `font-body` de adentro —componentes incluidos— cambia
- * sin tocarlos. No va en un `div` que envuelva la página porque el Navbar busca
- * el hero como `main > section` (components/Navbar.tsx) y un envoltorio lo
- * escondería. Si la ficha gana un bloque de primer nivel, lleva esta clase.
- */
-const jakarta = Plus_Jakarta_Sans({
-  variable: "--font-jakarta",
-  subsets: ["latin"],
-  display: "swap",
-});
-const FUENTE_FICHA = `${jakarta.variable} font-body [--font-body:var(--font-jakarta)]`;
 
 /**
  * Parte "Con al menos 5 días de anticipación — coordinamos la fecha contigo" en
