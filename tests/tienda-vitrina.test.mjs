@@ -109,6 +109,32 @@ test("la tienda declara sus vinos como lista, además de la página como colecci
   assert.equal((pagina.match(/<JsonLd data=/g) ?? []).length, 2);
 });
 
+test("la línea sobre el nombre va en la cursiva de los antetítulos, no en mayúsculas", () => {
+  // Pedido de Juan Francisco (2026-09-25): en mayúsculas espaciadas y negrita
+  // se veía "demasiado recta y grande". Pasa a la cursiva serif de "Tienda
+  // online" y "Línea Berá".
+  const linea = vitrina.match(/\{wine\.line && \(\s*<(\w+) className="([^"]*)"/);
+  assert.ok(linea, "falta la línea sobre el nombre");
+  assert.match(linea[2], /font-accent/);
+  assert.match(linea[2], /italic/);
+  assert.doesNotMatch(linea[2], /uppercase|tracking-widest/);
+});
+
+test("los sellos sobre la foto son el mismo componente en la tienda y en la ficha", async () => {
+  // Mismo pedido: el rectángulo oscuro en mayúsculas pasa a una pastilla
+  // blanca con texto en letra normal. Un solo componente para los dos lugares.
+  const ficha = await leer("app/[locale]/vinos/[slug]/page.tsx");
+  const selloProducto = await leer("components/SelloProducto.tsx");
+  for (const [nombre, fuente] of [["tienda", vitrina], ["ficha", ficha]]) {
+    assert.match(fuente, /import SelloProducto from "@\/components\/SelloProducto"/, nombre);
+    assert.match(fuente, /<SelloProducto[\s\S]*?translatedOr\(tBadges, wine\.badge, wine\.badge\)/, nombre);
+  }
+  const clases = selloProducto.match(/className=\{`([^`]*)`\}/)?.[1];
+  assert.ok(clases, "falta el className del sello");
+  assert.doesNotMatch(clases, /uppercase|tracking-wider/);
+  assert.match(clases, /rounded-full/);
+});
+
 test("el botón de carrito de la tarjeta es un círculo vino, no un contorno", () => {
   // El mismo círculo de `IconBadge`: degradado vino y filete de luz.
   assert.match(boton, /from-wine-accent to-primary-container/);

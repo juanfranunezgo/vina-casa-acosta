@@ -6,6 +6,7 @@ import { useTranslations, useLocale } from "next-intl";
 import { Check, ChevronDown, Filter, X } from "lucide-react";
 import Reveal from "@/components/Reveal";
 import AddToCartButton from "@/components/AddToCartButton";
+import SelloProducto from "@/components/SelloProducto";
 import WineBottleImage from "@/components/WineBottleImage";
 import { matchesWineType } from "@/data/wines";
 import type { CatalogWine } from "@/lib/afeleia/catalog";
@@ -415,17 +416,21 @@ export default function TiendaCatalogo({
                         sizes="(max-width: 768px) 100vw, 33vw"
                       />
                       {wine.badge && (
-                        <span className="absolute top-4 left-4 bg-primary text-on-primary px-3 py-1 text-label-sm uppercase tracking-wider rounded font-semibold">
+                        <SelloProducto className="top-4 left-4">
                           {translatedOr(tBadges, wine.badge, wine.badge)}
-                        </span>
+                        </SelloProducto>
                       )}
                     </Link>
                     <div className="p-6 flex flex-col flex-grow">
                       {/* La línea en vino (`wine-accent`, 9,9:1 sobre el blanco
                           de la tarjeta), no en el gris de las etiquetas: es la
-                          colección, lo primero que distingue un vino de otro. */}
+                          colección, lo primero que distingue un vino de otro.
+                          En la cursiva serif de los antetítulos del sitio
+                          ("Tienda online", "Línea Berá"): en mayúsculas
+                          espaciadas se veía "demasiado recta y grande"
+                          (2026-09-25). */}
                       {wine.line && (
-                        <span className="font-body text-label-sm text-wine-accent uppercase tracking-widest mb-2">
+                        <span className="mb-1 font-accent text-[17px] font-light italic leading-snug text-wine-accent">
                           {wine.line}
                         </span>
                       )}

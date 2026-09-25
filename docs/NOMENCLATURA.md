@@ -163,7 +163,7 @@ sugieren los nombres de Tailwind.
 | ID | Sección |
 |---|---|
 | F1 | Hero + franja de confianza bajo el subtítulo (`CompraSegura` en variante `franja`: pago seguro con Mercado Pago —sólo con el pago en línea encendido—, compra directa a la viña, mínimo de botellas). Desde el 2026-09-25 |
-| F2 | Catálogo (filtros + sort + grilla + sheet mobile). Desde el 2026-09-25 con el tratamiento de las fichas: Plus Jakarta Sans, filtros como pastillas (`aria-pressed`) en una tarjeta que flota por la sombra, orden como pastilla, tarjetas de vino blancas con sombra y el botón de carrito en círculo vino. El aviso del pie dice cómo se paga de verdad: Mercado Pago con el pago en línea encendido, WhatsApp sin él |
+| F2 | Catálogo (filtros + sort + grilla + sheet mobile). Desde el 2026-09-25 con el tratamiento de las fichas: Plus Jakarta Sans, filtros como pastillas (`aria-pressed`) en una tarjeta que flota por la sombra, orden como pastilla, tarjetas de vino blancas con sombra, la línea en la cursiva de los antetítulos, los sellos ("Edición Limitada", "Insignia") en pastilla blanca (`SelloProducto`, el mismo de Cd1) y el botón de carrito en círculo vino. El aviso del pie dice cómo se paga de verdad: Mercado Pago con el pago en línea encendido, WhatsApp sin él |
 
 ## G — 404 (`app/[locale]/not-found.tsx`)
 

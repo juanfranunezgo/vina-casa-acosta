@@ -9,6 +9,7 @@ import Reveal from "@/components/Reveal";
 import Button from "@/components/ui/Button";
 import ProductPurchase from "@/components/ProductPurchase";
 import CompraSegura from "@/components/CompraSegura";
+import SelloProducto from "@/components/SelloProducto";
 import TastingProfile from "@/components/TastingProfile";
 import WineBottleImage from "@/components/WineBottleImage";
 import IconBadge from "@/components/ui/IconBadge";
@@ -226,9 +227,9 @@ export default async function WinePage({
                 priority
               />
               {wine.badge && (
-                <span className="absolute top-6 left-6 bg-primary text-on-primary px-3 py-1.5 text-label-sm uppercase tracking-wider rounded font-semibold">
+                <SelloProducto className="top-5 left-5 md:top-6 md:left-6">
                   {translatedOr(tBadges, wine.badge, wine.badge)}
-                </span>
+                </SelloProducto>
               )}
             </div>
           </Reveal>
