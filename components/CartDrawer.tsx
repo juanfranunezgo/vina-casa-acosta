@@ -202,7 +202,10 @@ export default function CartDrawer() {
         aria-hidden={!isOpen}
       >
         <header className="flex items-center justify-between px-6 py-5 border-b border-outline-variant/30">
-          <h2 className="font-display text-2xl text-primary">{t("title")}</h2>
+          {/* Rótulo y no H2: el carrito se renderiza en todas las páginas,
+              cerrado, y su título entraba a la estructura de encabezados de
+              cada una. El diálogo se sigue llamando así por su aria-label. */}
+          <p className="font-display text-2xl text-primary">{t("title")}</p>
           <button
             onClick={() => toggle(false)}
             className="p-2 -mr-2 text-on-surface-variant hover:text-primary transition-colors"
@@ -254,9 +257,11 @@ export default function CartDrawer() {
                           <p className="font-body text-label-sm uppercase tracking-wider text-on-surface-variant">
                             {item.line}
                           </p>
-                          <h3 className="font-display text-lg text-primary truncate">
+                          {/* Rótulo y no H3, por lo mismo que el título del
+                              carrito: el cajón vive en todas las páginas. */}
+                          <p className="font-display text-lg text-primary truncate">
                             {item.name}
-                          </h3>
+                          </p>
                           {isSoldOut && (
                             <>
                               <span className="mt-1 inline-flex rounded bg-surface-container-highest px-2 py-0.5 font-body text-label-sm font-semibold uppercase tracking-wider text-on-surface-variant">

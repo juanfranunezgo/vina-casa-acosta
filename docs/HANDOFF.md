@@ -218,6 +218,14 @@ nuestra, sin validar.
   Rancagua" son los que el sitio ya publicaba con el texto de la viña.
 - Las preguntas frecuentes son `<h3>` dentro del `<summary>`, bajo el `<h2>`. El
   `Product` del JSON-LD declara las ocho fotos y la meta descripción.
+- **Encabezados globales fuera.** Pie, carrito y capa de +18 sumaban cinco `<h2>` a
+  todas las páginas ("Visítanos", "Actividades", "La viña", "Tu selección", "¿Eres
+  mayor de 18 años?") y el carrito un `<h3>` por vino. Ahora son `<p>` con el mismo
+  estilo; los diálogos conservan su nombre por `aria-label` / `aria-labelledby`.
+  `tests/encabezados-globales.test.mjs` impide que vuelvan. Era el punto 3 del
+  diagnóstico SEO del 2026-09-22.
+- `photos.*.position` (`object-position` por ranura): la usa el panel del formulario
+  del yoga, con la foto del grupo en el brunch entera y corrida hacia las caras.
 
 ### Rediseño de la ficha (2026-09-24, pedido de Juan Francisco)
 

@@ -247,13 +247,17 @@ export default function AgeGate() {
 
         {/* `clamp()` y no media queries, como el resto de los títulos grandes del
             sitio: una sola declaración cubre de 375px a 1920px. */}
-        <h2
+        {/* Rótulo y no H2: la capa está en el HTML de todas las páginas
+            (ver la nota de #age-gate en globals.css) y su pregunta entraba a
+            la estructura de encabezados de cada una. El diálogo la sigue
+            tomando como nombre por aria-labelledby. */}
+        <p
           id="age-gate-title"
           className="mt-8 font-display text-on-primary drop-shadow-[0_4px_24px_rgba(0,0,0,0.6)]"
           style={{ fontSize: "clamp(2.25rem, 6.4vw, 4.5rem)", lineHeight: 1.08, letterSpacing: "-0.015em" }}
         >
           {despedida ? t("byeTitle") : t("title")}
-        </h2>
+        </p>
 
         {despedida && (
           <p className="mx-auto mt-5 max-w-lg font-body text-[16px] leading-[1.65] text-on-primary/85">

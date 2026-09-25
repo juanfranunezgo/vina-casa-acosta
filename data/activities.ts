@@ -23,7 +23,17 @@ export type ActivityCategory = (typeof ACTIVITY_CATEGORIES)[number];
  * en pantalla —lo lee un lector de pantalla— así que vive en messages como
  * cualquier otro copy, no acá.
  */
-export type ActivityPhoto = { src: string; alt: string };
+export type ActivityPhoto = {
+  src: string;
+  alt: string;
+  /**
+   * `object-position` en la ranura, cuando el centro de la foto no es lo que
+   * importa. Hoy sólo lo usa el panel del formulario del yoga: una foto
+   * apaisada en un panel alto, donde el centro es la mesa y las caras están a
+   * la izquierda.
+   */
+  position?: string;
+};
 
 /**
  * Fotos propias de la actividad, una por ranura de la ficha. Ausente = la ficha
@@ -367,7 +377,11 @@ export const activities: Activity[] = [
     photos: {
       intro: { src: "/images/actividades/yoga-grupo.webp", alt: "grupo" },
       card: { src: "/images/actividades/yoga-mesa.webp", alt: "mesa" },
-      reserve: { src: "/images/actividades/yoga-toldo.webp", alt: "toldo" },
+      reserve: {
+        src: "/images/actividades/yoga-brunch-grupo.webp",
+        alt: "brunch",
+        position: "15% 50%",
+      },
       gallery: {
         wide: { src: "/images/actividades/yoga-brunch.webp", alt: "brunch" },
         portraits: [

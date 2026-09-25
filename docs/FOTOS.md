@@ -245,16 +245,16 @@ declara su caja en píxeles del original (`box`), anotada en el script.
 | `yoga-hero.jpg` | yoga1 | `yoga-hero.webp` 960×1280 | Dd1, hero (y `og:image`) | ninguno; en escritorio `heroPosition: 50% 58%` |
 | `yoga-grupo.jpg` | yoga 3 | `yoga-grupo.webp` 800×600 | Dd1, junto a la introducción | 4:3 sin el ventilador de la izquierda |
 | `yoga-mesa.jpg` | yoga 8 | `yoga-mesa.webp` 960×600 | Dd5, tarjeta de precio ("¿Qué incluye?") | 16:10, la mesa del brunch |
-| `yoga-toldo.jpg` | yoga 6 | `yoga-toldo.webp` 960×1280 | Dd7, junto al formulario | ninguno |
+| `yoga-brunch.jpg` | yoga 9 | `yoga-brunch-grupo.webp` 1280×960 | Dd7, junto al formulario | ninguno; `position: 15% 50%` corre el encuadre a las caras |
 | `yoga-brunch.jpg` | yoga 9 | `yoga-brunch.webp` 1280×720 | Dd6, apertura de galería | 16:9 centrado |
 | `yoga-parras.jpg` | yoga 5 | `yoga-parras.webp` 853×1280 | Dd6, mosaico | 2:3, conserva la derecha |
 | `yoga-relajacion.jpg` | yoga 7 | `yoga-relajacion.webp` 640×960 | Dd6, mosaico | 2:3 sin los bolsos del primer plano |
 | `yoga-instructora.jpg` | yoga 2 | `yoga-instructora.webp` 853×1280 | Dd6, mosaico | 2:3, conserva la barrica |
 
-La que no entra es `yoga-bailarin.jpg` (yoga 4): la mitad de abajo es tierra y el
-mismo momento lo cuentan mejor las demás. La tarjeta de precio llevaba las posturas
-bajo el toldo y el panel del formulario la mesa; Juan Francisco pidió la mesa en
-"¿Qué incluye?" y se intercambiaron. Los `alt` están en los tres bundles bajo
+No entran `yoga-bailarin.jpg` (yoga 4: la mitad de abajo es tierra) ni `yoga-toldo.jpg`
+(yoga 6). Juan Francisco pidió la mesa del brunch en "¿Qué incluye?" y el grupo
+sonriendo junto al formulario: es la misma foto que abre la galería, repetida a
+propósito, pero entera (4:3) en vez del recorte 16:9, porque el panel es alto. Los `alt` están en los tres bundles bajo
 `activities.items.yoga.photos`, incluido el del hero (`photos.hero`), que lleva el
 lugar porque también es SEO.
 

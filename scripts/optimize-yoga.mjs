@@ -16,9 +16,10 @@
 // de su ranura, elegida mirando la foto y anotada una por una. Sin `box`, la
 // foto sale entera y el encuadre lo resuelve `object-cover` en la página.
 //
-// La que no entra: `yoga-bailarin.jpg` (el grupo en la postura del bailarín
-// detrás del tronco). La mitad de abajo es tierra, y el mismo momento lo
-// cuentan mejor las demás.
+// Las que no entran: `yoga-bailarin.jpg` (el grupo en la postura del bailarín
+// detrás del tronco: la mitad de abajo es tierra) y `yoga-toldo.jpg` (las
+// posturas bajo el toldo), que estuvo junto al formulario hasta que Juan
+// Francisco eligió ahí el grupo del brunch.
 
 import sharp from "sharp";
 import { mkdir, stat, access } from "node:fs/promises";
@@ -63,11 +64,14 @@ const FOTOS = [
     box: { left: 0, top: 440, width: 960, height: 600 },
   },
   {
-    // Dd7 — panel junto al formulario. Las posturas bajo el toldo blanco.
-    // Entera: la ranura es vertical en escritorio y apaisada en celular, y en
-    // los dos casos el centro del cuadro son las posturas.
-    source: "yoga-toldo.jpg",
-    name: "yoga-toldo",
+    // Dd7 — panel junto al formulario. El grupo sonriendo en la mesa del
+    // brunch, elegida por Juan Francisco. Es la misma foto que abre la
+    // galería, pero ENTERA (4:3) y no recortada a 16:9: el panel es alto en
+    // escritorio y cada píxel de alto que quede es ancho que no se pierde. El
+    // encuadre lo corre hacia las cuatro caras de la izquierda
+    // (`position` en data/activities.ts).
+    source: "yoga-brunch.jpg",
+    name: "yoga-brunch-grupo",
   },
   {
     // Dd6 — apertura de la galería, 16:9. El grupo en la mesa del brunch,

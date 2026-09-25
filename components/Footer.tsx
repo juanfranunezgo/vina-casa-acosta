@@ -181,7 +181,11 @@ export default async function Footer() {
 
           {/* ── Visítanos ──────────────────────────────────────────────── */}
           <div className="md:col-span-3">
-            <h2 className={`${rotuloClass} mb-5`}>{t("columns.visit")}</h2>
+            {/* Rótulo y no H2: el pie se repite en todas las páginas y sus
+                columnas no son secciones del contenido. Como H2 sumaban tres
+                encabezados iguales a la estructura de cada página (ver la nota
+                en tests/encabezados-globales.test.mjs). */}
+            <p className={`${rotuloClass} mb-5`}>{t("columns.visit")}</p>
             <ul className="space-y-3.5 font-body text-[15px]">
               <li className="flex items-start gap-2.5">
                 <MapPin className="mt-1 h-4 w-4 shrink-0 text-primary" aria-hidden="true" />
@@ -238,7 +242,7 @@ export default async function Footer() {
           >
             {columnas.map(({ title, links }) => (
               <div key={title}>
-                <h2 className={`${rotuloClass} mb-5`}>{title}</h2>
+                <p className={`${rotuloClass} mb-5`}>{title}</p>
                 <ul className="space-y-3 font-body text-[15px]">
                   {links.map(({ label, href }) => (
                     <li key={href}>

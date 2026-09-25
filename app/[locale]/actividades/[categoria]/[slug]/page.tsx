@@ -325,7 +325,11 @@ export default async function ActivityDetailPage({
       ? { src: tour.photos.card.src, alt: photoAlt(tour.photos.card) }
       : { src: tour.image, alt: name },
     reserve: tour.photos?.reserve
-      ? { src: tour.photos.reserve.src, alt: photoAlt(tour.photos.reserve) }
+      ? {
+          src: tour.photos.reserve.src,
+          alt: photoAlt(tour.photos.reserve),
+          position: tour.photos.reserve.position,
+        }
       : { src: "/images/actividades/pareja-columpio.webp", alt: t("reserveImageAlt") },
   };
 
@@ -947,6 +951,11 @@ export default async function ActivityDetailPage({
                 alt={photos.reserve.alt}
                 fill
                 className="object-cover"
+                style={
+                  "position" in photos.reserve && photos.reserve.position
+                    ? { objectPosition: photos.reserve.position }
+                    : undefined
+                }
                 sizes="(max-width: 1024px) 100vw, 45vw"
               />
             </div>
