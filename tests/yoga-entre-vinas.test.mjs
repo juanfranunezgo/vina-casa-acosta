@@ -11,8 +11,9 @@ const { buildActivityJsonLd } = await import("@/lib/activityJsonLd");
  * ("Contenido web de la experiencia Yoga entre Viñas", versión septiembre 2026).
  *
  * Lo que se cuida acá son los datos que el documento fija y que, si se
- * desalinean, le dicen al visitante algo falso: el precio con y sin IVA, la
- * duración y el reparto de esa duración entre las cuatro etapas.
+ * desalinean, le dicen al visitante algo falso: el precio y su IVA, la
+ * duración y el reparto de esa duración entre las cuatro etapas. Encima van
+ * los ajustes que la viña pidió el 2026-09-25 al ver la ficha publicada.
  */
 
 const LOCALES = ["es", "en", "pt"];
@@ -34,22 +35,22 @@ function minutos(iso) {
   return Number(match[1] ?? 0) * 60 + Number(match[2] ?? 0);
 }
 
-test("el yoga publica $47.481 IVA incluido y su neto de $39.900", () => {
-  assert.equal(yoga.priceCLP, 47481);
-  assert.equal(yoga.priceNetCLP, 39900);
+test("el yoga publica $39.900 + IVA por persona", () => {
+  // Pedido de la viña (2026-09-25): el precio dice "$39.900 + IVA (por
+  // persona)" en el hero y en la tarjeta. Antes publicaba $47.481 IVA incluido
+  // con el neto en chico para empresas y agencias.
+  assert.equal(yoga.priceCLP, 39900);
+  assert.equal(yoga.priceExcludesVAT, true);
 });
 
-test("todo precio neto declarado es el precio publicado sin el 19% de IVA", () => {
-  // Si alguien actualiza uno de los dos y se olvida del otro, la tarjeta de
-  // precio mostraría dos cifras que no se corresponden.
-  for (const activity of activities) {
-    if (activity.priceNetCLP === undefined) continue;
-    assert.ok(activity.priceCLP, `${activity.slug}: neto sin precio publicado`);
-    assert.equal(
-      Math.round(activity.priceNetCLP * 1.19),
-      activity.priceCLP,
-      `${activity.slug}: ${activity.priceNetCLP} + IVA no da ${activity.priceCLP}`,
-    );
+test("la ficha ya no publica un precio aparte para empresas y agencias", () => {
+  // La viña pidió sacarlo: el precio es uno solo, el mismo para todos.
+  assert.ok(activities.every((activity) => !("priceNetCLP" in activity)));
+  for (const locale of LOCALES) {
+    const labels = bundles[locale].activities.labels;
+    assert.equal(labels.netPrice, undefined, locale);
+    assert.equal(labels.vatIncluded, undefined, locale);
+    assert.match(labels.plusVat, /^\+ /, `${locale}: "+ IVA" junto a la cifra`);
   }
 });
 
@@ -153,20 +154,30 @@ test("la ficha del yoga se llama como el documento y tiene su propia meta descri
   }
 });
 
-test("la ficha del yoga nombra las ciudades que se buscan, en texto visible", () => {
+test("la ficha del yoga nombra las ciudades que se buscan", () => {
   // Pedido de Juan Francisco: posicionar búsquedas como "yoga cerca de San
   // Fernando". El autocompletado de Google en Chile confirma "yoga rancagua",
   // "yoga san fernando" y "yoga en san vicente de tagua tagua". Lo que Google
   // lee para eso es el título y el texto visible; la etiqueta `keywords` la
   // ignora, y va igual porque se pidió.
+  //
+  // La respuesta de "¿Dónde queda?" es la que más se cita (Google y los
+  // buscadores con IA toman ese bloque tal cual), así que las ciudades van
+  // ahí. La viña mandó su propia respuesta el 2026-09-25 sin nombrarlas, y
+  // Juan Francisco pidió sumarlas igual: una frase al final del primer
+  // párrafo, con los 40 minutos a Rancagua que el sitio ya publica.
   const es = bundles.es.activities.items.yoga;
   assert.match(es.metaTitle, /Rancagua/);
   assert.match(es.metaTitle, /San Fernando/);
   assert.match(es.metaDescription, /San Vicente de Tagua Tagua/);
-  const ubicacion = es.faq.find(({ q }) => /Dónde queda/.test(q));
-  assert.ok(ubicacion, "falta la pregunta de ubicación");
-  for (const lugar of ["San Vicente de Tagua Tagua", "San Fernando", "Rancagua"]) {
-    assert.match(ubicacion.a, new RegExp(lugar), lugar);
+  for (const locale of LOCALES) {
+    const faq = bundles[locale].activities.items.yoga.faq;
+    // Se la busca por la dirección, que se escribe igual en los tres idiomas.
+    const ubicacion = faq.find(({ a }) => /Fundo El Llano/.test(a));
+    assert.ok(ubicacion, `${locale}: falta la pregunta de ubicación`);
+    for (const lugar of ["San Vicente de Tagua Tagua", "San Fernando", "Rancagua"]) {
+      assert.match(ubicacion.a, new RegExp(lugar), `${locale}: ${lugar}`);
+    }
   }
   for (const locale of LOCALES) {
     const item = bundles[locale].activities.items.yoga;
@@ -177,8 +188,80 @@ test("la ficha del yoga nombra las ciudades que se buscan, en texto visible", ()
   assert.match(es.metaKeywords, /yoga cerca de San Fernando/);
 });
 
+test("las respuestas del yoga son las que mandó la viña el 2026-09-25", () => {
+  // Seis respuestas reescritas por la viña. Se verifica el dato que cada una
+  // agrega o corrige, no la frase entera: el texto se puede pulir, el dato no.
+  const respuesta = (pregunta) => {
+    const entrada = bundles.es.activities.items.yoga.faq.find(({ q }) => pregunta.test(q));
+    assert.ok(entrada, `falta la pregunta ${pregunta}`);
+    return entrada.a;
+  };
+  const reservar = respuesta(/reservar cualquier día/);
+  assert.match(reservar, /sábados, domingos y festivos/);
+  assert.match(reservar, /5 días de anticipación/);
+  const ubicacion = respuesta(/Dónde queda/);
+  assert.match(ubicacion, /1 hora y 40 minutos de Santiago/);
+  assert.match(ubicacion, /Fundo El Llano, lote 6/);
+  assert.match(ubicacion, /Waze o Google Maps/);
+  const degustacion = respuesta(/incluye la degustación/);
+  for (const linea of ["Ombú", "Lajau", "Estación Francia"]) {
+    assert.match(degustacion, new RegExp(linea), linea);
+  }
+  assert.match(degustacion, /pueden variar según disponibilidad/);
+  assert.match(respuesta(/Cuántas personas/), /sin límite máximo/);
+  assert.match(respuesta(/adaptar el brunch/), /formulario de reserva/);
+  // `\s`: entre el 100 y el % va un espacio duro, para que no se corten.
+  assert.match(respuesta(/menores de edad/), /jugos 100\s% naturales/);
+});
+
+test("las alergias se informan en el formulario, y la ficha lo dice igual en todas partes", () => {
+  // La respuesta nueva de la viña pide indicarlas al completar el formulario.
+  // Las condiciones y la nota de la carta decían "al confirmar la reserva" y
+  // "con anticipación": tres momentos distintos para lo mismo en una página.
+  const lugares = {
+    es: /formulario de reserva/,
+    en: /booking form/,
+    pt: /formulário de reserva/,
+  };
+  for (const locale of LOCALES) {
+    const item = bundles[locale].activities.items.yoga;
+    const textos = [
+      ...item.conditions,
+      item.schedule[2].menu.note,
+      ...item.faq.map(({ a }) => a),
+    ].filter((texto) => /alerg|allerg/i.test(texto));
+    assert.equal(textos.length, 3, `${locale}: condición, nota de la carta y pregunta`);
+    for (const texto of textos) {
+      assert.match(texto, lugares[locale], `${locale}: "${texto}"`);
+    }
+  }
+});
+
+test("una respuesta de dos párrafos tiene dos párrafos en los tres idiomas", () => {
+  // La ubicación y la degustación traen un segundo párrafo en el texto de la
+  // viña. Van separados por una línea en blanco y la ficha los dibuja como
+  // dos <p>; una traducción que los junte rompería el paralelo.
+  const parrafos = (locale) =>
+    bundles[locale].activities.items.yoga.faq.map(({ a }) => a.split("\n\n").length);
+  assert.ok(parrafos("es").some((n) => n > 1), "el español trae algún segundo párrafo");
+  assert.deepEqual(parrafos("en"), parrafos("es"), "en");
+  assert.deepEqual(parrafos("pt"), parrafos("es"), "pt");
+});
+
+test("el formulario del yoga ya no pide una segunda fecha", () => {
+  // Pedido de la viña (2026-09-25). Era el único que la pedía, así que el
+  // campo se fue del formulario, de los textos y de la declaración de Netlify.
+  assert.equal(yoga.bookingFields.includes("segundaFecha"), false);
+  for (const locale of LOCALES) {
+    const form = bundles[locale].activities.labels.form;
+    for (const key of ["secondDate", "secondDateHint", "datePreferred"]) {
+      assert.equal(form[key], undefined, `${locale}.form.${key}`);
+    }
+  }
+});
+
 test("los campos extra del formulario del yoga tienen su texto", () => {
-  assert.deepEqual([...yoga.bookingFields].sort(), ["eleccion", "restricciones", "segundaFecha"]);
+  assert.deepEqual([...yoga.bookingFields].sort(), ["eleccion", "restricciones"]);
   for (const locale of LOCALES) {
     const form = bundles[locale].activities.items.yoga.form;
     for (const key of ["choiceLabel", "choicePlaceholder", "choiceHint", "title", "subtitle", "waIntro"]) {
@@ -198,7 +281,7 @@ test("una actividad que pide elección en el formulario trae el texto del campo"
   }
 });
 
-test("el JSON-LD del yoga declara el precio con IVA incluido", () => {
+test("el JSON-LD del yoga declara el precio sin IVA", () => {
   const graph = buildActivityJsonLd(
     "es",
     yoga,
@@ -207,12 +290,12 @@ test("el JSON-LD del yoga declara el precio con IVA incluido", () => {
   );
   const product = graph["@graph"].find((node) => node["@type"] === "Product");
   assert.ok(product, "con precio la actividad es un Product con Offer");
-  assert.equal(product.offers.price, 47481);
-  assert.equal(product.offers.priceSpecification.valueAddedTaxIncluded, true);
-  assert.equal(product.offers.priceSpecification.price, 47481);
+  assert.equal(product.offers.price, 39900);
+  assert.equal(product.offers.priceSpecification.valueAddedTaxIncluded, false);
+  assert.equal(product.offers.priceSpecification.price, 39900);
 });
 
-test("un precio sin neto declarado no afirma nada sobre el IVA", () => {
+test("un precio que no declara su IVA no afirma nada sobre el IVA", () => {
   const ombu = activities.find((activity) => activity.slug === "ombu");
   const graph = buildActivityJsonLd(
     "es",

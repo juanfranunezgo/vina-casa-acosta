@@ -77,9 +77,8 @@ type DateFieldProps = {
 };
 
 /**
- * Un campo de fecha del formulario. Está aparte porque el yoga pide dos —la
- * preferida y una segunda posible— y cada uno necesita su propio `ref` para
- * abrir el calendario y para ponerle el mínimo.
+ * El campo de fecha del formulario, con su `ref` para abrir el calendario y
+ * ponerle el mínimo. Quedó aparte de cuando el yoga pedía dos fechas.
  */
 function DateField({
   id,
@@ -169,7 +168,6 @@ export default function ActivityReservationForm({
   // pueden desincronizar.
   const suffix = mode === "reserva" ? "" : mode === "cotizacion" ? "Quote" : "Season";
   const pideFecha = mode !== "temporada";
-  const pideSegundaFecha = pideFecha && extraFields.includes("segundaFecha");
   // Sin rótulo no hay campo: un input de "elección" sin decir de qué sería
   // una pregunta vacía.
   const pideEleccion = extraFields.includes("eleccion") && choiceCopy !== undefined;
@@ -180,7 +178,6 @@ export default function ActivityReservationForm({
   const [phone, setPhone] = useState("");
   const [people, setPeople] = useState(minPeople === undefined ? "" : String(minPeople));
   const [date, setDate] = useState("");
-  const [date2, setDate2] = useState("");
   const [choice, setChoice] = useState("");
   const [dietary, setDietary] = useState("");
   const [note, setNote] = useState("");
@@ -217,10 +214,9 @@ export default function ActivityReservationForm({
         telefono: phone,
         personas: people,
         fecha: date,
-        // Los tres campos extra van siempre, vacíos en las actividades que no
-        // los piden: así la declaración de `__forms.html` es una sola y el
-        // panel de Netlify muestra las mismas columnas para todas.
-        fecha2: date2,
+        // Los campos extra van siempre, vacíos en las actividades que no los
+        // piden: así la declaración de `__forms.html` es una sola y el panel
+        // de Netlify muestra las mismas columnas para todas.
         eleccion: choice,
         restricciones: dietary,
         nota: note,
@@ -240,7 +236,6 @@ export default function ActivityReservationForm({
         setPhone("");
         setPeople(minPeople === undefined ? "" : String(minPeople));
         setDate("");
-        setDate2("");
         setChoice("");
         setDietary("");
         setNote("");
@@ -252,16 +247,12 @@ export default function ActivityReservationForm({
     }
   };
 
-  // Con segunda fecha, la primera deja de ser "la" fecha: es la preferida.
-  const dateLabel = pideSegundaFecha ? t("datePreferred") : t("date");
-
   const whatsappUrl = () => {
     const lines = [
       copy?.waIntro ?? t(`waIntro${suffix}`, { activity: activityName }),
       name && `${t("name")}: ${name}`,
       people && `${t("people")}: ${people}`,
-      date && `${dateLabel}: ${date}`,
-      date2 && `${t("secondDate")}: ${date2}`,
+      date && `${t("date")}: ${date}`,
       choice && choiceCopy && `${choiceCopy.label}: ${choice}`,
       dietary && `${t("dietary")}: ${dietary}`,
       note && `${t("note")}: ${note}`,
@@ -387,13 +378,13 @@ export default function ActivityReservationForm({
             campo `required` con `display:none` bloquea el envío sin poder
             mostrar dónde está el error. */}
         {pideFecha && (
-          <div className={pideSegundaFecha ? "" : "sm:col-span-2"}>
+          <div className="sm:col-span-2">
             {/* Con anticipación, la ayuda dice por qué los próximos días no se
                 pueden elegir: un calendario que los bloquea sin explicar parece
                 roto. */}
             <DateField
               id="tour-date"
-              label={dateLabel}
+              label={t("date")}
               hint={
                 minAdvanceDays
                   ? t("dateHintAdvance", { days: minAdvanceDays })
@@ -407,19 +398,6 @@ export default function ActivityReservationForm({
               openLabel={t("dateOpen")}
             />
           </div>
-        )}
-        {pideSegundaFecha && (
-          <DateField
-            id="tour-date-2"
-            label={t("secondDate")}
-            hint={t("secondDateHint")}
-            value={date2}
-            onChange={setDate2}
-            required={false}
-            minAdvanceDays={minAdvanceDays}
-            placeholder={t("datePlaceholder")}
-            openLabel={t("dateOpen")}
-          />
         )}
         {pideEleccion && (
           <div className="sm:col-span-2">

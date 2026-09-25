@@ -68,7 +68,7 @@ export async function GET() {
       `${es}${activityPath(actividad)}`,
       actividad.priceCLP === undefined
         ? "precio a consultar"
-        : `desde ${actividad.priceCLP.toLocaleString("es-CL")} CLP por persona`,
+        : `desde ${actividad.priceCLP.toLocaleString("es-CL")} CLP${actividad.priceExcludesVAT ? " + IVA" : ""} por persona`,
     ),
   );
 

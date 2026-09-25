@@ -2,7 +2,6 @@ import Image from "next/image";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
-import { Plus_Jakarta_Sans } from "next/font/google";
 import {
   ArrowRight,
   MapPin,
@@ -38,6 +37,7 @@ import ActivitySectionNav from "@/components/ActivitySectionNav";
 import IconBadge from "@/components/ui/IconBadge";
 import ActivityReservationForm from "@/components/ActivityReservationForm";
 import { mesesDeTemporada } from "@/lib/temporada";
+import { FUENTE_FICHA } from "@/lib/fuenteFicha";
 import {
   activities,
   activitiesByCategory,
@@ -66,24 +66,6 @@ const includeIcons: Record<string, LucideIcon[]> = {
   "carmenere": [Wine, Leaf, Warehouse, Pipette, Grape],
 };
 
-/**
- * Plus Jakarta Sans para el texto de las fichas —no para los títulos, que
- * siguen en Libre Caslon—. Pedido de Juan Francisco del 2026-09-24 sobre la
- * lectura de Quorum Legal, y sólo acá: menú, pie y el resto del sitio siguen en
- * Work Sans.
- *
- * Se aplica redefiniendo `--font-body` en cada bloque de primer nivel de la
- * ficha, así que todo `font-body` de adentro —componentes incluidos— cambia
- * sin tocarlos. No va en un `div` que envuelva la página porque el Navbar busca
- * el hero como `main > section` (components/Navbar.tsx) y un envoltorio lo
- * escondería. Si la ficha gana un bloque de primer nivel, lleva esta clase.
- */
-const jakarta = Plus_Jakarta_Sans({
-  variable: "--font-jakarta",
-  subsets: ["latin"],
-  display: "swap",
-});
-const FUENTE_FICHA = `${jakarta.variable} font-body [--font-body:var(--font-jakarta)]`;
 
 /**
  * Parte "Con al menos 5 días de anticipación — coordinamos la fecha contigo" en
@@ -356,16 +338,9 @@ export default async function ActivityDetailPage({
   // Undefined cuando la actividad no publica precio. La tarjeta de reserva
   // decide qué mostrar en ese caso.
   const priceFormatted = tour.priceCLP === undefined ? undefined : clp.format(tour.priceCLP);
-  // "por persona · IVA incluido" sólo si la actividad declaró su neto: es la
-  // única forma de saber que la cifra lleva IVA. Ver `priceNetCLP`.
-  const perPerson =
-    tour.priceNetCLP === undefined
-      ? t("perPerson")
-      : `${t("perPerson")} · ${t("vatIncluded")}`;
-  const netPrice =
-    tour.priceNetCLP === undefined
-      ? undefined
-      : t("netPrice", { price: clp.format(tour.priceNetCLP) });
+  // "+ IVA" pegado a la cifra sólo si la actividad lo declaró: sin eso no
+  // sabemos si la lleva. Ver `priceExcludesVAT`.
+  const plusVat = tour.priceExcludesVAT ? t("plusVat") : undefined;
 
   const ficha = [
     { icon: MapPin, label: t("placeLabel"), value: t("placeValue"), note: t("placeNote") },
@@ -502,7 +477,12 @@ export default async function ActivityDetailPage({
                     <span className="mr-2 font-body text-[1.9rem] font-bold leading-none tracking-tight tabular-nums text-white">
                       {priceFormatted}
                     </span>
-                    {perPerson}
+                    {plusVat && (
+                      <span className="mr-1.5 whitespace-nowrap font-body text-lg font-semibold text-white">
+                        {plusVat}
+                      </span>
+                    )}
+                    {t("perPerson")}
                   </p>
                   <div className="flex w-full justify-center gap-2.5 sm:w-auto sm:gap-3">
                     <Button
@@ -818,23 +798,22 @@ export default async function ActivityDetailPage({
                   </>
                 ) : (
                   <>
-                    <div className="flex items-baseline gap-2">
+                    {/* `flex-wrap` + `nowrap`: en la columna angosta de la
+                        tarjeta "+ IVA" baja entero bajo la cifra en vez de
+                        partirse en "+" e "IVA". */}
+                    <div className="flex flex-wrap items-baseline gap-x-2 gap-y-1">
                       <span className="font-body text-4xl font-bold leading-none tracking-tight tabular-nums text-primary md:text-[2.75rem]">
                         {priceFormatted}
                       </span>
+                      {plusVat && (
+                        <span className="whitespace-nowrap font-body text-xl font-semibold text-primary md:text-2xl">
+                          {plusVat}
+                        </span>
+                      )}
                     </div>
                     <p className="font-body text-body-md text-on-surface-variant mt-2">
-                      {perPerson}
+                      {t("perPerson")}
                     </p>
-                    {/* El neto, para quien cotiza como empresa o agencia. En
-                        chico y debajo: el precio que paga una persona es el de
-                        arriba, y dos cifras del mismo tamaño harían dudar
-                        cuál es. */}
-                    {netPrice && (
-                      <p className="mt-1 font-body text-[13px] tabular-nums text-on-surface-variant/80">
-                        {netPrice}
-                      </p>
-                    )}
                   </>
                 )}
                 <span className="block h-0.5 w-14 bg-primary/70 mt-5" />

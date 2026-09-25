@@ -11,8 +11,12 @@ todavía y qué trampas ya se pagaron.
 ## En una línea
 
 El sitio está **completo como pieza visual y casi vacío como software**: 74 páginas SSG en
-tres idiomas, sin backend propio, sin base de datos y sin pagos. Los dos formularios ya
-llegan a la viña vía Netlify Forms; el carrito sigue derivando a WhatsApp sin cobro.
+tres idiomas, sin backend propio y sin base de datos. Los dos formularios ya llegan a la
+viña vía Netlify Forms. **El carrito cobra**: en producción está definida
+`NEXT_PUBLIC_AFELEIA_CHECKOUT_URL` (`checkout.vinacasaacosta.cl`, verificado el 2026-09-25 en
+la CSP del sitio publicado) y el cajón ofrece "Pagar" con Mercado Pago a través del
+checkout de Afeleia; WhatsApp queda de respaldo. La ficha de vino muestra el sello "Pago
+seguro con Mercado Pago" con esa misma condición (`components/CompraSegura.tsx`).
 
 ---
 
@@ -24,7 +28,7 @@ Esto es lo primero que hay que saber, porque no se nota mirando la interfaz:
 |---|---|
 | Reserva de tours (`components/TourReservationForm.tsx`) | Envía a **Netlify Forms** (`reserva-tour`). Al lado hay un botón de WhatsApp que sí funciona. |
 | Contacto (`components/ContactForm.tsx`) | Envía a **Netlify Forms** (`contacto`). Antes era un `mailto:` que se perdía si el visitante no tenía cliente de correo. |
-| Carrito (`components/CartDrawer.tsx`) | El "checkout" arma un mensaje de WhatsApp con el pedido. **No hay cobro.** |
+| Carrito (`components/CartDrawer.tsx`) | Con `NEXT_PUBLIC_AFELEIA_CHECKOUT_URL` (definida en producción) ofrece **"Pagar"**: un POST al checkout de Afeleia, que cobra con Mercado Pago. Sin la variable, o si el checkout no responde, arma un mensaje de WhatsApp con el pedido. |
 
 ### Netlify Forms — cómo está armado
 
@@ -168,23 +172,24 @@ septiembre 2026). Es la primera experiencia con **precio publicado** y la que es
 cuatro piezas de la ficha, todas activadas por dato — una ficha sin esos datos queda
 exactamente como estaba:
 
-- **`priceNetCLP`** — el neto sin IVA. Si está, `priceCLP` es el precio con IVA y la
-  ficha dice "IVA incluido", muestra el neto en chico ("Empresas y agencias: $39.900 +
-  IVA") y el `Offer` del JSON-LD lleva `valueAddedTaxIncluded`. Sin neto, la ficha no
-  afirma nada sobre el IVA, porque el cliente no lo dijo. **Pendiente de preguntar:** los
-  talleres cuestan 39.900, la misma cifra que el neto del yoga; no sabemos si ese precio
-  lleva IVA.
+- **`priceExcludesVAT`** — `priceCLP` es neto: la ficha dice "$39.900 + IVA" en el hero
+  y en la tarjeta, y el `Offer` del JSON-LD lleva `valueAddedTaxIncluded: false`. Sin
+  la marca, la ficha no afirma nada sobre el IVA, porque el cliente no lo dijo. Hasta
+  el 25-09 era `priceNetCLP` ($47.481 IVA incluido + "Empresas y agencias: $39.900 +
+  IVA" en chico); la viña pidió un solo precio, el neto. **Pendiente de preguntar:** los
+  talleres cuestan 39.900, la misma cifra que el yoga; no sabemos si ese precio lleva IVA.
 - **`schedule`** — programa con horario: minutos y tono de cada etapa en `data/`, título,
   texto y carta en messages. La ficha dibuja una regla proporcional de la mañana
   (`components/ActivitySchedule.tsx`); los tonos van del agua al vino con colores de la
   paleta. Las etapas tienen que sumar `durationISO`. Una etapa puede traer su carta
   (`components/ActivityMenu.tsx`).
 - **`faq`** en messages → sección Dd6b (`components/ActivityFaq.tsx`), con `<details>`
-  nativo y sin `FAQPage`.
-- **`bookingFields`** — campos extra del formulario: `segundaFecha`, `eleccion` (el rótulo
-  sale de `items.{slug}.form.choice*`) y `restricciones`. Van a Netlify como `fecha2`,
-  `eleccion` y `restricciones`, declarados en `public/__forms.html`; las demás
-  actividades los mandan vacíos.
+  nativo y sin `FAQPage`. Una línea en blanco (`\n\n`) dentro de una respuesta la parte
+  en dos párrafos.
+- **`bookingFields`** — campos extra del formulario: `eleccion` (el rótulo sale de
+  `items.{slug}.form.choice*`) y `restricciones`. Van a Netlify con esos nombres,
+  declarados en `public/__forms.html`; las demás actividades los mandan vacíos. Hubo
+  una segunda fecha (`segundaFecha` → `fecha2`) que la viña sacó el 25-09.
 - **`heroBooking`** — precio y botones también en el hero. Sólo el yoga, por decisión de
   Juan Francisco: el documento lo pedía para esta ficha.
 

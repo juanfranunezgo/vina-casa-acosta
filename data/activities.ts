@@ -74,13 +74,15 @@ export type ScheduleStage = { minutes: number; tone: ScheduleTone };
 /**
  * Campos que el formulario de reserva pide además de los de siempre.
  *
- * - `segundaFecha` — una fecha alternativa, por si la primera no está libre.
  * - `eleccion` — lo que el grupo elige del menú (en el yoga, los sándwiches).
  *   El rótulo cambia con la actividad, así que sale de
  *   `activities.items.{slug}.form.choice*`.
  * - `restricciones` — alergias y restricciones alimentarias.
+ *
+ * Hubo un tercero, `segundaFecha`, que sólo pedía el yoga; la viña lo sacó el
+ * 2026-09-25.
  */
-export type BookingField = "segundaFecha" | "eleccion" | "restricciones";
+export type BookingField = "eleccion" | "restricciones";
 
 export type Activity = {
   /** Único en todo el catálogo. Es la clave en messages y el segmento de URL. */
@@ -94,12 +96,12 @@ export type Activity = {
    */
   priceCLP?: number;
   /**
-   * Valor neto, sin IVA. Si se declara, `priceCLP` es el precio CON IVA y la
-   * ficha lo dice ("IVA incluido") y muestra el neto en chico para empresas y
-   * agencias. Ausente = la ficha no afirma nada sobre el IVA, porque el cliente
-   * no lo dijo. `tests/yoga-entre-vinas` exige que neto × 1,19 dé el precio.
+   * `priceCLP` es neto y la ficha lo dice junto a la cifra ("$39.900 + IVA").
+   * Ausente = la ficha no afirma nada sobre el IVA, porque el cliente no lo
+   * dijo. Hasta el 2026-09-25 el yoga publicaba el precio con IVA y el neto en
+   * chico para empresas y agencias; la viña pidió un solo precio, el neto.
    */
-  priceNetCLP?: number;
+  priceExcludesVAT?: boolean;
   /** Piso de personas por reserva. */
   minPeople: number;
   /**
@@ -349,8 +351,9 @@ export const activities: Activity[] = [
     // Es la primera experiencia con precio publicado.
     slug: "yoga",
     category: "experiencias",
-    priceCLP: 47481,
-    priceNetCLP: 39900,
+    // Pedido de la viña (2026-09-25): "$39.900 + IVA (por persona)".
+    priceCLP: 39900,
+    priceExcludesVAT: true,
     minPeople: 8,
     // Pedido de la viña (2026-09-23): el yoga se reserva con 5 días de aviso.
     // El documento de septiembre no lo menciona, pero tampoco lo contradice.
@@ -364,7 +367,7 @@ export const activities: Activity[] = [
       { minutes: 60, tone: "mesa" },
       { minutes: 60, tone: "vino" },
     ],
-    bookingFields: ["segundaFecha", "eleccion", "restricciones"],
+    bookingFields: ["eleccion", "restricciones"],
     heroBooking: true,
     // Fotos de sesiones reales, mandadas por la viña el 2026-09-24. Salen de
     // `npm run fotos:yoga`, cada una recortada a su ranura: ver

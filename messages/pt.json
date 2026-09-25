@@ -20,7 +20,8 @@
     },
     "tienda": {
       "title": "Comprar vinhos online com entrega",
-      "description": "Compre os vinhos da Viña Casa Acosta: Carmenere, Tannat, blends, rosé e espumante do Vale do Cachapoal, no Chile. Monte seu pedido e combinamos a entrega."
+      "description": "Compre os vinhos da Viña Casa Acosta: Carmenere, Tannat, blends, rosé e espumante do Vale do Cachapoal, no Chile. Monte seu pedido e combinamos a entrega.",
+      "descriptionOnline": "Compre os vinhos da Viña Casa Acosta: Carmenere, Tannat, blends, rosé e espumante do Cachapoal. Pagamento seguro com Mercado Pago e entrega combinada."
     },
     "actividades": {
       "title": "Tours, oficinas e vindima na vinícola",
@@ -405,8 +406,16 @@
     "tastingNotes": "Notas de degustação",
     "pairing": "Harmonização",
     "technicalSheet": "Ficha técnica (PDF)",
-    "currency": "CLP",
-    "youMayAlsoLike": "Você também pode gostar"
+    "priceLabel": "Preço em pesos chilenos",
+    "youMayAlsoLike": "Você também pode gostar",
+    "trust": {
+      "securePayment": "Pagamento seguro com",
+      "securePaymentNote": "O pagamento é feito no Mercado Pago: seus dados bancários não passam por esta loja.",
+      "direct": "Compra direta da vinícola",
+      "directNote": "Vinhos da nossa adega em San Vicente de Tagua Tagua, sem intermediários.",
+      "minimum": "Compra mínima de {min, plural, one {# garrafa} other {# garrafas}}",
+      "minimumNote": "Combináveis entre todos os nossos vinhos. Combinamos a entrega com você."
+    }
   },
   "actividades": {
     "hero": {
@@ -494,8 +503,7 @@
       "perPerson": "por pessoa",
       "conditionsTitle": "Condições",
       "conditionMinors": "Degustação não indicada para menores de 18 anos · Lei N° 19.925",
-      "vatIncluded": "IVA incluído",
-      "netPrice": "Empresas e agências: {price} + IVA",
+      "plusVat": "+ IVA",
       "faqTitle": "Perguntas frequentes",
       "faqMore": "Tem outra pergunta?",
       "faqWhatsapp": "Fale conosco pelo WhatsApp",
@@ -536,9 +544,6 @@
         "whatsappQuote": "Perguntar no WhatsApp",
         "waIntro": "Olá 👋 Gostaria de reservar o {activity}.",
         "waIntroQuote": "Olá 👋 Gostaria de um orçamento para o {activity}.",
-        "datePreferred": "Data preferida",
-        "secondDate": "Segunda data possível",
-        "secondDateHint": "Opcional, caso a primeira não esteja disponível.",
         "dietary": "Restrições alimentares ou alergias",
         "dietaryPlaceholder": "Ex.: uma pessoa celíaca",
         "titleSeason": "Garanta o seu lugar na próxima data",
@@ -1012,7 +1017,7 @@
                   ]
                 }
               ],
-              "note": "As opções de sanduíche são escolhidas ao confirmar a reserva. Restrições alimentares e alergias devem ser informadas com antecedência."
+              "note": "As opções de sanduíche são escolhidas ao confirmar a reserva. Alergias e restrições alimentares são informadas no formulário de reserva."
             }
           },
           {
@@ -1023,7 +1028,7 @@
         "conditions": [
           "Atividade disponível durante todo o ano.",
           "A sessão de yoga acontece ao ar livre ou, se o clima exigir, na adega entre as barricas.",
-          "Restrições alimentares e alergias devem ser informadas ao confirmar a reserva."
+          "Alergias e restrições alimentares são informadas no formulário de reserva, indicando a quantas pessoas se aplicam."
         ],
         "faq": [
           {
@@ -1036,7 +1041,7 @@
           },
           {
             "q": "Onde fica a Viña Casa Acosta?",
-            "a": "Em **San Vicente de Tagua Tagua**, no Vale do Cachapoal (Região de O'Higgins): Fundo El Llano, lote 6. Estamos perto de **San Fernando**, a **40 minutos de Rancagua** e a menos de 2 horas de Santiago."
+            "a": "Estamos em **San Vicente de Tagua Tagua**, em pleno Vale do Cachapoal, a aproximadamente **1 hora e 40 minutos de Santiago**, a 40 minutos de Rancagua e muito perto de San Fernando.\n\nNosso endereço é Fundo El Llano, lote 6, Região de O'Higgins. Para chegar facilmente, procure por “Viña Casa Acosta” no **Waze ou Google Maps**."
           },
           {
             "q": "O que inclui o brunch?",
@@ -1044,15 +1049,15 @@
           },
           {
             "q": "O que inclui a degustação?",
-            "a": "Inclui **três rótulos selecionados** de diferentes linhas da Casa Acosta, apresentados em uma degustação guiada que percorre aromas, estilos e a história da família por trás da vinícola."
+            "a": "Inclui **três rótulos selecionados** de diferentes linhas da Casa Acosta, como Ombú, Lajau e Estación Francia. Durante a degustação guiada, você vai conhecer seus aromas, estilos e a história familiar da nossa vinícola.\n\nOs rótulos podem variar conforme a disponibilidade."
           },
           {
             "q": "Quantas pessoas podem participar?",
-            "a": "A experiência é realizada para grupos **a partir de 8 participantes**. Para grupos maiores, é preciso consultar a disponibilidade."
+            "a": "A experiência é realizada para grupos **a partir de 8 participantes, sem limite máximo**. Ao reservar, basta informar o número de participantes."
           },
           {
             "q": "Posso reservar qualquer dia?",
-            "a": "A experiência funciona com reserva antecipada, com **pelo menos 5 dias de antecedência**. A data e o horário são confirmados conforme a disponibilidade."
+            "a": "Sim, você pode reservar para **qualquer dia da semana**, incluindo sábados, domingos e feriados, desde que reserve com **pelo menos 5 dias de antecedência**. A data e o horário serão confirmados conforme a disponibilidade."
           },
           {
             "q": "O que acontece se o clima mudar?",
@@ -1060,11 +1065,11 @@
           },
           {
             "q": "É possível adaptar o brunch para alergias ou restrições alimentares?",
-            "a": "As necessidades alimentares devem ser informadas **ao confirmar a reserva** para revisarmos as alternativas disponíveis."
+            "a": "**Sim.** Ao preencher o formulário de reserva, informe as alergias ou restrições alimentares e a quantas pessoas elas se aplicam. Com essa informação, poderemos adaptar o brunch às suas necessidades."
           },
           {
             "q": "Menores de idade podem participar?",
-            "a": "A degustação de vinhos é exclusiva para **maiores de 18 anos**. Qualquer alternativa para menores deve ser consultada antes de reservar."
+            "a": "**Sim**, menores de idade podem participar da experiência. Somos uma vinícola familiar e queremos que todos possam aproveitar a visita. A degustação de vinhos é exclusiva para **maiores de 18 anos**, por isso oferecemos aos menores sucos 100% naturais."
           }
         ],
         "form": {
@@ -1139,7 +1144,8 @@
       "title": "Nenhum vinho corresponde aos filtros.",
       "cta": "Limpar filtros"
     },
-    "disclaimer": "Pagamento online em breve · Por ora confirmamos cada pedido via WhatsApp. Beba com moderação · Lei chilena N° 19.925."
+    "disclaimer": "Confirmamos cada pedido via WhatsApp. Beba com moderação · Lei chilena N° 19.925.",
+    "disclaimerOnline": "Pagamento online com Mercado Pago · Confirmamos cada pedido por e-mail. Beba com moderação · Lei chilena N° 19.925."
   },
   "contacto": {
     "hero": {

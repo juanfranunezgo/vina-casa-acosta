@@ -86,15 +86,15 @@ export function buildActivityJsonLd(
             "@type": "Offer",
             price: activity.priceCLP,
             priceCurrency: "CLP",
-            // Sólo cuando la ficha dice "IVA incluido", que es cuando la
-            // actividad declara su neto. Sin neto el cliente no dijo si la
-            // cifra lleva IVA, y el marcado no lo afirma por él.
-            ...(activity.priceNetCLP !== undefined && {
+            // Sólo cuando la ficha dice "+ IVA", que es cuando la actividad
+            // lo declara. Si no, el cliente no dijo si la cifra lleva IVA, y
+            // el marcado no lo afirma por él.
+            ...(activity.priceExcludesVAT && {
               priceSpecification: {
                 "@type": "UnitPriceSpecification",
                 price: activity.priceCLP,
                 priceCurrency: "CLP",
-                valueAddedTaxIncluded: true,
+                valueAddedTaxIncluded: false,
               },
             }),
             availability: "https://schema.org/InStock",

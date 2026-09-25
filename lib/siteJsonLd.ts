@@ -217,6 +217,28 @@ export function buildVinosJsonLd(locale: string, copy: PageCopy) {
 }
 
 /**
+ * La tienda: también una colección, la que vende. Hasta el 2026-09-25 era la
+ * única página principal sin structured data de página. El `ItemList` de los
+ * vinos lo emite `buildWinesItemListJsonLd` en su propio bloque, igual que en
+ * `/vinos`.
+ */
+export function buildTiendaJsonLd(locale: string, copy: PageCopy) {
+  return graph([
+    wineryNode(locale, copy.description),
+    {
+      "@type": "CollectionPage",
+      "@id": `${SITE_URL}/${locale}/tienda#page`,
+      url: `${SITE_URL}/${locale}/tienda`,
+      name: copy.name,
+      description: copy.description,
+      inLanguage: locale,
+      isPartOf: { "@id": WEBSITE_ID },
+      about: { "@id": WINERY_ID },
+    },
+  ]);
+}
+
+/**
  * Una persona del equipo, con los textos ya traducidos por la pagina.
  *
  * `key` no es decorativo: es el fragmento del `@id` de su nodo, y por eso tiene

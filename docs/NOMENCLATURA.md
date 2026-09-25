@@ -51,7 +51,7 @@ Sistema de IDs para referirse a páginas y secciones del sitio de forma rápida 
 
 | ID | Sección |
 |---|---|
-| Cd1 | Producto (imagen + info + `ProductPurchase` con stepper) |
+| Cd1 | Producto. Desde el 2026-09-25, con el tratamiento de las fichas de actividad (Plus Jakarta Sans, tarjetas que flotan por la sombra, `IconBadge`): la botella queda fija en escritorio y, a la derecha, nombre → **tarjeta de compra** (precio, `ProductPurchase` con stepper y el sello `CompraSegura`: Mercado Pago sólo con el pago en línea encendido, compra directa a la viña, mínimo de botellas) → descripción → notas de cata → maridaje → ficha técnica en tarjeta, con el PDF al pie. Antes la compra iba al final, después de la ficha técnica |
 | Cd2 | Vinos relacionados de la misma línea |
 
 ## D — Actividades (`app/[locale]/actividades/page.tsx`)
@@ -75,7 +75,7 @@ La ruta lleva la categoría: `/actividades/tours/ombu`, `/actividades/talleres/p
 | Dd2 | Píldora de secciones (Detalle · Galería · Preguntas, si hay · **Reserva** en vino) entre las migas y la ficha rápida. Al bajar queda pegada bajo el navbar, en celular y escritorio, y una pastilla oscura se desliza a la sección en pantalla (`components/ActivitySectionNav.tsx`). Acompaña hasta el final de la reserva |
 | ~~Dd3~~ | Retirada el 2026-09-24: la caja "¿Cuándo se hace?" con la franja de 12 meses decía "Todo el año" en once de catorce fichas. En las de temporada, los meses pasan a las condiciones de Dd5 (`lib/temporada.ts`). El ID no se reasigna |
 | Dd4 | Detalle — tickets (tours) o programa de la jornada (talleres · experiencias). Si la actividad declara `schedule`, el programa va con horario: una regla proporcional de la mañana y cada etapa con sus minutos (`components/ActivitySchedule.tsx`); una etapa puede traer su carta (`components/ActivityMenu.tsx`) |
-| Dd5 | Tarjeta de reserva: precio **o** "a consultar", más condiciones. Con `priceNetCLP` el precio dice "IVA incluido" y muestra el neto en chico |
+| Dd5 | Tarjeta de reserva: precio **o** "a consultar", más condiciones. Con `priceExcludesVAT` el precio dice "+ IVA" junto a la cifra |
 | Dd6 | Galería (placeholder hasta tener fotos) |
 | Dd6b | Preguntas frecuentes (`components/ActivityFaq.tsx`): una tarjeta con sombra por pregunta y "Expandir todo". Sólo si la actividad trae `faq` en messages; hoy, el yoga. Sin marcado `FAQPage`: Google lo limita a sitios de gobierno y salud desde 2023 |
 | Dd7 | Reserva o cotización (formulario Netlify Forms + botón WhatsApp con prefill) |
@@ -162,8 +162,8 @@ sugieren los nombres de Tailwind.
 
 | ID | Sección |
 |---|---|
-| F1 | Hero |
-| F2 | Catálogo (filtros + sort + grilla + sheet mobile) |
+| F1 | Hero + franja de confianza bajo el subtítulo (`CompraSegura` en variante `franja`: pago seguro con Mercado Pago —sólo con el pago en línea encendido—, compra directa a la viña, mínimo de botellas). Desde el 2026-09-25 |
+| F2 | Catálogo (filtros + sort + grilla + sheet mobile). Desde el 2026-09-25 con el tratamiento de las fichas: Plus Jakarta Sans, filtros como pastillas (`aria-pressed`) en una tarjeta que flota por la sombra, orden como pastilla, tarjetas de vino blancas con sombra, la línea en la cursiva de los antetítulos, los sellos ("Edición Limitada", "Insignia") en pastilla blanca (`SelloProducto`, el mismo de Cd1) y el botón de carrito en círculo vino. El aviso del pie dice cómo se paga de verdad: Mercado Pago con el pago en línea encendido, WhatsApp sin él |
 
 ## G — 404 (`app/[locale]/not-found.tsx`)
 

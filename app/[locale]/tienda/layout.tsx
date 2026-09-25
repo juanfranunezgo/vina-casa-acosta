@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import { alternatesFor } from "@/lib/alternates";
+import { checkoutIniciarUrl } from "@/lib/checkout";
 
 /**
  * Este layout existe solo para poder declarar metadata: `tienda/page.tsx` es un
@@ -18,9 +19,14 @@ export async function generateMetadata({
 }: LayoutProps<"/[locale]/tienda">): Promise<Metadata> {
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: "metadata.tienda" });
+  // "Pago seguro con Mercado Pago" en el resultado de Google sólo con el pago
+  // en línea encendido: la misma condición que la franja, el pie y el
+  // "Pagar" del carrito (2026-09-25).
+  const pagoEnLinea =
+    checkoutIniciarUrl(process.env.NEXT_PUBLIC_AFELEIA_CHECKOUT_URL) !== null;
   return {
     title: t("title"),
-    description: t("description"),
+    description: t(pagoEnLinea ? "descriptionOnline" : "description"),
     alternates: alternatesFor(locale, "/tienda"),
   };
 }
