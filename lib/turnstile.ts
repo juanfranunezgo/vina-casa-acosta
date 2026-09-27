@@ -6,7 +6,8 @@
  * del repo de Afeleia). El token dura 300 s y sirve una vez, así que no se pide al
  * cargar la página sino al enviar: `obtenerToken()` reinicia el widget, lo ejecuta y
  * espera el token. Con `interaction-only` la persona no ve nada salvo que Cloudflare
- * necesite que marque la casilla.
+ * necesite que marque la casilla. Y el script mismo se carga recién cuando alguien
+ * entra al formulario (`preparar()`), no al abrir la página.
  *
  * Todo lo que puede fallar termina en un `ErrorTurnstile`, y el formulario muestra
  * su alternativa (manual de conexión §12, Respaldo): el script bloqueado por una
@@ -82,8 +83,13 @@ export class ErrorTurnstile extends Error {
 }
 
 export type Turnstile = {
-  /** Carga el script (una sola vez por página) y pinta el widget en el contenedor. */
+  /** Registra el contenedor. No carga nada todavía: eso lo hace `preparar()`. */
   montar(contenedor: HTMLElement): void;
+  /**
+   * Carga el script (una sola vez por página) y pinta el widget. Se llama cuando
+   * alguien entra al formulario: quien solo mira la página no carga Cloudflare.
+   */
+  preparar(): void;
   /** Quita el widget y corta lo pendiente. Se puede volver a montar. */
   desmontar(): void;
   /** Un token nuevo para este envío. */
@@ -116,6 +122,10 @@ export function crearTurnstile({
   // Un fallo que se repetiría en cada intento: el siguiente falla sin esperar.
   let fallo: MotivoTurnstile | null = null;
   let pedido: Pedido | null = null;
+  // Alguien entró al formulario o pidió un token. Sobrevive a un remontaje.
+  let preparado = false;
+  // La carga de este montaje ya salió.
+  let cargando = false;
 
   const cerrar = () => {
     const actual = pedido;
@@ -163,39 +173,53 @@ export function crearTurnstile({
     },
   });
 
+  /** Carga el script y pinta el widget, si ya hay dónde y alguien lo pidió. */
+  const pintar = () => {
+    if (!sitekey || !contenedor || !preparado || cargando || widgetId) return;
+    cargando = true;
+    const este = montaje;
+    const destino = contenedor;
+    cargarApi().then(
+      (cargada) => {
+        if (este !== montaje || widgetId) return;
+        api = cargada;
+        try {
+          widgetId = cargada.render(destino, opciones(sitekey)) ?? null;
+        } catch {
+          widgetId = null;
+        }
+        if (!widgetId) {
+          fallo = "widget";
+          fallar("widget");
+          return;
+        }
+        ejecutar();
+      },
+      () => {
+        if (este !== montaje) return;
+        fallo = "script";
+        fallar("script");
+      },
+    );
+  };
+
   return {
     montar(nuevo) {
       montaje += 1;
-      const este = montaje;
       contenedor = nuevo;
       fallo = null;
-      if (!sitekey) return;
-      cargarApi().then(
-        (cargada) => {
-          if (este !== montaje || widgetId) return;
-          api = cargada;
-          try {
-            widgetId = cargada.render(nuevo, opciones(sitekey)) ?? null;
-          } catch {
-            widgetId = null;
-          }
-          if (!widgetId) {
-            fallo = "widget";
-            fallar("widget");
-            return;
-          }
-          ejecutar();
-        },
-        () => {
-          if (este !== montaje) return;
-          fallo = "script";
-          fallar("script");
-        },
-      );
+      cargando = false;
+      pintar();
+    },
+
+    preparar() {
+      preparado = true;
+      pintar();
     },
 
     desmontar() {
       montaje += 1;
+      cargando = false;
       if (api && widgetId) {
         try {
           api.remove(widgetId);
@@ -215,7 +239,10 @@ export function crearTurnstile({
       const promesa = new Promise<string>((resolver, rechazar) => {
         pedido = { resolver, rechazar, plazo: plazo(plazoMs) };
       });
-      // Si el script todavía no cargó, ejecuta al pintarse el widget.
+      // Un envío sin foco previo en el formulario (un autocompletado) también
+      // carga el widget. Si el script todavía no cargó, ejecuta al pintarse.
+      preparado = true;
+      pintar();
       ejecutar();
       return promesa;
     },

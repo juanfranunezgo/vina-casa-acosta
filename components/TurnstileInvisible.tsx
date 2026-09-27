@@ -23,8 +23,21 @@ export default function TurnstileInvisible({ ref }: { ref: Ref<TurnstileInvisibl
   );
 
   useEffect(() => {
-    if (contenedor.current) turnstile.montar(contenedor.current);
-    return () => turnstile.desmontar();
+    const el = contenedor.current;
+    if (!el) return;
+    turnstile.montar(el);
+    // Cloudflare se carga recién con el primer foco dentro del formulario, no al
+    // abrir la página: el formulario de reservas está al pie de cada ficha de
+    // actividad, y así ni la velocidad de la página ni la IP de quien solo mira
+    // pasan por Cloudflare. Mientras la persona escribe, el script llega; y si
+    // envía sin haber enfocado nada, `obtenerToken()` lo carga igual.
+    const formulario = el.closest("form");
+    const preparar = () => turnstile.preparar();
+    formulario?.addEventListener("focusin", preparar, { once: true });
+    return () => {
+      formulario?.removeEventListener("focusin", preparar);
+      turnstile.desmontar();
+    };
   }, [turnstile]);
 
   useImperativeHandle(ref, () => ({ obtenerToken: () => turnstile.obtenerToken() }), [turnstile]);

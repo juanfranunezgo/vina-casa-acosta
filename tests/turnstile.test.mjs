@@ -34,6 +34,7 @@ function apiFalsa() {
 
 const CONTENEDOR = { nodo: "div" };
 
+/** Montado y preparado: como queda después de que alguien entra al formulario. */
 function montado(opciones = {}) {
   const falsa = apiFalsa();
   const turnstile = crearTurnstile({
@@ -42,8 +43,80 @@ function montado(opciones = {}) {
     ...opciones,
   });
   turnstile.montar(CONTENEDOR);
+  turnstile.preparar();
   return { turnstile, ...falsa };
 }
+
+/** Una API falsa que cuenta cuántas veces se pidió cargar el script. */
+function contandoCargas() {
+  const falsa = apiFalsa();
+  const cuenta = { cargas: 0 };
+  const cargarApi = () => {
+    cuenta.cargas += 1;
+    return Promise.resolve(falsa.api);
+  };
+  return { ...falsa, cuenta, cargarApi };
+}
+
+test("montar no carga nada: Cloudflare espera a que alguien use el formulario", async () => {
+  // El formulario de reservas está al pie de cada ficha de actividad. Cargar el
+  // script al abrir la página lo pagaría cada visita, y Cloudflare vería la IP
+  // de quien nunca escribió nada.
+  const { cuenta, cargarApi, llamadas } = contandoCargas();
+  const turnstile = crearTurnstile({ sitekey: "k", cargarApi });
+  turnstile.montar(CONTENEDOR);
+  await tick();
+  assert.equal(cuenta.cargas, 0);
+  assert.deepEqual(llamadas, []);
+});
+
+test("preparar carga y pinta una sola vez", async () => {
+  const { cuenta, cargarApi, llamadas } = contandoCargas();
+  const turnstile = crearTurnstile({ sitekey: "k", cargarApi });
+  turnstile.montar(CONTENEDOR);
+  turnstile.preparar();
+  turnstile.preparar();
+  await tick();
+  turnstile.preparar();
+  await tick();
+  assert.equal(cuenta.cargas, 1);
+  assert.deepEqual(llamadas, [["render", CONTENEDOR]]);
+});
+
+test("preparar antes de montar pinta al montar", async () => {
+  const { cargarApi, llamadas } = contandoCargas();
+  const turnstile = crearTurnstile({ sitekey: "k", cargarApi });
+  turnstile.preparar();
+  turnstile.montar(CONTENEDOR);
+  await tick();
+  assert.deepEqual(llamadas, [["render", CONTENEDOR]]);
+});
+
+test("pedir un token sin haber preparado carga igual", async () => {
+  // Un envío que llega sin foco previo en el formulario (un autocompletado, por
+  // ejemplo) no puede quedarse sin widget.
+  const { cargarApi, llamadas, estado } = contandoCargas();
+  const turnstile = crearTurnstile({ sitekey: "k", cargarApi });
+  turnstile.montar(CONTENEDOR);
+  const promesa = turnstile.obtenerToken();
+  await tick();
+  assert.deepEqual(llamadas.map(([q]) => q), ["render", "reset", "execute"]);
+  estado.opciones.callback("sin-foco");
+  assert.equal(await promesa, "sin-foco");
+});
+
+test("después de preparar, un remontaje vuelve a pintar sin esperar otro foco", async () => {
+  // React monta dos veces en desarrollo, y una navegación vuelve a montar.
+  const { cargarApi, llamadas } = contandoCargas();
+  const turnstile = crearTurnstile({ sitekey: "k", cargarApi });
+  turnstile.montar(CONTENEDOR);
+  turnstile.preparar();
+  await tick();
+  turnstile.desmontar();
+  turnstile.montar(CONTENEDOR);
+  await tick();
+  assert.deepEqual(llamadas.map(([q]) => q), ["render", "remove", "render"]);
+});
 
 async function motivoDelError(promesa) {
   try {
@@ -196,6 +269,7 @@ test("sin clave pública no carga nada y falla como configuración", async () =>
       },
     });
     turnstile.montar(CONTENEDOR);
+    turnstile.preparar();
     assert.equal(await motivoDelError(turnstile.obtenerToken()), "configuracion");
   }
   assert.equal(cargas, 0);
@@ -222,6 +296,7 @@ test("un script que carga después de desmontar no pinta nada", async () => {
   let cargar;
   const turnstile = crearTurnstile({ sitekey: "k", cargarApi: () => new Promise((r) => (cargar = r)) });
   turnstile.montar(CONTENEDOR);
+  turnstile.preparar();
   turnstile.desmontar();
   cargar(falsa.api);
   await tick();
@@ -326,4 +401,22 @@ test("un script que carga sin dejar la API cuenta como fallo", async () => {
   const promesa = cargar();
   scripts[0].listeners.load();
   await assert.rejects(promesa);
+});
+
+// ---------------------------------------------------------------------------
+// El componente
+// ---------------------------------------------------------------------------
+
+test("el componente prepara el widget con el primer foco en el formulario", async () => {
+  const { readFile } = await import("node:fs/promises");
+  const fuente = await readFile(new URL("../components/TurnstileInvisible.tsx", import.meta.url), "utf8");
+  assert.match(fuente, /\.closest\("form"\)/);
+  assert.match(fuente, /addEventListener\("focusin", \w+, \{ once: true \}\)/);
+  assert.match(fuente, /removeEventListener\("focusin", \w+\)/);
+  // Montar solo registra el contenedor: lo que carga Cloudflare es preparar(), y
+  // se llama únicamente desde el listener del foco.
+  assert.match(fuente, /turnstile\.montar\(/);
+  const llamadas = [...fuente.matchAll(/turnstile\.preparar\(\)/g)];
+  assert.equal(llamadas.length, 1);
+  assert.match(fuente, /const (\w+) = \(\) => turnstile\.preparar\(\);[\s\S]*addEventListener\("focusin", \1,/);
 });
