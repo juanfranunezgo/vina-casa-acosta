@@ -1,11 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { Check, Loader2, Mail } from "lucide-react";
 import { CONTACT_EMAIL } from "@/lib/contact";
-import { submitToNetlifyForms } from "@/lib/netlifyForms";
+import { enviarFormularioAfeleia, LARGO_MAXIMO_CAMPO } from "@/lib/afeleiaFormularios";
 import PrivacyConsent from "@/components/PrivacyConsent";
+import TurnstileInvisible, { type TurnstileInvisibleHandle } from "@/components/TurnstileInvisible";
 import { PRIVACIDAD_VERSION, TERMINOS_VERSION } from "@/lib/legal";
 
 type Status = "idle" | "submitting" | "success" | "error";
@@ -24,11 +25,14 @@ export default function ContactForm() {
   const [message, setMessage] = useState("");
   const [botField, setBotField] = useState("");
   const [consent, setConsent] = useState(false);
+  const turnstile = useRef<TurnstileInvisibleHandle>(null);
 
   /**
-   * Los envíos van a Netlify Forms y quedan en el panel del proyecto, además
-   * de dispararse por correo. Los campos tienen que estar declarados en
-   * `public/__forms.html` o Netlify los descarta.
+   * Los envíos van a la puerta de formularios de Afeleia
+   * (`lib/afeleiaFormularios.ts`): quedan en el panel de la viña y disparan el
+   * aviso por correo. El token de Cloudflare se pide acá, al enviar: dura 300 s
+   * y sirve una sola vez. Cualquier falla —el widget, la red, la puerta— deja
+   * el error con la alternativa.
    */
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -36,23 +40,31 @@ export default function ContactForm() {
     setStatus("submitting");
 
     try {
-      await submitToNetlifyForms("contacto", {
-        nombre: name,
-        email,
-        // Mismo nombre de campo que en la reserva: en el panel de Netlify el
-        // teléfono se llama igual en los dos formularios.
-        telefono: phone.trim(),
-        asunto: t(`subjects.${subject || "other"}`),
-        mensaje: message,
-        idioma: locale,
-        // Qué ediciones se aceptaron, no sólo que se aceptaron: cuando salga
-        // una v1.2, los consentimientos ya guardados siguen diciendo la verdad
-        // sobre lo que esta persona leyó. Son dos campos porque los dos
-        // documentos se versionan por separado.
-        terminos: TERMINOS_VERSION,
-        privacidad: PRIVACIDAD_VERSION,
-        "bot-field": botField,
-      });
+      const widget = turnstile.current;
+      if (!widget) throw new Error("el widget de Cloudflare no está montado");
+      const token = await widget.obtenerToken();
+      await enviarFormularioAfeleia(
+        "contacto",
+        {
+          // `nombre`, `email` y `telefono` son los nombres con que Afeleia suma
+          // a quien escribió a los contactos de la viña. El teléfono se llama
+          // igual en la reserva.
+          nombre: name,
+          email,
+          telefono: phone.trim(),
+          asunto: t(`subjects.${subject || "other"}`),
+          mensaje: message,
+          idioma: locale,
+          // Qué ediciones se aceptaron, no sólo que se aceptaron: cuando salga
+          // una v1.2, los consentimientos ya guardados siguen diciendo la verdad
+          // sobre lo que esta persona leyó. Son dos campos porque los dos
+          // documentos se versionan por separado.
+          terminos: TERMINOS_VERSION,
+          privacidad: PRIVACIDAD_VERSION,
+        },
+        token,
+        botField,
+      );
       setName("");
       setEmail("");
       setPhone("");
@@ -73,8 +85,8 @@ export default function ContactForm() {
       <h2 className="mb-2 font-display text-3xl text-primary">{t("title")}</h2>
       <p className="mb-6 font-body text-body-md text-on-surface-variant">{t("subtitle")}</p>
 
-      {/* Honeypot: invisible para personas, tentador para bots. Si llega con
-          algo, Netlify descarta el envío como spam. */}
+      {/* Trampa: invisible para personas, tentadora para bots. Viaja aparte de
+          los campos, y si llega con algo Afeleia descarta el envío en silencio. */}
       <p className="hidden" aria-hidden="true">
         <label>
           No llenar este campo
@@ -171,11 +183,14 @@ export default function ContactForm() {
           onChange={(event) => setMessage(event.target.value)}
           placeholder={t("fields.messagePlaceholder")}
           rows={4}
+          maxLength={LARGO_MAXIMO_CAMPO}
           className="w-full resize-none border-0 border-b border-outline bg-transparent px-0 py-2 font-body text-body-md transition-colors focus:border-primary focus:outline-none"
         />
       </div>
 
       <PrivacyConsent id="contacto-privacidad" checked={consent} onChange={setConsent} />
+
+      <TurnstileInvisible ref={turnstile} />
 
       <button
         type="submit"

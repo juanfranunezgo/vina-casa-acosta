@@ -58,6 +58,9 @@ function checkoutOrigin(): string | null {
   return url ? new URL(url).origin : null;
 }
 
+/** El widget de Cloudflare Turnstile es un script y un iframe de este origen. */
+const TURNSTILE_ORIGIN = "https://challenges.cloudflare.com";
+
 /**
  * Content-Security-Policy del sitio.
  *
@@ -72,7 +75,8 @@ function checkoutOrigin(): string | null {
  * Consecuencia honesta: esta CSP NO detiene un XSS inline. La defensa real
  * contra eso es escapar en el sink — `lib/jsonLd.ts` y el resto del árbol, que
  * React ya escapa por defecto. Esta política es la segunda línea: acota lo que
- * un XSS podría HACER después (no puede cargar script externo, ni exfiltrar a
+ * un XSS podría HACER después (no puede cargar script externo —salvo el de
+ * Cloudflare Turnstile, que no sirve código de terceros—, ni exfiltrar a
  * un host cualquiera, ni reescribir la base de las URLs relativas, ni embeber
  * plugins, ni enviar formularios afuera — salvo al checkout de Afeleia cuando
  * `NEXT_PUBLIC_AFELEIA_CHECKOUT_URL` está definida: ver `checkoutOrigin`).
@@ -86,33 +90,41 @@ function contentSecurityPolicy(): string {
   const directives: Record<string, string[]> = {
     "default-src": ["'self'"],
     // Ver el comentario de arriba: 'unsafe-inline' es estructural en App Router.
-    "script-src": ["'self'", "'unsafe-inline'"],
+    // Cloudflare Turnstile: los formularios cargan su script (`lib/turnstile.ts`)
+    // para pedir el token que exige la puerta de formularios de Afeleia.
+    "script-src": ["'self'", "'unsafe-inline'", TURNSTILE_ORIGIN],
     // Tailwind y los `style={{…}}` de las páginas emiten estilo inline.
     "style-src": ["'self'", "'unsafe-inline'"],
     // Las fotos de producto salen del Storage de Afeleia; el Image CDN de
     // Netlify las reescribe al mismo origen, así que `'self'` lo cubre.
     "img-src": ["'self'", "data:", "blob:", "https://images.unsplash.com"],
     "font-src": ["'self'", "data:"],
-    // CartDrawer consulta el catálogo desde el cliente al abrirse. Quitar el
-    // origen de Afeleia rompe el marcado de líneas agotadas del carrito.
+    // CartDrawer consulta el catálogo desde el cliente al abrirse, y los
+    // formularios mandan a la puerta de formularios, las dos en el origen de
+    // Afeleia (se suma abajo). Quitarlo rompe el marcado de líneas agotadas del
+    // carrito y deja a los formularios sin enviar.
     "connect-src": ["'self'"],
     "frame-ancestors": ["'self'"],
     "form-action": ["'self'"],
     "base-uri": ["'self'"],
     "object-src": ["'none'"],
-    // El único iframe del sitio es el mapa de /contacto. Con `'none'` la página
-    // se veía entera menos el mapa: el navegador bloqueaba el frame y dejaba a
-    // la vista el esqueleto de `MapEmbed`, sin más rastro que una línea en la
-    // consola («Framing 'https://maps.google.com/' violates … frame-src»).
+    // Dos iframes: el mapa de /contacto y el widget de Turnstile de los
+    // formularios. Con `'none'` la página se veía entera menos el mapa: el
+    // navegador bloqueaba el frame y dejaba a la vista el esqueleto de
+    // `MapEmbed`, sin más rastro que una línea en la consola («Framing
+    // 'https://maps.google.com/' violates … frame-src»). Sin Turnstile acá, el
+    // síntoma sería peor: ningún formulario enviaría.
     //
-    // Van los tres orígenes porque la CSP se evalúa también en cada salto de la
-    // cadena de redirecciones, y el embed hace dos: `maps.google.com/maps?q=…`
-    // → `google.com/maps/embed` → `www.google.com/maps/embed`. Con solo el
-    // primero, el bloqueo se corre al segundo y el síntoma es idéntico.
+    // Van los tres orígenes del mapa porque la CSP se evalúa también en cada
+    // salto de la cadena de redirecciones, y el embed hace dos:
+    // `maps.google.com/maps?q=…` → `google.com/maps/embed` →
+    // `www.google.com/maps/embed`. Con solo el primero, el bloqueo se corre al
+    // segundo y el síntoma es idéntico.
     "frame-src": [
       "https://maps.google.com",
       "https://google.com",
       "https://www.google.com",
+      TURNSTILE_ORIGIN,
     ],
   };
 

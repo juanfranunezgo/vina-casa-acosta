@@ -355,7 +355,7 @@ test("activities keeps mobile navigation clear and sends EFE visitors to ticket 
   assert.match(gallerySource, /Array\.from\(\{ length: 6 \}\)/);
 });
 
-test("contact page keeps the exact address and submits to Netlify Forms", async () => {
+test("contact page keeps the exact address and submits to Afeleia", async () => {
   const [pageSource, formSource, esMessages] = await Promise.all([
     readFile(new URL("../app/[locale]/contacto/page.tsx", import.meta.url), "utf8"),
     readFile(new URL("../components/ContactForm.tsx", import.meta.url), "utf8"),
@@ -372,10 +372,11 @@ test("contact page keeps the exact address and submits to Netlify Forms", async 
   assert.match(pageSource, /maps\.google\.com\/maps\?q=-34\.465\d*,-71\.009\d*/);
   assert.match(pageSource, /https:\/\/maps\.app\.goo\.gl\//);
   assert.match(pageSource, /rounded-2xl/);
-  // El formulario dejó de derivar a WhatsApp: ahora llega a Netlify Forms, que
-  // guarda el envío aunque falle la notificación por correo. El handoff a
-  // `window.open` se retiró a propósito y no debe volver sin decisión.
-  assert.match(formSource, /submitToNetlifyForms/);
+  // El formulario dejó de derivar a WhatsApp: llega a la puerta de formularios
+  // de Afeleia (antes, a Netlify Forms), que guarda el envío aunque falle el
+  // aviso por correo. El handoff a `window.open` se retiró a propósito y no
+  // debe volver sin decisión.
+  assert.match(formSource, /enviarFormularioAfeleia/);
   assert.doesNotMatch(formSource, /window\.open/);
   // El único temporizador que queda devuelve el formulario a reposo después del
   // acuse de recibo. El `doesNotMatch(/setTimeout/)` de antes cuidaba el handoff
