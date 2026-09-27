@@ -11,8 +11,8 @@ todavía y qué trampas ya se pagaron.
 ## En una línea
 
 El sitio está **completo como pieza visual y casi vacío como software**: 74 páginas SSG en
-tres idiomas, sin backend propio y sin base de datos. Los dos formularios ya llegan a la
-viña vía Netlify Forms. **El carrito cobra**: en producción está definida
+tres idiomas, sin backend propio y sin base de datos. Los dos formularios llegan al panel
+de Afeleia de la viña, con aviso por correo. **El carrito cobra**: en producción está definida
 `NEXT_PUBLIC_AFELEIA_CHECKOUT_URL` (`checkout.vinacasaacosta.cl`, verificado el 2026-09-25 en
 la CSP del sitio publicado) y el cajón ofrece "Pagar" con Mercado Pago a través del
 checkout de Afeleia; WhatsApp queda de respaldo. La ficha de vino muestra el sello "Pago
@@ -26,35 +26,51 @@ Esto es lo primero que hay que saber, porque no se nota mirando la interfaz:
 
 | Formulario | Qué hace realmente |
 |---|---|
-| Reserva de tours (`components/TourReservationForm.tsx`) | Envía a **Netlify Forms** (`reserva-tour`). Al lado hay un botón de WhatsApp que sí funciona. |
-| Contacto (`components/ContactForm.tsx`) | Envía a **Netlify Forms** (`contacto`). Antes era un `mailto:` que se perdía si el visitante no tenía cliente de correo. |
+| Reserva de actividades (`components/ActivityReservationForm.tsx`) | Envía a la **puerta de formularios de Afeleia** (`reserva-actividad`). Al lado hay un botón de WhatsApp que sí funciona, y es la alternativa si el envío falla. |
+| Contacto (`components/ContactForm.tsx`) | Envía a la **puerta de formularios de Afeleia** (`contacto`). Antes era un `mailto:` que se perdía si el visitante no tenía cliente de correo, y después Netlify Forms. |
 | Carrito (`components/CartDrawer.tsx`) | Con `NEXT_PUBLIC_AFELEIA_CHECKOUT_URL` (definida en producción) ofrece **"Pagar"**: un POST al checkout de Afeleia, que cobra con Mercado Pago. Sin la variable, o si el checkout no responde, arma un mensaje de WhatsApp con el pedido. |
 
-### Netlify Forms — cómo está armado
+### Formularios — la puerta de Afeleia (desde 2026-09)
 
-Solución provisoria mientras no haya backend. Plan Free: **100 envíos/mes**.
+Los dos formularios mandan a `formularios-publico`, la puerta de formularios de Afeleia.
+Afeleia guarda cada mensaje, lo muestra en el panel de la viña (Formularios, y quien
+escribió en Clientes) y manda el aviso por correo. El contrato v1 está en el repo privado
+de Afeleia (`supabase/functions/formularios-publico/README.md` y el capítulo 12 de
+`docs/conexiones-web/manual-conexion.md`) y **no se copia acá**.
 
-- `public/__forms.html` declara los dos formularios. Existe porque Netlify detecta
-  formularios parseando el HTML **estático** del deploy, y con OpenNext los `<form>` de
-  React no existen como HTML en el build. **Cada campo que envíe un componente tiene que
-  estar declarado ahí**: Netlify descarta en silencio los que no figuren.
-- `lib/netlifyForms.ts` hace el POST contra `/__forms.html` (no contra una ruta de Next,
-  que se la llevaría OpenNext antes de que Forms la vea).
-- ⚠️ **En `npm run dev` los formularios siempre fallan** (405/404): el handler de Forms es
-  parte del runtime de Netlify. Se prueban en un deploy preview, no en local.
-- La casilla de destino se configura en Netlify → Notifications → Form submission
-  notifications. **No sale de `lib/contact.ts`**: cambiar esa constante no cambia a dónde
-  llegan los envíos.
-- Los envíos quedan guardados en el panel aunque la notificación por correo falle.
-- El formulario de reserva pasó de llamarse `reserva-tour` a **`reserva-actividad`**
-  (campos nuevos: `actividad` y `tipo`, que vale `reserva` o `cotizacion`). Los envíos
-  anteriores **no se pierden**: quedan en el panel bajo el nombre viejo, en su propia
-  lista. Si la notificación por correo estaba configurada sobre `reserva-tour`, hay que
-  volver a configurarla para el nombre nuevo.
+- `lib/afeleiaFormularios.ts` arma la URL con `NEXT_PUBLIC_AFELEIA_API_URL` y
+  `NEXT_PUBLIC_AFELEIA_SITIO` —las del catálogo— y manda `{ campos, turnstile, trampa }`.
+  Solo un `200` con `{ ok: true }` es un envío hecho; cualquier otra cosa deja el error con
+  la alternativa (correo y WhatsApp en contacto, WhatsApp en reservas).
+- **Cloudflare Turnstile**: cada envío pide un token (`components/TurnstileInvisible.tsx`,
+  lógica en `lib/turnstile.ts`). Necesita `NEXT_PUBLIC_TURNSTILE_SITE_KEY` en el build (la
+  clave **pública** del widget de Afeleia) y la CSP abre `https://challenges.cloudflare.com`
+  en `script-src` y `frame-src`. No se ve salvo que Cloudflare pida marcar la casilla, y el
+  script se carga recién con el primer foco dentro del formulario (o al enviar), no al
+  abrir la página: quien solo mira una ficha no pasa por Cloudflare.
+- **En producción la clave es obligatoria**: `scripts/formularios-validacion.mjs`, primer
+  paso del `prebuild`, corta el build de `CONTEXT=production` si falta, tiene espacios o es
+  una clave de prueba de Cloudflare. Netlify deja publicado el deploy anterior. En los
+  previews y en local no corta.
+- ⚠️ **Solo envía desde `vinacasaacosta.cl`.** El widget tiene cargados solo los dominios de
+  producción, y la puerta exige el origen registrado del sitio: en un deploy preview o en
+  `npm run dev` el formulario termina en el error. Se prueba en producción.
+- Los nombres de campo importan: `nombre`, `email` y `telefono` son los que Afeleia usa
+  para sumar el contacto y para el "Responder a" del aviso. Las claves son
+  `^[a-z0-9_]{1,40}$` (una sola con guion es un 400 para todo el envío) y cada valor hasta
+  5.000 caracteres (`maxLength` en los textos largos). Lo cuida
+  `tests/formularios-afeleia.test.mjs`, que además fija los campos de cada formulario.
+- La trampa (`botField`) viaja aparte, en `trampa`: si llega llena, Afeleia responde `200`
+  y descarta el mensaje en silencio.
+- Los correos de aviso se configuran en Afeleia, por formulario. **No salen de
+  `lib/contact.ts`.**
 - Desde el 2026-09-22 el formulario de **contacto** pide el celular, obligatorio, en el
   campo `telefono` —el mismo nombre que usa la reserva—. Acepta de 8 a 15 dígitos con
   espacios, guiones, paréntesis y "+"; lo cuida `tests/contacto-celular.test.mjs`, que
   compila el `pattern` con el flag `v` como lo hace el navegador.
+- Antes iban a **Netlify Forms** (`public/__forms.html` y `lib/netlifyForms.ts`, ya
+  borrados). Los envíos viejos siguen en el panel de Netlify, incluidos los del nombre
+  anterior de la reserva, `reserva-tour`.
 
 ---
 
@@ -187,8 +203,8 @@ exactamente como estaba:
   nativo y sin `FAQPage`. Una línea en blanco (`\n\n`) dentro de una respuesta la parte
   en dos párrafos.
 - **`bookingFields`** — campos extra del formulario: `eleccion` (el rótulo sale de
-  `items.{slug}.form.choice*`) y `restricciones`. Van a Netlify con esos nombres,
-  declarados en `public/__forms.html`; las demás actividades los mandan vacíos. Hubo
+  `items.{slug}.form.choice*`) y `restricciones`. Van a Afeleia con esos nombres; las
+  demás actividades los mandan vacíos. Hubo
   una segunda fecha (`segundaFecha` → `fecha2`) que la viña sacó el 25-09.
 - **`heroBooking`** — precio y botones también en el hero. Sólo el yoga, por decisión de
   Juan Francisco: el documento lo pedía para esta ficha.
@@ -740,9 +756,8 @@ vino (una cadena nueva en tres idiomas) para que nadie llegue al cierre con la s
 acepto la Política de Privacidad" y ahora dice **"Acepto los términos y condiciones y estoy
 de acuerdo con las políticas de privacidad"**, con los dos PDF enlazados (`TERMINOS_PDF` y
 `PRIVACIDAD_PDF` en `lib/legal.ts`). El envío pasó a llevar **dos** campos de versión
-—`terminos` y `privacidad`—, declarados en `public/__forms.html`: si el archivo no se
-deployea con el campo nuevo, Netlify lo descarta en silencio y el registro dice qué política
-se aceptó pero no qué términos. El texto en inglés y portugués es traducción de trabajo, como
+—`terminos` y `privacidad`—, para que el registro diga qué política y qué términos se
+aceptaron. El texto en inglés y portugués es traducción de trabajo, como
 el resto del copy EN/PT: falta validación humana.
 
 **Legal (actualizado 2026-08-18):** el footer enlaza **tres documentos**, todos en
@@ -812,10 +827,8 @@ campo `privacidad` con la **edición aceptada** (`PRIVACIDAD_VERSION` de `lib/le
 `en` y `pt` enlaza el PDF en español y la etiqueta lo advierte: es lo contrario de la regla
 del footer, y la diferencia es que ahí se *ofrece* un documento y acá se *pide aceptarlo*.
 
-⚠️ **El campo nuevo hay que declararlo en `public/__forms.html`** o Netlify lo descarta en
-silencio. Eso ya no depende de que alguien se acuerde: `tests/netlify-forms-paridad.test.mjs`
-compara campo por campo lo que envía cada componente contra lo declarado, en los dos
-sentidos.
+Que los dos formularios sigan mandando `terminos` y `privacidad`, y montando la casilla, lo
+cuida `tests/formularios-afeleia.test.mjs`.
 
 Historia previa:
 

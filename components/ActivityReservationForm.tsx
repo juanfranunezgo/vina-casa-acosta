@@ -5,13 +5,13 @@ import { useLocale, useTranslations } from "next-intl";
 import { Check, Send, MessageCircle, CalendarDays, Users } from "lucide-react";
 import Button from "@/components/ui/Button";
 import { CONTACT_WHATSAPP_URL } from "@/lib/contact";
-import { submitToNetlifyForms } from "@/lib/netlifyForms";
+import { enviarFormularioAfeleia, LARGO_MAXIMO_CAMPO } from "@/lib/afeleiaFormularios";
+import { enviarConVerificacion, type EstadoEnvio } from "@/lib/estadoEnvio";
 import PrivacyConsent from "@/components/PrivacyConsent";
+import TurnstileInvisible, { type TurnstileInvisibleHandle } from "@/components/TurnstileInvisible";
 import { PRIVACIDAD_VERSION, TERMINOS_VERSION } from "@/lib/legal";
 import { primeraFechaReservable } from "@/lib/fechaReserva";
 import type { BookingField } from "@/data/activities";
-
-type Status = "idle" | "submitting" | "success" | "error";
 
 type Props = {
   /** Nombre de la actividad, para el prefill del mensaje de WhatsApp. */
@@ -172,7 +172,7 @@ export default function ActivityReservationForm({
   // una pregunta vacía.
   const pideEleccion = extraFields.includes("eleccion") && choiceCopy !== undefined;
   const pideRestricciones = extraFields.includes("restricciones");
-  const [status, setStatus] = useState<Status>("idle");
+  const [status, setStatus] = useState<EstadoEnvio>("idle");
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
@@ -183,6 +183,7 @@ export default function ActivityReservationForm({
   const [note, setNote] = useState("");
   const [botField, setBotField] = useState("");
   const [consent, setConsent] = useState(false);
+  const turnstile = useRef<TurnstileInvisibleHandle>(null);
 
   // Grupo por debajo del mínimo publicado. El campo dejó de corregir el número
   // hacia arriba a propósito: si lo sube solo, la persona nunca puede declarar
@@ -196,55 +197,63 @@ export default function ActivityReservationForm({
     peopleCount < minPeople;
 
   /**
-   * La solicitud va a Netlify Forms: queda en el panel del proyecto y dispara
-   * la notificación por correo. Los campos tienen que estar declarados en
-   * `public/__forms.html` o Netlify los descarta en silencio.
+   * La solicitud va a la puerta de formularios de Afeleia
+   * (`lib/afeleiaFormularios.ts`): queda en el panel de la viña y dispara el
+   * aviso por correo. `enviarConVerificacion` (`lib/estadoEnvio.ts`) pide el token
+   * de Cloudflare en cada envío y lleva los estados: cualquier falla —el widget,
+   * la red, la puerta— termina en el error, que manda a WhatsApp, nunca en un
+   * botón girando.
    */
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (status === "submitting") return;
-    setStatus("submitting");
 
-    try {
-      await submitToNetlifyForms("reserva-actividad", {
-        actividad: activityName,
-        tipo: mode,
-        nombre: name,
-        email,
-        telefono: phone,
-        personas: people,
-        fecha: date,
-        // Los campos extra van siempre, vacíos en las actividades que no los
-        // piden: así la declaración de `__forms.html` es una sola y el panel
-        // de Netlify muestra las mismas columnas para todas.
-        eleccion: choice,
-        restricciones: dietary,
-        nota: note,
-        idioma: locale,
-        // Qué ediciones se aceptaron, no sólo que se aceptaron: cuando salga
-        // una v1.2, los consentimientos ya guardados siguen diciendo la verdad
-        // sobre lo que esta persona leyó. Son dos campos porque los dos
-        // documentos se versionan por separado.
-        terminos: TERMINOS_VERSION,
-        privacidad: PRIVACIDAD_VERSION,
-        "bot-field": botField,
-      });
-      setStatus("success");
-      window.setTimeout(() => {
-        setName("");
-        setEmail("");
-        setPhone("");
-        setPeople(minPeople === undefined ? "" : String(minPeople));
-        setDate("");
-        setChoice("");
-        setDietary("");
-        setNote("");
-        setConsent(false);
-        setStatus("idle");
-      }, 5000);
-    } catch {
-      setStatus("error");
-    }
+    const enviado = await enviarConVerificacion(
+      turnstile.current,
+      (token) =>
+        enviarFormularioAfeleia(
+          "reserva-actividad",
+          {
+            actividad: activityName,
+            tipo: mode,
+            // `nombre`, `email` y `telefono` son los nombres con que Afeleia suma
+            // a quien escribió a los contactos de la viña.
+            nombre: name,
+            email,
+            telefono: phone,
+            personas: people,
+            fecha: date,
+            // Los campos extra van siempre, vacíos en las actividades que no los
+            // piden: todas las solicitudes llegan al panel con la misma forma.
+            eleccion: choice,
+            restricciones: dietary,
+            nota: note,
+            idioma: locale,
+            // Qué ediciones se aceptaron, no sólo que se aceptaron: cuando salga
+            // una v1.2, los consentimientos ya guardados siguen diciendo la verdad
+            // sobre lo que esta persona leyó. Son dos campos porque los dos
+            // documentos se versionan por separado.
+            terminos: TERMINOS_VERSION,
+            privacidad: PRIVACIDAD_VERSION,
+          },
+          token,
+          botField,
+        ),
+      setStatus,
+    );
+    if (!enviado) return;
+    window.setTimeout(() => {
+      setName("");
+      setEmail("");
+      setPhone("");
+      setPeople(minPeople === undefined ? "" : String(minPeople));
+      setDate("");
+      setChoice("");
+      setDietary("");
+      setNote("");
+      setConsent(false);
+      setStatus("idle");
+    }, 5000);
   };
 
   const whatsappUrl = () => {
@@ -271,8 +280,8 @@ export default function ActivityReservationForm({
         </p>
       </div>
 
-      {/* Honeypot: invisible para personas, tentador para bots. Si llega con
-          algo, Netlify descarta el envío como spam. */}
+      {/* Trampa: invisible para personas, tentadora para bots. Viaja aparte de
+          los campos, y si llega con algo Afeleia descarta el envío en silencio. */}
       <p className="hidden" aria-hidden="true">
         <label>
           No llenar este campo
@@ -440,6 +449,7 @@ export default function ActivityReservationForm({
             onChange={(e) => setNote(e.target.value)}
             placeholder={t("notePlaceholder")}
             rows={3}
+            maxLength={LARGO_MAXIMO_CAMPO}
             className={`${inputClass} resize-none`}
           />
         </div>
@@ -450,6 +460,8 @@ export default function ActivityReservationForm({
         checked={consent}
         onChange={setConsent}
       />
+
+      <TurnstileInvisible ref={turnstile} />
 
       {/* Una acción principal y una alternativa. Antes eran dos cajas del mismo
           peso —relleno oscuro y contorno, las dos en negrita y a lo ancho— y la

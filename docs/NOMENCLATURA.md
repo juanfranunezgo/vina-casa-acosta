@@ -78,7 +78,7 @@ La ruta lleva la categoría: `/actividades/tours/ombu`, `/actividades/talleres/p
 | Dd5 | Tarjeta de reserva: precio **o** "a consultar", más condiciones. Con `priceExcludesVAT` el precio dice "+ IVA" junto a la cifra |
 | Dd6 | Galería (placeholder hasta tener fotos) |
 | Dd6b | Preguntas frecuentes (`components/ActivityFaq.tsx`): una tarjeta con sombra por pregunta y "Expandir todo". Sólo si la actividad trae `faq` en messages; hoy, el yoga. Sin marcado `FAQPage`: Google lo limita a sitios de gobierno y salud desde 2023 |
-| Dd7 | Reserva o cotización (formulario Netlify Forms + botón WhatsApp con prefill) |
+| Dd7 | Reserva o cotización (formulario a Afeleia + botón WhatsApp con prefill) |
 | Dd8 | Otras actividades de la misma categoría |
 
 **Tipografía de la ficha:** Libre Caslon sólo en los títulos y en la cita de la

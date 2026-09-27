@@ -21,9 +21,9 @@ export const CONTACT_TEL_URL = `tel:+${CONTACT_PHONE_E164}`;
  * que redirigir el sitio viejo con un 301 no lo toca — pero mover los NS del
  * dominio sí, porque los MX tendrían que viajar con ellos.
  *
- * Las notificaciones de los formularios se configuran aparte, en Netlify →
- * Notifications → Form submission notifications. Cambiar esta constante NO
- * cambia a dónde llegan los envíos.
+ * Los avisos de los formularios se configuran aparte, en Afeleia: cada
+ * formulario (`contacto`, `reserva-actividad`) tiene sus correos de aviso.
+ * Cambiar esta constante NO cambia a dónde llegan los envíos.
  */
 export const CONTACT_EMAIL = "contacto@casaacosta.cl";
 export const CONTACT_MAILTO_URL = `mailto:${CONTACT_EMAIL}`;

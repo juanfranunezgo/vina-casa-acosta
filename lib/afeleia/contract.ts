@@ -192,8 +192,10 @@ function storageOrigin(apiUrl: string | undefined): string | null {
 }
 
 /**
- * El endpoint del catálogo para una base y un sitio, o `null` si con esa base no
- * se puede armar uno.
+ * La URL de una Edge Function de Afeleia sobre la base, o `null` si con esa base
+ * no se puede armar una. La usan el catálogo (`catalogEndpointFor`) y los
+ * formularios (`lib/afeleiaFormularios.ts`): las dos llegan a la misma base y las
+ * dos tienen que rechazar las mismas bases malas.
  *
  * Se compone modificando `pathname` con `URL` y **no pegando texto**, y eso salió
  * de la tercera ronda de review: con una base legítima en apariencia
@@ -208,11 +210,8 @@ function storageOrigin(apiUrl: string | undefined): string | null {
  * viajarían en cada consulta del build y del runtime, y el contrato v1 no las
  * necesita — la web no tiene credenciales de ningún tipo.
  */
-export function catalogEndpointFor(
-  base: string | undefined,
-  sitio: string | undefined,
-): string | null {
-  if (!base || !sitio) return null;
+export function edgeFunctionUrlFor(base: string | undefined, funcion: string): URL | null {
+  if (!base) return null;
 
   let url: URL;
   try {
@@ -225,7 +224,18 @@ export function catalogEndpointFor(
   if (url.search !== "" || url.hash !== "" || base.includes("#")) return null;
   if (url.username !== "" || url.password !== "") return null;
 
-  url.pathname = `${url.pathname.replace(/\/+$/, "")}/catalogo-publico`;
+  url.pathname = `${url.pathname.replace(/\/+$/, "")}/${funcion}`;
+  return url;
+}
+
+/** El endpoint del catálogo para una base y un sitio, o `null` si con esa base no se puede armar uno. */
+export function catalogEndpointFor(
+  base: string | undefined,
+  sitio: string | undefined,
+): string | null {
+  if (!sitio) return null;
+  const url = edgeFunctionUrlFor(base, "catalogo-publico");
+  if (!url) return null;
   url.searchParams.set("sitio", sitio);
   return url.toString();
 }
