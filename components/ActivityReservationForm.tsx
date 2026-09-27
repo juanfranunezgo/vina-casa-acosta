@@ -6,13 +6,12 @@ import { Check, Send, MessageCircle, CalendarDays, Users } from "lucide-react";
 import Button from "@/components/ui/Button";
 import { CONTACT_WHATSAPP_URL } from "@/lib/contact";
 import { enviarFormularioAfeleia, LARGO_MAXIMO_CAMPO } from "@/lib/afeleiaFormularios";
+import { enviarConVerificacion, type EstadoEnvio } from "@/lib/estadoEnvio";
 import PrivacyConsent from "@/components/PrivacyConsent";
 import TurnstileInvisible, { type TurnstileInvisibleHandle } from "@/components/TurnstileInvisible";
 import { PRIVACIDAD_VERSION, TERMINOS_VERSION } from "@/lib/legal";
 import { primeraFechaReservable } from "@/lib/fechaReserva";
 import type { BookingField } from "@/data/activities";
-
-type Status = "idle" | "submitting" | "success" | "error";
 
 type Props = {
   /** Nombre de la actividad, para el prefill del mensaje de WhatsApp. */
@@ -173,7 +172,7 @@ export default function ActivityReservationForm({
   // una pregunta vacía.
   const pideEleccion = extraFields.includes("eleccion") && choiceCopy !== undefined;
   const pideRestricciones = extraFields.includes("restricciones");
-  const [status, setStatus] = useState<Status>("idle");
+  const [status, setStatus] = useState<EstadoEnvio>("idle");
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
@@ -200,63 +199,61 @@ export default function ActivityReservationForm({
   /**
    * La solicitud va a la puerta de formularios de Afeleia
    * (`lib/afeleiaFormularios.ts`): queda en el panel de la viña y dispara el
-   * aviso por correo. El token de Cloudflare se pide acá, al enviar: dura 300 s
-   * y sirve una sola vez. Cualquier falla —el widget, la red, la puerta— deja
-   * el error, que manda a WhatsApp.
+   * aviso por correo. `enviarConVerificacion` (`lib/estadoEnvio.ts`) pide el token
+   * de Cloudflare en cada envío y lleva los estados: cualquier falla —el widget,
+   * la red, la puerta— termina en el error, que manda a WhatsApp, nunca en un
+   * botón girando.
    */
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (status === "submitting") return;
-    setStatus("submitting");
 
-    try {
-      const widget = turnstile.current;
-      if (!widget) throw new Error("el widget de Cloudflare no está montado");
-      const token = await widget.obtenerToken();
-      await enviarFormularioAfeleia(
-        "reserva-actividad",
-        {
-          actividad: activityName,
-          tipo: mode,
-          // `nombre`, `email` y `telefono` son los nombres con que Afeleia suma
-          // a quien escribió a los contactos de la viña.
-          nombre: name,
-          email,
-          telefono: phone,
-          personas: people,
-          fecha: date,
-          // Los campos extra van siempre, vacíos en las actividades que no los
-          // piden: todas las solicitudes llegan al panel con la misma forma.
-          eleccion: choice,
-          restricciones: dietary,
-          nota: note,
-          idioma: locale,
-          // Qué ediciones se aceptaron, no sólo que se aceptaron: cuando salga
-          // una v1.2, los consentimientos ya guardados siguen diciendo la verdad
-          // sobre lo que esta persona leyó. Son dos campos porque los dos
-          // documentos se versionan por separado.
-          terminos: TERMINOS_VERSION,
-          privacidad: PRIVACIDAD_VERSION,
-        },
-        token,
-        botField,
-      );
-      setStatus("success");
-      window.setTimeout(() => {
-        setName("");
-        setEmail("");
-        setPhone("");
-        setPeople(minPeople === undefined ? "" : String(minPeople));
-        setDate("");
-        setChoice("");
-        setDietary("");
-        setNote("");
-        setConsent(false);
-        setStatus("idle");
-      }, 5000);
-    } catch {
-      setStatus("error");
-    }
+    const enviado = await enviarConVerificacion(
+      turnstile.current,
+      (token) =>
+        enviarFormularioAfeleia(
+          "reserva-actividad",
+          {
+            actividad: activityName,
+            tipo: mode,
+            // `nombre`, `email` y `telefono` son los nombres con que Afeleia suma
+            // a quien escribió a los contactos de la viña.
+            nombre: name,
+            email,
+            telefono: phone,
+            personas: people,
+            fecha: date,
+            // Los campos extra van siempre, vacíos en las actividades que no los
+            // piden: todas las solicitudes llegan al panel con la misma forma.
+            eleccion: choice,
+            restricciones: dietary,
+            nota: note,
+            idioma: locale,
+            // Qué ediciones se aceptaron, no sólo que se aceptaron: cuando salga
+            // una v1.2, los consentimientos ya guardados siguen diciendo la verdad
+            // sobre lo que esta persona leyó. Son dos campos porque los dos
+            // documentos se versionan por separado.
+            terminos: TERMINOS_VERSION,
+            privacidad: PRIVACIDAD_VERSION,
+          },
+          token,
+          botField,
+        ),
+      setStatus,
+    );
+    if (!enviado) return;
+    window.setTimeout(() => {
+      setName("");
+      setEmail("");
+      setPhone("");
+      setPeople(minPeople === undefined ? "" : String(minPeople));
+      setDate("");
+      setChoice("");
+      setDietary("");
+      setNote("");
+      setConsent(false);
+      setStatus("idle");
+    }, 5000);
   };
 
   const whatsappUrl = () => {

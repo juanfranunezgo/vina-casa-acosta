@@ -420,3 +420,74 @@ test("el componente prepara el widget con el primer foco en el formulario", asyn
   assert.equal(llamadas.length, 1);
   assert.match(fuente, /const (\w+) = \(\) => turnstile\.preparar\(\);[\s\S]*addEventListener\("focusin", \1,/);
 });
+
+// ---------------------------------------------------------------------------
+// Los plazos de verdad, con tiempo simulado
+// ---------------------------------------------------------------------------
+
+/**
+ * Los tests de arriba inyectan plazos cortos para ver la lógica; estos corren con
+ * los plazos por defecto y el reloj de `node:test`, así que cambiar 30 s o 180 s
+ * en `lib/turnstile.ts` los hace fallar.
+ */
+function seguir(promesa) {
+  const estado = { resultado: "pendiente" };
+  promesa.then(
+    (token) => (estado.resultado = `token:${token}`),
+    (error) => (estado.resultado = error.motivo ?? String(error)),
+  );
+  return estado;
+}
+
+function montadoConPlazosReales() {
+  const falsa = apiFalsa();
+  const turnstile = crearTurnstile({ sitekey: "clave-publica", cargarApi: () => Promise.resolve(falsa.api) });
+  turnstile.montar(CONTENEDOR);
+  turnstile.preparar();
+  return { turnstile, ...falsa };
+}
+
+test("sin respuesta de Cloudflare espera 30 s: sigue a 29,999 s y corta justo a los 30 s", async (t) => {
+  t.mock.timers.enable({ apis: ["setTimeout"] });
+  const { turnstile } = montadoConPlazosReales();
+  await tick();
+  const estado = seguir(turnstile.obtenerToken());
+  await tick();
+  t.mock.timers.tick(29_999);
+  await tick();
+  assert.equal(estado.resultado, "pendiente");
+  t.mock.timers.tick(1);
+  await tick();
+  assert.equal(estado.resultado, "tiempo_agotado");
+});
+
+test("si Cloudflare pide interacción, espera 180 s desde ahí: sigue a 179,999 s y corta justo a los 180 s", async (t) => {
+  t.mock.timers.enable({ apis: ["setTimeout"] });
+  const { turnstile, estado: widget } = montadoConPlazosReales();
+  await tick();
+  const estado = seguir(turnstile.obtenerToken());
+  await tick();
+  // La casilla aparece a los 10 s del envío: los 180 s cuentan desde ahí.
+  t.mock.timers.tick(10_000);
+  widget.opciones["before-interactive-callback"]();
+  // Pasados los 30 s del plazo normal, sigue esperando.
+  t.mock.timers.tick(179_999);
+  await tick();
+  assert.equal(estado.resultado, "pendiente");
+  t.mock.timers.tick(1);
+  await tick();
+  assert.equal(estado.resultado, "tiempo_agotado");
+});
+
+test("con interacción, el token que llega antes de los 180 s se entrega", async (t) => {
+  t.mock.timers.enable({ apis: ["setTimeout"] });
+  const { turnstile, estado: widget } = montadoConPlazosReales();
+  await tick();
+  const estado = seguir(turnstile.obtenerToken());
+  await tick();
+  widget.opciones["before-interactive-callback"]();
+  t.mock.timers.tick(179_999);
+  widget.opciones.callback("a-tiempo");
+  await tick();
+  assert.equal(estado.resultado, "token:a-tiempo");
+});

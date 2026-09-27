@@ -92,31 +92,42 @@ export async function enviarFormularioAfeleia(
   );
   if (!url) throw new ErrorEnvioFormulario("configuracion");
 
-  let respuesta: Response;
+  // El plazo cubre el pedido y la lectura de la respuesta. Va con `setTimeout` y no
+  // con `AbortSignal.timeout`: así se prueba con tiempo simulado
+  // (`tests/formularios-afeleia.test.mjs`) y se apaga apenas termina el envío.
+  const controlador = new AbortController();
+  const plazo = setTimeout(() => controlador.abort(), TIMEOUT_MS);
   try {
-    respuesta = await fetchImpl(url, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      // La puerta mide `trampa.length` y con más de 200 responde 400: el bot se
-      // enteraría de que lo vieron. Recortada sigue llena y se descarta con 200.
-      body: JSON.stringify({ campos, turnstile: token, trampa: trampa.slice(0, TRAMPA_MAXIMA) }),
-      // La puerta no redirige. Si algo en el camino lo hiciera, un 307 o un 308
-      // reenviarían el mensaje entero a otra URL: se corta como error de red.
-      redirect: "error",
-      signal: AbortSignal.timeout(TIMEOUT_MS),
-    });
-  } catch {
-    throw new ErrorEnvioFormulario("red");
-  }
+    let respuesta: Response;
+    try {
+      respuesta = await fetchImpl(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        // La puerta mide `trampa.length` y con más de 200 responde 400: el bot se
+        // enteraría de que lo vieron. Recortada sigue llena y se descarta con 200.
+        body: JSON.stringify({ campos, turnstile: token, trampa: trampa.slice(0, TRAMPA_MAXIMA) }),
+        // La puerta no redirige. Si algo en el camino lo hiciera, un 307 o un 308
+        // reenviarían el mensaje entero a otra URL: se corta como error de red.
+        redirect: "error",
+        signal: controlador.signal,
+      });
+    } catch {
+      throw new ErrorEnvioFormulario("red");
+    }
 
-  const cuerpo = (await respuesta.json().catch(() => null)) as { ok?: unknown; codigo?: unknown } | null;
-  // El contrato dice `200`, no "cualquier 2xx": `respuesta.ok` aceptaría un 204.
-  if (respuesta.status === 200) {
-    // Un 200 que no dice `ok: true` no es de la puerta (un portal cautivo, un
-    // proxy): dar el mensaje por enviado sería perderlo sin que nadie lo sepa.
-    if (cuerpo?.ok === true) return;
-    throw new ErrorEnvioFormulario("respuesta_invalida");
+    const cuerpo = (await respuesta.json().catch(() => null)) as { ok?: unknown; codigo?: unknown } | null;
+    // Un cuerpo que no terminó de llegar en el plazo es la misma falla que la red.
+    if (controlador.signal.aborted) throw new ErrorEnvioFormulario("red");
+    // El contrato dice `200`, no "cualquier 2xx": `respuesta.ok` aceptaría un 204.
+    if (respuesta.status === 200) {
+      // Un 200 que no dice `ok: true` no es de la puerta (un portal cautivo, un
+      // proxy): dar el mensaje por enviado sería perderlo sin que nadie lo sepa.
+      if (cuerpo?.ok === true) return;
+      throw new ErrorEnvioFormulario("respuesta_invalida");
+    }
+    const codigo = typeof cuerpo?.codigo === "string" && /^[a-z_]{1,64}$/.test(cuerpo.codigo) ? cuerpo.codigo : null;
+    throw new ErrorEnvioFormulario(codigo ?? `http_${respuesta.status}`);
+  } finally {
+    clearTimeout(plazo);
   }
-  const codigo = typeof cuerpo?.codigo === "string" && /^[a-z_]{1,64}$/.test(cuerpo.codigo) ? cuerpo.codigo : null;
-  throw new ErrorEnvioFormulario(codigo ?? `http_${respuesta.status}`);
 }

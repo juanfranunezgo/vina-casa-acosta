@@ -211,6 +211,69 @@ test("sin un código legible, el error dice el HTTP", async () => {
   );
 });
 
+const tick = () => new Promise((r) => setImmediate(r));
+
+function seguir(promesa) {
+  const estado = { resultado: "pendiente" };
+  promesa.then(
+    () => (estado.resultado = "enviado"),
+    (error) => (estado.resultado = error.codigo ?? String(error)),
+  );
+  return estado;
+}
+
+/** Un fetch que no contesta nunca y solo termina si lo abortan. */
+function fetchColgado() {
+  const visto = {};
+  const fn = (_url, init) => {
+    visto.senal = init.signal;
+    return new Promise((_resolver, rechazar) =>
+      init.signal.addEventListener("abort", () => rechazar(new DOMException("abortado", "AbortError"))),
+    );
+  };
+  return { fn, visto };
+}
+
+test("el envío espera 10 s: sigue a 9,999 s y corta justo a los 10 s", async (t) => {
+  // Con el reloj de `node:test`: cambiar el timeout del contrato lo hace fallar.
+  t.mock.timers.enable({ apis: ["setTimeout"] });
+  conEntorno(BASE, SITIO);
+  const { fn, visto } = fetchColgado();
+  const estado = seguir(enviarFormularioAfeleia("contacto", { nombre: "A" }, "t", "", fn));
+  await tick();
+  t.mock.timers.tick(9_999);
+  await tick();
+  assert.equal(estado.resultado, "pendiente");
+  assert.equal(visto.senal.aborted, false);
+  t.mock.timers.tick(1);
+  await tick();
+  assert.equal(visto.senal.aborted, true);
+  assert.equal(estado.resultado, "red");
+});
+
+test("los 10 s cubren también la lectura de la respuesta", async (t) => {
+  // Una puerta que manda las cabeceras y deja el cuerpo colgado no puede dejar el
+  // botón girando: el mismo plazo corta la lectura.
+  t.mock.timers.enable({ apis: ["setTimeout"] });
+  conEntorno(BASE, SITIO);
+  const fn = async (_url, init) => ({
+    status: 200,
+    ok: true,
+    json: () =>
+      new Promise((_resolver, rechazar) =>
+        init.signal.addEventListener("abort", () => rechazar(new DOMException("abortado", "AbortError"))),
+      ),
+  });
+  const estado = seguir(enviarFormularioAfeleia("contacto", { nombre: "A" }, "t", "", fn));
+  await tick();
+  t.mock.timers.tick(9_999);
+  await tick();
+  assert.equal(estado.resultado, "pendiente");
+  t.mock.timers.tick(1);
+  await tick();
+  assert.equal(estado.resultado, "red");
+});
+
 test("una caída de red o un timeout es un ErrorEnvioFormulario, no un TypeError suelto", async () => {
   conEntorno(BASE, SITIO);
   for (const error of [new TypeError("Failed to fetch"), new DOMException("timeout", "TimeoutError")]) {
@@ -338,19 +401,25 @@ for (const { formulario, componente, campos } of CASOS) {
     assert.ok(enviados.some((c) => ["nombre", "name"].includes(c)), "sin nombre");
   });
 
-  test(`${formulario} manda la trampa aparte y pide el token antes de enviar`, async () => {
+  test(`${formulario} manda la trampa aparte y el token del widget, por enviarConVerificacion`, async () => {
     const fuente = await leer(componente);
     const { token, trampa } = llamada(fuente, formulario);
     assert.equal(trampa, "botField");
     assert.match(fuente, /value=\{botField\}/, "la trampa ya no está atada al input oculto");
     assert.doesNotMatch(fuente, /bot-field/);
-    // El token sale del widget en el mismo envío: dura 300 s y sirve una vez.
-    assert.match(fuente, new RegExp(`const ${token} = await \\w+\\.obtenerToken\\(\\)`));
-    assert.ok(
-      // El import no lleva paréntesis: el primer `enviarFormularioAfeleia(` es la llamada.
-      fuente.indexOf(".obtenerToken()") < fuente.indexOf("enviarFormularioAfeleia("),
-      "el token se pide después del envío",
+    // El token lo pide `enviarConVerificacion` al widget en el mismo envío (dura
+    // 300 s y sirve una vez) y se lo pasa a la puerta. El orden y los estados se
+    // prueban ejecutándolo, más abajo.
+    assert.match(
+      fuente,
+      new RegExp(
+        `enviarConVerificacion\\(\\s*turnstile\\.current,\\s*\\(${token}\\) =>\\s*enviarFormularioAfeleia\\(`,
+      ),
     );
+    assert.match(fuente, /enviarFormularioAfeleia\([\s\S]*?\),\s*setStatus,\s*\);/);
+    // Los estados "submitting" y "error" los pone solo el módulo: un camino a mano
+    // en el componente es por donde vuelve un botón girando para siempre.
+    assert.doesNotMatch(fuente, /setStatus\("(submitting|error)"\)/);
   });
 
   test(`${formulario} monta el widget invisible`, async () => {
@@ -365,6 +434,81 @@ for (const { formulario, componente, campos } of CASOS) {
     for (const area of areas) assert.match(area, /maxLength=\{LARGO_MAXIMO_CAMPO\}/);
   });
 }
+
+// ---------------------------------------------------------------------------
+// El estado del envío (lib/estadoEnvio.ts)
+// ---------------------------------------------------------------------------
+
+const { enviarConVerificacion } = await import("@/lib/estadoEnvio");
+
+async function recorrido(widget, enviar) {
+  const estados = [];
+  const enviado = await enviarConVerificacion(widget, enviar, (estado) => estados.push(estado));
+  return { estados, enviado };
+}
+
+test("un envío bien hecho pasa por submitting y termina en success, con el token del widget", async () => {
+  const recibidos = [];
+  const pedidos = [];
+  const widget = {
+    obtenerToken: async () => {
+      pedidos.push(recibidos.length);
+      return "token-del-widget";
+    },
+  };
+  const { estados, enviado } = await recorrido(widget, async (token) => {
+    recibidos.push(token);
+  });
+  assert.deepEqual(estados, ["submitting", "success"]);
+  assert.equal(enviado, true);
+  assert.deepEqual(recibidos, ["token-del-widget"]);
+  // El token se pidió antes de mandar nada.
+  assert.deepEqual(pedidos, [0]);
+});
+
+test("cualquier falla termina en error y nunca queda en submitting", async () => {
+  const bien = async () => {};
+  const fallas = {
+    "sin widget montado": [null, bien],
+    "el widget rechaza": [{ obtenerToken: () => Promise.reject(new Error("widget")) }, bien],
+    "el widget tira sin promesa": [
+      {
+        obtenerToken() {
+          throw new Error("widget");
+        },
+      },
+      bien,
+    ],
+    "la puerta rechaza": [
+      { obtenerToken: async () => "t" },
+      async () => {
+        throw new ErrorEnvioFormulario("no_disponible");
+      },
+    ],
+    "armar los campos tira": [
+      { obtenerToken: async () => "t" },
+      () => {
+        throw new TypeError("t is not a function");
+      },
+    ],
+  };
+  for (const [caso, [widget, enviar]] of Object.entries(fallas)) {
+    const { estados, enviado } = await recorrido(widget, enviar);
+    assert.deepEqual(estados, ["submitting", "error"], caso);
+    assert.equal(enviado, false, caso);
+  }
+});
+
+test("sin token no se manda nada", async () => {
+  let enviados = 0;
+  await recorrido({ obtenerToken: () => Promise.reject(new Error("widget")) }, async () => {
+    enviados += 1;
+  });
+  await recorrido(null, async () => {
+    enviados += 1;
+  });
+  assert.equal(enviados, 0);
+});
 
 test("el tope por campo es el del contrato", () => {
   assert.equal(LARGO_MAXIMO_CAMPO, 5000);
@@ -406,23 +550,102 @@ test("Netlify Forms ya no está en el código", async () => {
 // CSP
 // ---------------------------------------------------------------------------
 
-test("la CSP deja cargar el widget de Cloudflare y llamar a la puerta", async () => {
-  process.env.NEXT_PUBLIC_AFELEIA_API_URL = BASE;
-  const mod = await import(`../next.config.ts?turnstile=${Date.now()}`);
+/** La CSP de `next.config.ts` con esta configuración, como mapa directiva → fuentes. */
+async function cspCon({ api, checkout }) {
+  if (api === undefined) delete process.env.NEXT_PUBLIC_AFELEIA_API_URL;
+  else process.env.NEXT_PUBLIC_AFELEIA_API_URL = api;
+  if (checkout === undefined) delete process.env.NEXT_PUBLIC_AFELEIA_CHECKOUT_URL;
+  else process.env.NEXT_PUBLIC_AFELEIA_CHECKOUT_URL = checkout;
+  const mod = await import(`../next.config.ts?csp=${encodeURIComponent(`${api}|${checkout}`)}`);
   const headers = await mod.default.headers();
   const csp = headers.flatMap((h) => h.headers).find((h) => h.key === "Content-Security-Policy").value;
-  const directiva = (nombre) => csp.split("; ").find((d) => d.startsWith(`${nombre} `))?.split(" ").slice(1) ?? [];
+  return Object.fromEntries(
+    csp.split("; ").map((directiva) => {
+      const [nombre, ...fuentes] = directiva.split(" ");
+      return [nombre, fuentes];
+    }),
+  );
+}
 
-  assert.ok(directiva("script-src").includes("https://challenges.cloudflare.com"), "script-src");
-  assert.ok(directiva("frame-src").includes("https://challenges.cloudflare.com"), "frame-src");
-  // El POST sale del navegador hacia el origen de las Edge Functions.
-  assert.ok(directiva("connect-src").includes("https://ref.supabase.co"), "connect-src");
-  // Y nada más se abrió: el script de Turnstile no necesita conectar ni
-  // enviar formularios a Cloudflare.
-  assert.ok(!directiva("connect-src").includes("https://challenges.cloudflare.com"));
-  assert.ok(!directiva("form-action").includes("https://challenges.cloudflare.com"));
-  // El mapa sigue.
-  assert.ok(directiva("frame-src").includes("https://www.google.com"));
+const TURNSTILE = "https://challenges.cloudflare.com";
+
+/**
+ * Las fuentes exactas de cada directiva. Turnstile suma su origen solo a
+ * `script-src` y `frame-src`; sumarlo a cualquier otra (o sumar cualquier otra
+ * cosa) hace fallar este test, y tiene que ser una decisión, no un descuido.
+ */
+const CSP_BASE = {
+  "default-src": ["'self'"],
+  "script-src": ["'self'", "'unsafe-inline'", TURNSTILE],
+  "style-src": ["'self'", "'unsafe-inline'"],
+  "img-src": ["'self'", "data:", "blob:", "https://images.unsplash.com", "https://ref.supabase.co"],
+  "font-src": ["'self'", "data:"],
+  // El POST de los formularios sale del navegador hacia el origen de las Edge Functions.
+  "connect-src": ["'self'", "https://ref.supabase.co"],
+  "frame-ancestors": ["'self'"],
+  "form-action": ["'self'"],
+  "base-uri": ["'self'"],
+  "object-src": ["'none'"],
+  "frame-src": ["https://maps.google.com", "https://google.com", "https://www.google.com", TURNSTILE],
+};
+
+test("la CSP tiene exactamente las fuentes de cada directiva", async () => {
+  assert.deepEqual(await cspCon({ api: BASE }), CSP_BASE);
+});
+
+test("con el checkout, la CSP de producción tiene exactamente sus fuentes", async () => {
+  const checkout = "https://checkout.vinacasaacosta.cl";
+  assert.deepEqual(await cspCon({ api: BASE, checkout: `${checkout}/iniciar` }), {
+    ...CSP_BASE,
+    "connect-src": ["'self'", "https://ref.supabase.co", checkout],
+    "form-action": ["'self'", checkout],
+  });
+});
+
+// ---------------------------------------------------------------------------
+// La trampa y el HANDOFF, protegidos ante una reversión
+// ---------------------------------------------------------------------------
+
+for (const { componente } of CASOS) {
+  test(`${componente}: la trampa sigue fuera de la vista con display:none, no con sr-only`, async () => {
+    const fuente = await leer(componente);
+    // `hidden` (display:none) y no `sr-only`: un campo que el lector de pantalla
+    // anuncia, o que el navegador ve y autocompleta, descartaría en silencio el
+    // mensaje de una persona real.
+    const bloque = fuente.match(/<p className="([^"]*)" aria-hidden="true">\s*<label>([\s\S]*?)<\/label>\s*<\/p>/);
+    assert.ok(bloque, "no se encontró el párrafo de la trampa");
+    const clases = bloque[1].split(/\s+/);
+    assert.ok(clases.includes("hidden"), `clases de la trampa: ${bloque[1]}`);
+    assert.ok(!clases.includes("sr-only"), `clases de la trampa: ${bloque[1]}`);
+    const input = bloque[2].match(/<input([\s\S]*?)\/>/)?.[1] ?? "";
+    assert.match(input, /tabIndex=\{-1\}/);
+    assert.match(input, /autoComplete="off"/);
+    assert.match(input, /value=\{botField\}/);
+    // Es la única atadura de la trampa en el componente.
+    assert.equal(fuente.match(/value=\{botField\}/g).length, 1);
+  });
+}
+
+test("docs/HANDOFF.md no vuelve a dar las instrucciones de Netlify Forms", async () => {
+  const handoff = await leer("docs/HANDOFF.md");
+  assert.match(handoff, /^### Formularios — la puerta de Afeleia/m);
+  assert.doesNotMatch(handoff, /^#+ .*Netlify Forms/m, "un título de Netlify Forms volvió");
+
+  // Cada párrafo, ítem o fila que nombra Netlify Forms tiene que ser historia
+  // («antes», «ya borrados»), no una instrucción.
+  const bloques = [];
+  for (const linea of handoff.split("\n")) {
+    const nuevo = linea.trim() === "" || /^\s{0,1}[-|#]/.test(linea) || /^\d+\./.test(linea);
+    if (nuevo || bloques.length === 0) bloques.push(linea);
+    else bloques[bloques.length - 1] += `\n${linea}`;
+  }
+  const deNetlifyForms = bloques.filter((b) =>
+    /Netlify Forms|__forms\.html|netlifyForms|Form submission notifications|data-netlify/.test(b),
+  );
+  assert.ok(deNetlifyForms.length > 0, "el HANDOFF dejó de contar que antes eran Netlify Forms");
+  for (const bloque of deNetlifyForms) {
+    assert.match(bloque, /\b[Aa]ntes\b|borrad/, `instrucción de Netlify Forms en el HANDOFF:\n${bloque}`);
+  }
 });
 
 // ---------------------------------------------------------------------------
@@ -436,7 +659,11 @@ test("la CSP deja cargar el widget de Cloudflare y llamar a la puerta", async ()
  * de producción de Netlify se corta, y Netlify deja publicado el deploy anterior.
  */
 const { razonFormulariosSinConfigurar } = await import("../scripts/formularios-validacion.mjs");
+// Inventada, con la forma de una real. El ejemplo de la API de widgets de
+// Cloudflare (developers.cloudflare.com/api/resources/turnstile/subresources/widgets):
+// `sitekey` es un string de hasta 32 caracteres, como `0x4AAF00AAAABn0R22HWm-YUc`.
 const CLAVE_REAL = "0x4AAAAAAAB1cD2eF3gH4iJ5";
+const CLAVE_DEL_EJEMPLO_DE_CLOUDFLARE = "0x4AAF00AAAABn0R22HWm-YUc";
 
 test("en producción, sin una clave del widget que sirva, el build se frena", () => {
   const malas = [
@@ -445,6 +672,15 @@ test("en producción, sin una clave del widget que sirva, el build se frena", ()
     "   ",
     ` ${CLAVE_REAL}`,
     `${CLAVE_REAL}\n`,
+    // Cualquier cosa que no tiene la forma de una site key.
+    "x",
+    "abc",
+    "0x",
+    "0x4AAA",
+    "tu-clave-publica",
+    "0x4AAAAAAAB1cD2eF3gH4iJ5!",
+    `0x${"A".repeat(31)}`, // 33 caracteres: Cloudflare no pasa de 32
+    `${CLAVE_REAL}${CLAVE_REAL}`,
     // Las claves de prueba de Cloudflare: con ellas la puerta rechaza cada token.
     "1x00000000000000000000AA",
     "2x00000000000000000000AB",
@@ -457,10 +693,13 @@ test("en producción, sin una clave del widget que sirva, el build se frena", ()
     assert.ok(razon, `debía frenar con ${JSON.stringify(clave)}`);
     assert.match(razon, /NEXT_PUBLIC_TURNSTILE_SITE_KEY/);
   }
-  assert.equal(
-    razonFormulariosSinConfigurar({ CONTEXT: "production", NEXT_PUBLIC_TURNSTILE_SITE_KEY: CLAVE_REAL }),
-    null,
-  );
+  for (const buena of [CLAVE_REAL, CLAVE_DEL_EJEMPLO_DE_CLOUDFLARE, `0x${"A".repeat(30)}`]) {
+    assert.equal(
+      razonFormulariosSinConfigurar({ CONTEXT: "production", NEXT_PUBLIC_TURNSTILE_SITE_KEY: buena }),
+      null,
+      buena,
+    );
+  }
   assert.ok(razonFormulariosSinConfigurar({ CONTEXT: "Production" }), "CONTEXT sin distinguir mayúsculas");
 });
 
@@ -486,8 +725,10 @@ test("el prebuild corre la validación y un error la hace salir con 1", async ()
       env: { ...process.env, CONTEXT: "production", NEXT_PUBLIC_TURNSTILE_SITE_KEY: clave },
       encoding: "utf8",
     });
-  const mala = correr("   ");
-  assert.equal(mala.status, 1);
-  assert.match(mala.stderr, /NEXT_PUBLIC_TURNSTILE_SITE_KEY/);
+  for (const clave of ["   ", "x"]) {
+    const mala = correr(clave);
+    assert.equal(mala.status, 1, JSON.stringify(clave));
+    assert.match(mala.stderr, /NEXT_PUBLIC_TURNSTILE_SITE_KEY/);
+  }
   assert.equal(correr(CLAVE_REAL).status, 0);
 });

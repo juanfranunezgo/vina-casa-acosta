@@ -28,6 +28,17 @@ import entornoDeNext from "@next/env";
 const CLAVE_DE_PRUEBA = /^[1-3]x0{20}[A-Z]{2}$/;
 
 /**
+ * La forma de una site key de producción. La API de widgets de Cloudflare
+ * (developers.cloudflare.com/api/resources/turnstile/subresources/widgets) la
+ * documenta como un string de hasta 32 caracteres, con el ejemplo
+ * `0x4AAF00AAAABn0R22HWm-YUc`: `0x` y después letras, dígitos, `-` y `_`. Las de
+ * prueba empiezan con `1x`, `2x` o `3x`, y se rechazan aparte con su propio aviso.
+ * El piso de 16 después de `0x` deja afuera lo que claramente no es una clave (las
+ * reales tienen 23); no es un largo documentado.
+ */
+const FORMA_DE_CLAVE = /^0x[0-9A-Za-z_-]{16,30}$/;
+
+/**
  * Motivo por el que los formularios no podrían enviar en este build, o `null`.
  *
  * @param {Record<string, string | undefined>} env
@@ -53,6 +64,13 @@ export function razonFormulariosSinConfigurar(env) {
     return (
       `NEXT_PUBLIC_TURNSTILE_SITE_KEY es una clave de prueba de Cloudflare (${clave}): con ella ` +
       "la puerta de formularios rechaza cada token. Va la clave publica del widget de Afeleia."
+    );
+  }
+  if (!FORMA_DE_CLAVE.test(clave)) {
+    return (
+      `NEXT_PUBLIC_TURNSTILE_SITE_KEY no tiene la forma de una site key de Turnstile ` +
+      `(${JSON.stringify(clave)}): empieza con 0x, sigue con letras, digitos, - o _, y tiene ` +
+      "hasta 32 caracteres. Copiar la site key del widget, no la secreta ni otro dato."
     );
   }
   return null;

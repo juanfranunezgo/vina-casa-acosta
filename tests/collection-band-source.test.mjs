@@ -380,8 +380,10 @@ test("contact page keeps the exact address and submits to Afeleia", async () => 
   assert.doesNotMatch(formSource, /window\.open/);
   // El único temporizador que queda devuelve el formulario a reposo después del
   // acuse de recibo. El `doesNotMatch(/setTimeout/)` de antes cuidaba el handoff
-  // a WhatsApp, que ya no existe: prohibirlo hoy solo prohibiría esto.
-  assert.match(formSource, /setStatus\("success"\)/);
+  // a WhatsApp, que ya no existe: prohibirlo hoy solo prohibiría esto. El acuse
+  // ("success") lo pone `enviarConVerificacion` (lib/estadoEnvio.ts), que se
+  // prueba ejecutándolo en tests/formularios-afeleia.test.mjs.
+  assert.match(formSource, /enviarConVerificacion\([\s\S]*?setStatus,\s*\);\s*if \(!enviado\) return;/);
   assert.match(formSource, /window\.setTimeout\(\(\) => setStatus\("idle"\), 6000\)/);
   // La dirección es NAP: este string tiene que ser idéntico al del schema
   // LocalBusiness y al del footer. Si alguien lo edita en un solo lugar, acá se
