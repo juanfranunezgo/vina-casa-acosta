@@ -354,3 +354,70 @@ test("la CSP deja cargar el widget de Cloudflare y llamar a la puerta", async ()
   // El mapa sigue.
   assert.ok(directiva("frame-src").includes("https://www.google.com"));
 });
+
+// ---------------------------------------------------------------------------
+// El build de producción
+// ---------------------------------------------------------------------------
+
+/**
+ * Sin la clave pública del widget, el sitio compila igual y cada formulario falla
+ * al enviar: para siempre y en verde. Es la clase de error que este repo ya frena
+ * en el prebuild para el catálogo (`scripts/catalogo-validacion.mjs`). En el build
+ * de producción de Netlify se corta, y Netlify deja publicado el deploy anterior.
+ */
+const { razonFormulariosSinConfigurar } = await import("../scripts/formularios-validacion.mjs");
+const CLAVE_REAL = "0x4AAAAAAAB1cD2eF3gH4iJ5";
+
+test("en producción, sin una clave del widget que sirva, el build se frena", () => {
+  const malas = [
+    undefined,
+    "",
+    "   ",
+    ` ${CLAVE_REAL}`,
+    `${CLAVE_REAL}\n`,
+    // Las claves de prueba de Cloudflare: con ellas la puerta rechaza cada token.
+    "1x00000000000000000000AA",
+    "2x00000000000000000000AB",
+    "1x00000000000000000000BB",
+    "2x00000000000000000000BB",
+    "3x00000000000000000000FF",
+  ];
+  for (const clave of malas) {
+    const razon = razonFormulariosSinConfigurar({ CONTEXT: "production", NEXT_PUBLIC_TURNSTILE_SITE_KEY: clave });
+    assert.ok(razon, `debía frenar con ${JSON.stringify(clave)}`);
+    assert.match(razon, /NEXT_PUBLIC_TURNSTILE_SITE_KEY/);
+  }
+  assert.equal(
+    razonFormulariosSinConfigurar({ CONTEXT: "production", NEXT_PUBLIC_TURNSTILE_SITE_KEY: CLAVE_REAL }),
+    null,
+  );
+  assert.ok(razonFormulariosSinConfigurar({ CONTEXT: "Production" }), "CONTEXT sin distinguir mayúsculas");
+});
+
+test("fuera de producción no frena: los previews y el local no tienen el widget", () => {
+  for (const CONTEXT of [undefined, "deploy-preview", "branch-deploy", "dev"]) {
+    assert.equal(razonFormulariosSinConfigurar({ CONTEXT }), null, `CONTEXT=${CONTEXT}`);
+    assert.equal(
+      razonFormulariosSinConfigurar({ CONTEXT, NEXT_PUBLIC_TURNSTILE_SITE_KEY: "1x00000000000000000000AA" }),
+      null,
+    );
+  }
+});
+
+test("el prebuild corre la validación y un error la hace salir con 1", async () => {
+  const { spawnSync } = await import("node:child_process");
+  const { fileURLToPath } = await import("node:url");
+  const pkg = JSON.parse(await leer("package.json"));
+  assert.match(pkg.scripts.prebuild, /^node scripts\/formularios-validacion\.mjs && /);
+
+  const correr = (clave) =>
+    spawnSync(process.execPath, ["scripts/formularios-validacion.mjs"], {
+      cwd: fileURLToPath(raiz),
+      env: { ...process.env, CONTEXT: "production", NEXT_PUBLIC_TURNSTILE_SITE_KEY: clave },
+      encoding: "utf8",
+    });
+  const mala = correr("   ");
+  assert.equal(mala.status, 1);
+  assert.match(mala.stderr, /NEXT_PUBLIC_TURNSTILE_SITE_KEY/);
+  assert.equal(correr(CLAVE_REAL).status, 0);
+});

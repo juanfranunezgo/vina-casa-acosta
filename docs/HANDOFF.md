@@ -45,7 +45,13 @@ de Afeleia (`supabase/functions/formularios-publico/README.md` y el capítulo 12
 - **Cloudflare Turnstile**: cada envío pide un token (`components/TurnstileInvisible.tsx`,
   lógica en `lib/turnstile.ts`). Necesita `NEXT_PUBLIC_TURNSTILE_SITE_KEY` en el build (la
   clave **pública** del widget de Afeleia) y la CSP abre `https://challenges.cloudflare.com`
-  en `script-src` y `frame-src`. No se ve salvo que Cloudflare pida marcar la casilla.
+  en `script-src` y `frame-src`. No se ve salvo que Cloudflare pida marcar la casilla, y el
+  script se carga recién con el primer foco dentro del formulario (o al enviar), no al
+  abrir la página: quien solo mira una ficha no pasa por Cloudflare.
+- **En producción la clave es obligatoria**: `scripts/formularios-validacion.mjs`, primer
+  paso del `prebuild`, corta el build de `CONTEXT=production` si falta, tiene espacios o es
+  una clave de prueba de Cloudflare. Netlify deja publicado el deploy anterior. En los
+  previews y en local no corta.
 - ⚠️ **Solo envía desde `vinacasaacosta.cl`.** El widget tiene cargados solo los dominios de
   producción, y la puerta exige el origen registrado del sitio: en un deploy preview o en
   `npm run dev` el formulario termina en el error. Se prueba en producción.
