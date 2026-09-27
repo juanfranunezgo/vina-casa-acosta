@@ -4,8 +4,8 @@ import { readFile } from "node:fs/promises";
 
 /**
  * El formulario de contacto pide el celular desde el 2026-09-22, a pedido de la
- * viña, y es obligatorio. La paridad con `__forms.html` ya la cubre
- * `netlify-forms-paridad.test.mjs`; esto cubre lo que ese test no ve: que el
+ * viña, y es obligatorio. Que se envíe como `telefono` ya lo cubre
+ * `formularios-afeleia.test.mjs`; esto cubre lo que ese test no ve: que el
  * campo sea obligatorio y que su patrón haga lo que dice.
  *
  * El patrón se prueba compilado como lo compila el navegador —anclado y con el

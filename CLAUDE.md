@@ -92,7 +92,7 @@ público.
 | 1.5 parte 2 — polish visual | ✅ |
 | 2 — Supabase / Webpay / admin | ⏳ post-pitch |
 
-Blockers abiertos al cierre: fotos HD de botellas y retratos familiares pendientes, validación humana de copy EN/PT. Los formularios de contacto y reserva ya envían vía **Netlify Forms** (solución provisoria, 100 envíos/mes) — el carrito sigue sin cobro. La lista completa está en [`docs/HANDOFF.md`](docs/HANDOFF.md).
+Blockers abiertos al cierre: fotos HD de botellas y retratos familiares pendientes, validación humana de copy EN/PT. Los formularios de contacto y reserva envían a la **puerta de formularios de Afeleia** (`lib/afeleiaFormularios.ts`, con Cloudflare Turnstile); antes iban a Netlify Forms. La lista completa está en [`docs/HANDOFF.md`](docs/HANDOFF.md).
 
 ## Nomenclatura de secciones
 
