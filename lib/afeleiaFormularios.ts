@@ -32,6 +32,9 @@ export const LARGO_MAXIMO_CAMPO = 5000;
 
 const TIMEOUT_MS = 10_000;
 
+/** Largo máximo de la trampa en el contrato, contado como la puerta: `string.length`. */
+const TRAMPA_MAXIMA = 200;
+
 /**
  * Por qué no se pudo enviar. `codigo` es el de la puerta (`datos_invalidos`,
  * `verificacion_fallida`, `demasiados_envios`…) o uno de este lado:
@@ -94,7 +97,12 @@ export async function enviarFormularioAfeleia(
     respuesta = await fetchImpl(url, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ campos, turnstile: token, trampa }),
+      // La puerta mide `trampa.length` y con más de 200 responde 400: el bot se
+      // enteraría de que lo vieron. Recortada sigue llena y se descarta con 200.
+      body: JSON.stringify({ campos, turnstile: token, trampa: trampa.slice(0, TRAMPA_MAXIMA) }),
+      // La puerta no redirige. Si algo en el camino lo hiciera, un 307 o un 308
+      // reenviarían el mensaje entero a otra URL: se corta como error de red.
+      redirect: "error",
       signal: AbortSignal.timeout(TIMEOUT_MS),
     });
   } catch {
@@ -102,7 +110,8 @@ export async function enviarFormularioAfeleia(
   }
 
   const cuerpo = (await respuesta.json().catch(() => null)) as { ok?: unknown; codigo?: unknown } | null;
-  if (respuesta.ok) {
+  // El contrato dice `200`, no "cualquier 2xx": `respuesta.ok` aceptaría un 204.
+  if (respuesta.status === 200) {
     // Un 200 que no dice `ok: true` no es de la puerta (un portal cautivo, un
     // proxy): dar el mensaje por enviado sería perderlo sin que nadie lo sepa.
     if (cuerpo?.ok === true) return;

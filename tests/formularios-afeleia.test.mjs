@@ -112,6 +112,76 @@ test("un 200 sin `{ ok: true }` no cuenta como enviado", async () => {
   );
 });
 
+test("solo un 200 es un envío hecho: otro 2xx, aunque diga { ok: true }, es un error", async () => {
+  // El contrato dice 200. `respuesta.ok` acepta de 200 a 299, y un 204 ni
+  // siquiera puede traer cuerpo: se prueba con una respuesta armada a mano.
+  conEntorno(BASE, SITIO);
+  for (const status of [201, 202, 204, 206, 299]) {
+    const falsa = { status, ok: true, json: async () => ({ ok: true }) };
+    assert.equal(
+      await codigoDelError(enviarFormularioAfeleia("contacto", { nombre: "A" }, "t", "", fetchFalso(falsa).fn)),
+      `http_${status}`,
+      `status ${status}`,
+    );
+  }
+});
+
+test("un 3xx de la puerta no lleva el mensaje a otra parte", async () => {
+  conEntorno(BASE, SITIO);
+  const { fn, llamadas } = fetchFalso(json({ ok: true }));
+  await enviarFormularioAfeleia("contacto", { nombre: "A" }, "t", "", fn);
+  assert.equal(llamadas[0].init.redirect, "error");
+
+  // Y con el fetch de verdad: una puerta que redirige no recibe una segunda
+  // copia del mensaje en otra URL. Sin `redirect: "error"`, un 307 o un 308
+  // reenvían el POST con el cuerpo entero.
+  const { createServer } = await import("node:http");
+  let recibidosEnOtraParte = 0;
+  const servidor = createServer((req, res) => {
+    if (req.url.startsWith("/otra")) {
+      recibidosEnOtraParte += 1;
+      res.writeHead(200, { "Content-Type": "application/json" });
+      return res.end(JSON.stringify({ ok: true }));
+    }
+    const status = Number(new URL(req.url, "http://x").searchParams.get("sitio").split("-")[1]);
+    res.writeHead(status, { Location: "/otra" });
+    res.end();
+  });
+  await new Promise((r) => servidor.listen(0, "127.0.0.1", r));
+  try {
+    const base = `http://127.0.0.1:${servidor.address().port}/functions/v1`;
+    for (const status of [301, 302, 303, 307, 308]) {
+      conEntorno(base, `redirige-${status}`);
+      assert.equal(
+        await codigoDelError(enviarFormularioAfeleia("contacto", { nombre: "A" }, "t", "")),
+        "red",
+        `status ${status}`,
+      );
+    }
+    assert.equal(recibidosEnOtraParte, 0);
+  } finally {
+    servidor.close();
+  }
+});
+
+test("la trampa se recorta a 200: la puerta la descarta en silencio y no con un 400", async () => {
+  // La puerta mide `trampa.length` y con más de 200 responde 400: el bot se
+  // enteraría de que lo vieron. Recortada sigue llena, y se descarta con 200.
+  conEntorno(BASE, SITIO);
+  const enviada = async (trampa) => {
+    const { fn, llamadas } = fetchFalso(json({ ok: true }));
+    await enviarFormularioAfeleia("contacto", { nombre: "A" }, "t", trampa, fn);
+    return JSON.parse(llamadas[0].init.body).trampa;
+  };
+  const larga = "https://spam.example/".repeat(50);
+  assert.equal(await enviada(larga), larga.slice(0, 200));
+  // Se cuenta como la puerta: en unidades UTF-16.
+  assert.equal((await enviada("😀".repeat(150))).length, 200);
+  assert.equal(await enviada("x".repeat(200)), "x".repeat(200));
+  assert.equal(await enviada("bot"), "bot");
+  assert.equal(await enviada(""), "");
+});
+
 test("un rechazo de la puerta llega con su código", async () => {
   conEntorno(BASE, SITIO);
   for (const [status, codigo] of [
