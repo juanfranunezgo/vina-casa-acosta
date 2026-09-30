@@ -146,11 +146,18 @@ cuatro y panel del formulario— y ninguna repetida. Entran por `photos` en
 [`FOTOS.md`](FOTOS.md)) y `tests/actividades-fotos.test.mjs` cruza archivo, `alt` y
 proporción. La ficha aprendió a usarlas sola: sin `photos` sigue exactamente como estaba.
 
-Las otras 10 fichas nuevas siguen compartiendo dos imágenes de categoría (`talleres.jpg` y
-`pareja-columpio.webp`), que son hero, tarjeta de reserva y `og:image` a la vez; en las
-experiencias esa foto aparece además tres veces en la misma página. **Aceptado por el
-cliente**, que va a entregar fotos por actividad. Cuando lleguen, cada una es un bloque
-`photos` como el de mimbre, sin tocar componentes.
+**Desde el 2026-09-29 tienen fotos propias nueve fichas más**: los tres talleres
+(pizzas, pastas, ñoquis), los tres tours (Ombú, Berá, Carménère), Enólogo por un día,
+Alpacas y el mimbre, que suma cinco de otro taller. Salen de `npm run fotos:actividades`
+(una sola tabla para todas, ver [`FOTOS.md`](FOTOS.md)). Se publicó todo lo que mandó la
+viña salvo las casi repetidas; lo que no cabe en las ranuras queda detrás de **"Ver más
+fotos"** en la galería (`gallery.more`, mosaico en columnas dentro de
+`components/ActivityGallery.tsx`). La viña autorizó las fotos con menores. Los tours ya no
+usan fotos de Unsplash.
+
+Siguen con la foto de su categoría (`pareja-columpio.webp`) Cosecha tu historia, Lágrimas
+de invierno, Apicultura y Cena sensorial. Cuando llegue su material, es un bloque `photos`
+más, sin tocar componentes.
 
 **Anclas de categoría:** solo `tours` tiene en el índice una sección que lista su categoría,
 así que es la única cuya miga lleva fragmento. Talleres no tiene sección y la que se llama

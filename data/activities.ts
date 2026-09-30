@@ -54,11 +54,23 @@ export type ActivityPhotos = {
   /** Dd7 — panel junto al formulario; la ranura cambia de proporción. */
   reserve?: ActivityPhoto;
   /**
-   * Dd6 — mosaico: una apertura 16:9 y hasta tres verticales 2:3. Si falta,
-   * la ficha dibuja `GalleryPlaceholder` como siempre.
+   * Dd6 — mosaico: una apertura 16:9 y hasta tres verticales 2:3 (ninguna si
+   * la actividad no tiene fotos para eso: los ñoquis). Si falta, la ficha
+   * dibuja `GalleryPlaceholder` como siempre.
+   *
+   * `more` son las fotos que no caben en las ranuras: quedan detrás de "Ver
+   * más fotos", como en la galería de Vendimia (Dv6). La viña pidió publicar
+   * todo lo que mandó salvo las casi repetidas (2026-09-29).
    */
-  gallery?: { wide: ActivityPhoto; portraits: ActivityPhoto[] };
+  gallery?: { wide: ActivityPhoto; portraits: ActivityPhoto[]; more?: ActivityExtraPhoto[] };
 };
+
+/**
+ * Una foto de "Ver más fotos". Sale recortada a 3:2, o a 2:3 si es `vertical`:
+ * las dos proporciones nativas de la cámara, para que el mosaico no tenga que
+ * adivinar el alto de cada una.
+ */
+export type ActivityExtraPhoto = ActivityPhoto & { vertical?: boolean };
 
 /**
  * De qué está hecha una etapa del horario. La ficha la pinta con un color de la
@@ -199,9 +211,9 @@ export function categoryIndexHref(
 const TODO_EL_ANO = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
 
 /**
- * Foto por categoría. Son fotos que ya existen y están optimizadas en `public/`:
- * el cliente todavía no entregó material por actividad. Cuando llegue, se agrega
- * `image` en la actividad y pisa a la de su categoría — una línea por foto.
+ * Foto por categoría, para las actividades que todavía no tienen material
+ * propio. Son fotos que ya existen y están optimizadas en `public/`. Cuando
+ * llega el de una actividad, su `image` pisa a la de su categoría.
  */
 const CATEGORY_IMAGE: Record<ActivityCategory, string> = {
   tours: "/images/actividades/tour-carmenere.webp",
@@ -226,7 +238,27 @@ export const activities: Activity[] = [
     minPeople: 8,
     months: TODO_EL_ANO,
     durationISO: "PT3H",
-    image: CATEGORY_IMAGE.talleres,
+    // Fotos de la tanda "Fotos Taller Web" (2026-09-29). Salen de
+    // `npm run fotos:actividades`, cada una recortada a su ranura: ver
+    // scripts/optimize-actividades.mjs y docs/FOTOS.md.
+    image: "/images/actividades/pizzas-armadas.webp",
+    // Vertical: la franja del escritorio sube a las caras y las pizzas.
+    heroPosition: "50% 35%",
+    photos: {
+      intro: { src: "/images/actividades/pizzas-amasado.webp", alt: "amasado" },
+      card: { src: "/images/actividades/pizzas-ingredientes.webp", alt: "ingredientes" },
+      // La del hero, repetida a propósito: pedido de Juan Francisco.
+      reserve: { src: "/images/actividades/pizzas-armadas-panel.webp", alt: "armadas", position: "50% 45%" },
+      gallery: {
+        wide: { src: "/images/actividades/pizzas-bodega.webp", alt: "bodega" },
+        portraits: [
+          { src: "/images/actividades/pizzas-amasador.webp", alt: "amasador" },
+          { src: "/images/actividades/pizzas-armado.webp", alt: "armado" },
+          { src: "/images/actividades/pizzas-queso.webp", alt: "queso" },
+          { src: "/images/actividades/pizzas-mesa.webp", alt: "mesa" },
+        ],
+      },
+    },
   },
   {
     slug: "pastas",
@@ -235,7 +267,24 @@ export const activities: Activity[] = [
     minPeople: 8,
     months: TODO_EL_ANO,
     durationISO: "PT3H",
-    image: CATEGORY_IMAGE.talleres,
+    // Fotos de la tanda "Fotos Taller Web" (2026-09-29). Salen de
+    // `npm run fotos:actividades`, cada una recortada a su ranura: ver
+    // scripts/optimize-actividades.mjs y docs/FOTOS.md.
+    image: "/images/actividades/pastas-fideos.webp",
+    heroPosition: "70% 65%",
+    photos: {
+      intro: { src: "/images/actividades/pastas-amasado.webp", alt: "amasado" },
+      card: { src: "/images/actividades/pastas-plato.webp", alt: "plato" },
+      reserve: { src: "/images/actividades/pastas-doblado.webp", alt: "doblado", position: "50% 50%" },
+      gallery: {
+        wide: { src: "/images/actividades/pastas-mesa.webp", alt: "mesa" },
+        portraits: [
+          { src: "/images/actividades/pastas-disco.webp", alt: "disco" },
+          { src: "/images/actividades/pastas-relleno.webp", alt: "relleno" },
+          { src: "/images/actividades/pastas-laminado.webp", alt: "laminado" },
+        ],
+      },
+    },
   },
   {
     slug: "noquis",
@@ -244,7 +293,22 @@ export const activities: Activity[] = [
     minPeople: 8,
     months: TODO_EL_ANO,
     durationISO: "PT3H",
-    image: CATEGORY_IMAGE.talleres,
+    // Fotos de la tanda "Fotos Taller Web" (2026-09-29). Salen de
+    // `npm run fotos:actividades`, cada una recortada a su ranura: ver
+    // scripts/optimize-actividades.mjs y docs/FOTOS.md.
+    // Cinco fotos: la galería queda sólo con la apertura.
+    image: "/images/actividades/noquis-masa.webp",
+    // Los cilindros de masa están en el tercio de abajo a la izquierda.
+    heroPosition: "20% 100%",
+    photos: {
+      intro: { src: "/images/actividades/noquis-formado.webp", alt: "formado" },
+      card: { src: "/images/actividades/noquis-mesa.webp", alt: "mesa" },
+      reserve: { src: "/images/actividades/noquis-sonrisa.webp", alt: "sonrisa", position: "100% 0%" },
+      gallery: {
+        wide: { src: "/images/actividades/noquis-bandeja.webp", alt: "bandeja" },
+        portraits: [],
+      },
+    },
   },
   {
     slug: "ombu",
@@ -253,8 +317,24 @@ export const activities: Activity[] = [
     minPeople: 2,
     months: TODO_EL_ANO,
     durationISO: "PT2H",
-    image:
-      "https://images.unsplash.com/photo-1474722883778-792e7990302f?auto=format&fit=crop&w=1400&q=70",
+    // Fotos de la tanda "Fotos Taller Web" (2026-09-29). Salen de
+    // `npm run fotos:actividades`, cada una recortada a su ranura: ver
+    // scripts/optimize-actividades.mjs y docs/FOTOS.md.
+    image: "/images/actividades/ombu-copas.webp",
+    heroPosition: "50% 40%",
+    photos: {
+      intro: { src: "/images/actividades/ombu-reserva.webp", alt: "reserva" },
+      card: { src: "/images/actividades/ombu-botella.webp", alt: "botella" },
+      reserve: { src: "/images/actividades/ombu-rosado.webp", alt: "rosado", position: "45% 42%" },
+      gallery: {
+        wide: { src: "/images/actividades/ombu-barricas.webp", alt: "barricas" },
+        portraits: [
+          { src: "/images/actividades/ombu-mesa.webp", alt: "mesa" },
+          { src: "/images/actividades/ombu-taponadora.webp", alt: "taponadora" },
+          { src: "/images/actividades/ombu-bodega.webp", alt: "bodega" },
+        ],
+      },
+    },
   },
   {
     slug: "bera",
@@ -263,8 +343,23 @@ export const activities: Activity[] = [
     minPeople: 2,
     months: TODO_EL_ANO,
     durationISO: "PT2H30M",
-    image:
-      "https://images.unsplash.com/photo-1506377247377-2a5b3b417ebb?auto=format&fit=crop&w=1400&q=70",
+    // Fotos de la tanda "Fotos Taller Web" (2026-09-29). Salen de
+    // `npm run fotos:actividades`, cada una recortada a su ranura: ver
+    // scripts/optimize-actividades.mjs y docs/FOTOS.md.
+    // Seis fotos: la galería queda con una sola vertical.
+    image: "/images/actividades/bera-vinedo.webp",
+    heroPosition: "35% 6%",
+    photos: {
+      intro: { src: "/images/actividades/bera-barrica.webp", alt: "barrica" },
+      card: { src: "/images/actividades/bera-sala-barricas.webp", alt: "salaBarricas" },
+      reserve: { src: "/images/actividades/bera-mesa.webp", alt: "mesa", position: "50% 62%" },
+      gallery: {
+        wide: { src: "/images/actividades/bera-camino.webp", alt: "camino" },
+        portraits: [
+          { src: "/images/actividades/bera-pipeta.webp", alt: "pipeta" },
+        ],
+      },
+    },
   },
   {
     slug: "carmenere",
@@ -273,7 +368,30 @@ export const activities: Activity[] = [
     minPeople: 4,
     months: TODO_EL_ANO,
     durationISO: "PT3H",
-    image: CATEGORY_IMAGE.tours,
+    // Fotos de la tanda "Fotos Taller Web" (2026-09-29). Salen de
+    // `npm run fotos:actividades`, cada una recortada a su ranura: ver
+    // scripts/optimize-actividades.mjs y docs/FOTOS.md.
+    image: "/images/actividades/carmenere-grupo.webp",
+    // En celular manda la X: 65% suma al anfitrión, a la derecha del grupo.
+    heroPosition: "68% 28%",
+    photos: {
+      intro: { src: "/images/actividades/carmenere-gran-reserva.webp", alt: "granReserva" },
+      card: { src: "/images/actividades/carmenere-guidai.webp", alt: "guidai" },
+      reserve: { src: "/images/actividades/carmenere-espumante.webp", alt: "espumante", position: "50% 40%" },
+      gallery: {
+        wide: { src: "/images/actividades/carmenere-barricas.webp", alt: "barricas" },
+        portraits: [
+          { src: "/images/actividades/carmenere-pipeta.webp", alt: "pipeta" },
+          { src: "/images/actividades/carmenere-copas.webp", alt: "copas" },
+          { src: "/images/actividades/carmenere-mesa.webp", alt: "mesa" },
+        ],
+        more: [
+          { src: "/images/actividades/carmenere-cata.webp", alt: "cata" },
+          { src: "/images/actividades/carmenere-botella.webp", alt: "botella" },
+          { src: "/images/actividades/carmenere-barrica-pipeta.webp", alt: "barricaPipeta" },
+        ],
+      },
+    },
     premium: true,
   },
   {
@@ -290,7 +408,30 @@ export const activities: Activity[] = [
     minPeople: 8,
     months: TODO_EL_ANO,
     durationISO: "PT3H",
-    image: CATEGORY_IMAGE.experiencias,
+    // Fotos de la tanda "Fotos Taller Web" (2026-09-29). Salen de
+    // `npm run fotos:actividades`, cada una recortada a su ranura: ver
+    // scripts/optimize-actividades.mjs y docs/FOTOS.md.
+    image: "/images/actividades/enologo-probeta.webp",
+    heroPosition: "50% 45%",
+    photos: {
+      intro: { src: "/images/actividades/enologo-pipeta.webp", alt: "pipeta" },
+      card: { src: "/images/actividades/enologo-mesa.webp", alt: "mesa" },
+      reserve: { src: "/images/actividades/enologo-copa.webp", alt: "copa", position: "40% 50%" },
+      gallery: {
+        wide: { src: "/images/actividades/enologo-fichas.webp", alt: "fichas" },
+        portraits: [
+          { src: "/images/actividades/enologo-medicion.webp", alt: "medicion" },
+          { src: "/images/actividades/enologo-embotellado.webp", alt: "embotellado" },
+          { src: "/images/actividades/enologo-maridaje.webp", alt: "maridaje" },
+        ],
+        more: [
+          { src: "/images/actividades/enologo-botellas.webp", alt: "botellas" },
+          { src: "/images/actividades/enologo-varilla.webp", alt: "varilla" },
+          { src: "/images/actividades/enologo-etiqueta.webp", alt: "etiqueta" },
+          { src: "/images/actividades/enologo-botella-numerada.webp", alt: "botellaNumerada" },
+        ],
+      },
+    },
   },
   {
     // El catálogo lo llama "Taller mimbre" y lo clasifica como experiencia.
@@ -314,7 +455,18 @@ export const activities: Activity[] = [
         portraits: [
           { src: "/images/actividades/mimbre-artesana.webp", alt: "artesana" },
           { src: "/images/actividades/mimbre-maestro.webp", alt: "maestro" },
-          { src: "/images/actividades/mimbre-piezas.webp", alt: "piezas" },
+          // Desde el 2026-09-29, en lugar de `piezas`: la mesa de canastos ya
+          // estaba en el hero y en la apertura, y ésta es la única con la viña
+          // y la cordillera. `piezas` pasa a "Ver más fotos".
+          { src: "/images/actividades/mimbre-preparacion.webp", alt: "preparacion" },
+        ],
+        // De otro taller (tanda "Fotos Taller Web", `npm run fotos:actividades`).
+        more: [
+          { src: "/images/actividades/mimbre-presentacion.webp", alt: "presentacion" },
+          { src: "/images/actividades/mimbre-grupo.webp", alt: "grupo" },
+          { src: "/images/actividades/mimbre-piezas.webp", alt: "piezas", vertical: true },
+          { src: "/images/actividades/mimbre-maestro-corte.webp", alt: "maestroCorte", vertical: true },
+          { src: "/images/actividades/mimbre-ninas.webp", alt: "ninas", vertical: true },
         ],
       },
     },
@@ -325,7 +477,39 @@ export const activities: Activity[] = [
     minPeople: 20,
     months: [9, 10, 11],
     durationISO: "PT3H",
-    image: CATEGORY_IMAGE.experiencias,
+    // Fotos de la tanda "Fotos Taller Web" (2026-09-29). Salen de
+    // `npm run fotos:actividades`, cada una recortada a su ranura: ver
+    // scripts/optimize-actividades.mjs y docs/FOTOS.md.
+    image: "/images/actividades/alpacas-vellon.webp",
+    heroPosition: "53% 40%",
+    photos: {
+      intro: { src: "/images/actividades/alpacas-fibra.webp", alt: "fibra" },
+      card: { src: "/images/actividades/alpacas-rueca.webp", alt: "rueca" },
+      reserve: { src: "/images/actividades/alpacas-tijeras.webp", alt: "tijeras", position: "46% 50%" },
+      gallery: {
+        wide: { src: "/images/actividades/alpacas-corral.webp", alt: "corral" },
+        portraits: [
+          { src: "/images/actividades/alpacas-instructor.webp", alt: "instructor" },
+          { src: "/images/actividades/alpacas-cardado.webp", alt: "cardado" },
+          { src: "/images/actividades/alpacas-madeja.webp", alt: "madeja" },
+        ],
+        more: [
+          { src: "/images/actividades/alpacas-desayuno.webp", alt: "desayuno" },
+          { src: "/images/actividades/alpacas-charla.webp", alt: "charla" },
+          { src: "/images/actividades/alpacas-trasquila.webp", alt: "trasquila" },
+          { src: "/images/actividades/alpacas-vellon-lavado.webp", alt: "vellonLavado" },
+          { src: "/images/actividades/alpacas-artesana.webp", alt: "artesana" },
+          { src: "/images/actividades/alpacas-hilado.webp", alt: "hilado" },
+          { src: "/images/actividades/alpacas-rueca-hilado.webp", alt: "ruecaHilado" },
+          { src: "/images/actividades/alpacas-telar.webp", alt: "telar" },
+          { src: "/images/actividades/alpacas-urdimbre.webp", alt: "urdimbre" },
+          { src: "/images/actividades/alpacas-telar-familia.webp", alt: "telarFamilia" },
+          { src: "/images/actividades/alpacas-toldo.webp", alt: "toldo" },
+          { src: "/images/actividades/alpacas-camino.webp", alt: "camino" },
+          { src: "/images/actividades/alpacas-almuerzo.webp", alt: "almuerzo" },
+        ],
+      },
+    },
   },
   {
     // Sin `durationISO`: el catálogo dice "Actividad breve de temporada", que
