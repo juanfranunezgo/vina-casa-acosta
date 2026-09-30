@@ -18,6 +18,7 @@ npm run foto:heros          # los heros full-bleed y la capa de +18, desktop + m
 npm run fotos:vendimia      # las fotos del hub de Vendimia (Dv): recortes de la aérea y fotos sueltas
 npm run fotos:mimbre        # las 8 fotos del Taller de mimbre (Dd)
 npm run fotos:yoga          # las 8 fotos de Yoga entre Viñas (Dd)
+npm run fotos:actividades   # las fichas de la tanda "Fotos Taller Web" (Dd); acepta un slug
 ```
 
 Si falta un archivo fuente, el script lo salta con un aviso y procesa el resto.
@@ -257,6 +258,71 @@ sonriendo junto al formulario: es la misma foto que abre la galería, repetida a
 propósito, pero entera (4:3) en vez del recorte 16:9, porque el panel es alto. Los `alt` están en los tres bundles bajo
 `activities.items.yoga.photos`, incluido el del hero (`photos.hero`), que lleva el
 lugar porque también es SEO.
+
+## Fotos de nueve fichas: tanda "Fotos Taller Web" (2026-09-29)
+
+`npm run fotos:actividades` procesa la tanda que mandó la viña en una carpeta por
+actividad: Alpaca, Bera, Carmennere, Enologo x un dia, Mimbre, Ombu, Pastas, Pizzas y
+Ñoquis (las de nombre de vino son los tours). La subcarpeta `Premios` quedó para otra
+etapa. `npm run fotos:actividades -- ombu` procesa una sola.
+
+**Qué entra.** Todo, salvo las casi idénticas a otra de la misma carpeta; en las fichas con
+menos de siete fotos (Berá, 6; Ñoquis, 5) entra todo. Pedido de Juan Francisco. La viña
+autorizó las fotos con menores. Quedaron fuera nueve, anotadas en el script con el motivo:
+`_MG_0652` (enólogo), `_DSC8771` (Carménère), `_MG_1070` (pastas), `IMG_1369`, `IMG_1389`
+e `IMG_1392` (pizzas), `IMG_3408` e `IMG_3516` (mimbre). Además, Juan Francisco sacó
+`IMG_1376` de pizzas (las risas alrededor de la mesa, que estuvo junto al formulario).
+
+**Dónde van los originales.** `_fuentes-fotos/actividades/<slug>/`, con el nombre que
+traían, para poder rastrear cada `.webp` hasta el archivo del cliente. Las diez HEIC de
+pizzas se pasaron antes a JPEG (q95, con `heic-convert`): sharp no decodifica HEVC.
+
+**La tabla es el script.** Cada foto declara su ranura (`hero`, `intro`, `card`,
+`reserve`, `wide`, `portrait`, o `mas-h` / `mas-v` para "Ver más fotos") y, si hace falta,
+una caja `box` en fracciones del cuadro enderezado, elegida mirando la foto. El script la
+ajusta a la proporción exacta de la ranura y falla si eso le quita más de un 3%. Sin
+`box`, recorta centrado (o con `anchorX` / `anchorY`). Todas salen a q80 salvo los heros
+(q76; el de Carménère a 2000 px y q72, porque el follaje pesaba 691 KB).
+
+**Ver más fotos.** Lo que no cabe en las ocho ranuras va a `gallery.more` en
+`data/activities.ts` y se dibuja detrás de un botón. Van en 3:2 o 2:3 (`vertical: true`)
+para que la página reserve el alto de cada una antes de que carguen. Si son todas de una
+orientación, van en grilla de tres que completa la última fila (las que sobran pasan a ir
+de a dos); si se mezclan, en dos columnas parejas. Hoy: alpacas 13, enólogo 4, Carménère 3
+y mimbre 5 (incluida `mimbre-piezas`, que dejó el mosaico a `mimbre-preparacion`). Una sola
+foto no abre "Ver más": pizzas tiene cuatro verticales en la fila del mosaico, y Berá, con
+una sola, la pone al lado de la apertura. El test lo exige.
+
+**Cambios después de mirar las capturas.** Los heros de alpacas y ñoquis cambiaron de
+foto: con las tijeras (sin cara ni animal) y con las manos formando ñoquis (se leía como una
+cata) el sujeto se entendía sólo por el título. Esas dos pasaron al panel del formulario y
+a la galería. En Ombú, la botella en la penumbra (un fotograma de video) dejó la apertura de
+la galería a la charla en la sala de barricas.
+
+**El panel del formulario** es una columna alta en escritorio y una franja en celular: una
+foto horizontal muestra ahí sólo la mitad de su ancho, y una vertical la mitad de su alto.
+Por eso conviene una foto con el sujeto concentrado. En pastas va la de las manos doblando la
+pasta (la del participante con la manga viene cortada en la frente desde el original y pasó
+al mosaico). En pizzas, Juan Francisco pidió repetir el hero: sale como
+`pizzas-armadas-panel`, un archivo propio al tamaño del panel.
+
+**Fotos oscuras.** Varias fotos de bodega llegaron casi negras (luminancia media 17 a 47
+de 255). `luz` las lleva a una media con una curva gamma, y `negro` / `blanco` fijan los
+percentiles 1 y 99 como los niveles de un editor: la curva sola dejaba los negros en gris
+y la foto lavada. La foto de producto de Guidaí (`carmenere-espumante`, media 21) es
+oscura a propósito y no se toca.
+
+**El encuadre del hero y del panel del formulario** no se recorta: lo resuelve
+`heroPosition` / `position` en `data/activities.ts`. El hero de escritorio muestra una
+franja apaisada y el panel del formulario es una franja en celular y una columna alta en
+escritorio, así que un solo `object-position` sirve para los dos (en celular manda la Y, en
+escritorio la X). Cada valor salió de mirar la foto; si cambia la foto, cambia el valor.
+
+**Lo que no tiene arreglo con recorte** (viene así del original): la frente de la joven en
+`bera-barrica` y `carmenere-barrica-pipeta`, la cabeza de la mujer en
+`alpacas-vellon-lavado`, la de un participante en `noquis-formado` y la del hombre en
+`pastas-relleno`. Varias de pizzas, Berá y el mimbre son de teléfono o de WhatsApp: van a
+ranuras chicas.
 
 ## Otros pipelines (no usan `_fuentes-fotos/`)
 

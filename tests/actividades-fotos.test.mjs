@@ -54,6 +54,13 @@ function slots(activity) {
             photo,
             ratio: 2 / 3,
           })),
+          // "Ver más fotos": el mosaico en columnas reserva el alto con la
+          // proporción, así que cada una tiene que ser 3:2 o 2:3 de verdad.
+          ...(photos.gallery.more ?? []).map((photo, i) => ({
+            ranura: `gallery.more[${i}]`,
+            photo,
+            ratio: photo.vertical ? 2 / 3 : 3 / 2,
+          })),
         ]
       : []),
   ];
@@ -108,6 +115,8 @@ test("ninguna foto se repite dentro de una actividad", () => {
     // que muestra; es lo que la version con la foto de categoria hacia en las
     // cinco ranuras a la vez.
     const usadas = [activity.image, ...slots(activity).map(({ photo }) => photo.src)];
+    // Y una actividad con fotos propias no usa una de afuera en el hero.
+    assert.ok(activity.image.startsWith("/images/"), `${activity.slug}: el hero no es local`);
     assert.equal(
       new Set(usadas).size,
       usadas.length,
@@ -120,8 +129,12 @@ test("el mosaico no pide mas verticales de las que la fila dibuja", () => {
   for (const activity of conFotos) {
     const portraits = activity.photos.gallery?.portraits;
     if (!portraits) continue;
-    // ActivityGallery las pone en una sola fila de tres, tambien en movil.
-    assert.ok(portraits.length > 0 && portraits.length <= 3, activity.slug);
+    // ActivityGallery las pone en una sola fila: tres, o cuatro (de a dos en
+    // movil). Una va al lado de la apertura. Cero vale: los ñoquis no tienen
+    // fotos para esa fila y la galeria queda con la apertura sola.
+    assert.ok(portraits.length <= 4, activity.slug);
+    // "Ver mas fotos" para una sola foto es un boton de mas: esa va a la fila.
+    assert.notEqual(activity.photos.gallery.more?.length, 1, `${activity.slug}: una sola foto en "ver mas"`);
   }
 });
 

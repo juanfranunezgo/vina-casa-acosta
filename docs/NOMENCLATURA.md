@@ -76,7 +76,7 @@ La ruta lleva la categoría: `/actividades/tours/ombu`, `/actividades/talleres/p
 | ~~Dd3~~ | Retirada el 2026-09-24: la caja "¿Cuándo se hace?" con la franja de 12 meses decía "Todo el año" en once de catorce fichas. En las de temporada, los meses pasan a las condiciones de Dd5 (`lib/temporada.ts`). El ID no se reasigna |
 | Dd4 | Detalle — tickets (tours) o programa de la jornada (talleres · experiencias). Si la actividad declara `schedule`, el programa va con horario: una regla proporcional de la mañana y cada etapa con sus minutos (`components/ActivitySchedule.tsx`); una etapa puede traer su carta (`components/ActivityMenu.tsx`) |
 | Dd5 | Tarjeta de reserva: precio **o** "a consultar", más condiciones. Con `priceExcludesVAT` el precio dice "+ IVA" junto a la cifra |
-| Dd6 | Galería (placeholder hasta tener fotos) |
+| Dd6 | Galería: apertura 16:9 + hasta tres verticales 2:3; lo que no cabe, detrás de **"Ver más fotos"** en columnas (`gallery.more`, desde el 2026-09-29). Placeholder si la actividad no tiene fotos |
 | Dd6b | Preguntas frecuentes (`components/ActivityFaq.tsx`): una tarjeta con sombra por pregunta y "Expandir todo". Sólo si la actividad trae `faq` en messages; hoy, el yoga. Sin marcado `FAQPage`: Google lo limita a sitios de gobierno y salud desde 2023 |
 | Dd7 | Reserva o cotización (formulario a Afeleia + botón WhatsApp con prefill) |
 | Dd8 | Otras actividades de la misma categoría |

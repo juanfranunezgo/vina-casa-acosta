@@ -511,6 +511,8 @@
       "faqCollapseAll": "Collapse all",
       "galleryTitle": "Gallery",
       "galleryComing": "We're putting together the photo gallery for this experience.",
+      "galleryMore": "See more photos",
+      "galleryMoreLabel": "More photos of {name}",
       "otherInCategory": "Other activities you might like",
       "form": {
         "title": "Booking",
@@ -707,7 +709,18 @@
           "Natural juices for under-18s.",
           "Dough ready to take home."
         ],
-        "closing": "You leave with the recipe, dough to do it again at home, and the table talk."
+        "closing": "You leave with the recipe, dough to do it again at home, and the table talk.",
+        "photos": {
+          "hero": "Three participants smile as they show the pizzas they made, at the Pizza Workshop at Viña Casa Acosta, in San Vicente de Tagua Tagua",
+          "amasado": "Participants in aprons knead by hand on wooden trays, with wine glasses on the table",
+          "ingredientes": "A counter with tomato, mushrooms, ham, salami, cheese and sauce for topping the pizza",
+          "armadas": "Three participants smile as they show the pizzas they made",
+          "bodega": "View of the winery hall with two rows of participants kneading at long tables",
+          "amasador": "A participant smiles at the camera while kneading on a wooden tray",
+          "armado": "Participants top their pizzas at the ingredient counter",
+          "queso": "Participants add cheese and salami to their pizza bases",
+          "mesa": "The workshop's long table, with participants kneading and laughing"
+        }
       },
       "pastas": {
         "name": "Pasta Workshop",
@@ -725,7 +738,17 @@
           "Wine tasting: on arrival, during the workshop and at the close.",
           "Natural juices for under-18s."
         ],
-        "closing": "You leave with the recipe, the cut you learned, and the table talk."
+        "closing": "You leave with the recipe, the cut you learned, and the table talk.",
+        "photos": {
+          "hero": "Hands hold freshly cut noodles coming out of the pasta machine, at the Pasta Workshop at Viña Casa Acosta, in San Vicente de Tagua Tagua",
+          "amasado": "A hand kneads a small ball of dough on the board, with wine glasses and participants behind",
+          "plato": "A plate of fresh pasta with tomato sauce, grated cheese and bay leaves",
+          "relleno": "A participant in an apron pipes filling onto a disc of dough, beside glasses of wine",
+          "mesa": "Participants in aprons make filled pasta at the long table, under the Viña Casa Acosta sign",
+          "disco": "A hand holds a disc of dough with its filling before closing it",
+          "doblado": "Floury hands fold the filled disc to shape the pasta",
+          "laminado": "A sheet of fresh dough goes through the pasta machine"
+        }
       },
       "noquis": {
         "name": "Gnocchi Workshop",
@@ -743,7 +766,14 @@
           "Wine tasting: on arrival, during the workshop and at the close.",
           "Natural juices for under-18s."
         ],
-        "closing": "You leave with the recipe, the sauces written down, and the dinner you shared."
+        "closing": "You leave with the recipe, the sauces written down, and the dinner you shared.",
+        "photos": {
+          "hero": "Rolls of dough and freshly cut gnocchi on a tray beside glasses of wine, at the Gnocchi Workshop at Viña Casa Acosta, in San Vicente de Tagua Tagua",
+          "formado": "Two participants cut and shape gnocchi from rolls of dough",
+          "mesa": "Participants in aprons work the dough at the long table, under the Viña Casa Acosta sign",
+          "sonrisa": "A participant smiles while shaping gnocchi by hand at the workshop table",
+          "bandeja": "Hands shape ridged gnocchi on a wooden tray beside glasses of red wine"
+        }
       },
       "ombu": {
         "name": "Ombú Tour",
@@ -772,7 +802,17 @@
           "Tasting of 3 wines from the Ombú and/or Lajau lines."
         ],
         "pairing": "Pairing board included.",
-        "closing": "You'll be able to purchase our wines directly at the cellar."
+        "closing": "You'll be able to purchase our wines directly at the cellar.",
+        "photos": {
+          "hero": "Four glasses of red wine in front of Viña Casa Acosta bottles, at the Ombú Tour tasting, in San Vicente de Tagua Tagua",
+          "barricas": "The host presents the wines to a group seated before their glasses, in the barrel room",
+          "botella": "A visitor photographs a bottle of Ombú with a phone on the tasting table",
+          "rosado": "Two visitors smile with glasses of rosé and boards of bites on a wooden walkway among the vines",
+          "reserva": "A bottle of Ombú Reserva Carménère 2021 in the dim light of the cellar",
+          "mesa": "A long table set for the tasting, with glasses in a row, boards of bites and hydrangeas",
+          "taponadora": "A visitor corks a bottle with a hand corker while the group looks on",
+          "bodega": "The host holds a bottle in the cellar, among Viña Casa Acosta signs"
+        }
       },
       "bera": {
         "name": "Berá Tour",
@@ -804,7 +844,15 @@
           "1 Gran Reserva «Estación Francia» wine."
         ],
         "pairing": "Pairing board included.",
-        "closing": "Our wines will be available for sale at the cellar itself."
+        "closing": "Our wines will be available for sale at the cellar itself.",
+        "photos": {
+          "hero": "The host points out the vineyard, glass of rosé in hand, on the Berá Tour at Viña Casa Acosta, in San Vicente de Tagua Tagua",
+          "barrica": "Two young visitors draw wine from the barrel with a glass pipette and pour it into a glass",
+          "salaBarricas": "A visitor stands by barrels bearing the Viña Casa Acosta logo while a woman and a little girl sit on another barrel",
+          "mesa": "Glasses lined up and a board of bites on the tasting table, in the light from the window",
+          "camino": "A group walks with glasses of rosé along a path under flowering trees, with the host",
+          "pipeta": "A visitor draws wine from the barrel with a pipette and pours it into a glass"
+        }
       },
       "carmenere": {
         "name": "Carménère Tour",
@@ -840,7 +888,20 @@
           "Yaráy Guá Late Harvest Carménère."
         ],
         "pairing": "Pairing board included.",
-        "closing": "You'll have the option to purchase our wines directly at the cellar."
+        "closing": "You'll have the option to purchase our wines directly at the cellar.",
+        "photos": {
+          "hero": "The host talks with a group of visitors holding glasses of rosé outside the winery, on the Carménère Tour at Viña Casa Acosta, in San Vicente de Tagua Tagua",
+          "granReserva": "A bottle of Estación Francia Gran Reserva Carménère 2017 beside two glasses of red wine",
+          "guidai": "Hands hold a bottle of Guidaí sparkling wine over the tasting table",
+          "espumante": "A bottle of Guidaí sparkling wine and a flute with pink foam, against a dark background",
+          "barricas": "Oak barrels engraved with the Viña Casa Acosta name, in the barrel room",
+          "pipeta": "Red wine flows from a cellar pipette into a glass, beside the barrels",
+          "copas": "Glasses of red wine on a wooden table, lit by the sun",
+          "mesa": "A long tasting table with boards of bites, glasses and hydrangeas, in low light",
+          "cata": "The host noses a glass of red wine among the barrels",
+          "botella": "Hands hold a bottle of wine in front of the cellar's barrels",
+          "barricaPipeta": "A young visitor draws wine from the barrel with a glass pipette, next to another guest"
+        }
       },
       "cosecha-tu-historia": {
         "name": "Harvest Your Story",
@@ -881,7 +942,21 @@
           "Final tasting",
           "Prizes for the winners"
         ],
-        "closing": "You leave with the bottle you blended and, if the group says so, with the prize."
+        "closing": "You leave with the bottle you blended and, if the group says so, with the prize.",
+        "photos": {
+          "hero": "A participant pours wine into a measuring cylinder to build a blend at Winemaker for a Day, Viña Casa Acosta, San Vicente de Tagua Tagua",
+          "pipeta": "A participant measures a wine sample with a pipette, in front of bottles labelled by grape",
+          "mesa": "Bottles labelled by grape, glasses, cylinders and flasks on the blending worktable",
+          "copa": "A participant holds a glass of red wine up to the light to judge its colour",
+          "fichas": "Participants write their impressions on tasting sheets, in front of glasses and bottles",
+          "medicion": "A participant lifts a cylinder of wine while measuring a blend",
+          "embotellado": "Hands pour the blend from a cylinder into the bottle",
+          "maridaje": "Bruschetta, cheese and nuts beside the bottles and glasses, during the pairing break",
+          "botellas": "Blending bottles on the table, with participants smiling behind",
+          "varilla": "A participant stirs the wine in the cylinder with a rod, among labelled bottles",
+          "etiqueta": "Adjusting a bottle's label among rows of bottles and flowers",
+          "botellaNumerada": "A participant pours from bottle number 6 during the blind tasting"
+        }
       },
       "mimbre": {
         "name": "Wicker Workshop",
@@ -907,7 +982,12 @@
           "artesana": "A craftswoman sets the wicker rods over a mould to start a piece",
           "maestro": "The master craftsman shows a participant how to start the weave",
           "piezas": "Finished wicker pieces — bowls, lidded baskets and mugs — stacked on the table",
-          "desayuno": "Long table set for the country breakfast, with bread, glasses and wild flowers"
+          "desayuno": "Long table set for the country breakfast, with bread, glasses and wild flowers",
+          "preparacion": "A participant prepares a strip of wicker in the cutting tool, guided by an artisan, with the vineyard and the mountains behind",
+          "presentacion": "An artisan introduces the craft of wicker at a screen, to participants at the breakfast table",
+          "grupo": "Group photo of the participants with their finished wicker pieces, with the mountains behind",
+          "maestroCorte": "The master craftsman splits a strip of wicker by hand",
+          "ninas": "Two girls smile, holding the base of their wicker basket"
         }
       },
       "alpacas": {
@@ -927,7 +1007,30 @@
           "Traditional spinning",
           "Closing"
         ],
-        "closing": "You leave with the yarn you spun and the whole process seen end to end."
+        "closing": "You leave with the yarn you spun and the whole process seen end to end.",
+        "photos": {
+          "hero": "A visitor laughs, holding a handful of freshly shorn alpaca fleece, at the alpaca shearing at Viña Casa Acosta, in San Vicente de Tagua Tagua",
+          "fibra": "A visitor in a straw hat smiles at a tuft of alpaca fibre",
+          "rueca": "A wooden spinning wheel turns, winding white and black yarn, with brown fibre on the table",
+          "corral": "Visitors leaning on the fence watch the shearing demonstration in the pen, with the mountains behind",
+          "instructor": "The winery's instructor shows a visitor the shearing scissors",
+          "cardado": "Hands hold carded alpaca fibre in front of a drum carder",
+          "madeja": "A participant winds a skein of white wool on a wooden swift",
+          "desayuno": "Participants share the country breakfast at the long table in the barn",
+          "charla": "The host introduces the alpaca day to the group seated at the table",
+          "trasquila": "Several participants shear an alpaca together, guided by the winery team",
+          "vellonLavado": "An artisan hands a boy a clean white fleece, next to the raw fibre",
+          "artesana": "An artisan spreads brown and black alpaca fibre across the carding table",
+          "hilado": "Adults and children spin the fibre around the spinning wheel",
+          "ruecaHilado": "An artisan and the winery's host smile as they spin at the wheel",
+          "telar": "Two participants weave on a table loom",
+          "urdimbre": "Three participants look at a loom strung with a raw wool warp",
+          "telarFamilia": "A family and the artisan look at a small loom with black wool",
+          "toldo": "The burlap awning with barrels and plant pots where the group gathers",
+          "camino": "The group walks down a dirt track under the trees, past a cart loaded with hay bales",
+          "almuerzo": "Lunch at the long table under the awning, among the vines, with the mountains behind",
+          "tijeras": "Hands part an alpaca's fleece with red-handled shears"
+        }
       },
       "lagrimas-de-invierno": {
         "name": "Winter Tears",

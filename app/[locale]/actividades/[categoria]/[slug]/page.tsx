@@ -326,6 +326,16 @@ export default async function ActivityDetailPage({
           src: photo.src,
           alt: photoAlt(photo),
         })),
+        more: tour.photos.gallery.more && {
+          id: `${slug}-mas-fotos`,
+          label: t("galleryMore"),
+          regionLabel: t("galleryMoreLabel", { name }),
+          photos: tour.photos.gallery.more.map((photo) => ({
+            src: photo.src,
+            alt: photoAlt(photo),
+            vertical: photo.vertical,
+          })),
+        },
       }
     : undefined;
 
@@ -874,6 +884,7 @@ export default async function ActivityDetailPage({
                 title={t("galleryTitle")}
                 wide={gallery.wide}
                 portraits={gallery.portraits}
+                more={gallery.more}
               />
             ) : (
               <GalleryPlaceholder title={t("galleryTitle")} coming={t("galleryComing")} />

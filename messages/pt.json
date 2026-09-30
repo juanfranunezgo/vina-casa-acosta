@@ -511,6 +511,8 @@
       "faqCollapseAll": "Recolher tudo",
       "galleryTitle": "Galeria",
       "galleryComing": "Estamos preparando a galeria de fotos desta experiência.",
+      "galleryMore": "Ver mais fotos",
+      "galleryMoreLabel": "Mais fotos de {name}",
       "otherInCategory": "Outras atividades que podem interessar",
       "form": {
         "title": "Reserva",
@@ -707,7 +709,18 @@
           "Sucos naturais para menores.",
           "Massa pronta para levar para casa."
         ],
-        "closing": "Você leva a receita, a massa para repetir em casa e a conversa da mesa."
+        "closing": "Você leva a receita, a massa para repetir em casa e a conversa da mesa.",
+        "photos": {
+          "hero": "Três participantes mostram sorrindo as pizzas que montaram, na Oficina de Pizzas da Viña Casa Acosta, em San Vicente de Tagua Tagua",
+          "amasado": "Participantes de avental sovam à mão sobre bandejas de madeira, com taças de vinho na mesa",
+          "ingredientes": "Balcão com tomate, cogumelos, presunto, salame, queijo e molho para montar a pizza",
+          "armadas": "Três participantes mostram sorrindo as pizzas que montaram",
+          "bodega": "Vista da adega com duas fileiras de participantes sovando em mesas compridas",
+          "amasador": "Um participante sorri para a câmera enquanto sova sobre uma bandeja de madeira",
+          "armado": "Participantes montam suas pizzas junto ao balcão de ingredientes",
+          "queso": "Participantes colocam queijo e salame sobre a base da pizza",
+          "mesa": "A mesa comprida da oficina, com participantes sovando e rindo"
+        }
       },
       "pastas": {
         "name": "Oficina de Massas",
@@ -725,7 +738,17 @@
           "Degustação de vinhos: de boas-vindas, durante a oficina e no encerramento.",
           "Sucos naturais para menores."
         ],
-        "closing": "Você leva a receita, o corte aprendido e a conversa da mesa."
+        "closing": "Você leva a receita, o corte aprendido e a conversa da mesa.",
+        "photos": {
+          "hero": "Mãos seguram talharins recém-cortados saindo da máquina de massa, na Oficina de Massas da Viña Casa Acosta, em San Vicente de Tagua Tagua",
+          "amasado": "Uma mão sova uma bolinha de massa sobre a tábua, com taças de vinho e participantes ao fundo",
+          "plato": "Prato de massa fresca com molho de tomate, queijo ralado e louro",
+          "relleno": "Um participante de avental recheia um disco de massa com um saco de confeitar, junto a taças de vinho",
+          "mesa": "Participantes de avental preparam massa recheada na mesa comprida, sob a placa da Viña Casa Acosta",
+          "disco": "Uma mão segura um disco de massa com o recheio antes de fechá-lo",
+          "doblado": "Mãos enfarinhadas dobram o disco recheado para formar a massa",
+          "laminado": "Uma lâmina de massa fresca passa pela máquina de macarrão"
+        }
       },
       "noquis": {
         "name": "Oficina de Nhoque",
@@ -743,7 +766,14 @@
           "Degustação de vinhos: de boas-vindas, durante a oficina e no encerramento.",
           "Sucos naturais para menores."
         ],
-        "closing": "Você leva a receita, os molhos anotados e o jantar compartilhado."
+        "closing": "Você leva a receita, os molhos anotados e o jantar compartilhado.",
+        "photos": {
+          "hero": "Rolos de massa e nhoques recém-cortados sobre uma bandeja, junto a taças de vinho, na Oficina de Nhoque da Viña Casa Acosta, em San Vicente de Tagua Tagua",
+          "formado": "Duas participantes cortam e modelam nhoques a partir de rolos de massa",
+          "mesa": "Participantes de avental trabalham a massa na mesa comprida, sob a placa da Viña Casa Acosta",
+          "sonrisa": "Uma participante sorri enquanto modela nhoques à mão na mesa da oficina",
+          "bandeja": "Mãos modelam nhoques listrados sobre uma bandeja de madeira, junto a taças de vinho tinto"
+        }
       },
       "ombu": {
         "name": "Tour Ombú",
@@ -772,7 +802,17 @@
           "Degustação de 3 vinhos das linhas Ombú e/ou Lajau."
         ],
         "pairing": "Tábua de harmonização incluída.",
-        "closing": "Você poderá adquirir nossos vinhos diretamente na adega."
+        "closing": "Você poderá adquirir nossos vinhos diretamente na adega.",
+        "photos": {
+          "hero": "Quatro taças de vinho tinto diante de garrafas da Viña Casa Acosta, na degustação do Tour Ombú, em San Vicente de Tagua Tagua",
+          "barricas": "O anfitrião apresenta os vinhos a um grupo sentado diante das taças, na sala de barris",
+          "botella": "Uma visitante fotografa com o celular uma garrafa de Ombú sobre a mesa de degustação",
+          "rosado": "Dois visitantes sorriem com taças de rosé e tábuas de petiscos numa passarela de madeira entre as videiras",
+          "reserva": "Uma garrafa de Ombú Reserva Carménère 2021 na penumbra da adega",
+          "mesa": "Mesa comprida preparada para a degustação, com taças alinhadas, tábuas de petiscos e hortênsias",
+          "taponadora": "Uma visitante arrolha uma garrafa com uma arrolhadora manual enquanto o grupo observa",
+          "bodega": "O anfitrião segura uma garrafa na adega, entre as placas da Viña Casa Acosta"
+        }
       },
       "bera": {
         "name": "Tour Berá",
@@ -804,7 +844,15 @@
           "1 vinho Gran Reserva «Estación Francia»."
         ],
         "pairing": "Tábua de harmonização incluída.",
-        "closing": "Nossos vinhos estarão disponíveis para venda na própria adega."
+        "closing": "Nossos vinhos estarão disponíveis para venda na própria adega.",
+        "photos": {
+          "hero": "O anfitrião aponta o vinhedo com uma taça de rosé na mão, no Tour Berá da Viña Casa Acosta, em San Vicente de Tagua Tagua",
+          "barrica": "Dois jovens tiram vinho do barril com uma pipeta de vidro e o servem numa taça",
+          "salaBarricas": "Um visitante junto aos barris com o logo da Viña Casa Acosta, enquanto uma mulher e uma menina se sentam sobre outro barril",
+          "mesa": "Taças alinhadas e uma tábua de petiscos sobre a mesa de degustação, à luz da janela",
+          "camino": "Um grupo caminha com taças de rosé por um caminho sob árvores floridas, junto ao anfitrião",
+          "pipeta": "Um visitante tira vinho do barril com uma pipeta e o despeja na taça"
+        }
       },
       "carmenere": {
         "name": "Tour Carménère",
@@ -840,7 +888,20 @@
           "Yaráy Guá Late Harvest Carménère."
         ],
         "pairing": "Tábua de harmonização incluída.",
-        "closing": "Você terá a opção de adquirir nossos vinhos diretamente na adega."
+        "closing": "Você terá a opção de adquirir nossos vinhos diretamente na adega.",
+        "photos": {
+          "hero": "O anfitrião conversa com um grupo de visitantes com taças de rosé em frente à adega, no Tour Carménère da Viña Casa Acosta, em San Vicente de Tagua Tagua",
+          "granReserva": "Garrafa de Estación Francia Gran Reserva Carménère 2017 ao lado de duas taças de vinho tinto",
+          "guidai": "Mãos seguram uma garrafa do espumante Guidaí sobre a mesa de degustação",
+          "espumante": "Garrafa de espumante Guidaí e uma taça flute com espuma rosada, sobre fundo escuro",
+          "barricas": "Barris de carvalho com o nome da Viña Casa Acosta gravado, na sala de barris",
+          "pipeta": "Vinho tinto cai de uma pipeta de adega numa taça, junto aos barris",
+          "copas": "Taças de vinho tinto sobre uma mesa de madeira, iluminadas pelo sol",
+          "mesa": "Mesa comprida de degustação com tábuas de petiscos, taças e hortênsias, na penumbra",
+          "cata": "O anfitrião sente o aroma de uma taça de vinho tinto entre os barris",
+          "botella": "Mãos seguram uma garrafa de vinho diante dos barris da adega",
+          "barricaPipeta": "Uma jovem tira vinho do barril com uma pipeta de vidro, junto a um visitante"
+        }
       },
       "cosecha-tu-historia": {
         "name": "Colha a sua história",
@@ -881,7 +942,21 @@
           "Degustação final",
           "Premiação dos vencedores"
         ],
-        "closing": "Você leva a garrafa que montou e, se o grupo decidir, o prêmio."
+        "closing": "Você leva a garrafa que montou e, se o grupo decidir, o prêmio.",
+        "photos": {
+          "hero": "Uma participante despeja vinho numa proveta para criar seu corte no Enólogo por um dia, na Viña Casa Acosta, em San Vicente de Tagua Tagua",
+          "pipeta": "Uma participante mede uma amostra de vinho com uma pipeta, diante de garrafas rotuladas por uva",
+          "mesa": "Garrafas rotuladas por uva, taças, provetas e frascos sobre a mesa de trabalho do corte",
+          "copa": "Um participante levanta uma taça de vinho tinto contra a luz para avaliar a cor",
+          "fichas": "Os participantes anotam suas impressões nas fichas de degustação, diante de taças e garrafas",
+          "medicion": "Uma participante levanta uma proveta com vinho enquanto mede seu corte",
+          "embotellado": "Mãos despejam o corte da proveta na garrafa",
+          "maridaje": "Bruschettas, queijo e castanhas junto às garrafas e taças, na pausa de harmonização",
+          "botellas": "Garrafas do corte sobre a mesa, com participantes sorrindo ao fundo",
+          "varilla": "Um participante mistura com um bastão o vinho da proveta, entre garrafas rotuladas",
+          "etiqueta": "Ajuste do rótulo de uma garrafa, entre fileiras de garrafas e flores",
+          "botellaNumerada": "Um participante serve da garrafa número 6 durante a degustação às cegas"
+        }
       },
       "mimbre": {
         "name": "Oficina de vime",
@@ -907,7 +982,12 @@
           "artesana": "Uma artesã fixa as varas de vime sobre um molde para começar uma peça",
           "maestro": "O mestre artesão mostra a uma participante como começar o trançado",
           "piezas": "Peças de vime prontas — fruteiras, cestos com tampa e canecas — empilhadas sobre a mesa",
-          "desayuno": "Mesa comprida posta para o café da manhã campestre, com pães, taças e flores do campo"
+          "desayuno": "Mesa comprida posta para o café da manhã campestre, com pães, taças e flores do campo",
+          "preparacion": "Um participante prepara uma tira de vime na ferramenta de corte, guiado por uma artesã, com o vinhedo e a cordilheira ao fundo",
+          "presentacion": "Uma artesã apresenta o ofício do vime diante de uma tela, para os participantes à mesa do café da manhã",
+          "grupo": "Foto em grupo dos participantes com suas peças de vime prontas, com a cordilheira ao fundo",
+          "maestroCorte": "O mestre artesão divide uma tira de vime com as mãos",
+          "ninas": "Duas meninas sorriem segurando a base do seu cesto de vime"
         }
       },
       "alpacas": {
@@ -927,7 +1007,30 @@
           "Fiação tradicional",
           "Encerramento"
         ],
-        "closing": "Você leva o novelo que fiou e o processo completo visto do começo ao fim."
+        "closing": "Você leva o novelo que fiou e o processo completo visto do começo ao fim.",
+        "photos": {
+          "hero": "Uma visitante ri segurando um punhado de velo de alpaca recém-tosquiado, na tosquia da Viña Casa Acosta, em San Vicente de Tagua Tagua",
+          "fibra": "Uma visitante de chapéu de palha sorri olhando um tufo de fibra de alpaca",
+          "rueca": "Uma roca de madeira gira enrolando fio branco e preto, com fibra marrom sobre a mesa",
+          "corral": "Visitantes apoiados na cerca acompanham a demonstração de tosquia no curral, com a cordilheira ao fundo",
+          "instructor": "O instrutor da vinícola mostra a tesoura de tosquia a uma visitante",
+          "cardado": "Mãos seguram fibra de alpaca cardada diante de uma cardadeira de tambor",
+          "madeja": "Um participante enrola uma meada de lã branca numa dobadoura de madeira",
+          "desayuno": "Os participantes compartilham o café da manhã campestre na mesa comprida do galpão",
+          "charla": "O anfitrião apresenta a jornada das alpacas ao grupo sentado à mesa",
+          "trasquila": "Vários participantes tosquiam juntos uma alpaca, guiados pela equipe da vinícola",
+          "vellonLavado": "Uma artesã entrega a um menino um velo branco já lavado, ao lado da fibra crua",
+          "artesana": "Uma artesã estende fibra de alpaca marrom e preta sobre a mesa de cardagem",
+          "hilado": "Adultos e crianças fiam a fibra em volta da roca",
+          "ruecaHilado": "Uma artesã e a anfitriã da vinícola sorriem enquanto fiam na roca",
+          "telar": "Duas participantes tecem num tear de mesa",
+          "urdimbre": "Três participantes observam um tear com a urdidura de lã crua",
+          "telarFamilia": "Uma família observa com a artesã um pequeno tear com lã preta",
+          "toldo": "O toldo de aniagem com barris e vasos onde o grupo se reúne",
+          "camino": "O grupo caminha por uma estrada de terra sob as árvores, junto a uma carroça com fardos",
+          "almuerzo": "Almoço na mesa comprida sob o toldo, entre as videiras e com a cordilheira ao fundo",
+          "tijeras": "Mãos abrem o velo de uma alpaca com tesouras de cabo vermelho"
+        }
       },
       "lagrimas-de-invierno": {
         "name": "Lágrimas de inverno",
