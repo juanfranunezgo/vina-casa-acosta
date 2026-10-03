@@ -337,6 +337,11 @@
       "subtitle": "Uma coleção de expressões autênticas, nascidas em nosso vinhedo boutique no Vale do Cachapoal. Cada garrafa conta a história do nosso patrimônio e do nosso terroir."
     },
     "lineLabel": "Linha",
+    "price": {
+      "previous": "Preço anterior",
+      "current": "Preço atual",
+      "discount": "−{percent}%"
+    },
     "collectionPhotoAlt": "Coleção {line} — ambiente da Viña Casa Acosta",
     "photoPrev": "Foto anterior da coleção {line}",
     "photoNext": "Próxima foto da coleção {line}",

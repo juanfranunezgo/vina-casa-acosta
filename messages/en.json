@@ -337,6 +337,11 @@
       "subtitle": "A collection of honest expressions born in our boutique vineyard in the Cachapoal Valley. Each bottle tells the story of our heritage and our terroir."
     },
     "lineLabel": "Line",
+    "price": {
+      "previous": "Previous price",
+      "current": "Current price",
+      "discount": "−{percent}%"
+    },
     "collectionPhotoAlt": "{line} collection — Viña Casa Acosta vineyard",
     "photoPrev": "Previous photo of the {line} collection",
     "photoNext": "Next photo of the {line} collection",

@@ -337,6 +337,11 @@
       "subtitle": "Una colección de expresiones auténticas, nacidas en nuestro viñedo boutique del Valle del Cachapoal. Cada botella cuenta la historia de nuestro patrimonio y nuestro terroir."
     },
     "lineLabel": "Línea",
+    "price": {
+      "previous": "Precio anterior",
+      "current": "Precio actual",
+      "discount": "−{percent} %"
+    },
     "collectionPhotoAlt": "Colección {line} — ambiente de Viña Casa Acosta",
     "photoPrev": "Foto anterior de la colección {line}",
     "photoNext": "Foto siguiente de la colección {line}",

@@ -6,6 +6,7 @@ import { useTranslations, useLocale } from "next-intl";
 import { Check, ChevronDown, Filter, X } from "lucide-react";
 import Reveal from "@/components/Reveal";
 import AddToCartButton from "@/components/AddToCartButton";
+import PrecioProducto, { saleCopy } from "@/components/PrecioProducto";
 import SelloProducto from "@/components/SelloProducto";
 import WineBottleImage from "@/components/WineBottleImage";
 import { matchesWineType } from "@/data/wines";
@@ -452,9 +453,11 @@ export default function TiendaCatalogo({
                       </p>
                       {/* El precio como en la ficha de vino: Jakarta en negrita. */}
                       <div className="flex items-center justify-between pt-4 border-t border-outline-variant/30">
-                        <span className="font-body text-xl font-bold tracking-tight text-primary tabular-nums">
-                          {formatPrice(wine.priceCLP)}
-                        </span>
+                        <PrecioProducto
+                          className="font-body text-xl font-bold tracking-tight text-primary tabular-nums"
+                          price={formatPrice(wine.priceCLP)}
+                          sale={saleCopy(wine.sale, formatPrice, tVinos)}
+                        />
                         <AddToCartButton
                           variant="icon"
                           agotado={wine.agotado}
