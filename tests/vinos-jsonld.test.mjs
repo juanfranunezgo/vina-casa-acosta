@@ -42,6 +42,18 @@ test("el Offer declara el precio que la pagina muestra", () => {
   assert.equal(producto.offers.priceCurrency, "CLP");
 });
 
+test("con rebaja el Offer sigue declarando el precio de venta", () => {
+  // `precio` es lo que se cobra, con o sin rebaja. El precio anterior es un
+  // dato de la vitrina: marcarlo como `price` le diria a un buscador que el vino
+  // cuesta lo que ya no cuesta.
+  const rebajado = { ...VINO, sale: { previousPriceCLP: 12990, discountPercent: 23 } };
+  const grafo = buildWineDetailJsonLd(rebajado, "es", COPY);
+  assert.equal(nodo(grafo, "Product").offers.price, 9900);
+  assert.doesNotMatch(JSON.stringify(grafo), /12990/);
+  // Y nada mas cambia: el mismo vino sin rebaja marca exactamente lo mismo.
+  assert.deepEqual(grafo, buildWineDetailJsonLd(VINO, "es", COPY));
+});
+
 test("la disponibilidad sigue al estado real del catalogo", () => {
   const enStock = nodo(buildWineDetailJsonLd(VINO, "es", COPY), "Product");
   assert.equal(enStock.offers.availability, "https://schema.org/InStock");

@@ -8,6 +8,7 @@ import JsonLd from "@/components/JsonLd";
 import Reveal from "@/components/Reveal";
 import Button from "@/components/ui/Button";
 import ProductPurchase from "@/components/ProductPurchase";
+import PrecioProducto, { saleCopy } from "@/components/PrecioProducto";
 import CompraSegura from "@/components/CompraSegura";
 import SelloProducto from "@/components/SelloProducto";
 import TastingProfile from "@/components/TastingProfile";
@@ -130,11 +131,12 @@ export default async function WinePage({
   ].slice(0, 4);
 
   const priceLocale = locale === "pt" ? "pt-BR" : locale === "en" ? "en-US" : "es-CL";
-  const priceFormatted = new Intl.NumberFormat(priceLocale, {
-    style: "currency",
-    currency: "CLP",
-    maximumFractionDigits: 0,
-  }).format(wine.priceCLP);
+  const formatPrice = (amount: number) =>
+    new Intl.NumberFormat(priceLocale, {
+      style: "currency",
+      currency: "CLP",
+      maximumFractionDigits: 0,
+    }).format(amount);
 
   // El sello de Mercado Pago, con la misma condición que el "Pagar" del
   // carrito (CartDrawer): sin checkout configurado el pedido cierra por
@@ -247,10 +249,16 @@ export default async function WinePage({
                 sombra no la corte lo que viene abajo. */}
             <Reveal delay={120} className="relative z-10">
               <div className="relative z-10 rounded-[28px] bg-surface-container-lowest p-6 shadow-[0_36px_70px_-30px_rgba(74,14,14,0.30),0_10px_30px_-14px_rgba(74,14,14,0.12)] md:p-8">
-                <p className="font-body text-[13px] text-on-surface-variant">{t("priceLabel")}</p>
-                <p className="mt-1 font-body text-4xl font-bold leading-none tracking-tight tabular-nums text-primary md:text-[2.75rem]">
-                  {priceFormatted}
-                </p>
+                {/* El margen entre el rótulo y el precio va en el rótulo (`mb-1`)
+                    y no en el precio: con rebaja, arriba del precio de venta se
+                    dibuja el tachado, y el margen tiene que quedar sobre eso. */}
+                <p className="mb-1 font-body text-[13px] text-on-surface-variant">{t("priceLabel")}</p>
+                <PrecioProducto
+                  as="p"
+                  className="font-body text-4xl font-bold leading-none tracking-tight tabular-nums text-primary md:text-[2.75rem]"
+                  price={formatPrice(wine.priceCLP)}
+                  sale={saleCopy(wine.sale, formatPrice, tVinos)}
+                />
                 <div className="mt-6">
                   <ProductPurchase
                     agotado={wine.agotado}

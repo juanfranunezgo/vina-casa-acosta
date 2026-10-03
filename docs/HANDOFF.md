@@ -643,6 +643,70 @@ que **se quedó sin productos**. Los cuatro datos salen de una sola lectura, par
 pueda contradecirse. Falta todavía el **monitor externo** que lea eso cada 5–10 minutos y
 alerte: es un servicio aparte, no cabe en este repo, y está pendiente.
 
+### Rebajas: precio anterior tachado y «−N %» (2026-10-03)
+
+El catálogo v1 publica dos claves opcionales por producto, `precio_anterior` y
+`descuento_porcentaje`, que viajan **las dos o ninguna**. La web las lee con `readSale`
+(`lib/afeleia/contract.ts`) y las dibuja con `components/PrecioProducto.tsx` en los dos lugares
+donde se ve el precio de un vino: la tarjeta de `/tienda` y la ficha `/vinos/<slug>`.
+
+Reglas que conviene no «arreglar»:
+
+1. **Hay rebaja solo si** vienen las dos claves, las dos son números, `precio_anterior` es mayor
+   que `precio` y `descuento_porcentaje` es un entero de 1 a 99. Cualquier otra cosa —una sola
+   clave, un texto, un 0, un 100— es «sin rebaja» y el precio se dibuja como siempre. Una rebaja
+   mal formada **no invalida el catálogo**: es la misma asimetría que las definiciones.
+2. **El porcentaje no se calcula acá.** Se muestra el que publica Afeleia.
+3. **`precio` sigue siendo lo que se cobra.** El carrito, el paso al checkout y el JSON-LD leen
+   solo `precio`; la rebaja no les llega.
+4. **Sin las claves no se dibuja nada.** Por eso este cambio pudo salir antes de que Afeleia
+   publicara la función.
+
+Un cambio de precio hecho en el panel tarda en verse lo que dure la caché: la función guarda 60
+segundos, más el CDN y los 60 segundos del sitio.
+
+#### Regenerar el respaldo después de tocar una rebaja
+
+Hay **dos copias** del respaldo y conviene no confundirlas:
+
+- **La desplegada.** El prebuild la refresca contra la API en cada build de Netlify. O sea que
+  el respaldo que sirve el sitio publicado es el catálogo **del momento del último deploy**.
+- **La committeada** (`data/catalogo-fallback.json` y su sello
+  `data/catalogo-fallback.integrity.json`). Es el piso: lo que se usa si el build no logra
+  consultar la API, y lo que se ve en un clon local sin `.env.local`. Nadie la actualiza sola.
+
+**Cuándo:** una vez después de que Afeleia publique la función con las dos claves, y **cada vez
+que se ponga o se quite una rebaja**. Si no, el día que el sitio caiga al respaldo muestra
+precios viejos. El caso que duele es el de una rebaja que se **quitó**: el respaldo sigue
+mostrando el precio rebajado y el tachado, y el checkout cobra el precio normal. Al revés —una
+rebaja nueva que el respaldo no conoce— el sitio muestra el precio de antes y se cobra menos.
+
+**Cómo:**
+
+```bash
+# 1. Con .env.local apuntando a la API y al sitio reales (o con --url y --sitio):
+npm run catalogo:snapshot
+
+# 2. Mirar qué cambió. Con una rebaja puesta tienen que aparecer las dos claves:
+git diff --stat data/
+grep -c precio_anterior data/catalogo-fallback.json
+
+# 3. El respaldo y su sello tienen que cerrar, y cada rebaja tiene que poder dibujarse:
+npm test
+```
+
+Después se commitean **los dos archivos** de `data/` juntos y se mergea a `main`. Ese deploy de
+producción refresca además la copia desplegada. El archivo no se edita a mano: el sello dejaría
+de cerrar y el prebuild frena el deploy.
+
+Si lo único que hace falta es refrescar la copia desplegada —se quitó una rebaja y no hay nada
+que mergear— alcanza con un deploy nuevo desde Netlify (*Deploys → Trigger deploy*), que vuelve
+a correr el prebuild. Cuesta los 15 créditos de cualquier deploy de producción y **no** actualiza
+la copia committeada.
+
+Para comprobar del lado de Afeleia que una rebaja viaja, el verificador de ese repo acepta
+`--rebaja <slug>`.
+
 ### Deterioro conocido: las fotos del modo degradado
 
 El snapshot reapunta cada foto a `public/vinos/<archivo>` **solo si ese archivo existe
