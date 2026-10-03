@@ -33,6 +33,7 @@ import {
   isValidCatalog,
   optionsFor,
   readOptionValue,
+  readSale,
   renderableDocument,
   renderableImage,
   sanitizeDefinitions,
@@ -41,6 +42,7 @@ import {
   type ApiProduct,
   type AttributeDefinition,
   type AttributeValue,
+  type Sale,
   type TechnicalRow,
 } from "@/lib/afeleia/contract";
 import { minBottlesFrom } from "@/lib/checkout";
@@ -112,6 +114,14 @@ export type CatalogWine = Omit<
    * tiene ninguna fila con valor" se dibujan igual: no se dibuja la sección.
    */
   technical: TechnicalRow[];
+  /**
+   * La rebaja, solo si el catálogo publica una que se pueda dibujar (ver
+   * `readSale`). `undefined` es el caso normal, y el de todo el snapshot mientras
+   * no se regenere: el precio se dibuja como siempre.
+   *
+   * `priceCLP` sigue siendo lo que se cobra. Esto solo agrega qué tachar al lado.
+   */
+  sale?: Sale;
   agotado: boolean;
 };
 
@@ -198,6 +208,7 @@ export function apiProductToWine(
     pairings: readList(attrs, "maridajes"),
     technical: technicalRowsFrom(definitions, attrs),
     priceCLP: product.precio,
+    sale: readSale(product),
     vintage: readNumber(attrs, "cosecha"),
     featured: product.destacado,
     badge: readText(attrs, "badge"),

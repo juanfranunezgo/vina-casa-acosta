@@ -19,6 +19,14 @@ export type ApiProduct = {
   descripcion: string | null;
   descripcion_corta: string | null;
   precio: number;
+  /**
+   * La rebaja: dos claves agregadas el 2026-10-03, opcionales por la regla 3 —el
+   * snapshot committeado no las trae hasta regenerarlo— y que viajan **las dos o
+   * ninguna**. El tipo dice `number` pero llegan por la red: nadie las lee
+   * directo, se leen con `readSale`.
+   */
+  precio_anterior?: number;
+  descuento_porcentaje?: number;
   moneda: string;
   imagenes: string[];
   destacado: boolean;
@@ -314,6 +322,49 @@ export function isValidCatalog(value: unknown): value is ApiCatalog {
   if (catalog.version !== CONTRACT_VERSION) return false;
   if (!Array.isArray(catalog.productos)) return false;
   return catalog.productos.every(isValidProduct);
+}
+
+/** La rebaja de un producto, ya comprobada: lo único que la web dibuja. */
+export type Sale = {
+  /** El precio de antes, en pesos: el que se dibuja tachado. */
+  previousPriceCLP: number;
+  /** El «−N %» tal como lo publica Afeleia: entero de 1 a 99. */
+  discountPercent: number;
+};
+
+/**
+ * La rebaja de un producto, o `undefined` si no tiene una que se pueda dibujar.
+ *
+ * Hay rebaja solo si vienen las dos claves, las dos son números, el precio
+ * anterior es mayor que el de venta y el porcentaje es un entero de 1 a 99. Todo
+ * lo demás —una sola clave, un texto, un 0, un 100— es «sin rebaja»: la tarjeta
+ * se dibuja como siempre, y eso también es lo que pasa con el snapshot, que es
+ * una respuesta vieja y no trae las claves.
+ *
+ * **Asimetría deliberada frente a `isValidProduct`, la misma que
+ * `sanitizeDefinitions`:** una rebaja mal formada no invalida el catálogo. La
+ * rebaja es un adorno del precio; si un `precio_anterior` roto mandara el sitio
+ * al snapshot, la tienda entera quedaría con precios viejos por un tachado.
+ *
+ * **El porcentaje no se calcula ni se redondea acá**: se muestra el publicado. El
+ * redondeo es de Afeleia, y dos cálculos del mismo número terminan discrepando.
+ * Por lo mismo un texto no se convierte a número: `"12990"` es un dato mal
+ * publicado, no un precio.
+ *
+ * `precio` no cambia de significado: sigue siendo lo que se cobra, y es lo único
+ * que leen el carrito, el checkout y el JSON-LD.
+ */
+export function readSale(product: {
+  precio: number;
+  precio_anterior?: unknown;
+  descuento_porcentaje?: unknown;
+}): Sale | undefined {
+  const { precio, precio_anterior: anterior, descuento_porcentaje: porcentaje } = product;
+  if (typeof anterior !== "number" || !Number.isFinite(anterior)) return undefined;
+  if (typeof porcentaje !== "number" || !Number.isInteger(porcentaje)) return undefined;
+  if (!(anterior > precio)) return undefined;
+  if (porcentaje < 1 || porcentaje > 99) return undefined;
+  return { previousPriceCLP: anterior, discountPercent: porcentaje };
 }
 
 /**
