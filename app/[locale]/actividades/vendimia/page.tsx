@@ -500,6 +500,9 @@ export default async function VendimiaPage({
                 <Button
                   href="#consulta"
                   variant="primary"
+                  // El texto no cabe en un celular: sin esto la página queda con scroll
+                  // horizontal (ver `buttonClasses`).
+                  multiline
                   iconRight={<ArrowRight className="h-4 w-4" />}
                 >
                   {tLabels("form.titleSeason")}
@@ -627,6 +630,9 @@ export default async function VendimiaPage({
                   <Button
                     href="#consulta"
                     variant="primary"
+                    // El texto no cabe en un celular: sin esto la página queda con scroll
+                    // horizontal (ver `buttonClasses`).
+                    multiline
                     iconRight={<ArrowRight className="h-4 w-4" />}
                   >
                     {t("program.cta")}

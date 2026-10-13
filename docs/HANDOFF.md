@@ -1146,6 +1146,14 @@ que hay que leer con ojo.
   explícitos por estado.
 - **RSC**: no se pueden pasar funciones de un server component a uno cliente. Las etiquetas
   del carrusel de colecciones se pasan como array de strings ya traducidos.
+- **Un botón con el texto largo deja la página con scroll horizontal en celular.** `Button`
+  lleva `whitespace-nowrap`: si el texto no cabe en la columna (327 px en un celular de
+  375), no se parte, empuja el ancho de la página entera. Pasó en la vendimia el 2026-10-12
+  con "Inscríbete, ven a vivir la vendimia en Casa Acosta" (478 px): la página medía 502.
+  **Salida: la prop `multiline`** (`components/ui/buttonClasses.ts`), que deja partir el
+  texto y limita el botón al ancho de su contenedor. Ojo con los otros idiomas: el texto en
+  portugués suele ser más largo que el español. Se mide con
+  `document.documentElement.scrollWidth > clientWidth` a 375 px.
 - **`npm run build` borra `.next`** y deja zombi al dev server (EBUSY / 500 en rutas). Bajar
   el dev, buildear, y recién ahí volver a levantarlo.
 - **SVG**: `fill="none"` y `stroke` van como **atributos del `<path>`**, no solo en CSS. Un

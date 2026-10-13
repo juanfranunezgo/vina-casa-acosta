@@ -1,9 +1,7 @@
 import Link from "next/link";
 import { Loader2 } from "lucide-react";
 import type { ComponentProps, ReactNode } from "react";
-
-type Variant = "primary" | "outline" | "ghost" | "glass" | "link";
-type Size = "sm" | "md" | "lg";
+import { buttonClasses, type Size, type Variant } from "@/components/ui/buttonClasses";
 
 type CommonProps = {
   variant?: Variant;
@@ -12,6 +10,11 @@ type CommonProps = {
   iconRight?: ReactNode;
   loading?: boolean;
   fullWidth?: boolean;
+  /**
+   * Deja que el texto se parta en renglones en vez de empujar el ancho de la
+   * página. Para textos largos: ver `buttonClasses`.
+   */
+  multiline?: boolean;
   children: ReactNode;
   className?: string;
 };
@@ -26,28 +29,6 @@ type AsButton = CommonProps & {
 
 type Props = AsLink | AsButton;
 
-const baseClass =
-  "group/btn relative inline-flex items-center justify-center gap-2 font-body font-semibold tracking-wide transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:opacity-50 disabled:pointer-events-none select-none whitespace-nowrap";
-
-const sizeClass: Record<Size, string> = {
-  sm: "h-9 px-4 text-label-sm uppercase tracking-wider rounded",
-  md: "h-11 px-6 text-body-md rounded-md",
-  lg: "h-14 px-8 text-body-md rounded-md",
-};
-
-const variantClass: Record<Variant, string> = {
-  primary:
-    "bg-primary text-on-primary shadow-[0_8px_24px_-8px_rgba(42,0,2,0.45)] hover:bg-primary-container hover:shadow-[0_12px_28px_-8px_rgba(42,0,2,0.55)] hover:-translate-y-0.5 active:translate-y-0 active:shadow-[0_4px_12px_-4px_rgba(42,0,2,0.4)]",
-  outline:
-    "border border-primary text-primary bg-transparent hover:bg-primary hover:text-on-primary",
-  ghost:
-    "text-primary bg-transparent hover:bg-primary/5",
-  glass:
-    "bg-white/12 text-on-primary border border-white/30 backdrop-blur-md hover:bg-white/22 hover:border-white/50 shadow-[0_8px_32px_-8px_rgba(0,0,0,0.4)]",
-  link:
-    "h-auto px-0 text-primary font-semibold border-b border-primary pb-0.5 rounded-none hover:gap-3",
-};
-
 export default function Button(props: Props) {
   const {
     variant = "primary",
@@ -56,22 +37,14 @@ export default function Button(props: Props) {
     iconRight,
     loading = false,
     fullWidth = false,
+    multiline = false,
     className = "",
     children,
     href,
     ...rest
   } = props;
 
-  const isLink = variant === "link";
-  const classes = [
-    baseClass,
-    isLink ? "" : sizeClass[size],
-    variantClass[variant],
-    fullWidth ? "w-full" : "",
-    className,
-  ]
-    .filter(Boolean)
-    .join(" ");
+  const classes = buttonClasses({ variant, size, fullWidth, multiline, className });
 
   const content = (
     <>
