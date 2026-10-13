@@ -409,6 +409,7 @@ se dibujaba en ninguna parte.
 |---|---|
 | Descripción, notas de cata, maridajes, ficha técnica, precio, stock, foto | Fotos de ambiente de cada colección (`lineMeta`), anclas de URL (`lineSlugs`), secuencia editorial (`collectionLines`) |
 | Los valores admitidos de cada atributo | El **vocabulario de la plantilla**: «Tinto», «Composición», «Ficha técnica», traducido en los tres idiomas |
+| | **Medallas y puntajes** de cada vino (`data/medallas.ts`): el panel no tiene dónde guardarlos — ver más abajo |
 
 **El contenido del cliente ya no pasa por next-intl** (regla R1 del founder). La consecuencia
 está aceptada y es visible: un visitante en inglés o portugués ve esos textos en español
@@ -707,6 +708,152 @@ la copia committeada.
 Para comprobar del lado de Afeleia que una rebaja viaja, el verificador de ese repo acepta
 `--rebaja <slug>`.
 
+### Correcciones de contenido de Damián (2026-10-12)
+
+Cuatro pedidos de la viña, llegados por Juan Francisco el mismo día:
+
+- **"Berá Rosa" → "Berá Rosé"** en la recepción del Tour Carmenere. Era un error de tipeo y
+  estaba en los tres idiomas.
+- **La bajada del Tour Berá** pasó de "Degustación premium y vino directo desde la barrica"
+  a "Una experiencia más profunda, con vino directo desde la barrica". Ojo: esa bajada es
+  también la meta descripción y la descripción del JSON-LD de la ficha (sólo el yoga trae
+  una propia), así que cambió en los tres lugares.
+- **Lo que incluye cada taller** (`includes` de pizzas, pastas y ñoquis). Hasta ese día los
+  tres compartían la misma lista genérica; los ñoquis y las pastas decían "cocción en horno
+  tradicional", copiado de las pizzas. Ahora cada uno tiene la suya: ocho, nueve y diez
+  puntos. La frase "Durante la experiencia disfrutarás de:" ya existía como rótulo común.
+- **Preguntas frecuentes en el hub de Vendimia** (Dv6b): diez, en `activities.vendimia.faq`,
+  con el componente de las fichas y antes de la consulta.
+
+**Una respuesta no se publicó como llegó.** La de "¿Cómo puedo reservar y pagar?" decía que,
+publicada la fecha, se reserva "en esta página mediante el botón Reservar y pagar", con pago
+en línea y correo de confirmación. El hub hoy no tiene precio, botón ni pago: tiene un
+formulario para dejar los datos. La pregunta quedó como "¿Cómo puedo reservar?" y responde
+eso mismo. **Si la vendimia se va a vender en línea**, es un trabajo aparte (el checkout de
+Afeleia hoy cobra vinos, no actividades); cuando exista, se repone el texto de Damián y se
+cambia a propósito el test que lo impide en `tests/vendimia-hub.test.mjs`.
+
+El español de los cuatro es el texto de la viña. **Inglés y portugués son traducción
+nuestra**, sin validar, como el resto.
+
+### El año en el título de la vendimia (2026-10-12)
+
+Pedido de Juan Francisco, para que el hub aparezca cuando alguien busca la vendimia del año:
+el título pasó de "Vendimia: corta, pisa y celebra" a **"Vive la Vendimia 2027 en el Valle
+del Cachapoal"**, y la descripción nombra San Vicente de Tagua Tagua.
+
+- **El año no está escrito en ninguna parte.** Va como `{year}` en los mensajes y lo pone la
+  página con `anioDeTemporada(VENDIMIA_MONTHS)` (`lib/temporada.ts`): el de este año hasta
+  que termina mayo, y el siguiente desde junio, mirado en hora de Chile. Un año escrito a
+  mano queda viejo sin que nadie lo vea.
+- **Se lee también en la página**, no sólo en Google: el dato de temporada de Dv2 dice
+  "Abril · Mayo 2027". El título de un resultado que la página no respalda es justo lo que
+  Google reescribe.
+- **La página pasó a regenerarse una vez al día** (`revalidate = 86400`). Es estática, y sin
+  eso seguiría diciendo el año viejo hasta el siguiente deploy.
+- **Sigue sin publicar una fecha exacta**: el año de la temporada no es un día. Los tests
+  del hub exigen que el bloque de mensajes no traiga ningún año escrito.
+- Con la marca, el título mide 66 caracteres en español: Google corta cerca de los 60 y lo
+  que se pierde es el final de "Viña Casa Acosta", no la frase.
+- **Lo que más le falta a esta página no es el título**: las tres URL de vendimia del sitio
+  antiguo (`/vendimia/`, `/events/vendimia-2/`, `/events/vendimia-abril/`) siguen
+  redirigiendo a la portada. Ver `MIGRACION-CASAACOSTA.md`.
+
+### La foto borrosa mientras carga (2026-10-12)
+
+Pedido de Juan Francisco: "en celular, cuando pongo el sitio o cambio la página, donde va
+la foto queda un gris feo". **Ese gris no era un color del sitio**: era el fondo blanco de
+la página bajo el velo oscuro que lleva cada portada para que el texto se lea, durante lo
+que tarda en bajar la foto (100 a 290 KB en celular; uno o dos segundos con datos móviles,
+y otra vez en cada cambio de página).
+
+- **Qué se ve ahora:** una miniatura muy chica de la misma foto, estirada hasta cubrir la
+  portada. Viaja dentro del HTML como data URI, así que está desde el primer pintado sin
+  pedir nada a la red; la foto real se pinta encima cuando termina de bajar.
+- **Dónde:** las siete portadas en `<picture>` (inicio, historia, vinos, actividades,
+  vendimia, contacto, staff), la capa de +18 y la portada de cada ficha de actividad.
+- **Cómo, en las portadas:** `<FotoBorrosa />` (`components/FotoBorrosa.tsx`) justo **antes**
+  del `<picture>` de la foto, con **las mismas clases** que la foto real menos su zoom de
+  entrada — si el encuadre difiere, la imagen salta al enfocarse. Trae sus dos encuadres
+  con el mismo corte de proporción (3:4) que la portada. No lleva `filter: blur`: el
+  navegador ya suaviza una imagen estirada cincuenta veces, y el filtro sobre una portada
+  a pantalla completa cuesta GPU.
+- **Cómo, en las fichas de actividad:** `placeholder="blur"` + `blurDataURL` de
+  `next/image`, que ahí sí se usa. Sin miniatura cae a `"empty"`: `blur` sin
+  `blurDataURL` es un error de Next.
+- **La capa de +18 es de cliente** y recibe sus dos miniaturas por props desde el layout.
+  Importar `lib/fotoBorrosa.ts` en un componente de cliente mete el mapa entero en el
+  JavaScript del navegador: sólo se usa desde el servidor.
+- **Las miniaturas** salen de `npm run fotos:borrosas` (ver [`FOTOS.md`](FOTOS.md)): hay que
+  correrlo al cambiar o sumar una foto de portada. El peso es de unos 300 bytes por página.
+- **Lo que se descartó:** una pantalla de carga con logo (esconde el sitio hasta que todo
+  baja y perjudica el LCP) y pintar el contenedor de un color oscuro (sigue siendo un bloque
+  plano que salta a la foto).
+- **No cubre** las fotos de más abajo en cada página (galerías, tarjetas): cargan diferidas
+  y no fueron parte del pedido.
+
+### Mercado Pago en una banda y el fondo neutro de las botellas (2026-10-12)
+
+Dos pedidos de Juan Francisco al revisar la tienda publicada:
+
+- **"Me da TOC cómo se ve el símbolo de Mercado Pago."** El logo iba pegado a la frase "Pago
+  seguro con", a la altura del texto: la marca son dos renglones al lado de uno, y a 22 px
+  quedaba chica y desalineada. Mandó de referencia una banda gris con el texto a un lado y
+  el logo al otro, y así quedó (`BandaMercadoPago` en `components/CompraSegura.tsx`), en
+  la tienda (F1) y en la tarjeta de compra de la ficha (Cd1). El logo se dibuja a 37 px de
+  alto (30 en celular). **Se copió la forma, no el texto**: la referencia decía "hasta 6
+  cuotas sin interés", que depende de la cuenta de Mercado Pago de la viña y nadie
+  confirmó. El texto es "Compra en línea con **pago seguro**" (`securePaymentBanner`, con
+  la negrita marcada en el mensaje) y la nota de siempre. `tests/vino-ficha.test.mjs` falla
+  si alguien suma cuotas o intereses al texto sin sacar ese guard a propósito.
+- **"¿Por qué se ven medio rosadas las tarjetas?"** Porque el fondo de las fotos de botella
+  usaba las superficies M3 de la paleta (`#f6f3f2` → `#f0eded`), que llevan un punto de
+  rojo y al lado del blanco puro se leen rosadas. Pasó a dos grises sin tinte
+  (`--color-neutro-claro` `#f7f7f7` y `--color-neutro` `#efefef`) en la tienda, en
+  `/vinos` y en la ficha.
+- **"Yo creo que podríamos cambiar el color rosa de fondo."** Con los fondos ya grises, el
+  rosado que quedaba era el de las **sombras**: todas las tarjetas del sitio flotaban sobre
+  una sombra teñida de vino (`rgba(74,14,14,…)`), y una sombra de color sobre blanco deja un
+  halo de ese color. Pasaron a `rgba(27,28,28,…)` —el `on-surface` de la paleta, de la misma
+  luminosidad, así que pesan igual— **en todo el sitio**: 25 lugares, entre ellos
+  `.ambient-shadow` y `.ambient-shadow-lg`, las tarjetas de tienda, ficha de vino y fichas
+  de actividad, y la sombra bajo cada botella. **La regla que queda: una sombra vino sólo va
+  bajo un elemento vino** (botones, `IconBadge`, la pastilla prendida de un filtro), donde
+  se lee como reflejo del elemento. La cuida `tests/sombras-neutras.test.mjs`.
+
+En local la banda no se ve: `.env.local` no define `NEXT_PUBLIC_AFELEIA_CHECKOUT_URL`. Para
+revisarla se usó un `.env.development.local` con la URL de preview de `.env.example`.
+
+### Medallas y puntajes (2026-10-12)
+
+La viña mandó sus premios en la carpeta `Premios/` de la tanda "Fotos Taller Web": nueve
+medallas distintas (Catador Oro 2020, 2021, 2022, 2023 y 2025 · Carmenère al Mundo Oro 2022 ·
+La CAV 90, 91 y 93) repartidas en diez vinos. Sin premios: Estación Francia Tannat y los dos
+Yaráy Guá.
+
+- **En la tarjeta va una sola** —tienda (F2) y `/vinos` (C2)—, de 28 px, abajo a la derecha de
+  la foto (nacieron de 56; Juan Francisco las pidió "a la mitad"). **La ficha (Cd1) las muestra todas** bajo «Premios y puntajes», cada una con su texto,
+  y repite la de la tarjeta sobre el panel de la botella. Pedido de Juan Francisco: "una en la
+  imagen principal y las otras en el detalle".
+- **Todo sale de `data/medallas.ts`**: qué medallas existen y cuáles lleva cada vino, por
+  `slug`. **El orden manda**: la primera de la lista es la de la tarjeta. Se ordenaron con las
+  de oro primero, de la más reciente a la más antigua, y después los puntajes de mayor a menor.
+- **No viene del panel**, y es deuda reconocida igual que el copy de las colecciones: Afeleia
+  no tiene campo de premios. Sumar o quitar una medalla es un cambio de código. Si el panel
+  renombra el `slug` de un vino, su medalla deja de verse sin que nada falle en producción;
+  `tests/medallas.test.mjs` lo detecta contra el respaldo del catálogo.
+- **Una medalla nueva** son cuatro pasos: el PNG en `_fuentes-fotos/medallas/<id>.png`, el id en
+  la lista de `scripts/optimize-medallas.mjs`, `npm run fotos:medallas`, y la entrada en
+  `data/medallas.ts`. El test falla si falta la imagen, si el id no está en el script o si
+  una medalla queda sin vino.
+- **Los textos** («Medalla de Oro», «{puntos} puntos», el título del bloque) están en
+  `vinos.medallas` en los tres idiomas; el nombre del concurso es un nombre propio y no se
+  traduce. La viña no mandó el año de los puntajes de La CAV: no se muestra.
+- **La ficha marca lo que lista**: los mismos textos van como `award` en el `Product` del
+  JSON-LD (`lib/wineJsonLd.ts`). Sin premios no se emite la propiedad.
+- **Sin validar con la viña**: a qué cosecha corresponde cada premio. Las medallas se
+  muestran por vino, no por añada, que es como llegaron.
+
 ### Deterioro conocido: las fotos del modo degradado
 
 El snapshot reapunta cada foto a `public/vinos/<archivo>` **solo si ese archivo existe
@@ -973,6 +1120,14 @@ que hay que leer con ojo.
   pidiendo el `.css` del build y buscando el token ahí. Se arregla reiniciando
   `npm run dev`. Editar un color que ya existe sí se recarga solo; el que no aparece es el
   token nuevo. Verificado el 2026-08-19.
+  **Y a veces ni reiniciando** (2026-10-12, visto dos veces el mismo día): cuando
+  `globals.css` lo escribe un script junto con varios `.tsx`, el dev server puede quedarse
+  sirviendo la hoja anterior. La primera vez faltaban dos tokens nuevos de `@theme` y
+  siguieron faltando después de reiniciar (la caché de Turbopack vive en disco, en
+  `.next/dev/cache`); la segunda, `.ambient-shadow` siguió saliendo con el color viejo
+  diez minutos después de cambiado. Las dos se arreglaron **volviendo a guardar
+  `globals.css`** con cualquier cambio de contenido. Se diagnostica igual que arriba:
+  pidiendo el `.css` servido y buscando ahí el valor. No afecta a `next build`.
 - **Un atributo puesto a mano en `<html>` no es estado durable: React lo borra al
   re-renderizar el layout.** Cambiar de idioma con `router.replace` vuelve a pintar
   `<html lang>` y se lleva por delante el `data-age-gate="pendiente"` que había dejado el

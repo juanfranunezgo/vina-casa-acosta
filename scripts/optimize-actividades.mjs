@@ -87,12 +87,20 @@ const ACTIVIDADES = {
   // Seis fotos: entran todas y la galería queda con una sola vertical. Tres son
   // de WhatsApp (1280 px o menos) y van a las ranuras chicas.
   bera: [
-    { source: "DSC08645.jpg", name: "bera-vinedo", slot: "hero" },
+    // Portada desde el 2026-10-12: el grupo que camina con sus copas, elegida por
+    // Juan Francisco. Hasta ese día abría la galería, y la portada era el
+    // anfitrión señalando el viñedo: las dos fotos cambiaron de ranura, y de
+    // nombre, porque cada una sale con otro recorte (ver "Ojo con el nombre del
+    // archivo de salida" en docs/FOTOS.md). Follaje y grava, igual que el hero
+    // de Carmenere: a 2400 px y q76 pesaba 920 KB; va con su misma receta.
+    { source: "DSC08589.jpg", name: "bera-camino-hero", slot: "hero", width: 2000, quality: 72 },
     // Vino sacado de la barrica con la pipeta: lo que promete el tour.
     { source: "1A PHOTO-2020-12-09-15-37-30 (4).jpg", name: "bera-barrica", slot: "intro", box: [0.055, 0, 0.889, 1] },
     { source: "OK PHOTO-2020-12-09-15-37-30 (1).jpg", name: "bera-sala-barricas", slot: "card", box: [0, 0.03, 1, 0.938] },
     { source: "_MG_1063.jpg", name: "bera-mesa", slot: "reserve" },
-    { source: "DSC08589.jpg", name: "bera-camino", slot: "wide", box: [0, 0.12, 1, 0.844] },
+    // El recorte 16:9 sale de arriba: la cabeza del anfitrión y la mano que
+    // señala están en el quinto superior del cuadro.
+    { source: "DSC08645.jpg", name: "bera-vinedo-wide", slot: "wide", box: [0, 0.02, 1, 0.844] },
     { source: "PHOTO-2026-09-27-20-49-48 (2).jpg", name: "bera-pipeta", slot: "portrait", box: [0.02, 0, 0.889, 1] },
   ],
 

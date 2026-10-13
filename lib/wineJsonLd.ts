@@ -16,6 +16,11 @@ type WineDetailCopy = {
   vintageProperty: string;
   /** Descripción del sitio, para el nodo de la viña. */
   siteDescription: string;
+  /**
+   * Medallas y puntajes del vino, tal como la ficha los lista: «Medalla de Oro,
+   * Catador World Wine Awards 2023». Ausente o vacío si no tiene.
+   */
+  awards?: string[];
 };
 
 type WineLabels = {
@@ -148,6 +153,10 @@ export function buildWineDetailJsonLd(
             name: copy.vintageProperty,
             value: String(wine.vintage),
           },
+    // Los premios que la ficha lista bajo «Premios y puntajes». Sin ninguno no
+    // se emite la propiedad: una lista vacía es un dato declarado, no una
+    // ausencia, y `withoutEmpty` sólo descarta `undefined` y `""`.
+    award: copy.awards?.length ? copy.awards : undefined,
     offers: {
       "@type": "Offer",
       price: wine.priceCLP,

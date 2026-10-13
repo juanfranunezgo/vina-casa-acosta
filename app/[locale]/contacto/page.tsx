@@ -2,9 +2,11 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { ArrowUpRight, Clock, Mail, MapPin, Phone } from "lucide-react";
+import FotoBorrosa from "@/components/FotoBorrosa";
 import Reveal from "@/components/Reveal";
 import ContactForm from "@/components/ContactForm";
 import MapEmbed from "@/components/MapEmbed";
+import { fotoBorrosa } from "@/lib/fotoBorrosa";
 import { alternatesFor } from "@/lib/alternates";
 import JsonLd from "@/components/JsonLd";
 import { buildContactoJsonLd } from "@/lib/siteJsonLd";
@@ -99,6 +101,11 @@ export default async function ContactoPage({
             pantallas verticales. `sizes` lleva el alto del viewport porque con
             object-cover en vertical la foto se estira hasta cubrir el alto, y
             ese ancho estirado —no el del contenedor— es el que hay que bajar. */}
+        <FotoBorrosa
+          movil={fotoBorrosa("/images/contacto/hero-mesa-larga-movil-750.webp")}
+          escritorio={fotoBorrosa("/images/contacto/hero-mesa-larga-1280.webp")}
+          className="h-full w-full object-cover object-center"
+        />
         <picture className="absolute inset-0">
           <source
             media="(min-aspect-ratio: 3/4)"

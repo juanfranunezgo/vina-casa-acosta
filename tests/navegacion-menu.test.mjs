@@ -53,3 +53,15 @@ test("el hub de vendimia esta declarado, aunque todavia no exista", () => {
   // lugar que cambia.
   assert.ok(VENDIMIA_HUB === null || typeof VENDIMIA_HUB === "string");
 });
+
+test("el yoga abre la lista de experiencias", () => {
+  // Pedido de Juan Francisco (2026-10-12): en el menú de la tarjeta de
+  // Actividades el yoga era el séptimo de ocho y no se veía sin hacer scroll,
+  // siendo una de las pocas fichas con el contenido final de la viña. El orden
+  // de todos los menús —navbar, tarjetas del índice y de la portada, "otras
+  // actividades"— sale del orden del catálogo, así que basta con mirarlo ahí.
+  const experiencias = activityMenu().find((c) => c.category === "experiencias");
+  assert.equal(experiencias.items[0].slug, "yoga");
+  // Y nadie se perdió en la mudanza.
+  assert.equal(experiencias.items.length, 8);
+});

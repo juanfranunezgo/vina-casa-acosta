@@ -3,6 +3,7 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Check, CheckCircle2, Clock, CalendarDays, MessageCircle, ArrowUpRight, ArrowRight, Star } from "lucide-react";
+import FotoBorrosa from "@/components/FotoBorrosa";
 import InstagramIcon from "@/components/icons/InstagramIcon";
 import Reveal from "@/components/Reveal";
 import Button from "@/components/ui/Button";
@@ -16,6 +17,7 @@ import {
   categoryDoors,
   VENDIMIA_HUB,
 } from "@/data/activities";
+import { fotoBorrosa } from "@/lib/fotoBorrosa";
 import { CONTACT_WHATSAPP_URL, CONTACT_PHONE_DISPLAY, INSTAGRAM_URL } from "@/lib/contact";
 import { alternatesFor } from "@/lib/alternates";
 import JsonLd from "@/components/JsonLd";
@@ -128,6 +130,11 @@ export default async function ActividadesPage({
             alto, y ese ancho estirado —no el del contenedor— es el que hay que
             descargar. El recorte vertical de la foto grupal viene centrado en el
             letrero: en 9:16 no entra el grupo completo. */}
+        <FotoBorrosa
+          movil={fotoBorrosa("/images/actividades/hero-grupal-movil-828.webp")}
+          escritorio={fotoBorrosa("/images/actividades/hero-grupal-1280.webp")}
+          className="h-full w-full object-cover object-center"
+        />
         <picture className="absolute inset-0">
           <source
             media="(min-aspect-ratio: 3/4)"
@@ -229,7 +236,7 @@ export default async function ActividadesPage({
                       fija: el orden de `tours` va de menor a mayor precio. Se
                       distingue por anillo y sombra, sin desalinearse de la fila. */}
                   <article
-                    className={`relative bg-surface-container-low rounded-xl overflow-hidden group h-full flex flex-col hover:-translate-y-1 hover:shadow-[0_24px_48px_-12px_rgba(74,14,14,0.12)] transition-all duration-300 ${
+                    className={`relative bg-surface-container-low rounded-xl overflow-hidden group h-full flex flex-col hover:-translate-y-1 hover:shadow-[0_24px_48px_-12px_rgba(27,28,28,0.12)] transition-all duration-300 ${
                       tour.premium ? "ring-1 ring-primary/25 ambient-shadow-lg" : ""
                     }`}
                   >

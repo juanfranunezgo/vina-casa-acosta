@@ -88,6 +88,21 @@ test("un vino sin foto no declara una imagen vacia", () => {
   assert.ok(!("image" in producto));
 });
 
+test("los premios que la ficha muestra van como `award`", () => {
+  // La ficha lista las medallas con su texto (2026-10-12), asi que se marcan.
+  // Llegan ya escritas en el idioma de la pagina: son lo mismo que se lee.
+  const awards = ["Medalla de Oro, Catador World Wine Awards 2021", "91 puntos, La CAV"];
+  const producto = nodo(buildWineDetailJsonLd(VINO, "es", { ...COPY, awards }), "Product");
+  assert.deepEqual(producto.award, awards);
+});
+
+test("un vino sin premios no declara `award` en vez de declararlo vacio", () => {
+  const sinClave = nodo(buildWineDetailJsonLd(VINO, "es", COPY), "Product");
+  assert.ok(!("award" in sinClave));
+  const listaVacia = nodo(buildWineDetailJsonLd(VINO, "es", { ...COPY, awards: [] }), "Product");
+  assert.ok(!("award" in listaVacia));
+});
+
 test("la ficha resuelve sola la entidad de la vina, y el Offer la referencia", () => {
   const graph = buildWineDetailJsonLd(VINO, "es", COPY);
   const vina = nodo(graph, "Winery");

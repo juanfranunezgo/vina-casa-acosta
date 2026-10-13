@@ -1,13 +1,16 @@
 import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { ArrowRight } from "lucide-react";
+import FotoBorrosa from "@/components/FotoBorrosa";
 import CatalogOriginMeta from "@/components/CatalogOriginMeta";
 import CollectionBand, { type CollectionWine } from "@/components/CollectionBand";
 import JsonLd from "@/components/JsonLd";
 import Reveal from "@/components/Reveal";
 import WineCard from "@/components/WineCard";
 import Button from "@/components/ui/Button";
+import { medallaDeTarjeta } from "@/data/medallas";
 import { WINE_CATEGORY, lineSlugs, lineMeta, type WineLine } from "@/data/wines";
+import { fotoBorrosa } from "@/lib/fotoBorrosa";
 import { getCatalog, winesByLine, type CatalogWine } from "@/lib/afeleia/catalog";
 import { excludingOtherCategories, winesOutsideLines } from "@/lib/afeleia/contract";
 import { joinLabels, labelOr } from "@/lib/afeleia/copy";
@@ -141,6 +144,11 @@ export default async function VinosPage({ params }: PageProps<"/[locale]/vinos">
             porque con object-cover en vertical la foto se estira hasta cubrir el
             alto, y ese ancho estirado —no el del contenedor— es el que hay que
             descargar. El umbral de cada media es la proporción de su encuadre. */}
+        <FotoBorrosa
+          movil={fotoBorrosa("/images/vinos/hero-corchos-movil-828.webp")}
+          escritorio={fotoBorrosa("/images/vinos/hero-corchos-1280.webp")}
+          className="h-full w-full object-cover object-center"
+        />
         <picture className="absolute inset-0">
           <source
             media="(min-aspect-ratio: 3/4)"
@@ -198,6 +206,7 @@ export default async function VinosPage({ params }: PageProps<"/[locale]/vinos">
           eyebrow: cardEyebrowOf(wine),
           agotado: wine.agotado,
           soldOutLabel: tCart("soldOut"),
+          medalla: medallaDeTarjeta(wine.slug, t),
         }));
 
         return (
@@ -248,6 +257,7 @@ export default async function VinosPage({ params }: PageProps<"/[locale]/vinos">
                       eyebrow={eyebrowOf(wine)}
                       agotado={wine.agotado}
                       soldOutLabel={tCart("soldOut")}
+                      medalla={medallaDeTarjeta(wine.slug, t)}
                     />
                   </Reveal>
                 </li>

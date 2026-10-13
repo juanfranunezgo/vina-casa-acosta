@@ -337,6 +337,11 @@
       "subtitle": "Una colección de expresiones auténticas, nacidas en nuestro viñedo boutique del Valle del Cachapoal. Cada botella cuenta la historia de nuestro patrimonio y nuestro terroir."
     },
     "lineLabel": "Línea",
+    "medallas": {
+      "titulo": "Premios y puntajes",
+      "oro": "Medalla de Oro",
+      "puntos": "{puntos} puntos"
+    },
     "price": {
       "previous": "Precio anterior",
       "current": "Precio actual",
@@ -414,7 +419,7 @@
     "priceLabel": "Precio en pesos chilenos",
     "youMayAlsoLike": "También te puede interesar",
     "trust": {
-      "securePayment": "Pago seguro con",
+      "securePaymentBanner": "Compra en línea con <b>pago seguro</b>",
       "securePaymentNote": "El pago se hace en Mercado Pago: tus datos bancarios no pasan por esta tienda.",
       "direct": "Compra directa a la viña",
       "directNote": "Vinos de nuestra bodega en San Vicente de Tagua Tagua, sin intermediarios.",
@@ -576,14 +581,14 @@
     },
     "vendimia": {
       "meta": {
-        "title": "Vendimia: corta, pisa y celebra",
-        "description": "Vive la vendimia en el Valle del Cachapoal: corta la uva, despalilla y pisa como se hizo siempre, y cierra la jornada con un asado campestre entre viñedos."
+        "title": "Vive la Vendimia {year} en el Valle del Cachapoal",
+        "description": "Vive la vendimia {year} en San Vicente de Tagua Tagua: corte de uva, pisoneo y almuerzo campestre. En abril y mayo; déjanos tus datos y te avisamos la fecha."
       },
       "breadcrumb": "Vendimia",
       "cta": "Conocer la vendimia",
       "facts": {
         "seasonLabel": "Temporada",
-        "seasonValue": "Abril · Mayo",
+        "seasonValue": "Abril · Mayo {year}",
         "durationLabel": "Duración",
         "durationValue": "Jornada completa",
         "audienceLabel": "Para quién",
@@ -686,6 +691,48 @@
       "season": {
         "note": "La fecha exacta la decide la uva: se vendimia cuando alcanza su madurez, así que cada jornada se confirma en la temporada. Déjanos tus datos y te avisamos apenas se definan."
       },
+      "faq": [
+        {
+          "q": "¿En qué fecha se realiza la vendimia?",
+          "a": "La Vendimia en Casa Acosta se realiza durante abril y mayo. La fecha se define considerando el estado de madurez de la uva y, una vez publicada, queda confirmada. Déjanos tus datos y te avisaremos apenas anunciemos la próxima jornada."
+        },
+        {
+          "q": "¿Necesito experiencia previa?",
+          "a": "**No.** La actividad está pensada para quienes quieran conocer y vivir la vendimia por primera vez. Nuestro equipo agrícola y enológico acompaña y explica cada etapa de la jornada."
+        },
+        {
+          "q": "¿Pueden participar niños?",
+          "a": "**Sí.** Es una jornada familiar en la que pueden participar niños y adultos. Los menores deben permanecer acompañados por un adulto durante las actividades en el viñedo. El consumo de vino está reservado exclusivamente para mayores de 18 años."
+        },
+        {
+          "q": "¿Qué incluye la experiencia?",
+          "a": "La jornada incluye desayuno campestre, charla introductoria, corte de uva, despalillado, pisoneo tradicional, almuerzo campestre con buffet de ensaladas, vino para adultos, concursos, sorteos, pechera y copa de recuerdo."
+        },
+        {
+          "q": "¿Qué ropa debo llevar?",
+          "a": "Recomendamos ropa cómoda, zapatos cerrados adecuados para caminar por el campo, sombrero o gorro, protector solar y una chaqueta ligera. Para el pisoneo sugerimos llevar una toalla pequeña y ropa que pueda ensuciarse."
+        },
+        {
+          "q": "¿Qué ocurre si llueve o las condiciones climáticas no permiten realizar la actividad?",
+          "a": "Si las condiciones climáticas impiden realizar la jornada de manera segura, informaremos oportunamente cualquier cambio o reprogramación a las personas inscritas."
+        },
+        {
+          "q": "¿Pueden adaptar el almuerzo por alergias o restricciones alimentarias?",
+          "a": "**Sí.** Las alergias, restricciones alimentarias y solicitudes de alternativas vegetarianas deben informarse al momento de reservar para que podamos revisar las opciones disponibles."
+        },
+        {
+          "q": "¿Cuánto dura la jornada?",
+          "a": "Es una experiencia de jornada completa. Los horarios de inicio y término se informarán al momento de publicar y confirmar la fecha."
+        },
+        {
+          "q": "¿La fecha publicada puede cambiar?",
+          "a": "Una vez publicada, la fecha queda confirmada. Solo podría modificarse excepcionalmente si las condiciones climáticas impiden realizar las actividades de manera segura."
+        },
+        {
+          "q": "¿Cómo puedo reservar?",
+          "a": "Déjanos tus datos en el formulario de esta página y te avisaremos apenas se publique la fecha, con los pasos para asegurar tu cupo.\n\nSi necesitas ayuda, también puedes escribirnos directamente por WhatsApp."
+        }
+      ],
       "others": {
         "title": "Otras formas de vivir el ciclo de la viña",
         "lead": "La vendimia es una etapa del año. Estas dos experiencias acompañan las demás."
@@ -707,12 +754,14 @@
         "groupFrom": "Grupos desde 8 personas",
         "reservationNote": "Sujeto a disponibilidad — coordinamos la fecha contigo",
         "includes": [
-          "Ingredientes frescos y utensilios.",
-          "Recetas impresas para llevar.",
+          "Copa de bienvenida Berá Rosé Carménère.",
+          "Ingredientes frescos y todos los utensilios necesarios.",
+          "Preparación guiada de la masa, desde el amasado hasta el armado de tu propia pizza.",
           "Cocción en horno tradicional.",
-          "Degustación de vinos: de bienvenida, durante el taller y al cierre.",
-          "Jugos naturales para menores.",
-          "Masa lista para llevar a casa."
+          "Degustación de tres vinos de Casa Acosta, servidos durante el taller y al cierre.",
+          "Jugos naturales para menores de edad y personas que no consuman alcohol.",
+          "Receta impresa para repetir la experiencia en casa.",
+          "Porción de masa lista para llevar."
         ],
         "closing": "Te vas con la receta, la masa para repetirla en casa y la sobremesa.",
         "photos": {
@@ -737,11 +786,15 @@
         "groupFrom": "Grupos desde 8 personas",
         "reservationNote": "Sujeto a disponibilidad — coordinamos la fecha contigo",
         "includes": [
-          "Ingredientes frescos y utensilios.",
-          "Recetas impresas para llevar.",
-          "Cocción en horno tradicional.",
-          "Degustación de vinos: de bienvenida, durante el taller y al cierre.",
-          "Jugos naturales para menores."
+          "Copa de bienvenida Berá Rosé Carménère.",
+          "Ingredientes frescos y todos los utensilios necesarios.",
+          "Preparación guiada de la masa, desde el amasado y estirado hasta el corte.",
+          "Elaboración de fetuccini y pasta rellena.",
+          "Cocción de las pastas elaboradas durante el taller.",
+          "Degustación de cuatro salsas diferentes para acompañar las preparaciones.",
+          "Degustación de tres vinos de Casa Acosta, servidos durante el taller y al cierre.",
+          "Jugos naturales para menores de edad y personas que no consuman alcohol.",
+          "Receta impresa para repetir la experiencia en casa."
         ],
         "closing": "Te vas con la receta, el corte aprendido y la sobremesa.",
         "photos": {
@@ -765,11 +818,16 @@
         "groupFrom": "Grupos desde 8 personas",
         "reservationNote": "Sujeto a disponibilidad — coordinamos la fecha contigo",
         "includes": [
-          "Ingredientes frescos y utensilios.",
-          "Recetas impresas para llevar.",
-          "Cocción en horno tradicional.",
-          "Degustación de vinos: de bienvenida, durante el taller y al cierre.",
-          "Jugos naturales para menores."
+          "Copa de bienvenida Berá Rosé Carménère.",
+          "Ingredientes frescos y todos los utensilios necesarios.",
+          "Preparación guiada de la masa de ñoquis, desde el amasado hasta lograr el punto correcto.",
+          "Corte y formado manual de los ñoquis mediante técnicas tradicionales.",
+          "Cocción de los ñoquis elaborados durante el taller.",
+          "Degustación de cuatro salsas diferentes para acompañar las preparaciones.",
+          "Degustación de tres vinos de Casa Acosta, servidos durante el taller y al cierre.",
+          "Jugos naturales para menores de edad y personas que no consuman alcohol.",
+          "Cena compartida con los ñoquis preparados por el grupo.",
+          "Receta impresa de los ñoquis y sus salsas para repetir la experiencia en casa."
         ],
         "closing": "Te vas con la receta, las salsas anotadas y la cena compartida.",
         "photos": {
@@ -831,7 +889,7 @@
           "Cata directa desde barrica",
           "Tabla de maridaje"
         ],
-        "tagline": "Degustación premium y vino directo desde la barrica",
+        "tagline": "Una experiencia más profunda, con vino directo desde la barrica",
         "intro": "Una experiencia más profunda y técnica, ideal para quienes desean explorar distintas expresiones del Carménère, desde la barrica hasta nuestras líneas más complejas.",
         "duration": "2 horas y 30 minutos",
         "groupFrom": "Grupos desde 2 personas",
@@ -851,11 +909,11 @@
         "pairing": "Tabla de maridaje incluida.",
         "closing": "Nuestros vinos estarán disponibles para la venta en la misma bodega.",
         "photos": {
-          "hero": "El anfitrión señala el viñedo con una copa de vino rosado en la mano, en el Tour Berá de Viña Casa Acosta, en San Vicente de Tagua Tagua",
+          "hero": "Un grupo camina con copas de vino rosado por un camino bajo los árboles en flor, junto al anfitrión, en el Tour Berá de Viña Casa Acosta, en San Vicente de Tagua Tagua",
           "barrica": "Dos jóvenes sacan vino de la barrica con una pipeta de vidrio y lo sirven en una copa",
           "salaBarricas": "Un visitante junto a las barricas con el logo de Viña Casa Acosta, mientras una mujer y una niña se sientan sobre otra barrica",
           "mesa": "Copas alineadas y una tabla de bocados sobre la mesa de degustación, a la luz de la ventana",
-          "camino": "Un grupo camina con copas de vino rosado por un camino bajo los árboles en flor, junto al anfitrión",
+          "vinedo": "El anfitrión señala el viñedo con una copa de vino rosado en la mano",
           "pipeta": "Un visitante saca vino de la barrica con una pipeta y lo vierte en su copa"
         }
       },
@@ -878,7 +936,7 @@
         "groupFrom": "Grupos desde 4 personas",
         "reservationNote": "Ideal 1 día antes o según disponibilidad",
         "includes": [
-          "Recepción en el Jardín de Variedades con copa de bienvenida, Berá Rosa Carménère.",
+          "Recepción en el Jardín de Variedades con copa de bienvenida, Berá Rosé Carménère.",
           "Paseo por el viñedo con enfoque en ampelografía: explicación técnica de la variedad Carménère y su historia en Casa Acosta.",
           "Recorrido por la bodega, sala de vinificación y sala de barricas, con explicación completa del proceso productivo del vino, desde la vid hasta la copa.",
           "Degustación directa desde barrica, para conocer el vino en su etapa de crianza.",

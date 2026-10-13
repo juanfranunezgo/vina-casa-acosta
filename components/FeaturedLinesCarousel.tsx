@@ -135,7 +135,7 @@ export default function FeaturedLinesCarousel({ lines, labels }: Props) {
             type="button"
             onClick={prev}
             aria-label={labels.prev}
-            className="absolute left-0 top-1/2 z-10 hidden h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full border border-outline-variant/60 bg-surface/90 text-primary shadow-[0_8px_24px_-12px_rgba(74,14,14,0.35)] backdrop-blur transition hover:border-primary/40 hover:bg-surface focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary md:-left-3 md:flex lg:-left-5"
+            className="absolute left-0 top-1/2 z-10 hidden h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full border border-outline-variant/60 bg-surface/90 text-primary shadow-[0_8px_24px_-12px_rgba(27,28,28,0.35)] backdrop-blur transition hover:border-primary/40 hover:bg-surface focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary md:-left-3 md:flex lg:-left-5"
           >
             <ChevronLeft className="h-5 w-5" />
           </button>
@@ -143,7 +143,7 @@ export default function FeaturedLinesCarousel({ lines, labels }: Props) {
             type="button"
             onClick={next}
             aria-label={labels.next}
-            className="absolute right-0 top-1/2 z-10 hidden h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full border border-outline-variant/60 bg-surface/90 text-primary shadow-[0_8px_24px_-12px_rgba(74,14,14,0.35)] backdrop-blur transition hover:border-primary/40 hover:bg-surface focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary md:-right-3 md:flex lg:-right-5"
+            className="absolute right-0 top-1/2 z-10 hidden h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full border border-outline-variant/60 bg-surface/90 text-primary shadow-[0_8px_24px_-12px_rgba(27,28,28,0.35)] backdrop-blur transition hover:border-primary/40 hover:bg-surface focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary md:-right-3 md:flex lg:-right-5"
           >
             <ChevronRight className="h-5 w-5" />
           </button>
@@ -236,7 +236,7 @@ function LineCard({
               <WineBottleImage
                 src={wine.image}
                 alt={wine.name}
-                className="object-cover object-bottom drop-shadow-[0_10px_14px_rgba(74,14,14,0.22)] transition-transform duration-500 group-hover:-translate-y-2 motion-reduce:transition-none"
+                className="object-cover object-bottom drop-shadow-[0_10px_14px_rgba(27,28,28,0.22)] transition-transform duration-500 group-hover:-translate-y-2 motion-reduce:transition-none"
                 sizes="300px"
               />
               </span>

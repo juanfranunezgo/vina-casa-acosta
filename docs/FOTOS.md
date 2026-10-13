@@ -19,6 +19,8 @@ npm run fotos:vendimia      # las fotos del hub de Vendimia (Dv): recortes de la
 npm run fotos:mimbre        # las 8 fotos del Taller de mimbre (Dd)
 npm run fotos:yoga          # las 8 fotos de Yoga entre Viñas (Dd)
 npm run fotos:actividades   # las fichas de la tanda "Fotos Taller Web" (Dd); acepta un slug
+npm run fotos:medallas      # las medallas y puntajes de los vinos (C2, Cd1, F2)
+npm run fotos:borrosas      # la miniatura borrosa de cada foto de portada; correr después de cambiar una
 ```
 
 Si falta un archivo fuente, el script lo salta con un aviso y procesa el resto.
@@ -323,6 +325,59 @@ escritorio la X). Cada valor salió de mirar la foto; si cambia la foto, cambia 
 `alpacas-vellon-lavado`, la de un participante en `noquis-formado` y la del hombre en
 `pastas-relleno`. Varias de pizzas, Berá y el mimbre son de teléfono o de WhatsApp: van a
 ranuras chicas.
+
+## Medallas y puntajes de los vinos (2026-10-12)
+
+`npm run fotos:medallas` → `public/images/medallas/<id>.webp`, nueve archivos de 256×256
+(18 a 23 KB). Lee `_fuentes-fotos/medallas/<id>.png`, recorta la transparencia que rodea a
+la medalla y la saca en un cuadrado parejo. El `<id>` es el de `data/medallas.ts`.
+
+La viña las mandó en la carpeta `Premios/` de la tanda "Fotos Taller Web", una subcarpeta
+por vino y **el mismo archivo repetido** en cada vino que lo ganó (22 archivos, 9 distintos).
+Dos vienen como PNG y siete como PDF:
+
+| Fuente | Archivo de la viña | Qué es |
+|---|---|---|
+| `catador-oro-2025.png` | `Betum yu/oro_wine_2025.png` | PNG de 332×336 — el más chico, y por eso el master no pasa de 256 |
+| `carmenere-al-mundo-oro-2022.png` | `E.F carmennere/Carmenere al mundo medalla de oro.png` | PNG de 2000×1523 con la medalla al centro (715 px) |
+| `catador-oro-2020.png`, `-2021.png` | `Catador Medalla de oro 2020.pdf`, `2021.pdf` | PDF con una imagen de 945×945 adentro |
+| `catador-oro-2022.png`, `-2023.png` | `Catador Medalla de oro 2022.pdf`, `2023.pdf` | PDF vectorial, la medalla flota en una página más grande |
+| `la-cav-90.png`, `-91.png`, `-93.png` | `Cav Puntajes-90.pdf`, `-91 (2).pdf`, `-93.pdf` | PDF vectorial |
+
+**sharp no lee PDF.** Los siete se rasterizaron una sola vez a PNG con transparencia —la
+primera página, recortada a lo que dibuja, con el lado mayor en 1024 px— usando PyMuPDF
+(`pip install pymupdf`; `page.get_pixmap(matrix, clip, alpha=True)`). Ese PNG es la fuente
+del script; los PDF originales quedaron al lado, en `_fuentes-fotos/medallas/originales/`.
+Una medalla nueva que llegue en PDF pide repetir ese paso a mano.
+
+Se dibujan chicas: 28 px en las tarjetas y en la lista de la ficha, 32 a 40 px sobre el panel
+de la botella. Nacieron al doble y Juan Francisco las pidió "a la mitad" el mismo día. A ese
+tamaño la medalla se reconoce pero no se lee, y por eso en la ficha cada una va con su texto
+al lado. El master de 256 px sobra a propósito: deja agrandarlas sin regenerar.
+
+**Tour Berá: cambio de portada (2026-10-12).** Juan Francisco eligió para la portada la
+foto del grupo que camina con sus copas (`DSC08589.jpg`), que hasta ese día abría la
+galería; la del anfitrión señalando el viñedo (`DSC08645.jpg`), que era la portada, pasó a
+la galería. Las dos cambiaron de recorte y por eso de nombre: `bera-camino-hero.webp` y
+`bera-vinedo-wide.webp` (los `bera-camino.webp` y `bera-vinedo.webp` de antes se borraron).
+La portada va a 2000 px y q72, la receta del hero de Carmenere: es follaje y grava, y a
+2400 px y q76 pesaba 920 KB. Su encuadre en la ficha es `heroPosition: "50% 62%"`, revisado
+en celular y escritorio: las caras quedan sobre el título.
+
+## Miniaturas borrosas de las portadas (2026-10-12)
+
+`npm run fotos:borrosas` → `data/fotosBorrosas.ts`: una miniatura de 24 px de ancho por cada
+foto de portada, como data URI (100 a 230 bytes cada una, 26 hoy). Es lo que se ve mientras
+baja la foto real: ver "La foto borrosa mientras carga" en [`HANDOFF.md`](HANDOFF.md).
+
+**No lleva lista de fotos, las encuentra**: toda llamada `fotoBorrosa("/images/…")` escrita
+en `app/` o `components/`, más la `image` de cada actividad de `data/activities.ts`. Lee los
+`.webp` ya optimizados de `public/`, así que **no necesita `_fuentes-fotos/`**.
+
+**Cuándo correrlo:** después de reemplazar una foto de portada (aunque conserve el nombre:
+la miniatura es de la foto vieja), de sumar una portada o de agregar una actividad. Si se
+olvida, no se rompe nada: la portada sin miniatura se ve como antes de existir esto, y
+`tests/fotos-borrosas.test.mjs` falla por la que falta.
 
 ## Otros pipelines (no usan `_fuentes-fotos/`)
 

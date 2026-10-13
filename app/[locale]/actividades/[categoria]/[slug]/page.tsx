@@ -29,6 +29,7 @@ import ActivitySchedule, { type ScheduleStageView } from "@/components/ActivityS
 import ActivityFaq, { type FaqEntry } from "@/components/ActivityFaq";
 import Emphasis from "@/components/Emphasis";
 import type { MenuCopy } from "@/components/ActivityMenu";
+import { fotoBorrosa } from "@/lib/fotoBorrosa";
 import { CONTACT_WHATSAPP_URL } from "@/lib/contact";
 import ActivityRowCard from "@/components/ActivityRowCard";
 import GalleryPlaceholder from "@/components/GalleryPlaceholder";
@@ -188,6 +189,10 @@ export default async function ActivityDetailPage({
   // El `alt` del hero: una descripción de la foto donde la actividad la trae
   // (con el lugar, que también es SEO); si no, el nombre.
   const heroAlt = optional("photos.hero") ?? name;
+  // La miniatura borrosa de la portada, mientras baja la foto. La ruta no va
+  // escrita acá, pero `npm run fotos:borrosas` recorre `activities` y genera
+  // la de cada una; una actividad nueva queda sin ella hasta correrlo.
+  const borrosa = fotoBorrosa(tour.image);
   // Para el JSON-LD: la meta descripción dice qué es y dónde; la bajada es una
   // frase para leer bajo el título.
   const seoDescription = optional("metaDescription") ?? tagline;
@@ -431,6 +436,8 @@ export default async function ActivityDetailPage({
             alt={heroAlt}
             fill
             priority
+            placeholder={borrosa ? "blur" : "empty"}
+            blurDataURL={borrosa}
             className="object-cover motion-safe:animate-[heroZoom_1.4s_cubic-bezier(0.16,1,0.3,1)_both]"
             style={tour.heroPosition ? { objectPosition: tour.heroPosition } : undefined}
             sizes="100vw"
@@ -580,7 +587,7 @@ export default async function ActivityDetailPage({
           la pinta encima y la corta en seco. */}
       <section className="bg-surface-container-lowest px-margin-mobile pt-3 md:px-margin-desktop md:pt-5">
         <div className="mx-auto max-w-(--container-max)">
-          <div className="relative z-10 rounded-[28px] bg-surface-container-lowest px-1 py-2 shadow-[0_36px_70px_-30px_rgba(74,14,14,0.30),0_10px_30px_-14px_rgba(74,14,14,0.12)] sm:p-2 lg:py-3">
+          <div className="relative z-10 rounded-[28px] bg-surface-container-lowest px-1 py-2 shadow-[0_36px_70px_-30px_rgba(27,28,28,0.30),0_10px_30px_-14px_rgba(27,28,28,0.12)] sm:p-2 lg:py-3">
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
               {ficha.map(({ icon: Icon, label, value, note }) => (
                 <div key={label} className="flex items-start gap-4 px-5 py-4 sm:p-5 lg:p-6">
@@ -743,7 +750,7 @@ export default async function ActivityDetailPage({
                     {wines.map((w) => (
                       <li
                         key={w}
-                        className="flex items-start gap-3 bg-surface-container-lowest rounded-md pl-4 pr-5 py-3.5 border-l-[3px] border-primary/70 shadow-[0_2px_10px_-6px_rgba(74,14,14,0.15)] font-body text-body-md text-on-surface"
+                        className="flex items-start gap-3 bg-surface-container-lowest rounded-md pl-4 pr-5 py-3.5 border-l-[3px] border-primary/70 shadow-[0_2px_10px_-6px_rgba(27,28,28,0.15)] font-body text-body-md text-on-surface"
                       >
                         <Grape className="h-4 w-4 text-wine-accent mt-1 shrink-0" aria-hidden="true" />
                         {w}

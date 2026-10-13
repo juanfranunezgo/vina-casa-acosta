@@ -81,7 +81,9 @@ público.
 - **Tipografía hero**: `clamp()` en CSS, no media queries. Una sola declaración cubre 375px–1920px.
 - **Precios**: `tabular-nums` para que no bailen al cambiar dígito. Formateo por locale (`es-CL` / `en-US` / `pt-BR`), moneda CLP en los tres.
 - **Reduced motion**: respetado en `Reveal`, skeletons y scroll-behavior. Hero usa `motion-safe:animate-*`.
-- **Imágenes**: Next/Image siempre. Para drop-shadows vino-tinto usar las utilidades existentes en `globals.css`.
+- **Imágenes**: Next/Image siempre.
+- **Portadas**: toda foto de portada lleva su miniatura borrosa debajo (`<FotoBorrosa />` antes del `<picture>`, o `placeholder="blur"` con `next/image`) para que no se vea gris mientras baja. Después de cambiar o sumar una: `npm run fotos:borrosas`.
+- **Sombras**: gris neutro (`rgba(27,28,28,…)`) sobre superficies claras — tarjetas, fotos, botellas —; teñida de vino sólo bajo un elemento vino (botón, `IconBadge`). Una sombra vino sobre blanco deja un halo rosado: `tests/sombras-neutras.test.mjs` lo impide. Las utilidades `.ambient-shadow*` de `globals.css` ya son neutras.
 
 ## Estado del proyecto
 

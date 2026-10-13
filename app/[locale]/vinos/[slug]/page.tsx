@@ -5,6 +5,7 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { ArrowLeft, ArrowRight, FileText, Utensils } from "lucide-react";
 import CatalogOriginMeta from "@/components/CatalogOriginMeta";
 import JsonLd from "@/components/JsonLd";
+import MedallaVino from "@/components/MedallaVino";
 import Reveal from "@/components/Reveal";
 import Button from "@/components/ui/Button";
 import ProductPurchase from "@/components/ProductPurchase";
@@ -14,6 +15,7 @@ import SelloProducto from "@/components/SelloProducto";
 import TastingProfile from "@/components/TastingProfile";
 import WineBottleImage from "@/components/WineBottleImage";
 import IconBadge from "@/components/ui/IconBadge";
+import { medallasDe, medallaTexto } from "@/data/medallas";
 import { getCatalog, getMinBottles, getWineBySlug } from "@/lib/afeleia/catalog";
 import { checkoutIniciarUrl } from "@/lib/checkout";
 import { FUENTE_FICHA } from "@/lib/fuenteFicha";
@@ -145,6 +147,16 @@ export default async function WinePage({
     checkoutIniciarUrl(process.env.NEXT_PUBLIC_AFELEIA_CHECKOUT_URL) !== null;
   const minBottles = await getMinBottles();
 
+  // Las medallas y puntajes del vino, ya con su texto en el idioma de la
+  // página. La primera es la de la tarjeta y va también sobre la foto; la lista
+  // completa está bajo la descripción, y sus textos son los que se marcan en el
+  // JSON-LD.
+  const premios = medallasDe(wine.slug).map((medalla) => ({
+    id: medalla.id,
+    src: medalla.src,
+    ...medallaTexto(medalla, tVinos),
+  }));
+
   // Structured data de la ficha. Se arma acá abajo, con los mismos valores que
   // la página acaba de resolver para mostrarlos, y no con una segunda lectura
   // del catálogo: así lo marcado y lo visible no pueden separarse.
@@ -157,6 +169,7 @@ export default async function WinePage({
     ),
     vintageProperty: t("vintageProperty"),
     siteDescription: tMeta("description"),
+    awards: premios.map((p) => p.alt),
   });
 
   return (
@@ -212,7 +225,7 @@ export default async function WinePage({
               no llega a pegarse. En celular va 4:3 y no 3:4, para que el
               precio y el botón entren en la primera pantalla (medido a 375×812). */}
           <Reveal className="md:sticky md:top-28 md:col-start-1 md:row-span-2 md:row-start-1">
-            <div className="relative aspect-[4/3] overflow-hidden rounded-[28px] bg-gradient-to-br from-surface-container-low to-surface-container md:aspect-auto md:h-[min(calc(100svh-9rem),46rem)]">
+            <div className="relative aspect-[4/3] overflow-hidden rounded-[28px] bg-gradient-to-br from-neutro-claro to-neutro md:aspect-auto md:h-[min(calc(100svh-9rem),46rem)]">
               {/* Subtle radial spotlight */}
               <div
                 className="absolute inset-0 pointer-events-none"
@@ -224,7 +237,7 @@ export default async function WinePage({
               <WineBottleImage
                 src={wine.image}
                 alt={wine.name}
-                className="object-contain p-6 drop-shadow-[0_24px_32px_rgba(74,14,14,0.18)] md:p-12"
+                className="object-contain p-6 drop-shadow-[0_24px_32px_rgba(27,28,28,0.18)] md:p-12"
                 sizes="(max-width: 768px) 100vw, 50vw"
                 priority
               />
@@ -233,6 +246,11 @@ export default async function WinePage({
                   {translatedOr(tBadges, wine.badge, wine.badge)}
                 </SelloProducto>
               )}
+              <MedallaVino
+                medalla={premios[0]}
+                sizes="(max-width: 767px) 32px, 40px"
+                className="absolute bottom-5 right-5 h-8 w-8 md:bottom-6 md:right-6 md:h-10 md:w-10"
+              />
             </div>
           </Reveal>
 
@@ -248,7 +266,7 @@ export default async function WinePage({
                 la ficha rápida de las actividades. `relative z-10` para que la
                 sombra no la corte lo que viene abajo. */}
             <Reveal delay={120} className="relative z-10">
-              <div className="relative z-10 rounded-[28px] bg-surface-container-lowest p-6 shadow-[0_36px_70px_-30px_rgba(74,14,14,0.30),0_10px_30px_-14px_rgba(74,14,14,0.12)] md:p-8">
+              <div className="relative z-10 rounded-[28px] bg-surface-container-lowest p-6 shadow-[0_36px_70px_-30px_rgba(27,28,28,0.30),0_10px_30px_-14px_rgba(27,28,28,0.12)] md:p-8">
                 {/* El margen entre el rótulo y el precio va en el rótulo (`mb-1`)
                     y no en el precio: con rebaja, arriba del precio de venta se
                     dibuja el tachado, y el margen tiene que quedar sobre eso. */}
@@ -285,6 +303,38 @@ export default async function WinePage({
                 <p className="mt-10 font-body text-body-lg leading-relaxed text-on-surface">
                   {description}
                 </p>
+              )}
+
+              {/* Todas las medallas y puntajes del vino. En la tarjeta va una
+                  sola; acá cada una lleva su texto, porque a este tamaño la
+                  medalla se reconoce pero no se lee. */}
+              {premios.length > 0 && (
+                <div className="mt-10">
+                  <h2 className="font-body text-label-sm uppercase tracking-widest text-primary mb-5 flex items-center gap-2">
+                    <span className="h-px w-6 bg-primary/40" />
+                    {tVinos("medallas.titulo")}
+                  </h2>
+                  <ul className="grid grid-cols-1 gap-x-6 gap-y-4 sm:grid-cols-2">
+                    {premios.map((p) => (
+                      <li key={p.id} className="flex items-center gap-3">
+                        {/* Decorativa: el texto de al lado ya dice lo mismo. */}
+                        <MedallaVino
+                          medalla={{ src: p.src, alt: "" }}
+                          sizes="28px"
+                          className="h-7 w-7 shrink-0"
+                        />
+                        <span className="font-body leading-snug">
+                          <span className="block text-[1.05rem] font-semibold text-primary">
+                            {p.premio}
+                          </span>
+                          <span className="block text-[13px] text-on-surface-variant">
+                            {p.origen}
+                          </span>
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
               )}
 
               {/* DEC-5: cada sección se dibuja solo si su dato existe. Un producto
@@ -351,7 +401,7 @@ export default async function WinePage({
                     <span className="h-px w-6 bg-primary/40" />
                     {t("technical.title")}
                   </h2>
-                  <div className="rounded-[28px] bg-surface-container-lowest p-6 shadow-[0_36px_70px_-30px_rgba(74,14,14,0.30),0_10px_30px_-14px_rgba(74,14,14,0.12)] md:p-8">
+                  <div className="rounded-[28px] bg-surface-container-lowest p-6 shadow-[0_36px_70px_-30px_rgba(27,28,28,0.30),0_10px_30px_-14px_rgba(27,28,28,0.12)] md:p-8">
                     {wine.technical.length > 0 && (
                       <dl className="grid grid-cols-1 gap-x-8 gap-y-5 sm:grid-cols-2">
                         {wine.technical.map((row) => (
@@ -414,13 +464,13 @@ export default async function WinePage({
                 <Reveal key={r.slug} delay={idx * 80}>
                   <Link
                     href={`/${locale}/vinos/${r.slug}`}
-                    className="group block overflow-hidden rounded-[28px] bg-surface shadow-[0_14px_34px_-22px_rgba(74,14,14,0.30),0_2px_6px_-2px_rgba(74,14,14,0.05)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_28px_56px_-24px_rgba(74,14,14,0.34),0_4px_12px_-4px_rgba(74,14,14,0.08)]"
+                    className="group block overflow-hidden rounded-[28px] bg-surface shadow-[0_14px_34px_-22px_rgba(27,28,28,0.30),0_2px_6px_-2px_rgba(27,28,28,0.05)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_28px_56px_-24px_rgba(27,28,28,0.34),0_4px_12px_-4px_rgba(27,28,28,0.08)]"
                   >
-                    <div className="aspect-[3/4] relative bg-gradient-to-br from-surface-container-low to-surface-container">
+                    <div className="aspect-[3/4] relative bg-gradient-to-br from-neutro-claro to-neutro">
                       <WineBottleImage
                         src={r.image}
                         alt={r.name}
-                        className="object-contain p-8 group-hover:scale-105 transition-transform duration-500 drop-shadow-[0_12px_18px_rgba(74,14,14,0.15)]"
+                        className="object-contain p-8 group-hover:scale-105 transition-transform duration-500 drop-shadow-[0_12px_18px_rgba(27,28,28,0.15)]"
                         sizes="(max-width: 639px) 100vw, (max-width: 1023px) 50vw, 25vw"
                       />
                     </div>

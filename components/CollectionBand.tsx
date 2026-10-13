@@ -92,6 +92,7 @@ export default function CollectionBand({
                     eyebrow={wine.eyebrow}
                     agotado={wine.agotado}
                     soldOutLabel={wine.soldOutLabel}
+                    medalla={wine.medalla}
                   />
                 </Reveal>
               ))}

@@ -100,7 +100,7 @@ test("los textos del sello y del precio existen en los tres idiomas", () => {
     assert.equal(typeof detalle.priceLabel, "string", `${locale}.wineDetail.priceLabel`);
     const sello = detalle.trust;
     for (const clave of [
-      "securePayment",
+      "securePaymentBanner",
       "securePaymentNote",
       "direct",
       "directNote",
@@ -110,14 +110,77 @@ test("los textos del sello y del precio existen en los tres idiomas", () => {
       assert.equal(typeof sello?.[clave], "string", `${locale}.wineDetail.trust.${clave}`);
       assert.ok(sello[clave].length > 0, `${locale}.wineDetail.trust.${clave}`);
     }
-    // "Pago seguro con" + el logo: el nombre de la marca lo pone el `alt`.
-    assert.doesNotMatch(sello.securePayment, /Mercado Pago/, `${locale}: el nombre va en el logo`);
+    // El texto de la banda no nombra la marca: la pone el logo, a su derecha.
+    assert.doesNotMatch(sello.securePaymentBanner, /Mercado Pago/, `${locale}: el nombre va en el logo`);
+    // Una parte va en negrita, como en la referencia que mandó Juan Francisco.
+    assert.match(sello.securePaymentBanner, /<b>[^<]+<\/b>/, `${locale}: falta la negrita`);
+    // La frase suelta "Pago seguro con" ya no existe: colgaba del logo.
+    assert.equal(sello.securePayment, undefined, `${locale}: clave huérfana`);
     assert.match(sello.minimum, /\{min, plural,/, `${locale}: el mínimo viene del catálogo`);
   }
 });
 
 test("el logo de Mercado Pago dice su nombre a quien no lo ve", () => {
-  // El título dice "Pago seguro con" y el logo completa la frase: sin `alt`,
-  // un lector de pantalla leería "Pago seguro con" y nada más.
+  // El texto de la banda no nombra la marca: sin `alt`, un lector de pantalla
+  // leería "Compra en línea con pago seguro" sin saber con quién.
   assert.match(sello, /src=\{MERCADO_PAGO_LOGO\}\s*alt="Mercado Pago"/);
+});
+
+test("Mercado Pago va en una banda propia: el texto a la izquierda y el logo, grande, a la derecha", () => {
+  // Pedido de Juan Francisco (2026-10-12): el logo pegado a "Pago seguro con"
+  // se veía chico y desalineado —la marca son dos renglones al lado de uno—,
+  // en la tienda y en la ficha. Mandó de referencia una banda gris con el
+  // texto a un lado y el logo al otro.
+  assert.match(sello, /function BandaMercadoPago\(/);
+  assert.doesNotMatch(sello, /PagoSeguro/);
+  // Una sola banda para los dos lugares: la tienda (franja) y la ficha (lista).
+  assert.equal((sello.match(/<BandaMercadoPago/g) ?? []).length, 2);
+  const banda = sello.match(/function BandaMercadoPago\([\s\S]*?\n}\n/)?.[0];
+  assert.ok(banda, "no se encontró el cuerpo de la banda");
+  // Dos columnas, y el logo en la segunda: va después del título en el fuente.
+  assert.match(banda, /grid-cols-\[minmax\(0,1fr\)_auto\]/);
+  assert.ok(banda.indexOf("{titulo}") < banda.indexOf("src={MERCADO_PAGO_LOGO}"));
+  assert.match(banda, /bg-neutro-claro/);
+  // El texto se arma con la negrita del mensaje, no partiéndolo a mano.
+  assert.match(sello, /t\.rich\("securePaymentBanner"/);
+});
+
+test("la banda no promete cuotas sin interés ni medios de pago", () => {
+  // La referencia decía "Paga hasta en 6 cuotas sin interés". Eso depende de
+  // cómo tenga configurada la viña su cuenta de Mercado Pago, y nadie lo
+  // confirmó: se copia la forma de la banda, no la promesa.
+  for (const locale of LOCALES) {
+    const { securePaymentBanner, securePaymentNote } = bundles[locale].wineDetail.trust;
+    for (const texto of [securePaymentBanner, securePaymentNote]) {
+      assert.equal(typeof texto, "string", locale);
+      assert.doesNotMatch(
+        texto,
+        /cuotas|sin inter[eé]s|installments|interest|parcelas|juros/i,
+        `${locale}: ${texto}`,
+      );
+    }
+  }
+});
+
+test("el fondo de la foto de una botella es gris neutro, no la superficie cálida", async () => {
+  // "¿Por qué se ven medio rosadas las tarjetas?" (Juan Francisco, 2026-10-12).
+  // Las superficies M3 de la paleta (#f6f3f2 → #f0eded) llevan un punto de
+  // rojo, y al lado del blanco puro del sitio se leen rosadas. El fondo de las
+  // botellas pasa a dos grises sin tinte, en la tienda, en `/vinos` y en la ficha.
+  const estilos = normal(await leer("app/globals.css"));
+  for (const token of ["neutro-claro", "neutro"]) {
+    const hex = estilos.match(new RegExp(`--color-${token}: #([0-9a-f]{6});`))?.[1];
+    assert.ok(hex, `falta --color-${token}`);
+    const [r, g, b] = [hex.slice(0, 2), hex.slice(2, 4), hex.slice(4, 6)];
+    assert.ok(r === g && g === b, `--color-${token} (#${hex}) no es neutro`);
+  }
+  const usos = {
+    tienda: normal(await leer("components/TiendaCatalogo.tsx")),
+    "/vinos": normal(await leer("components/WineCard.tsx")),
+    ficha,
+  };
+  for (const [nombre, fuente] of Object.entries(usos)) {
+    assert.match(fuente, /from-neutro-claro to-neutro/, nombre);
+    assert.doesNotMatch(fuente, /from-surface-container-low to-surface-container/, nombre);
+  }
 });

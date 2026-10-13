@@ -3,12 +3,14 @@ import Image from "next/image";
 import Link from "next/link";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { ArrowRight, Wine, MapPin } from "lucide-react";
+import FotoBorrosa from "@/components/FotoBorrosa";
 import Reveal from "@/components/Reveal";
 import Button from "@/components/ui/Button";
 import AboutSection from "@/components/AboutSection";
 import HomeActivitiesShowcase from "@/components/HomeActivitiesShowcase";
 import FeaturedLinesCarousel from "@/components/FeaturedLinesCarousel";
 import { featuredLineOrder, lineSlugs } from "@/data/wines";
+import { fotoBorrosa } from "@/lib/fotoBorrosa";
 import { getCatalog, winesByLine } from "@/lib/afeleia/catalog";
 import {
   tours as tourData,
@@ -148,6 +150,11 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
             en pantalla vertical la foto se estira hasta cubrir el alto, y ese
             ancho estirado —no el del contenedor— es el que hay que descargar.
             El umbral de cada media es la proporción de su propio encuadre. */}
+        <FotoBorrosa
+          movil={fotoBorrosa("/images/home/hero-movil-828.webp")}
+          escritorio={fotoBorrosa("/images/home/hero-1280.webp")}
+          className="h-full w-full object-cover object-[30%_center] apaisado:object-[center_72%]"
+        />
         <picture className="absolute inset-0">
           <source
             media="(min-aspect-ratio: 3/4)"

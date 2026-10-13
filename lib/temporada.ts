@@ -19,3 +19,25 @@ export function mesesDeTemporada(months: number[], locale: string): string | und
     .map((m) => mes.format(new Date(Date.UTC(2026, m - 1, 15))));
   return new Intl.ListFormat(intl, { style: "long", type: "conjunction" }).format(nombres);
 }
+
+/**
+ * El año de la próxima temporada de una actividad: el de este año mientras la
+ * temporada no haya terminado, y el siguiente desde el mes después.
+ *
+ * Es para decir "Vendimia 2027" sin escribir el año: un año puesto a mano en
+ * un título queda viejo el día después de la última jornada, y nadie lo ve
+ * hasta que alguien busca la del año siguiente y encuentra la anterior.
+ *
+ * El mes se mira en hora de Chile, que es donde ocurre. Supone una temporada
+ * que cabe en un año calendario (la vendimia: abril y mayo); una que cruce el
+ * año nuevo necesitaría otra regla.
+ */
+export function anioDeTemporada(months: number[], hoy: Date = new Date()): number {
+  const partes = new Intl.DateTimeFormat("en-CA", {
+    timeZone: "America/Santiago",
+    year: "numeric",
+    month: "numeric",
+  }).formatToParts(hoy);
+  const parte = (tipo: string) => Number(partes.find((p) => p.type === tipo)?.value);
+  return parte("month") <= Math.max(...months) ? parte("year") : parte("year") + 1;
+}

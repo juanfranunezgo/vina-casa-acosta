@@ -22,7 +22,9 @@
     "fotos:vendimia": "node scripts/optimize-vendimia.mjs",
     "fotos:mimbre": "node scripts/optimize-mimbre.mjs",
     "fotos:yoga": "node scripts/optimize-yoga.mjs",
-    "fotos:actividades": "node scripts/optimize-actividades.mjs"
+    "fotos:actividades": "node scripts/optimize-actividades.mjs",
+    "fotos:medallas": "node scripts/optimize-medallas.mjs",
+    "fotos:borrosas": "node scripts/fotos-borrosas.mjs"
   },
   "dependencies": {
     "@next/env": "16.2.6",
