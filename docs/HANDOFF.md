@@ -736,6 +736,30 @@ cambia a propósito el test que lo impide en `tests/vendimia-hub.test.mjs`.
 El español de los cuatro es el texto de la viña. **Inglés y portugués son traducción
 nuestra**, sin validar, como el resto.
 
+### La píldora de secciones, abajo en celular (2026-10-12)
+
+Pedido de Juan Francisco: "dejar la sub nav en la parte de abajo del celular para que no
+estorbe donde va la vista", y "que quede lo menos ancha posible". Pegada bajo el navbar,
+entre los dos se llevaban 150 px de los 812 de la pantalla, arriba, que es donde se lee.
+
+- **En celular (`< md`) va fija abajo**, centrada, a 12 px del borde más la zona segura del
+  teléfono (`env(safe-area-inset-bottom)`). **En escritorio sigue pegada bajo el navbar.**
+  Es el mismo componente (`components/ActivitySectionNav.tsx`), así que vale para las
+  catorce fichas y para la vendimia.
+- **Se esconde sola** al pasar el formulario: mide el `div` que la contiene (de la
+  introducción a la reserva) y deja de verse cuando ese bloque sale de la pantalla. Nace
+  visible desde el servidor, así que sin JavaScript no queda escondida.
+- **El carrito flotante sube** mientras la píldora está a la vista: los dos viven abajo y la
+  píldora, centrada, quedaba debajo del círculo. La píldora marca `data-subnav-abajo` y
+  `globals.css` mueve `[data-cart-fab]` con `body:has(…)`. No se usa un atributo en
+  `<html>` porque React lo borra al re-renderizar el layout (trampa ya anotada abajo).
+- **Más angosta en celular**: menos relleno entre rótulos. Mide 294 px en español, 302 en
+  portugués y 256 en inglés, sobre 375.
+- **El salto a una sección** (`scroll-mt`) en celular bajó a 24: ya no hay píldora arriba
+  que esquivar. En escritorio sigue en 44.
+- **La vendimia la estrena**: Detalle · Galería · Preguntas · Reserva, de Dv2 a Dv7. Y sus
+  migas dejaron la foto: van bajo el hero, centradas, como en las fichas.
+
 ### El año en el título de la vendimia (2026-10-12)
 
 Pedido de Juan Francisco, para que el hub aparezca cuando alguien busca la vendimia del año:
@@ -1146,6 +1170,14 @@ que hay que leer con ojo.
   explícitos por estado.
 - **RSC**: no se pueden pasar funciones de un server component a uno cliente. Las etiquetas
   del carrusel de colecciones se pasan como array de strings ya traducidos.
+- **Un botón con el texto largo deja la página con scroll horizontal en celular.** `Button`
+  lleva `whitespace-nowrap`: si el texto no cabe en la columna (327 px en un celular de
+  375), no se parte, empuja el ancho de la página entera. Pasó en la vendimia el 2026-10-12
+  con "Inscríbete, ven a vivir la vendimia en Casa Acosta" (478 px): la página medía 502.
+  **Salida: la prop `multiline`** (`components/ui/buttonClasses.ts`), que deja partir el
+  texto y limita el botón al ancho de su contenedor. Ojo con los otros idiomas: el texto en
+  portugués suele ser más largo que el español. Se mide con
+  `document.documentElement.scrollWidth > clientWidth` a 375 px.
 - **`npm run build` borra `.next`** y deja zombi al dev server (EBUSY / 500 en rutas). Bajar
   el dev, buildear, y recién ahí volver a levantarlo.
 - **SVG**: `fill="none"` y `stroke` van como **atributos del `<path>`**, no solo en CSS. Un

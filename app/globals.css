@@ -433,3 +433,13 @@ html[data-age-gate="pendiente"] body {
     transition: none;
   }
 }
+
+/* La píldora de secciones de las fichas y de la vendimia va fija abajo en
+   celular (2026-10-12). El carrito flotante también vive ahí: sube mientras la
+   píldora está a la vista, para no quedar debajo de ella. Va con `translate` y
+   no con `transform`: el botón ya usa `scale` al tocarlo. */
+@media (max-width: 767.98px) {
+  body:has([data-subnav-abajo="visible"]) [data-cart-fab] {
+    translate: 0 -4.25rem;
+  }
+}
