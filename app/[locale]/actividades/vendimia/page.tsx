@@ -20,6 +20,7 @@ import ShowMore from "@/components/ShowMore";
 import ActivityBreadcrumbs from "@/components/ActivityBreadcrumbs";
 import ActivityFaq, { type FaqEntry } from "@/components/ActivityFaq";
 import ActivityReservationForm from "@/components/ActivityReservationForm";
+import ActivitySectionNav from "@/components/ActivitySectionNav";
 import VineyardYear from "@/components/VineyardYear";
 import JsonLd from "@/components/JsonLd";
 import { fotoBorrosa } from "@/lib/fotoBorrosa";
@@ -393,19 +394,6 @@ export default async function VendimiaPage({
             className="absolute inset-x-0 top-0 h-40 bg-gradient-to-b from-[#1a0203]/55 to-transparent"
           />
 
-          <div className="absolute left-0 right-0 top-24 px-margin-mobile md:px-margin-desktop">
-            <div className="mx-auto max-w-(--container-max)">
-              <ActivityBreadcrumbs
-                aria={tLabels("breadcrumbAria")}
-                items={[
-                  { href: `/${locale}`, label: crumbLabels.home },
-                  { href: `/${locale}/actividades`, label: crumbLabels.activities },
-                  { href: `/${locale}${HUB_PATH}`, label: crumbLabels.vendimia },
-                ]}
-              />
-            </div>
-          </div>
-
           <div className="absolute inset-x-0 bottom-0 px-margin-mobile pb-12 md:px-margin-desktop md:pb-16">
             <div data-hero-text className="mx-auto max-w-(--container-max)">
               {/* Sin antetítulo de meses. `hero.eyebrow` ("Marzo · Abril ·
@@ -429,6 +417,40 @@ export default async function VendimiaPage({
           </div>
         </div>
       </section>
+
+      {/* Dv1 — Migas, centradas bajo el hero, como en las fichas (Dd1). Pedido
+          de Juan Francisco del 2026-10-12: hasta ese día iban sobre la foto,
+          arriba a la izquierda. */}
+      <section className="bg-surface px-margin-mobile pt-7 md:px-margin-desktop md:pt-9">
+        <div className="mx-auto max-w-(--container-max)">
+          <ActivityBreadcrumbs
+            tone="papel"
+            align="center"
+            aria={tLabels("breadcrumbAria")}
+            items={[
+              { href: `/${locale}`, label: crumbLabels.home },
+              { href: `/${locale}/actividades`, label: crumbLabels.activities },
+              { href: `/${locale}${HUB_PATH}`, label: crumbLabels.vendimia },
+            ]}
+          />
+        </div>
+      </section>
+
+      {/* Desde acá hasta la consulta acompaña la píldora de secciones, la
+          misma de las fichas (Dd2). El `div` existe por ella: en escritorio es
+          un `sticky`, que sólo se pega dentro de su contenedor, y en celular
+          usa este mismo contenedor para saber cuándo esconderse. Al llegar a
+          "otras formas de vivir el ciclo" se va con el resto. */}
+      <div className="relative bg-surface">
+        <ActivitySectionNav
+          items={[
+            { id: "jornada", label: tLabels("nav.detail") },
+            { id: "galeria", label: tLabels("nav.gallery") },
+            { id: "preguntas", label: tLabels("nav.faq") },
+          ]}
+          cta={{ id: "consulta", label: tLabels("nav.reserve") }}
+          aria={t("navAria")}
+        />
 
       {/* Dv2 — Qué es la vendimia. En papel, no en penumbra. La respuesta corta
           va primero y en una sola oración: es lo que lee quien llega de una
@@ -552,7 +574,7 @@ export default async function VendimiaPage({
           van `aria-hidden` porque el texto de al lado ya nombra el paso. */}
       <section
         id="jornada"
-        className="scroll-mt-24 bg-surface py-section-gap px-margin-mobile md:px-margin-desktop"
+        className="scroll-mt-24 md:scroll-mt-44 bg-surface py-section-gap px-margin-mobile md:px-margin-desktop"
       >
         <div className="mx-auto max-w-(--container-max)">
           {/* El encabezado va a todo el ancho y no dentro de la columna de 7:
@@ -726,7 +748,10 @@ export default async function VendimiaPage({
           cuadro dos veces en la página— y antes de eso eran seis piezas donde
           cuatro salían de esa aérea, que es lo que la hacía ver armada con
           relleno. */}
-      <section className="bg-surface py-section-gap px-margin-mobile md:px-margin-desktop">
+      <section
+        id="galeria"
+        className="scroll-mt-24 bg-surface py-section-gap px-margin-mobile md:scroll-mt-44 md:px-margin-desktop"
+      >
         <div className="mx-auto max-w-(--container-max)">
           <Reveal className="mb-12">
             <h2 className="font-display text-[2rem] leading-[1.12] text-primary md:text-[2.6rem]">
@@ -768,7 +793,7 @@ export default async function VendimiaPage({
           `tests/vendimia-hub.test.mjs`. */}
       <section
         id="preguntas"
-        className="scroll-mt-24 border-t border-outline-variant/30 bg-surface py-section-gap px-margin-mobile md:px-margin-desktop"
+        className="scroll-mt-24 md:scroll-mt-44 border-t border-outline-variant/30 bg-surface py-section-gap px-margin-mobile md:px-margin-desktop"
       >
         <div className="mx-auto max-w-(--container-max)">
           <Reveal>
@@ -803,7 +828,7 @@ export default async function VendimiaPage({
           del ciclo tapada al 88% — se descargaba entera para no verse. */}
       <section
         id="consulta"
-        className="scroll-mt-24 border-t border-outline-variant/30 bg-surface py-section-gap px-margin-mobile md:px-margin-desktop"
+        className="scroll-mt-24 md:scroll-mt-44 border-t border-outline-variant/30 bg-surface py-section-gap px-margin-mobile md:px-margin-desktop"
       >
         <div className="mx-auto max-w-(--container-max)">
           <div className="grid grid-cols-1 overflow-hidden rounded-2xl bg-surface ambient-shadow-lg ring-1 ring-outline-variant/40 lg:grid-cols-[1.1fr_0.9fr]">
@@ -838,6 +863,8 @@ export default async function VendimiaPage({
           </div>
         </div>
       </section>
+      {/* Fin del recorrido de la píldora */}
+      </div>
 
       {/* Dv5 — Otras formas de vivir el ciclo. Las dos fichas salen de
           `VENDIMIA_RELATED_SLUGS`: si el catálogo suma otra experiencia de

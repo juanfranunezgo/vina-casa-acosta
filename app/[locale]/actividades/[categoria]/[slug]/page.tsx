@@ -655,7 +655,7 @@ export default async function ActivityDetailPage({
       {/* Dd3 — Detalle / ¿Qué incluye? */}
       <section
         id="detalle"
-        className="bg-surface-container-lowest py-section-gap px-margin-mobile md:px-margin-desktop scroll-mt-40 md:scroll-mt-44"
+        className="bg-surface-container-lowest py-section-gap px-margin-mobile md:px-margin-desktop scroll-mt-24 md:scroll-mt-44"
       >
         <div className="max-w-(--container-max) mx-auto grid grid-cols-1 lg:grid-cols-3 gap-10 lg:gap-14">
           <div className="lg:col-span-2">
@@ -882,7 +882,7 @@ export default async function ActivityDetailPage({
           de diseño y el aviso de que están por llegar. Ver ActivityGallery. */}
       <section
         id="galeria"
-        className="bg-surface-container-lowest py-section-gap px-margin-mobile md:px-margin-desktop scroll-mt-40 md:scroll-mt-44"
+        className="bg-surface-container-lowest py-section-gap px-margin-mobile md:px-margin-desktop scroll-mt-24 md:scroll-mt-44"
       >
         <div className="max-w-(--container-max) mx-auto">
           <Reveal>
@@ -906,7 +906,7 @@ export default async function ActivityDetailPage({
       {faq.length > 0 && (
         <section
           id="preguntas"
-          className="bg-surface-container-lowest py-section-gap px-margin-mobile md:px-margin-desktop scroll-mt-40 md:scroll-mt-44"
+          className="bg-surface-container-lowest py-section-gap px-margin-mobile md:px-margin-desktop scroll-mt-24 md:scroll-mt-44"
         >
           <div className="max-w-(--container-max) mx-auto">
             <Reveal>
@@ -927,7 +927,7 @@ export default async function ActivityDetailPage({
       {/* Dd6 — Reserva */}
       <section
         id="reserva"
-        className="bg-surface-container-lowest py-section-gap px-margin-mobile md:px-margin-desktop scroll-mt-40 md:scroll-mt-44"
+        className="bg-surface-container-lowest py-section-gap px-margin-mobile md:px-margin-desktop scroll-mt-24 md:scroll-mt-44"
       >
         <div className="max-w-(--container-max) mx-auto">
           <div className="grid grid-cols-1 lg:grid-cols-[1.1fr_0.9fr] overflow-hidden rounded-2xl bg-surface-container-lowest ambient-shadow-lg ring-1 ring-outline-variant/40">

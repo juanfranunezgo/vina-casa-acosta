@@ -72,7 +72,7 @@ La ruta lleva la categoría: `/actividades/tours/ombu`, `/actividades/talleres/p
 | ID | Sección |
 |---|---|
 | Dd1 | Hero con el texto centrado y sin antetítulo → migas centradas → (Dd2) → ficha rápida → intro. La ficha rápida (Lugar · Duración · Participantes · Reservas) es una tarjeta blanca sin bordes que flota sólo por su sombra, con íconos `IconBadge` (2026-09-24). Con `heroBooking` (hoy sólo el yoga) el hero suma el precio y los dos botones de reserva, para que en celular se vean sin bajar |
-| Dd2 | Píldora de secciones (Detalle · Galería · Preguntas, si hay · **Reserva** en vino) entre las migas y la ficha rápida. Al bajar queda pegada bajo el navbar, en celular y escritorio, y una pastilla oscura se desliza a la sección en pantalla (`components/ActivitySectionNav.tsx`). Acompaña hasta el final de la reserva |
+| Dd2 | Píldora de secciones (Detalle · Galería · Preguntas, si hay · **Reserva** en vino) entre las migas y la ficha rápida. Al bajar queda pegada bajo el navbar, en celular y escritorio, y una pastilla oscura se desliza a la sección en pantalla (`components/ActivitySectionNav.tsx`). Acompaña hasta el final de la reserva **En celular va fija abajo de la pantalla desde el 2026-10-12** (pedido de Juan Francisco: "para que no estorbe donde va la vista"), más angosta, y el carrito flotante sube para no quedar debajo; se esconde al pasar el formulario. En escritorio sigue pegada bajo el navbar. |
 | ~~Dd3~~ | Retirada el 2026-09-24: la caja "¿Cuándo se hace?" con la franja de 12 meses decía "Todo el año" en once de catorce fichas. En las de temporada, los meses pasan a las condiciones de Dd5 (`lib/temporada.ts`). El ID no se reasigna |
 | Dd4 | Detalle — tickets (tours) o programa de la jornada (talleres · experiencias). Si la actividad declara `schedule`, el programa va con horario: una regla proporcional de la mañana y cada etapa con sus minutos (`components/ActivitySchedule.tsx`); una etapa puede traer su carta (`components/ActivityMenu.tsx`) |
 | Dd5 | Tarjeta de reserva: precio **o** "a consultar", más condiciones. Con `priceExcludesVAT` el precio dice "+ IVA" junto a la cifra |
@@ -99,7 +99,7 @@ pie) pasaron a `bg-surface`. Las tarjetas grises dentro de las páginas se queda
 
 | ID | Sección |
 |---|---|
-| Dv1 | Hero + breadcrumbs |
+| Dv1 | Hero + breadcrumbs Desde el 2026-10-12 las migas ya no van sobre la foto: bajan a la página, centradas, como en las fichas (Dd1), y debajo va la misma píldora de secciones de Dd2 (Detalle · Galería · Preguntas · Reserva), que acompaña de Dv2 a Dv7. |
 | Dv2 | Qué es la vendimia en Casa Acosta + los tres datos ciertos (temporada · duración · para quién) Desde el 2026-10-12 el dato de temporada lleva el año de la próxima vendimia ("Abril · Mayo 2027"), calculado con `anioDeTemporada`: es el mismo año del título de la página |
 | Dv3 | El año de la viña — banda de 12 meses con las 5 etapas del ciclo y la ventana de cosecha (`components/VineyardYear.tsx`) |
 | Dv4 | La jornada: corta, pisa y celebra — programa en `<ol>` con un ícono por paso + qué incluye, y al lado un carrusel 4:5 con tres fotos en el orden del día (desayuno · cosecha · asado) |

@@ -23,8 +23,15 @@ const navHeight = () =>
 /**
  * Dd2 — La píldora de secciones de la ficha.
  *
- * Nace bajo la ficha rápida y, al bajar, se queda pegada bajo el navbar hasta
- * el final del formulario: en celular y en escritorio, pedido de Juan Francisco
+ * **En celular va fija abajo de la pantalla** (2026-10-12, pedido de Juan
+ * Francisco: "para que no estorbe donde va la vista"). Pegada bajo el navbar,
+ * entre los dos se llevaban 150 px de los 812 de la pantalla, justo arriba,
+ * que es donde se lee. Abajo queda al alcance del pulgar y no tapa nada. Se
+ * esconde al pasar el formulario, y el carrito flotante sube para no quedar
+ * debajo (`data-subnav-abajo` y la regla de `globals.css`).
+ *
+ * En escritorio sigue como nació: bajo la ficha rápida y, al bajar, pegada
+ * bajo el navbar hasta el final del formulario, pedido de Juan Francisco
  * del 2026-09-24 sobre la barra de Quorum Legal. La que había era una fila
  * estática en medio de la página: servía una vez y el resto del recorrido no
  * estaba.
@@ -46,6 +53,9 @@ const navHeight = () =>
 export default function ActivitySectionNav({ items, cta, aria }: Props) {
   const [active, setActive] = useState<string | null>(null);
   const [stuck, setStuck] = useState(false);
+  // Sólo importa en celular. Nace visible: es lo correcto al entrar a la
+  // página, y sin JavaScript la píldora no puede quedar escondida.
+  const [enRango, setEnRango] = useState(true);
   const [indicator, setIndicator] = useState<{ x: number; w: number } | null>(null);
   const rowRef = useRef<HTMLDivElement>(null);
   const itemRefs = useRef<Record<string, HTMLLIElement | null>>({});
@@ -61,11 +71,24 @@ export default function ActivitySectionNav({ items, cta, aria }: Props) {
       frame = 0;
       const row = rowRef.current;
       const top = navHeight();
+      const movil = !window.matchMedia("(min-width: 768px)").matches;
+      // En celular va fija abajo y se ve mientras su contenedor —de la
+      // introducción a la reserva— está en pantalla: desde que asoma bajo el
+      // hero hasta que termina el formulario.
+      const contenedor = row?.parentElement?.getBoundingClientRect();
+      setEnRango(
+        !movil ||
+          !contenedor ||
+          (contenedor.top < window.innerHeight - 96 &&
+            contenedor.bottom > window.innerHeight - 24),
+      );
       // Pegada = su borde superior llegó al del navbar. Medirlo evita un
-      // centinela y un IntersectionObserver para un solo dato.
-      setStuck(row !== null && row.getBoundingClientRect().top <= top + 1);
+      // centinela y un IntersectionObserver para un solo dato. Abajo, en
+      // celular, flota siempre.
+      setStuck(movil || (row !== null && row.getBoundingClientRect().top <= top + 1));
 
-      const line = top + (row?.offsetHeight ?? 0) + 24;
+      // Abajo no le quita alto a la lectura: la línea queda bajo el navbar.
+      const line = top + (movil ? 0 : (row?.offsetHeight ?? 0)) + 24;
       let current: string | null = null;
       for (const section of sections) {
         if (section.getBoundingClientRect().top <= line) current = section.id;
@@ -104,7 +127,11 @@ export default function ActivitySectionNav({ items, cta, aria }: Props) {
   return (
     <div
       ref={rowRef}
-      className="pointer-events-none sticky top-[88px] z-30 flex justify-center px-4 py-3 md:top-24 md:py-4"
+      // Lo lee `globals.css` para subir el carrito flotante en celular.
+      data-subnav-abajo={enRango ? "visible" : "oculta"}
+      className={`pointer-events-none z-30 flex justify-center px-4 max-md:fixed max-md:inset-x-0 max-md:bottom-[calc(0.75rem+env(safe-area-inset-bottom))] max-md:transition-[opacity,translate,visibility] max-md:duration-300 md:sticky md:top-24 md:py-4 ${
+        enRango ? "" : "max-md:invisible max-md:translate-y-4 max-md:opacity-0"
+      }`}
     >
       {/* En pantallas de 360px o menos los cuatro rótulos pueden no caber: ahí
           la píldora se desliza de lado en vez de partir un rótulo en dos. Sólo
@@ -143,7 +170,7 @@ export default function ActivitySectionNav({ items, cta, aria }: Props) {
                   href={`#${item.id}`}
                   aria-current={isActive ? "location" : undefined}
                   onClick={() => setActive(item.id)}
-                  className={`inline-flex h-10 items-center whitespace-nowrap rounded-full px-2.5 font-body text-[13px] font-medium transition-colors duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 sm:px-5 sm:text-[14px] ${
+                  className={`inline-flex h-10 items-center whitespace-nowrap rounded-full max-md:px-2 md:px-2.5 font-body text-[13px] font-medium transition-colors duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 sm:px-5 sm:text-[14px] ${
                     isActive ? "text-on-primary" : "text-on-surface-variant hover:text-primary"
                   }`}
                 >
@@ -152,12 +179,12 @@ export default function ActivitySectionNav({ items, cta, aria }: Props) {
               </li>
             );
           })}
-          <li className="relative z-10 ml-1">
+          <li className="relative z-10 max-md:ml-0.5 md:ml-1">
             <a
               href={`#${cta.id}`}
               aria-current={active === cta.id ? "location" : undefined}
               onClick={() => setActive(cta.id)}
-              className="inline-flex h-10 items-center gap-1.5 whitespace-nowrap rounded-full bg-gradient-to-b from-wine-accent to-primary-container px-3.5 font-body text-[13px] font-semibold text-on-primary shadow-[0_8px_18px_-8px_rgba(74,14,14,0.6),inset_0_1px_0_rgba(255,255,255,0.2)] transition-[transform,box-shadow] duration-200 hover:-translate-y-px hover:shadow-[0_12px_22px_-8px_rgba(74,14,14,0.65),inset_0_1px_0_rgba(255,255,255,0.2)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:ring-offset-2 motion-reduce:transition-none sm:px-5 sm:text-[14px]"
+              className="inline-flex h-10 items-center gap-1.5 whitespace-nowrap rounded-full bg-gradient-to-b from-wine-accent to-primary-container max-md:px-3 md:px-3.5 font-body text-[13px] font-semibold text-on-primary shadow-[0_8px_18px_-8px_rgba(74,14,14,0.6),inset_0_1px_0_rgba(255,255,255,0.2)] transition-[transform,box-shadow] duration-200 hover:-translate-y-px hover:shadow-[0_12px_22px_-8px_rgba(74,14,14,0.65),inset_0_1px_0_rgba(255,255,255,0.2)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:ring-offset-2 motion-reduce:transition-none sm:px-5 sm:text-[14px]"
             >
               {cta.label}
               <ArrowDown className="hidden h-4 w-4 sm:block" aria-hidden="true" />

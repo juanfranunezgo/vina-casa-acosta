@@ -580,6 +580,7 @@
       }
     },
     "vendimia": {
+      "navAria": "Secciones de la página",
       "meta": {
         "title": "Vive la Vendimia {year} en el Valle del Cachapoal",
         "description": "Vive la vendimia {year} en San Vicente de Tagua Tagua: corte de uva, pisoneo y almuerzo campestre. En abril y mayo; déjanos tus datos y te avisamos la fecha."

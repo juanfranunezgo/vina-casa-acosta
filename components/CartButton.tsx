@@ -24,6 +24,9 @@ export default function CartButton() {
     <button
       onClick={() => toggle(true)}
       aria-label={label}
+      // En celular, `globals.css` lo sube cuando la píldora de secciones de una
+      // ficha está abajo, para que no quede debajo de ella.
+      data-cart-fab
       className="fixed bottom-6 right-6 z-40 w-14 h-14 rounded-full bg-primary text-on-primary shadow-lg shadow-primary/30 flex items-center justify-center hover:scale-105 active:scale-95 transition-transform"
     >
       <ShoppingBag className="h-5 w-5" aria-hidden="true" />
