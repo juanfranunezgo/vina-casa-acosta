@@ -6,9 +6,11 @@ import { useTranslations, useLocale } from "next-intl";
 import { Check, ChevronDown, Filter, X } from "lucide-react";
 import Reveal from "@/components/Reveal";
 import AddToCartButton from "@/components/AddToCartButton";
+import MedallaVino from "@/components/MedallaVino";
 import PrecioProducto, { saleCopy } from "@/components/PrecioProducto";
 import SelloProducto from "@/components/SelloProducto";
 import WineBottleImage from "@/components/WineBottleImage";
+import { medallaDeTarjeta } from "@/data/medallas";
 import { matchesWineType } from "@/data/wines";
 import type { CatalogWine } from "@/lib/afeleia/catalog";
 import { joinLabels, labelOr, translatedOr } from "@/lib/afeleia/copy";
@@ -20,10 +22,10 @@ import { FUENTE_FICHA } from "@/lib/fuenteFicha";
  * del blanco es sólo la sombra.
  */
 const SOMBRA_FLOTANTE =
-  "shadow-[0_36px_70px_-30px_rgba(74,14,14,0.30),0_10px_30px_-14px_rgba(74,14,14,0.12)]";
+  "shadow-[0_36px_70px_-30px_rgba(27,28,28,0.30),0_10px_30px_-14px_rgba(27,28,28,0.12)]";
 /** La de las tarjetas de vino, más corta: son muchas y van en grilla. */
 const SOMBRA_TARJETA =
-  "shadow-[0_14px_34px_-22px_rgba(74,14,14,0.30),0_2px_6px_-2px_rgba(74,14,14,0.05)]";
+  "shadow-[0_14px_34px_-22px_rgba(27,28,28,0.30),0_2px_6px_-2px_rgba(27,28,28,0.05)]";
 
 /**
  * Un grupo de filtros como pastillas. Reemplazan a las casillas nativas
@@ -401,19 +403,19 @@ export default function TiendaCatalogo({
                 {filtered.map((wine) => (
                   <article
                     key={wine.slug}
-                    className={`group flex flex-col overflow-hidden rounded-[28px] bg-surface-container-lowest transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_28px_56px_-24px_rgba(74,14,14,0.34),0_4px_12px_-4px_rgba(74,14,14,0.08)] ${SOMBRA_TARJETA}`}
+                    className={`group flex flex-col overflow-hidden rounded-[28px] bg-surface-container-lowest transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_28px_56px_-24px_rgba(27,28,28,0.34),0_4px_12px_-4px_rgba(27,28,28,0.08)] ${SOMBRA_TARJETA}`}
                   >
                     {/* El degradado claro del panel de la botella en la ficha,
                         no el gris `surface-container-highest` de antes, que
                         sobre el sitio blanco se leía sucio. */}
                     <Link
                       href={`/${locale}/vinos/${wine.slug}`}
-                      className="relative h-[320px] w-full bg-gradient-to-br from-surface-container-low to-surface-container p-8 flex items-center justify-center"
+                      className="relative h-[320px] w-full bg-gradient-to-br from-neutro-claro to-neutro p-8 flex items-center justify-center"
                     >
                       <WineBottleImage
                         src={wine.image}
                         alt={wine.name}
-                        className="object-contain p-6 group-hover:scale-105 transition-transform duration-700 drop-shadow-[0_12px_18px_rgba(74,14,14,0.18)]"
+                        className="object-contain p-6 group-hover:scale-105 transition-transform duration-700 drop-shadow-[0_12px_18px_rgba(27,28,28,0.18)]"
                         sizes="(max-width: 768px) 100vw, 33vw"
                       />
                       {wine.badge && (
@@ -421,6 +423,13 @@ export default function TiendaCatalogo({
                           {translatedOr(tBadges, wine.badge, wine.badge)}
                         </SelloProducto>
                       )}
+                      {/* Una sola medalla por tarjeta, la primera de su lista:
+                          las demás están en la ficha del vino. */}
+                      <MedallaVino
+                        medalla={medallaDeTarjeta(wine.slug, tVinos)}
+                        sizes="28px"
+                        className="absolute bottom-4 right-4 h-7 w-7"
+                      />
                     </Link>
                     <div className="p-6 flex flex-col flex-grow">
                       {/* La línea en vino (`wine-accent`, 9,9:1 sobre el blanco

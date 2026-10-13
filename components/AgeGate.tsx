@@ -4,6 +4,7 @@ import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import Image from "next/image";
 import { useLocale, useTranslations } from "next-intl";
 import { routing } from "@/i18n/routing";
+import FotoBorrosa from "@/components/FotoBorrosa";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
 import Button from "@/components/ui/Button";
 
@@ -109,7 +110,16 @@ const suscribir = () => () => {};
 const hayQuePreguntar = sinConfirmacionVigente;
 const enElServidor = () => true;
 
-export default function AgeGate() {
+export default function AgeGate({
+  fotoBorrosa,
+}: {
+  /**
+   * Las miniaturas borrosas de la foto de fondo, ya resueltas por el layout.
+   * Llegan por props porque esto es un componente de cliente: pedirlas acá
+   * metería el mapa entero de miniaturas en el JavaScript del navegador.
+   */
+  fotoBorrosa?: { movil?: string; escritorio?: string };
+}) {
   const t = useTranslations("ageGate");
   const locale = useLocale();
   const pendiente = useSyncExternalStore(suscribir, hayQuePreguntar, enElServidor);
@@ -207,6 +217,11 @@ export default function AgeGate() {
           `sizes` lleva el alto del viewport: con `object-cover` en vertical la
           foto se estira hasta cubrir el alto, y ese ancho estirado —no el del
           contenedor— es el que hay que descargar. Mismo criterio que los heros. */}
+      <FotoBorrosa
+        movil={fotoBorrosa?.movil}
+        escritorio={fotoBorrosa?.escritorio}
+        className="h-full w-full object-cover object-center"
+      />
       <picture className="absolute inset-0">
         <source
           media="(min-aspect-ratio: 3/4)"

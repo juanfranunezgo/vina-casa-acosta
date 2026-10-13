@@ -168,3 +168,87 @@ test("el hero pide un candidato mas ancho que el viewport en movil", async () =>
     assert.match(pagina, new RegExp(String(ancho)), `falta el candidato de ${ancho}px`);
   }
 });
+
+test("la vendimia trae sus diez preguntas frecuentes en los tres idiomas", () => {
+  // Pedido de Damián (2026-10-12): "para ir dando el mismo orden a las páginas",
+  // como la ficha del yoga. El español es su texto.
+  for (const locale of LOCALES) {
+    const { faq } = messages[locale].activities.vendimia;
+    assert.ok(Array.isArray(faq), `${locale}: falta activities.vendimia.faq`);
+    assert.equal(faq.length, 10, locale);
+    for (const { q, a } of faq) {
+      assert.match(q, /\?$/, `${locale}: ${q}`);
+      assert.ok(typeof a === "string" && a.length > 40, `${locale}: respuesta corta en "${q}"`);
+    }
+  }
+  const es = messages.es.activities.vendimia.faq;
+  assert.equal(es[0].q, "¿En qué fecha se realiza la vendimia?");
+  assert.equal(
+    es[4].a,
+    "Recomendamos ropa cómoda, zapatos cerrados adecuados para caminar por el campo, sombrero o gorro, protector solar y una chaqueta ligera. Para el pisoneo sugerimos llevar una toalla pequeña y ropa que pueda ensuciarse.",
+  );
+});
+
+test("las preguntas van entre la galería y la consulta, con el componente de las fichas", async () => {
+  // El mismo lugar que en la ficha (Dd6b antes de Dd7): son las dudas que
+  // frenan a quien está por dejar sus datos.
+  const pagina = (await source("app/[locale]/actividades/vendimia/page.tsx")).replace(/\r\n/g, "\n");
+  assert.match(pagina, /import ActivityFaq, \{ type FaqEntry \} from "@\/components\/ActivityFaq"/);
+  const galeria = pagina.indexOf("{/* Dv6 —");
+  const preguntas = pagina.indexOf("<ActivityFaq");
+  const consulta = pagina.indexOf('id="consulta"');
+  assert.ok(galeria > 0 && preguntas > 0 && consulta > 0, "falta alguna de las tres secciones");
+  assert.ok(galeria < preguntas && preguntas < consulta, "las preguntas no están entre la galería y la consulta");
+  assert.match(pagina, /<section\s+id="preguntas"/);
+});
+
+test("ninguna respuesta promete un pago en línea que la página no tiene", async () => {
+  // El texto de Damián para "¿Cómo puedo reservar y pagar?" describía un botón
+  // "Reservar y pagar" y un pago en línea en esta página. Hoy la página tiene
+  // un formulario para dejar los datos, sin precio ni pago: publicarlo tal cual
+  // era prometer algo que el visitante no iba a encontrar. Esa respuesta se
+  // adaptó a lo que la página hace. El día que la vendimia se venda en línea,
+  // este test se cambia a propósito junto con la respuesta.
+  const pagina = await source("app/[locale]/actividades/vendimia/page.tsx");
+  assert.doesNotMatch(pagina, /checkoutIniciarUrl|ProductPurchase|AddToCartButton/, "la página ya cobra: revisar la respuesta");
+  for (const locale of LOCALES) {
+    const texto = JSON.stringify(messages[locale].activities.vendimia.faq ?? []);
+    assert.doesNotMatch(
+      texto,
+      /Reservar y pagar|pago en l[ií]nea|Book and pay|pay online|online payment|Reservar e pagar|pagamento online/i,
+      locale,
+    );
+  }
+});
+
+test("el título dice el año de la próxima vendimia, calculado y no escrito", async () => {
+  // Pedido de Juan Francisco (2026-10-12): "vive la vendimia 2027…", para que la
+  // página aparezca cuando alguien busca la vendimia del año. El año va como
+  // `{year}` en los mensajes y lo pone la página con `anioDeTemporada`.
+  assert.equal(
+    messages.es.activities.vendimia.meta.title,
+    "Vive la Vendimia {year} en el Valle del Cachapoal",
+  );
+  for (const locale of LOCALES) {
+    const { meta, facts } = messages[locale].activities.vendimia;
+    assert.match(meta.title, /\{year\}/, `${locale}.meta.title`);
+    assert.match(meta.description, /\{year\}/, `${locale}.meta.description`);
+    // El año también se lee en la página, no sólo en el resultado de Google.
+    assert.match(facts.seasonValue, /\{year\}/, `${locale}.facts.seasonValue`);
+    // Con el año puesto, la descripción cabe en lo que Google muestra.
+    const largo = meta.description.replace("{year}", "2027").length;
+    assert.ok(largo <= 160 && largo >= 110, `${locale}: la descripción mide ${largo}`);
+    // Ningún año escrito a mano en todo el bloque.
+    assert.doesNotMatch(JSON.stringify(messages[locale].activities.vendimia), /\b20\d\d\b/, locale);
+  }
+
+  const pagina = await source("app/[locale]/actividades/vendimia/page.tsx");
+  assert.match(pagina, /anioDeTemporada\(VENDIMIA_MONTHS\)/);
+  // Título, descripción (meta y JSON-LD) y el dato de temporada reciben el año.
+  assert.match(pagina, /t\("meta\.title", \{ year \}\)/);
+  assert.equal((pagina.match(/t\("meta\.description", \{ year \}\)/g) ?? []).length, 2);
+  assert.match(pagina, /t\("facts\.seasonValue", \{ year \}\)/);
+  // La página es estática: sin esto, pasado mayo seguiría diciendo el año
+  // viejo hasta el siguiente deploy.
+  assert.match(pagina, /export const revalidate = 86400;/);
+});

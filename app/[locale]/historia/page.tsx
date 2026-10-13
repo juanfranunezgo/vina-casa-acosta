@@ -2,10 +2,12 @@ import Image from "next/image";
 import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { ArrowRight } from "lucide-react";
+import FotoBorrosa from "@/components/FotoBorrosa";
 import Reveal from "@/components/Reveal";
 import Button from "@/components/ui/Button";
 import HistoriaTimeline from "@/components/HistoriaTimeline";
 import StoryChapter from "@/components/StoryChapter";
+import { fotoBorrosa } from "@/lib/fotoBorrosa";
 import { alternatesFor } from "@/lib/alternates";
 import JsonLd from "@/components/JsonLd";
 import { buildHistoriaJsonLd } from "@/lib/siteJsonLd";
@@ -81,6 +83,11 @@ export default async function HistoriaPage({
             alto, y ese ancho estirado —no el del contenedor— es el que hay que
             descargar. El 58% horizontal solo aplica al encuadre horizontal: el
             recorte vertical ya viene centrado en el tino con las botellas. */}
+        <FotoBorrosa
+          movil={fotoBorrosa("/images/historia/vinos-retro-movil-828.webp")}
+          escritorio={fotoBorrosa("/images/historia/vinos-retro-1280.webp")}
+          className="h-full w-full object-cover object-center apaisado:object-[58%_center]"
+        />
         <picture className="absolute inset-0">
           <source
             media="(min-aspect-ratio: 3/4)"

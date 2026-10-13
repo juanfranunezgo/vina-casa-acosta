@@ -12,16 +12,21 @@ import {
   Trophy,
   Wine,
 } from "lucide-react";
+import FotoBorrosa from "@/components/FotoBorrosa";
 import Reveal from "@/components/Reveal";
 import Button from "@/components/ui/Button";
 import CollectionPhotos from "@/components/CollectionPhotos";
 import ShowMore from "@/components/ShowMore";
 import ActivityBreadcrumbs from "@/components/ActivityBreadcrumbs";
+import ActivityFaq, { type FaqEntry } from "@/components/ActivityFaq";
 import ActivityReservationForm from "@/components/ActivityReservationForm";
 import VineyardYear from "@/components/VineyardYear";
 import JsonLd from "@/components/JsonLd";
+import { fotoBorrosa } from "@/lib/fotoBorrosa";
+import { anioDeTemporada } from "@/lib/temporada";
 import { buildVendimiaJsonLd } from "@/lib/activityJsonLd";
 import { alternatesFor } from "@/lib/alternates";
+import { CONTACT_WHATSAPP_URL } from "@/lib/contact";
 import {
   VENDIMIA_HUB,
   VENDIMIA_MONTHS,
@@ -78,6 +83,12 @@ import {
  */
 
 const HUB_PATH = VENDIMIA_HUB ?? "/actividades/vendimia";
+
+// La página es estática, pero dice el año de la próxima vendimia ("Vive la
+// Vendimia 2027…") y ese año cambia solo, terminado mayo. Regenerarla una vez
+// al día alcanza: sin esto seguiría diciendo el año viejo hasta el siguiente
+// deploy. Tiene que ser un literal: Next lee la config de segmento estáticamente.
+export const revalidate = 86400;
 
 // El hero va en <img> con srcSet y no en next/image: los tres anchos ya están
 // generados y versionados (scripts/optimize-heros.mjs), así que no hace falta
@@ -209,8 +220,10 @@ export async function generateMetadata({
   const t = await getTranslations({ locale, namespace: "activities.vendimia" });
   const tMeta = await getTranslations({ locale, namespace: "metadata" });
 
-  const title = t("meta.title");
-  const description = t("meta.description");
+  // El año de la próxima temporada, calculado: ver `anioDeTemporada`.
+  const year = anioDeTemporada(VENDIMIA_MONTHS);
+  const title = t("meta.title", { year });
+  const description = t("meta.description", { year });
   // Open Graph no aplica la plantilla de `title`, así que el título completo va
   // escrito (misma nota que en la ficha y en la portada de vinos).
   const ogTitle = `${title} | ${tMeta("siteName")}`;
@@ -250,6 +263,17 @@ export default async function VendimiaPage({
   const t = await getTranslations("activities.vendimia");
   const tLabels = await getTranslations("activities.labels");
   const tItems = await getTranslations("activities.items");
+  // El mismo año del título, para que la página diga lo que el resultado de
+  // Google promete: va en el dato de temporada de Dv2 y en el JSON-LD.
+  const year = anioDeTemporada(VENDIMIA_MONTHS);
+
+  // Dv6b — las preguntas frecuentes, y el mensaje con que abre WhatsApp desde
+  // ahí: el mismo del botón del formulario en modo temporada ("quiero que me
+  // avisen cuándo es la próxima…"), porque todavía no hay fecha que reservar.
+  const faq = t.raw("faq") as FaqEntry[];
+  const whatsappHref = `${CONTACT_WHATSAPP_URL}?text=${encodeURIComponent(
+    tLabels("form.waIntroSeason", { activity: t("hero.title") }),
+  )}`;
 
   const cycleSteps = t.raw("cycle.steps") as CycleStep[];
   const programSteps = t.raw("program.steps") as string[];
@@ -296,7 +320,7 @@ export default async function VendimiaPage({
   // no agregaban nada — las etiquetas ya dicen "Temporada", "Duración" y "Para
   // quién". Lo que ordena la fila es el filete de arriba.
   const facts = [
-    { label: t("facts.seasonLabel"), value: t("facts.seasonValue") },
+    { label: t("facts.seasonLabel"), value: t("facts.seasonValue", { year }) },
     { label: t("facts.durationLabel"), value: t("facts.durationValue") },
     { label: t("facts.audienceLabel"), value: t("facts.audienceValue") },
   ];
@@ -316,7 +340,7 @@ export default async function VendimiaPage({
           locale,
           {
             name: t("hero.title"),
-            description: t("meta.description"),
+            description: t("meta.description", { year }),
             image: HERO_FALLBACK,
           },
           crumbLabels,
@@ -340,6 +364,10 @@ export default async function VendimiaPage({
               —ver el comentario de HERO_SIZES— pero es la forma que el resto de
               los heros del sitio ya usa, y la que deja servir los tres anchos
               del repo sin pasar por el optimizador en cada visita. */}
+          <FotoBorrosa
+            escritorio={fotoBorrosa("/images/actividades/hero-vendimia-1280.webp")}
+            className="h-full w-full object-cover object-center"
+          />
           <picture className="absolute inset-0 block h-full w-full">
             <img
               src={HERO_FALLBACK}
@@ -718,6 +746,36 @@ export default async function VendimiaPage({
               <div key={fila.fotos[0]}>{filaDeGaleria(fila, true)}</div>
             ))}
           </ShowMore>
+        </div>
+      </section>
+
+      {/* Dv6b — Preguntas frecuentes (2026-10-12, pedido de Damián: "para ir
+          dando el mismo orden a las páginas"). Van donde en la ficha (Dd6b),
+          justo antes de la consulta, y con su mismo componente. Es la tercera
+          excepción a la regla de "nada de tarjetas" de esta página, por la
+          misma razón que el formulario: quien viene de la ficha del yoga ya
+          sabe cómo se usan.
+
+          Diez preguntas con el texto de la viña. Una se adaptó: la de cómo
+          reservar describía un botón "Reservar y pagar" y un pago en línea que
+          esta página no tiene; dice lo que la página hace hoy. Lo cuida
+          `tests/vendimia-hub.test.mjs`. */}
+      <section
+        id="preguntas"
+        className="scroll-mt-24 border-t border-outline-variant/30 bg-surface py-section-gap px-margin-mobile md:px-margin-desktop"
+      >
+        <div className="mx-auto max-w-(--container-max)">
+          <Reveal>
+            <ActivityFaq
+              title={tLabels("faqTitle")}
+              entries={faq}
+              more={tLabels("faqMore")}
+              whatsappLabel={tLabels("faqWhatsapp")}
+              whatsappHref={whatsappHref}
+              expandAll={tLabels("faqExpandAll")}
+              collapseAll={tLabels("faqCollapseAll")}
+            />
+          </Reveal>
         </div>
       </section>
 

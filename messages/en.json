@@ -337,6 +337,11 @@
       "subtitle": "A collection of honest expressions born in our boutique vineyard in the Cachapoal Valley. Each bottle tells the story of our heritage and our terroir."
     },
     "lineLabel": "Line",
+    "medallas": {
+      "titulo": "Awards & ratings",
+      "oro": "Gold Medal",
+      "puntos": "{puntos} points"
+    },
     "price": {
       "previous": "Previous price",
       "current": "Current price",
@@ -414,7 +419,7 @@
     "priceLabel": "Price in Chilean pesos",
     "youMayAlsoLike": "You may also like",
     "trust": {
-      "securePayment": "Secure payment with",
+      "securePaymentBanner": "Shop online with <b>secure payment</b>",
       "securePaymentNote": "You pay on Mercado Pago: your banking details never go through this store.",
       "direct": "Buy direct from the winery",
       "directNote": "Wines from our cellar in San Vicente de Tagua Tagua, with no middlemen.",
@@ -576,14 +581,14 @@
     },
     "vendimia": {
       "meta": {
-        "title": "Harvest: pick, stomp and celebrate",
-        "description": "Live the grape harvest in Chile's Cachapoal Valley: pick, destem and stomp the grapes the way it has always been done, then close the day with a country asado."
+        "title": "Join the {year} Harvest in the Cachapoal Valley",
+        "description": "The {year} grape harvest in San Vicente de Tagua Tagua, Chile: picking, stomping and a country lunch. April and May; leave your details and we'll tell you when."
       },
       "breadcrumb": "Harvest",
       "cta": "Discover the harvest",
       "facts": {
         "seasonLabel": "Season",
-        "seasonValue": "April · May",
+        "seasonValue": "April · May {year}",
         "durationLabel": "Length",
         "durationValue": "A full day",
         "audienceLabel": "Who it's for",
@@ -686,6 +691,48 @@
       "season": {
         "note": "The exact date is set by the grapes: we harvest when they reach ripeness, so each day is confirmed within the season. Leave us your details and we'll let you know as soon as they're set."
       },
+      "faq": [
+        {
+          "q": "When does the harvest take place?",
+          "a": "The Harvest at Casa Acosta takes place during April and May. The date is set according to how ripe the grapes are and, once published, it is confirmed. Leave us your details and we'll let you know as soon as we announce the next harvest day."
+        },
+        {
+          "q": "Do I need previous experience?",
+          "a": "**No.** The activity is designed for anyone who wants to discover and experience the harvest for the first time. Our field and winemaking team is with you and explains each stage of the day."
+        },
+        {
+          "q": "Can children take part?",
+          "a": "**Yes.** It's a family day that children and adults can both join. Minors must be accompanied by an adult during the activities in the vineyard. Wine is served only to those over 18."
+        },
+        {
+          "q": "What does the experience include?",
+          "a": "The day includes a country breakfast, an introductory talk, grape picking, destemming, traditional stomping, a country lunch with a salad buffet, wine for adults, games, raffles, an apron and a souvenir wine glass."
+        },
+        {
+          "q": "What should I wear?",
+          "a": "We recommend comfortable clothes, closed shoes suitable for walking in the countryside, a hat or cap, sunscreen and a light jacket. For the stomping we suggest bringing a small towel and clothes you don't mind getting dirty."
+        },
+        {
+          "q": "What happens if it rains or the weather doesn't allow the activity?",
+          "a": "If the weather prevents us from holding the day safely, we will let everyone who has signed up know of any change or rescheduling in good time."
+        },
+        {
+          "q": "Can lunch be adapted for allergies or dietary restrictions?",
+          "a": "**Yes.** Allergies, dietary restrictions and requests for vegetarian alternatives must be reported when you book, so that we can review the options available."
+        },
+        {
+          "q": "How long does the day last?",
+          "a": "It's a full-day experience. Start and end times will be announced when the date is published and confirmed."
+        },
+        {
+          "q": "Can the published date change?",
+          "a": "Once published, the date is confirmed. It could only be changed exceptionally, if the weather prevents the activities from being held safely."
+        },
+        {
+          "q": "How can I book?",
+          "a": "Leave us your details in the form on this page and we'll let you know as soon as the date is published, with the steps to secure your place.\n\nIf you need help, you can also write to us directly on WhatsApp."
+        }
+      ],
       "others": {
         "title": "Other ways to live the vineyard's year",
         "lead": "The harvest is one stage of the year. These two experiences follow the others."
@@ -707,12 +754,14 @@
         "groupFrom": "Groups from 8 people",
         "reservationNote": "Subject to availability — we arrange the date with you",
         "includes": [
-          "Fresh ingredients and utensils.",
-          "Printed recipes to take home.",
-          "Baked in a traditional oven.",
-          "Wine tasting: on arrival, during the workshop and at the close.",
-          "Natural juices for under-18s.",
-          "Dough ready to take home."
+          "Welcome glass of Berá Rosé Carménère.",
+          "Fresh ingredients and all the utensils you need.",
+          "Guided preparation of the dough, from kneading to putting together your own pizza.",
+          "Cooked in a traditional oven.",
+          "Tasting of three Casa Acosta wines, served during the workshop and at the close.",
+          "Natural juices for under-18s and anyone who doesn't drink alcohol.",
+          "Printed recipe to repeat the experience at home.",
+          "A portion of dough, ready to take home."
         ],
         "closing": "You leave with the recipe, dough to do it again at home, and the table talk.",
         "photos": {
@@ -737,11 +786,15 @@
         "groupFrom": "Groups from 8 people",
         "reservationNote": "Subject to availability — we arrange the date with you",
         "includes": [
-          "Fresh ingredients and utensils.",
-          "Printed recipes to take home.",
-          "Cooked in a traditional oven.",
-          "Wine tasting: on arrival, during the workshop and at the close.",
-          "Natural juices for under-18s."
+          "Welcome glass of Berá Rosé Carménère.",
+          "Fresh ingredients and all the utensils you need.",
+          "Guided preparation of the dough, from kneading and rolling it out to cutting.",
+          "Making fettuccine and filled pasta.",
+          "Cooking the pasta made during the workshop.",
+          "Tasting of four different sauces to go with the dishes.",
+          "Tasting of three Casa Acosta wines, served during the workshop and at the close.",
+          "Natural juices for under-18s and anyone who doesn't drink alcohol.",
+          "Printed recipe to repeat the experience at home."
         ],
         "closing": "You leave with the recipe, the cut you learned, and the table talk.",
         "photos": {
@@ -765,11 +818,16 @@
         "groupFrom": "Groups from 8 people",
         "reservationNote": "Subject to availability — we arrange the date with you",
         "includes": [
-          "Fresh ingredients and utensils.",
-          "Printed recipes to take home.",
-          "Cooked in a traditional oven.",
-          "Wine tasting: on arrival, during the workshop and at the close.",
-          "Natural juices for under-18s."
+          "Welcome glass of Berá Rosé Carménère.",
+          "Fresh ingredients and all the utensils you need.",
+          "Guided preparation of the gnocchi dough, from kneading to getting it just right.",
+          "Cutting and shaping the gnocchi by hand, using traditional techniques.",
+          "Cooking the gnocchi made during the workshop.",
+          "Tasting of four different sauces to go with the dishes.",
+          "Tasting of three Casa Acosta wines, served during the workshop and at the close.",
+          "Natural juices for under-18s and anyone who doesn't drink alcohol.",
+          "A shared dinner with the gnocchi the group has made.",
+          "Printed recipe for the gnocchi and their sauces, to repeat the experience at home."
         ],
         "closing": "You leave with the recipe, the sauces written down, and the dinner you shared.",
         "photos": {
@@ -831,7 +889,7 @@
           "Tasting straight from the barrel",
           "Pairing board"
         ],
-        "tagline": "Premium tasting and wine straight from the barrel",
+        "tagline": "A deeper experience, with wine straight from the barrel",
         "intro": "A deeper, more technical experience, ideal for those who want to explore different expressions of Carménère, from the barrel to our most complex lines.",
         "duration": "2 hours 30 minutes",
         "groupFrom": "Groups from 2 people",
@@ -851,11 +909,11 @@
         "pairing": "Pairing board included.",
         "closing": "Our wines will be available for sale at the cellar itself.",
         "photos": {
-          "hero": "The host points out the vineyard, glass of rosé in hand, on the Berá Tour at Viña Casa Acosta, in San Vicente de Tagua Tagua",
+          "hero": "A group walks with glasses of rosé along a path under flowering trees, with the host, on the Berá Tour at Viña Casa Acosta, in San Vicente de Tagua Tagua",
           "barrica": "Two young visitors draw wine from the barrel with a glass pipette and pour it into a glass",
           "salaBarricas": "A visitor stands by barrels bearing the Viña Casa Acosta logo while a woman and a little girl sit on another barrel",
           "mesa": "Glasses lined up and a board of bites on the tasting table, in the light from the window",
-          "camino": "A group walks with glasses of rosé along a path under flowering trees, with the host",
+          "vinedo": "The host points out the vineyard, glass of rosé in hand",
           "pipeta": "A visitor draws wine from the barrel with a pipette and pours it into a glass"
         }
       },
@@ -878,7 +936,7 @@
         "groupFrom": "Groups from 4 people",
         "reservationNote": "Ideally 1 day ahead or subject to availability",
         "includes": [
-          "Welcome at the Varieties Garden with a welcome glass of Berá Rosa Carménère.",
+          "Welcome at the Varieties Garden with a welcome glass of Berá Rosé Carménère.",
           "Vineyard walk focused on ampelography: a technical explanation of the Carménère variety and its history at Casa Acosta.",
           "Tour of the cellar, winemaking room and barrel room, with a full explanation of the wine's production process, from vine to glass.",
           "Tasting straight from the barrel, to get to know the wine during its aging stage.",

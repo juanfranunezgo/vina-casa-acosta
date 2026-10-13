@@ -1,7 +1,9 @@
 import Image from "next/image";
 import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
+import FotoBorrosa from "@/components/FotoBorrosa";
 import Reveal from "@/components/Reveal";
+import { fotoBorrosa } from "@/lib/fotoBorrosa";
 import { alternatesFor } from "@/lib/alternates";
 import { buildStaffJsonLd } from "@/lib/siteJsonLd";
 import JsonLd from "@/components/JsonLd";
@@ -84,6 +86,11 @@ export default async function StaffPage({
             `sizes` lleva el alto del viewport porque con object-cover en vertical
             la foto se estira hasta cubrir el alto, y ese ancho estirado —no el
             del contenedor— es el que hay que descargar. */}
+        <FotoBorrosa
+          movil={fotoBorrosa("/images/staff/hero-caja-uvas-movil-828.webp")}
+          escritorio={fotoBorrosa("/images/staff/hero-caja-uvas-1280.webp")}
+          className="h-full w-full object-cover object-center"
+        />
         <picture className="absolute inset-0">
           <source
             media="(min-aspect-ratio: 3/4)"

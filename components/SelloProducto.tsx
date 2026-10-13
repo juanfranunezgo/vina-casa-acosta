@@ -20,7 +20,7 @@ export default function SelloProducto({
 }) {
   return (
     <span
-      className={`absolute inline-flex items-center rounded-full bg-surface-container-lowest/95 px-3 py-1 font-body text-[12px] font-semibold text-primary shadow-[0_6px_16px_-8px_rgba(74,14,14,0.35)] ${className}`}
+      className={`absolute inline-flex items-center rounded-full bg-surface-container-lowest/95 px-3 py-1 font-body text-[12px] font-semibold text-primary shadow-[0_6px_16px_-8px_rgba(27,28,28,0.35)] ${className}`}
     >
       {children}
     </span>

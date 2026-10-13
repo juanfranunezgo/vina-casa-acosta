@@ -113,8 +113,8 @@ export default function ActivitySectionNav({ items, cta, aria }: Props) {
         aria-label={aria}
         className={`pointer-events-auto max-w-full rounded-full border p-1 transition-[background-color,box-shadow,border-color] duration-300 max-[380px]:overflow-x-auto max-[380px]:[scrollbar-width:none] ${
           stuck
-            ? "border-outline-variant/50 bg-surface-container-lowest/85 shadow-[0_18px_40px_-16px_rgba(42,0,2,0.32)] backdrop-blur-xl"
-            : "border-outline-variant/40 bg-surface-container-lowest shadow-[0_12px_32px_-18px_rgba(42,0,2,0.28)]"
+            ? "border-outline-variant/50 bg-surface-container-lowest/85 shadow-[0_18px_40px_-16px_rgba(27,28,28,0.32)] backdrop-blur-xl"
+            : "border-outline-variant/40 bg-surface-container-lowest shadow-[0_12px_32px_-18px_rgba(27,28,28,0.28)]"
         }`}
       >
         <ul className="relative flex items-center gap-0.5">

@@ -9,6 +9,7 @@ import AgeGate, { AGE_GATE_SCRIPT } from "@/components/AgeGate";
 import CartDrawer from "@/components/CartDrawer";
 import CartButton from "@/components/CartButton";
 import ScrollReset from "@/components/ScrollReset";
+import { fotoBorrosa } from "@/lib/fotoBorrosa";
 import { routing } from "@/i18n/routing";
 import { SITE_URL } from "@/lib/siteUrl";
 import "../globals.css";
@@ -126,7 +127,12 @@ export default async function LocaleLayout({
           <Footer />
           <CartButton />
           <CartDrawer />
-          <AgeGate />
+          <AgeGate
+            fotoBorrosa={{
+              movil: fotoBorrosa("/images/edad/uvas-movil-828.webp"),
+              escritorio: fotoBorrosa("/images/edad/uvas-1280.webp"),
+            }}
+          />
         </NextIntlClientProvider>
       </body>
     </html>

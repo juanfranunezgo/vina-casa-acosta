@@ -46,6 +46,13 @@
   --color-on-surface: #1b1c1c;
   --color-on-surface-variant: #544341;
 
+  /* Grises sin tinte. Las superficies M3 de arriba llevan un punto de rojo
+     (#f0eded) y al lado del blanco puro se leen rosadas: "¿por qué se ven
+     medio rosadas las tarjetas?" (Juan Francisco, 2026-10-12). Estos dos son
+     el fondo de las fotos de botella y de la banda de Mercado Pago. */
+  --color-neutro-claro: #f7f7f7;
+  --color-neutro: #efefef;
+
   --color-outline: #877270;
   --color-outline-variant: #dac1bf;
 
@@ -133,14 +140,14 @@ body {
 }
 
 .ambient-shadow {
-  box-shadow: 0 20px 40px rgba(74, 14, 14, 0.05);
+  box-shadow: 0 20px 40px rgba(27, 28, 28, 0.05);
 }
 
 /* Sombra más profunda para tarjetas destacadas (precio, formulario). */
 .ambient-shadow-lg {
   box-shadow:
-    0 32px 64px -24px rgba(74, 14, 14, 0.18),
-    0 8px 24px -14px rgba(74, 14, 14, 0.08);
+    0 32px 64px -24px rgba(27, 28, 28, 0.18),
+    0 8px 24px -14px rgba(27, 28, 28, 0.08);
 }
 
 .hero-gradient {
@@ -233,7 +240,7 @@ body {
   aspect-ratio: 4 / 3;
   border-radius: 1.1rem 2.75rem 1.1rem 2.75rem;
   overflow: hidden;
-  box-shadow: 0 22px 44px -18px rgba(74, 14, 14, 0.28);
+  box-shadow: 0 22px 44px -18px rgba(27, 28, 28, 0.28);
 }
 
 .tl-year {

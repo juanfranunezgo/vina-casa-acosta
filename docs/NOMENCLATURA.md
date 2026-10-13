@@ -38,7 +38,7 @@ Sistema de IDs para referirse a páginas y secciones del sitio de forma rápida 
 | ID | Sección |
 |---|---|
 | C1 | Hero (centrado) |
-| C2 | Catálogo por línea — banda editorial por colección (carrusel 4:5 de fotos de ambiente + identidad de la línea, y grilla de tarjetas que enlazan a la ficha del producto). 6 sub-secciones alternando fondos. Cada banda muestra **todos** los vinos de su línea (sin "ver más"). Las fotos del carrusel se declaran en `lineMeta[línea].photos` y se generan con `npm run fotos:colecciones`. |
+| C2 | Catálogo por línea — banda editorial por colección (carrusel 4:5 de fotos de ambiente + identidad de la línea, y grilla de tarjetas que enlazan a la ficha del producto). 6 sub-secciones alternando fondos. Cada banda muestra **todos** los vinos de su línea (sin "ver más"). Las fotos del carrusel se declaran en `lineMeta[línea].photos` y se generan con `npm run fotos:colecciones`. Desde el 2026-10-12 cada tarjeta lleva **una medalla** abajo a la derecha de la foto, si el vino tiene (`MedallaVino`, la primera de su lista en `data/medallas.ts`). |
 | C2a | Línea Ombú |
 | C2b | Línea Lajau |
 | C2c | Línea Estación Francia |
@@ -51,7 +51,7 @@ Sistema de IDs para referirse a páginas y secciones del sitio de forma rápida 
 
 | ID | Sección |
 |---|---|
-| Cd1 | Producto. Desde el 2026-09-25, con el tratamiento de las fichas de actividad (Plus Jakarta Sans, tarjetas que flotan por la sombra, `IconBadge`): la botella queda fija en escritorio y, a la derecha, nombre → **tarjeta de compra** (precio, `ProductPurchase` con stepper y el sello `CompraSegura`: Mercado Pago sólo con el pago en línea encendido, compra directa a la viña, mínimo de botellas) → descripción → notas de cata → maridaje → ficha técnica en tarjeta, con el PDF al pie. Antes la compra iba al final, después de la ficha técnica |
+| Cd1 | Producto. Desde el 2026-09-25, con el tratamiento de las fichas de actividad (Plus Jakarta Sans, tarjetas que flotan por la sombra, `IconBadge`): la botella queda fija en escritorio y, a la derecha, nombre → **tarjeta de compra** (precio, `ProductPurchase` con stepper y el sello `CompraSegura`: Mercado Pago sólo con el pago en línea encendido, compra directa a la viña, mínimo de botellas) → descripción → notas de cata → maridaje → ficha técnica en tarjeta, con el PDF al pie. Antes la compra iba al final, después de la ficha técnica Desde el 2026-10-12, la medalla de la tarjeta va también sobre el panel de la botella (abajo a la derecha) y, entre la descripción y las notas de cata, el bloque **«Premios y puntajes»** lista todas las del vino con su texto (`data/medallas.ts`); sin medallas no se dibuja. Mismo día: en la tarjeta de compra, Mercado Pago pasa a la misma banda gris de F1, y el fondo de la foto de la botella a gris neutro (`from-neutro-claro to-neutro`), igual que en C2 y F2. |
 | Cd2 | Vinos relacionados de la misma línea |
 
 ## D — Actividades (`app/[locale]/actividades/page.tsx`)
@@ -100,14 +100,15 @@ pie) pasaron a `bg-surface`. Las tarjetas grises dentro de las páginas se queda
 | ID | Sección |
 |---|---|
 | Dv1 | Hero + breadcrumbs |
-| Dv2 | Qué es la vendimia en Casa Acosta + los tres datos ciertos (temporada · duración · para quién) |
+| Dv2 | Qué es la vendimia en Casa Acosta + los tres datos ciertos (temporada · duración · para quién) Desde el 2026-10-12 el dato de temporada lleva el año de la próxima vendimia ("Abril · Mayo 2027"), calculado con `anioDeTemporada`: es el mismo año del título de la página |
 | Dv3 | El año de la viña — banda de 12 meses con las 5 etapas del ciclo y la ventana de cosecha (`components/VineyardYear.tsx`) |
 | Dv4 | La jornada: corta, pisa y celebra — programa en `<ol>` con un ícono por paso + qué incluye, y al lado un carrusel 4:5 con tres fotos en el orden del día (desayuno · cosecha · asado) |
 | Dv5 | Otras formas de vivir el ciclo (Cosecha tu historia · Lágrimas de invierno) |
 | Dv6 | Galería en filas de una sola proporción: a la vista, apertura ancha 16:9 + fila de tres 3:2; detrás de **"Ver más fotos"** (`components/ShowMore.tsx`), fila de cuatro 4:5, par 3:2 y cierre 16:9 con la foto grupal. Las filas se declaran en `data/vendimiaGallery.ts`; lo cuida `tests/vendimia-galeria.test.mjs`. Desde el 2026-09-22 |
+| Dv6b | Preguntas frecuentes (2026-10-12, pedido de Damián: "para ir dando el mismo orden a las páginas"). Diez preguntas en `activities.vendimia.faq`, con el mismo componente de las fichas (`components/ActivityFaq.tsx`, Dd6b) y en el mismo lugar: justo antes de la consulta. La salida a WhatsApp abre con el mensaje del formulario en modo temporada |
 | Dv7 | Consulta (formulario en modo temporada, sin mínimo de personas) |
 
-**El orden en pantalla es Dv1 · Dv2 · Dv4 · Dv3 · Dv6 · Dv7 · Dv5**, no el de la
+**El orden en pantalla es Dv1 · Dv2 · Dv4 · Dv3 · Dv6 · Dv6b · Dv7 · Dv5**, no el de la
 numeración: mandar a otra página justo antes del formulario es perder la visita.
 Es el mismo orden que la ficha `Dd`, donde "otras actividades" también cierra.
 
@@ -132,7 +133,9 @@ redondeada con sombra y salto al hover). Siguen intactos para `Dd`. Si una
 sección nueva de Dv necesita una caja para leerse, lo que le falta es jerarquía
 tipográfica.
 
-Dos excepciones deliberadas a esa regla: **las fotos van con esquina redondeada**
+Tres excepciones deliberadas a esa regla. **Las preguntas frecuentes (Dv6b) van en
+tarjetas**, las de `ActivityFaq`, por la misma razón que el formulario: quien viene de la
+ficha del yoga ya sabe cómo se usan. Las otras dos: **las fotos van con esquina redondeada**
 (`rounded-xl`; `rounded-lg` las miniaturas de Dv5) porque una foto no encierra
 contenido sino que lo es, y **Dv7 sí es una tarjeta**, copiando exactamente la de
 `Dd6` — el formulario no es contenido editorial sino el mismo trámite que el
@@ -162,8 +165,8 @@ sugieren los nombres de Tailwind.
 
 | ID | Sección |
 |---|---|
-| F1 | Hero + franja de confianza bajo el subtítulo (`CompraSegura` en variante `franja`: pago seguro con Mercado Pago —sólo con el pago en línea encendido—, compra directa a la viña, mínimo de botellas). Desde el 2026-09-25 |
-| F2 | Catálogo (filtros + sort + grilla + sheet mobile). Desde el 2026-09-25 con el tratamiento de las fichas: Plus Jakarta Sans, filtros como pastillas (`aria-pressed`) en una tarjeta que flota por la sombra, orden como pastilla, tarjetas de vino blancas con sombra, la línea en la cursiva de los antetítulos, los sellos ("Edición Limitada", "Insignia") en pastilla blanca (`SelloProducto`, el mismo de Cd1) y el botón de carrito en círculo vino. El aviso del pie dice cómo se paga de verdad: Mercado Pago con el pago en línea encendido, WhatsApp sin él |
+| F1 | Hero + franja de confianza bajo el subtítulo (`CompraSegura` en variante `franja`: pago seguro con Mercado Pago —sólo con el pago en línea encendido—, compra directa a la viña, mínimo de botellas). Desde el 2026-09-25 Desde el 2026-10-12 Mercado Pago va en una **banda gris propia** bajo el subtítulo —texto a la izquierda, logo grande a la derecha (`BandaMercadoPago` en `CompraSegura`)— y los otros dos datos quedan en la fila de abajo. |
+| F2 | Catálogo (filtros + sort + grilla + sheet mobile). Desde el 2026-09-25 con el tratamiento de las fichas: Plus Jakarta Sans, filtros como pastillas (`aria-pressed`) en una tarjeta que flota por la sombra, orden como pastilla, tarjetas de vino blancas con sombra, la línea en la cursiva de los antetítulos, los sellos ("Edición Limitada", "Insignia") en pastilla blanca (`SelloProducto`, el mismo de Cd1) y el botón de carrito en círculo vino. El aviso del pie dice cómo se paga de verdad: Mercado Pago con el pago en línea encendido, WhatsApp sin él Desde el 2026-10-12 la tarjeta lleva **una medalla** abajo a la derecha de la foto, la misma de C2 (`MedallaVino`). |
 
 ## G — 404 (`app/[locale]/not-found.tsx`)
 

@@ -337,6 +337,11 @@
       "subtitle": "Uma coleção de expressões autênticas, nascidas em nosso vinhedo boutique no Vale do Cachapoal. Cada garrafa conta a história do nosso patrimônio e do nosso terroir."
     },
     "lineLabel": "Linha",
+    "medallas": {
+      "titulo": "Prêmios e pontuações",
+      "oro": "Medalha de Ouro",
+      "puntos": "{puntos} pontos"
+    },
     "price": {
       "previous": "Preço anterior",
       "current": "Preço atual",
@@ -414,7 +419,7 @@
     "priceLabel": "Preço em pesos chilenos",
     "youMayAlsoLike": "Você também pode gostar",
     "trust": {
-      "securePayment": "Pagamento seguro com",
+      "securePaymentBanner": "Compre online com <b>pagamento seguro</b>",
       "securePaymentNote": "O pagamento é feito no Mercado Pago: seus dados bancários não passam por esta loja.",
       "direct": "Compra direta da vinícola",
       "directNote": "Vinhos da nossa adega em San Vicente de Tagua Tagua, sem intermediários.",
@@ -576,14 +581,14 @@
     },
     "vendimia": {
       "meta": {
-        "title": "Vindima: colher, pisar e celebrar",
-        "description": "Viva a vindima no Vale do Cachapoal: colha a uva, desengace e pise como sempre se fez, e encerre o dia com um assado campestre entre as parreiras."
+        "title": "Viva a Vindima {year} no Vale do Cachapoal",
+        "description": "Viva a vindima {year} em San Vicente de Tagua Tagua, Chile: colheita da uva, pisa e almoço campestre. Em abril e maio; deixe seus dados e avisamos a data."
       },
       "breadcrumb": "Vindima",
       "cta": "Conhecer a vindima",
       "facts": {
         "seasonLabel": "Temporada",
-        "seasonValue": "Abril · Maio",
+        "seasonValue": "Abril · Maio {year}",
         "durationLabel": "Duração",
         "durationValue": "Dia inteiro",
         "audienceLabel": "Para quem",
@@ -686,6 +691,48 @@
       "season": {
         "note": "A data exata quem decide é a uva: colhe-se quando atinge a maturação, então cada jornada é confirmada na temporada. Deixe os seus dados e avisamos assim que forem definidas."
       },
+      "faq": [
+        {
+          "q": "Em que data acontece a vindima?",
+          "a": "A Vindima na Casa Acosta acontece durante abril e maio. A data é definida de acordo com o ponto de maturação da uva e, uma vez publicada, fica confirmada. Deixe seus dados e avisaremos assim que anunciarmos a próxima jornada."
+        },
+        {
+          "q": "Preciso de experiência prévia?",
+          "a": "**Não.** A atividade é pensada para quem quer conhecer e viver a vindima pela primeira vez. Nossa equipe agrícola e enológica acompanha e explica cada etapa da jornada."
+        },
+        {
+          "q": "Crianças podem participar?",
+          "a": "**Sim.** É uma jornada familiar da qual crianças e adultos podem participar. Os menores devem permanecer acompanhados por um adulto durante as atividades na vinha. O consumo de vinho é reservado exclusivamente a maiores de 18 anos."
+        },
+        {
+          "q": "O que a experiência inclui?",
+          "a": "A jornada inclui café da manhã campestre, conversa introdutória, colheita da uva, desengace, pisa tradicional, almoço campestre com buffet de saladas, vinho para adultos, concursos, sorteios, avental e taça de lembrança."
+        },
+        {
+          "q": "Que roupa devo levar?",
+          "a": "Recomendamos roupa confortável, sapatos fechados adequados para caminhar no campo, chapéu ou boné, protetor solar e um casaco leve. Para a pisa, sugerimos levar uma toalha pequena e roupa que possa sujar."
+        },
+        {
+          "q": "O que acontece se chover ou se o clima não permitir a atividade?",
+          "a": "Se as condições climáticas impedirem a realização da jornada com segurança, informaremos em tempo hábil qualquer mudança ou reprogramação às pessoas inscritas."
+        },
+        {
+          "q": "Podem adaptar o almoço em caso de alergias ou restrições alimentares?",
+          "a": "**Sim.** Alergias, restrições alimentares e pedidos de alternativas vegetarianas devem ser informados no momento da reserva, para que possamos avaliar as opções disponíveis."
+        },
+        {
+          "q": "Quanto tempo dura a jornada?",
+          "a": "É uma experiência de dia inteiro. Os horários de início e término serão informados quando a data for publicada e confirmada."
+        },
+        {
+          "q": "A data publicada pode mudar?",
+          "a": "Uma vez publicada, a data fica confirmada. Só poderia ser alterada excepcionalmente, se as condições climáticas impedirem a realização das atividades com segurança."
+        },
+        {
+          "q": "Como posso reservar?",
+          "a": "Deixe seus dados no formulário desta página e avisaremos assim que a data for publicada, com os passos para garantir sua vaga.\n\nSe precisar de ajuda, você também pode nos escrever diretamente pelo WhatsApp."
+        }
+      ],
       "others": {
         "title": "Outras formas de viver o ciclo da vinha",
         "lead": "A vindima é uma etapa do ano. Estas duas experiências acompanham as demais."
@@ -707,12 +754,14 @@
         "groupFrom": "Grupos a partir de 8 pessoas",
         "reservationNote": "Sujeito à disponibilidade — combinamos a data com você",
         "includes": [
-          "Ingredientes frescos e utensílios.",
-          "Receitas impressas para levar.",
-          "Assada em forno tradicional.",
-          "Degustação de vinhos: de boas-vindas, durante a oficina e no encerramento.",
-          "Sucos naturais para menores.",
-          "Massa pronta para levar para casa."
+          "Taça de boas-vindas Berá Rosé Carménère.",
+          "Ingredientes frescos e todos os utensílios necessários.",
+          "Preparo guiado da massa, da sova até a montagem da sua própria pizza.",
+          "Cozimento em forno tradicional.",
+          "Degustação de três vinhos da Casa Acosta, servidos durante a oficina e no encerramento.",
+          "Sucos naturais para menores de idade e pessoas que não consomem álcool.",
+          "Receita impressa para repetir a experiência em casa.",
+          "Porção de massa pronta para levar."
         ],
         "closing": "Você leva a receita, a massa para repetir em casa e a conversa da mesa.",
         "photos": {
@@ -737,11 +786,15 @@
         "groupFrom": "Grupos a partir de 8 pessoas",
         "reservationNote": "Sujeito à disponibilidade — combinamos a data com você",
         "includes": [
-          "Ingredientes frescos e utensílios.",
-          "Receitas impressas para levar.",
-          "Cozimento em forno tradicional.",
-          "Degustação de vinhos: de boas-vindas, durante a oficina e no encerramento.",
-          "Sucos naturais para menores."
+          "Taça de boas-vindas Berá Rosé Carménère.",
+          "Ingredientes frescos e todos os utensílios necessários.",
+          "Preparo guiado da massa, da sova e da abertura até o corte.",
+          "Elaboração de fettuccine e massa recheada.",
+          "Cozimento das massas feitas durante a oficina.",
+          "Degustação de quatro molhos diferentes para acompanhar as preparações.",
+          "Degustação de três vinhos da Casa Acosta, servidos durante a oficina e no encerramento.",
+          "Sucos naturais para menores de idade e pessoas que não consomem álcool.",
+          "Receita impressa para repetir a experiência em casa."
         ],
         "closing": "Você leva a receita, o corte aprendido e a conversa da mesa.",
         "photos": {
@@ -765,11 +818,16 @@
         "groupFrom": "Grupos a partir de 8 pessoas",
         "reservationNote": "Sujeito à disponibilidade — combinamos a data com você",
         "includes": [
-          "Ingredientes frescos e utensílios.",
-          "Receitas impressas para levar.",
-          "Cozimento em forno tradicional.",
-          "Degustação de vinhos: de boas-vindas, durante a oficina e no encerramento.",
-          "Sucos naturais para menores."
+          "Taça de boas-vindas Berá Rosé Carménère.",
+          "Ingredientes frescos e todos os utensílios necessários.",
+          "Preparo guiado da massa de nhoque, da sova até chegar ao ponto certo.",
+          "Corte e modelagem manual dos nhoques com técnicas tradicionais.",
+          "Cozimento dos nhoques feitos durante a oficina.",
+          "Degustação de quatro molhos diferentes para acompanhar as preparações.",
+          "Degustação de três vinhos da Casa Acosta, servidos durante a oficina e no encerramento.",
+          "Sucos naturais para menores de idade e pessoas que não consomem álcool.",
+          "Jantar compartilhado com os nhoques preparados pelo grupo.",
+          "Receita impressa dos nhoques e seus molhos para repetir a experiência em casa."
         ],
         "closing": "Você leva a receita, os molhos anotados e o jantar compartilhado.",
         "photos": {
@@ -831,7 +889,7 @@
           "Degustação direto da barrica",
           "Tábua de harmonização"
         ],
-        "tagline": "Degustação premium e vinho direto da barrica",
+        "tagline": "Uma experiência mais profunda, com vinho direto da barrica",
         "intro": "Uma experiência mais profunda e técnica, ideal para quem deseja explorar diferentes expressões do Carménère, da barrica às nossas linhas mais complexas.",
         "duration": "2 horas e 30 minutos",
         "groupFrom": "Grupos a partir de 2 pessoas",
@@ -851,11 +909,11 @@
         "pairing": "Tábua de harmonização incluída.",
         "closing": "Nossos vinhos estarão disponíveis para venda na própria adega.",
         "photos": {
-          "hero": "O anfitrião aponta o vinhedo com uma taça de rosé na mão, no Tour Berá da Viña Casa Acosta, em San Vicente de Tagua Tagua",
+          "hero": "Um grupo caminha com taças de rosé por um caminho sob árvores floridas, junto ao anfitrião, no Tour Berá da Viña Casa Acosta, em San Vicente de Tagua Tagua",
           "barrica": "Dois jovens tiram vinho do barril com uma pipeta de vidro e o servem numa taça",
           "salaBarricas": "Um visitante junto aos barris com o logo da Viña Casa Acosta, enquanto uma mulher e uma menina se sentam sobre outro barril",
           "mesa": "Taças alinhadas e uma tábua de petiscos sobre a mesa de degustação, à luz da janela",
-          "camino": "Um grupo caminha com taças de rosé por um caminho sob árvores floridas, junto ao anfitrião",
+          "vinedo": "O anfitrião aponta o vinhedo com uma taça de rosé na mão",
           "pipeta": "Um visitante tira vinho do barril com uma pipeta e o despeja na taça"
         }
       },
@@ -878,7 +936,7 @@
         "groupFrom": "Grupos a partir de 4 pessoas",
         "reservationNote": "Ideal 1 dia antes ou conforme disponibilidade",
         "includes": [
-          "Recepção no Jardim de Variedades com taça de boas-vindas, Berá Rosa Carménère.",
+          "Recepção no Jardim de Variedades com taça de boas-vindas, Berá Rosé Carménère.",
           "Passeio pelo vinhedo com foco em ampelografia: explicação técnica da variedade Carménère e sua história na Casa Acosta.",
           "Percurso pela adega, sala de vinificação e sala de barricas, com explicação completa do processo produtivo do vinho, da videira à taça.",
           "Degustação direto da barrica, para conhecer o vinho em sua etapa de amadurecimento.",

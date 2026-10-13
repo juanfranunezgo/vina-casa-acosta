@@ -347,14 +347,14 @@ export const activities: Activity[] = [
     // `npm run fotos:actividades`, cada una recortada a su ranura: ver
     // scripts/optimize-actividades.mjs y docs/FOTOS.md.
     // Seis fotos: la galería queda con una sola vertical.
-    image: "/images/actividades/bera-vinedo.webp",
-    heroPosition: "35% 6%",
+    image: "/images/actividades/bera-camino-hero.webp",
+    heroPosition: "50% 62%",
     photos: {
       intro: { src: "/images/actividades/bera-barrica.webp", alt: "barrica" },
       card: { src: "/images/actividades/bera-sala-barricas.webp", alt: "salaBarricas" },
       reserve: { src: "/images/actividades/bera-mesa.webp", alt: "mesa", position: "50% 62%" },
       gallery: {
-        wide: { src: "/images/actividades/bera-camino.webp", alt: "camino" },
+        wide: { src: "/images/actividades/bera-vinedo-wide.webp", alt: "vinedo" },
         portraits: [
           { src: "/images/actividades/bera-pipeta.webp", alt: "pipeta" },
         ],
@@ -393,6 +393,61 @@ export const activities: Activity[] = [
       },
     },
     premium: true,
+  },
+  {
+    // Va PRIMERA entre las experiencias a propósito (pedido de Juan Francisco,
+    // 2026-10-12): el orden de esta lista es el de todos los menús, y en el de
+    // la tarjeta de Actividades el yoga quedaba séptimo de ocho, fuera de la
+    // vista sin hacer scroll. Es de las pocas fichas con el contenido final.
+    //
+    // Contenido final de la viña, "Contenido web de la experiencia Yoga entre
+    // Viñas" (septiembre 2026): precio, duración, programa, brunch y preguntas.
+    // Es la primera experiencia con precio publicado.
+    slug: "yoga",
+    category: "experiencias",
+    // Pedido de la viña (2026-09-25): "$39.900 + IVA (por persona)".
+    priceCLP: 39900,
+    priceExcludesVAT: true,
+    minPeople: 8,
+    // Pedido de la viña (2026-09-23): el yoga se reserva con 5 días de aviso.
+    // El documento de septiembre no lo menciona, pero tampoco lo contradice.
+    minAdvanceDays: 5,
+    months: TODO_EL_ANO,
+    durationISO: "PT3H15M",
+    // Recepción con agua saborizada · yoga entre las parras · brunch · cata.
+    schedule: [
+      { minutes: 15, tone: "agua" },
+      { minutes: 60, tone: "parra" },
+      { minutes: 60, tone: "mesa" },
+      { minutes: 60, tone: "vino" },
+    ],
+    bookingFields: ["eleccion", "restricciones"],
+    heroBooking: true,
+    // Fotos de sesiones reales, mandadas por la viña el 2026-09-24. Salen de
+    // `npm run fotos:yoga`, cada una recortada a su ranura: ver
+    // scripts/optimize-yoga.mjs y docs/FOTOS.md.
+    image: "/images/actividades/yoga-hero.webp",
+    // La franja del escritorio baja un poco: centrada, el título caía sobre
+    // las piernas de la postura. En celular la foto entra casi entera y esto
+    // no se nota.
+    heroPosition: "50% 58%",
+    photos: {
+      intro: { src: "/images/actividades/yoga-grupo.webp", alt: "grupo" },
+      card: { src: "/images/actividades/yoga-mesa.webp", alt: "mesa" },
+      reserve: {
+        src: "/images/actividades/yoga-brunch-grupo.webp",
+        alt: "brunch",
+        position: "15% 50%",
+      },
+      gallery: {
+        wide: { src: "/images/actividades/yoga-brunch.webp", alt: "brunch" },
+        portraits: [
+          { src: "/images/actividades/yoga-parras.webp", alt: "parras" },
+          { src: "/images/actividades/yoga-relajacion.webp", alt: "relajacion" },
+          { src: "/images/actividades/yoga-instructora.webp", alt: "instructora" },
+        ],
+      },
+    },
   },
   {
     slug: "cosecha-tu-historia",
@@ -528,56 +583,6 @@ export const activities: Activity[] = [
     months: [9, 10],
     durationISO: "PT3H",
     image: CATEGORY_IMAGE.experiencias,
-  },
-  {
-    // Contenido final de la viña, "Contenido web de la experiencia Yoga entre
-    // Viñas" (septiembre 2026): precio, duración, programa, brunch y preguntas.
-    // Es la primera experiencia con precio publicado.
-    slug: "yoga",
-    category: "experiencias",
-    // Pedido de la viña (2026-09-25): "$39.900 + IVA (por persona)".
-    priceCLP: 39900,
-    priceExcludesVAT: true,
-    minPeople: 8,
-    // Pedido de la viña (2026-09-23): el yoga se reserva con 5 días de aviso.
-    // El documento de septiembre no lo menciona, pero tampoco lo contradice.
-    minAdvanceDays: 5,
-    months: TODO_EL_ANO,
-    durationISO: "PT3H15M",
-    // Recepción con agua saborizada · yoga entre las parras · brunch · cata.
-    schedule: [
-      { minutes: 15, tone: "agua" },
-      { minutes: 60, tone: "parra" },
-      { minutes: 60, tone: "mesa" },
-      { minutes: 60, tone: "vino" },
-    ],
-    bookingFields: ["eleccion", "restricciones"],
-    heroBooking: true,
-    // Fotos de sesiones reales, mandadas por la viña el 2026-09-24. Salen de
-    // `npm run fotos:yoga`, cada una recortada a su ranura: ver
-    // scripts/optimize-yoga.mjs y docs/FOTOS.md.
-    image: "/images/actividades/yoga-hero.webp",
-    // La franja del escritorio baja un poco: centrada, el título caía sobre
-    // las piernas de la postura. En celular la foto entra casi entera y esto
-    // no se nota.
-    heroPosition: "50% 58%",
-    photos: {
-      intro: { src: "/images/actividades/yoga-grupo.webp", alt: "grupo" },
-      card: { src: "/images/actividades/yoga-mesa.webp", alt: "mesa" },
-      reserve: {
-        src: "/images/actividades/yoga-brunch-grupo.webp",
-        alt: "brunch",
-        position: "15% 50%",
-      },
-      gallery: {
-        wide: { src: "/images/actividades/yoga-brunch.webp", alt: "brunch" },
-        portraits: [
-          { src: "/images/actividades/yoga-parras.webp", alt: "parras" },
-          { src: "/images/actividades/yoga-relajacion.webp", alt: "relajacion" },
-          { src: "/images/actividades/yoga-instructora.webp", alt: "instructora" },
-        ],
-      },
-    },
   },
   {
     slug: "cena-sensorial",

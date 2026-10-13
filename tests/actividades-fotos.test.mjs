@@ -154,3 +154,38 @@ test("cada foto sale con la proporcion de su ranura", async () => {
     }
   }
 });
+
+test("la portada del Tour Berá es el grupo caminando; el viñedo pasó a la galería", async () => {
+  // Juan Francisco, 2026-10-12: de las seis fotos del tour eligió para la
+  // portada la del grupo que camina con sus copas (antes abría la galería). La
+  // del anfitrión señalando el viñedo, que era la portada, ocupa su lugar.
+  const bera = activities.find((a) => a.slug === "bera");
+  assert.equal(bera.image, "/images/actividades/bera-camino-hero.webp");
+  assert.deepEqual(bera.photos.gallery.wide, {
+    src: "/images/actividades/bera-vinedo-wide.webp",
+    alt: "vinedo",
+  });
+
+  // Los nombres son nuevos a propósito: cada foto cambió de recorte, y un
+  // `.webp` que conserva el nombre con otro contenido lo sigue sirviendo viejo
+  // el navegador y el optimizador (docs/FOTOS.md). Los de antes no pueden quedar.
+  for (const viejo of ["bera-vinedo.webp", "bera-camino.webp"]) {
+    await assert.rejects(
+      stat(new URL(`../public/images/actividades/${viejo}`, import.meta.url)),
+      `${viejo} sigue en public/`,
+    );
+  }
+
+  // El `alt` de la portada describe la foto que ahora está ahí, con la
+  // actividad y el lugar (SEO); el del viñedo dejó de ser el de la portada.
+  const palabra = { es: /camin/i, en: /walk/i, pt: /caminh/i };
+  for (const locale of LOCALES) {
+    const fotos = bundles[locale].activities.items.bera.photos;
+    assert.match(fotos.hero, palabra[locale], `${locale}.hero`);
+    // En inglés el nombre va al revés: "the Berá Tour".
+    assert.match(fotos.hero, /Tour Berá|Berá Tour/, `${locale}.hero`);
+    assert.match(fotos.hero, /San Vicente de Tagua Tagua/, `${locale}.hero`);
+    assert.doesNotMatch(fotos.vinedo, /Tour Berá|Berá Tour/, `${locale}.vinedo`);
+    assert.equal(fotos.camino, undefined, `${locale}.camino quedó huérfana`);
+  }
+});

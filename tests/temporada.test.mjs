@@ -3,7 +3,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 
-const { mesesDeTemporada } = await import("@/lib/temporada");
+const { mesesDeTemporada, anioDeTemporada } = await import("@/lib/temporada");
 const { activities } = await import("@/data/activities");
 
 /**
@@ -64,4 +64,26 @@ test("el mensaje sigue trayendo el placeholder que la ficha reemplaza", async ()
 
 test("la caja de la franja de meses ya no está en la ficha", () => {
   assert.doesNotMatch(ficha, /SeasonStrip/);
+});
+
+test("el año de la temporada es el de la próxima que se puede vivir", () => {
+  // Para el título de la vendimia ("Vive la Vendimia 2027…"): el año se calcula,
+  // no se escribe, porque un año escrito a mano queda viejo sin que nadie lo vea.
+  // La vendimia es en abril y mayo.
+  const VENDIMIA = [4, 5];
+  const dia = (iso) => new Date(iso);
+  // En octubre de 2026 la próxima es la de 2027.
+  assert.equal(anioDeTemporada(VENDIMIA, dia("2026-10-12T15:00:00Z")), 2027);
+  // Antes y durante la temporada, es la de ese año.
+  assert.equal(anioDeTemporada(VENDIMIA, dia("2027-01-15T15:00:00Z")), 2027);
+  assert.equal(anioDeTemporada(VENDIMIA, dia("2027-04-20T15:00:00Z")), 2027);
+  assert.equal(anioDeTemporada(VENDIMIA, dia("2027-05-31T15:00:00Z")), 2027);
+  // Terminado mayo, ya se habla de la siguiente.
+  assert.equal(anioDeTemporada(VENDIMIA, dia("2027-06-01T15:00:00Z")), 2028);
+});
+
+test("el año cambia con la medianoche de Chile, no con la de Greenwich", () => {
+  // 1 de junio a las 02:00 UTC todavía es 31 de mayo en Santiago.
+  assert.equal(anioDeTemporada([4, 5], new Date("2027-06-01T02:00:00Z")), 2027);
+  assert.equal(anioDeTemporada([4, 5], new Date("2027-06-01T06:00:00Z")), 2028);
 });
