@@ -328,31 +328,63 @@ export default async function VendimiaPage({
         id="que-es"
         className={`mt-6 scroll-mt-24 bg-surface-container-low py-12 md:py-20 ${margenes} ${FUENTE_FICHA}`}
       >
-        <div className="mx-auto max-w-3xl text-center">
-          <h2 className={tituloSeccion}>{t("about.title")}</h2>
-          <p className="mx-auto mt-4 max-w-[62ch] font-body text-base leading-relaxed text-on-surface-variant md:text-lg">
-            {t("landing.queEs.texto")}
-          </p>
-          <h3 className="mt-10 font-body text-xl font-bold text-primary md:text-2xl">
-            {t("landing.invitacion.titulo")}
-          </h3>
-          <p className="mt-1.5 font-body text-base text-on-surface-variant">
-            {t("landing.invitacion.texto")}
-          </p>
-          <div className="mx-auto mt-6 w-full max-w-[17rem] md:max-w-[20rem]">
-            <VendimiaShort
-              poster={FOTO.manoUva}
-              alt={t("photos.manoUva")}
-              titulo={t("landing.video.titulo")}
-              ver={t("landing.video.ver")}
-              verYoutube={t("landing.video.verYoutube")}
-              pronto={t("landing.video.pronto")}
-            />
+        <div className="mx-auto grid max-w-(--container-max) grid-cols-1 items-center gap-8 text-center lg:grid-cols-2 lg:gap-14">
+          <div className="mx-auto max-w-xl">
+            <h2 className={tituloSeccion}>{t("about.title")}</h2>
+            <p className="mt-4 font-body text-base leading-relaxed text-on-surface-variant md:text-lg">
+              {t("landing.queEs.texto")}
+            </p>
+            <h3 className="mt-8 font-body text-xl font-bold text-primary md:text-2xl">
+              {t("landing.invitacion.titulo")}
+            </h3>
+            <p className="mt-1.5 font-body text-base text-on-surface-variant">
+              {t("landing.invitacion.texto")}
+            </p>
+            <div className="mt-7 hidden lg:block">
+              <Button href="#consulta" variant="primary" size="lg" multiline>
+                {t("landing.invitacion.cta")}
+              </Button>
+            </div>
           </div>
-          <div className="mt-7">
-            <Button href="#consulta" variant="primary" size="lg" multiline>
-              {t("landing.invitacion.cta")}
-            </Button>
+
+          {/* En escritorio el video va entre dos fotos de la jornada, para que la
+              sección use el ancho. En celular queda solo el video. */}
+          <div>
+            <div className="mx-auto grid max-w-[40rem] grid-cols-1 items-center gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(0,17rem)_minmax(0,1fr)]">
+              <div className="relative hidden aspect-[2/3] overflow-hidden rounded-2xl lg:block">
+                <Image
+                  src={FOTO.mosto}
+                  alt={t("photos.mosto")}
+                  fill
+                  className="object-cover"
+                  sizes="200px"
+                />
+              </div>
+              <div className="mx-auto w-full max-w-[17rem] lg:max-w-none">
+                <VendimiaShort
+                  poster={FOTO.manoUva}
+                  alt={t("photos.manoUva")}
+                  titulo={t("landing.video.titulo")}
+                  ver={t("landing.video.ver")}
+                  verYoutube={t("landing.video.verYoutube")}
+                  pronto={t("landing.video.pronto")}
+                />
+              </div>
+              <div className="relative hidden aspect-[2/3] overflow-hidden rounded-2xl lg:block">
+                <Image
+                  src={FOTO.pisoneo}
+                  alt={t("photos.pisoneo")}
+                  fill
+                  className="object-cover"
+                  sizes="200px"
+                />
+              </div>
+            </div>
+            <div className="mt-7 lg:hidden">
+              <Button href="#consulta" variant="primary" size="lg" multiline>
+                {t("landing.invitacion.cta")}
+              </Button>
+            </div>
           </div>
         </div>
       </section>

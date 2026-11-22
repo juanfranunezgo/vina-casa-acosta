@@ -2,8 +2,7 @@
 
 import { useSyncExternalStore } from "react";
 import { catalogEndpoint, isOwnCatalog, isValidCatalog } from "@/lib/afeleia/contract";
-import { checkoutIniciarUrl } from "@/lib/checkout";
-import { leerEventoVendimia, type EventoReserva } from "@/lib/vendimiaReserva";
+import { checkoutDeReservas, leerEventoVendimia, type EventoReserva } from "@/lib/vendimiaReserva";
 
 /**
  * El evento de la vendimia, leído en el navegador y compartido por la página.
@@ -62,8 +61,11 @@ export function useEventoVendimia(): EstadoEvento {
   return useSyncExternalStore(suscribir, () => estado, () => INICIAL);
 }
 
-/** La URL del checkout, incrustada en build igual que la CSP que la autoriza. */
-export const urlCheckoutVendimia = checkoutIniciarUrl(process.env.NEXT_PUBLIC_AFELEIA_CHECKOUT_URL);
+/** Con la venta cerrada es `null`, y la página queda con la consulta. Ver `checkoutDeReservas`. */
+export const urlCheckoutVendimia = checkoutDeReservas(
+  process.env.NEXT_PUBLIC_VENDIMIA_RESERVAS,
+  process.env.NEXT_PUBLIC_AFELEIA_CHECKOUT_URL,
+);
 
 // La fecha que se elige en la entrada del hero llega ya marcada al formulario.
 let fechaElegida = "";

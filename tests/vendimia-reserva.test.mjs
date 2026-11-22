@@ -422,6 +422,23 @@ test("el short se abre sin cookies, y si YouTube no deja, lleva a YouTube", asyn
   assert.match(componente, /url && reproduciendo \? \(\s*<iframe/);
 });
 
+test("la venta está apagada salvo que el interruptor diga exactamente abierta", async () => {
+  const { checkoutDeReservas } = await import("@/lib/vendimiaReserva");
+  for (const valor of [undefined, "", "true", "1", "ABIERTA", "cerrada", " abierta"]) {
+    assert.equal(checkoutDeReservas(valor, CHECKOUT), null, String(valor));
+  }
+  assert.equal(checkoutDeReservas("abierta", CHECKOUT), CHECKOUT);
+  assert.equal(checkoutDeReservas("abierta", undefined), null);
+
+  // Las tres puertas a reservar leen ese mismo valor, y nadie arma el suyo.
+  assert.match(await source("lib/eventoVendimia.ts"), /checkoutDeReservas\(\s*process\.env\.NEXT_PUBLIC_VENDIMIA_RESERVAS/);
+  for (const archivo of ["VendimiaReserva", "VendimiaHeroReserva", "VendimiaBarraReserva"]) {
+    const componente = await source(`components/${archivo}.tsx`);
+    assert.match(componente, /urlCheckoutVendimia/, archivo);
+    assert.doesNotMatch(componente, /checkoutIniciarUrl|NEXT_PUBLIC_AFELEIA_CHECKOUT_URL/, archivo);
+  }
+});
+
 test("el código no trae precios, fechas ni cupos escritos", async () => {
   for (const archivo of ["components/VendimiaReserva.tsx", "components/FechasVendimia.tsx", "lib/eventoVendimia.ts"]) {
     const texto = await source(archivo);

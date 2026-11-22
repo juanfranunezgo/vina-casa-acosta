@@ -612,7 +612,7 @@
       "navAria": "Page sections",
       "meta": {
         "title": "Join the {year} Harvest in the Cachapoal Valley",
-        "description": "The {year} grape harvest in San Vicente de Tagua Tagua, Chile: picking, stomping and a country lunch. In April; check the dates and book your place."
+        "description": "The {year} grape harvest in San Vicente de Tagua Tagua, Chile: picking, stomping and a country lunch. In April; see the day and save your place."
       },
       "breadcrumb": "Harvest",
       "cta": "Discover the harvest",
@@ -761,7 +761,7 @@
         },
         {
           "q": "How can I book and pay?",
-          "a": "You book on this page: choose the date, tell us who is coming and pay by card or bank transfer. Your ticket arrives by email with a QR code that is valid for the whole group.\n\nIf booking does not appear open or you need help, message us on WhatsApp."
+          "a": "When booking is open, you book on this page: choose the date, tell us who is coming and pay by card or bank transfer. Your ticket arrives by email with a QR code that is valid for the whole group.\n\nIf it is not open yet, leave us your details or message us on WhatsApp."
         }
       ],
       "others": {

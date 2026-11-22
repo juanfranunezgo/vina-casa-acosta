@@ -100,7 +100,7 @@ pie) pasaron a `bg-surface`. Las tarjetas grises dentro de las páginas se queda
 | ID | Sección |
 |---|---|
 | Dv1 | Hero a pantalla completa con **la entrada**: fechas, precio y reservar (`VendimiaHeroReserva`), más migas debajo. Tocar una fecha la deja elegida en el formulario. Rediseño del 2026-11-22 |
-| Dv2 | Qué es la vendimia, en un párrafo, y la invitación a participar con el **short de YouTube** (`data/vendimiaVideo.ts`) |
+| Dv2 | Qué es la vendimia, en un párrafo, y la invitación a participar con el **short de YouTube** (`data/vendimiaVideo.ts`). En escritorio, el texto a un lado y el video entre dos fotos al otro |
 | ~~Dv3~~ | Retirada el 2026-11-22: el ciclo de la vid contaba la viña en vez de ayudar a reservar. El ID no se reasigna |
 | Dv4 | Qué vas a hacer: los seis momentos del día, con foto y en orden. En celular se desliza de lado |
 | Dv4b | Lo que necesitas saber: los datos prácticos y qué incluye |

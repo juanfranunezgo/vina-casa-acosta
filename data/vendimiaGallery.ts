@@ -17,6 +17,7 @@
  */
 export const VENDIMIA_FOTOS = {
   // Fotos propias de la jornada (2026-08-18), de teléfono.
+  mosto: "/images/actividades/vendimia-mosto.webp",
   manoUva: "/images/actividades/vendimia-mano-uva.webp",
   pisoneo: "/images/actividades/vendimia-pisoneo.webp",
   desayuno: "/images/actividades/vendimia-desayuno.webp",
@@ -47,7 +48,7 @@ export const VENDIMIA_DIA: readonly VendimiaFoto[] = [
   "desayuno",
   "cosecha",
   "despalillado",
-  "pisoneo",
+  "pisoneoBarricas",
   "asadoJornada",
   "almuerzo",
 ];
@@ -77,11 +78,10 @@ export const VENDIMIA_GALERIA: {
   mas: readonly FilaGaleria[];
 } = {
   visibles: [
-    { proporcion: "16/9", fotos: ["pisoneoBarricas"] },
+    { proporcion: "16/9", fotos: ["fotoGrupalCerca"] },
     { proporcion: "3/2", fotos: ["desayunoDetalle", "corte", "pisoneoNinos"] },
   ],
   mas: [
-    { proporcion: "16/9", fotos: ["fotoGrupalCerca"] },
     { proporcion: "4/5", fotos: ["personas", "bin", "charla"] },
     { proporcion: "16/9", fotos: ["fotoGrupal"] },
   ],

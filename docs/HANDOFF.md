@@ -309,6 +309,8 @@ misma búsqueda es peor que una.
 
 **Rediseño para reservar (2026-11-22).** La página dejó el registro de almanaque: abre con una entrada (fechas, precio y reservar), sigue con qué es la vendimia y el short como invitación, los seis momentos del día, los datos prácticos, galería, reserva y preguntas. Vendimia va en el menú principal. La barra de reserva reemplaza a la píldora de secciones. **El short** está en `data/vendimiaVideo.ts`. Tiene restricción de edad y YouTube no lo reproduce en otros sitios, así que hoy el botón lo abre en YouTube. Al quitar la restricción en YouTube Studio, `VENDIMIA_SHORT_EMBEBIBLE` pasa a `true` y la CSP abre el reproductor sola. El ciclo de la vid (Dv3) salió de la página; sus textos siguen en `messages` y `VineyardYear` queda sin uso.
 
+**La venta está apagada por defecto.** Para abrirla: crear el evento en Afeleia, definir `NEXT_PUBLIC_VENDIMIA_RESERVAS=abierta` en Netlify y hacer un deploy nuevo. Sin esa variable, aunque el evento exista, la página solo ofrece la consulta.
+
 **Reservas pagadas desde la Vendimia 2027 (2026-11-22).** Dv7 lee `catalogo.eventos` en el
 navegador, pide los datos y hace `POST /iniciar` con `{ reserva }`; el checkout de Afeleia
 revisa y cobra. Fechas, rangos, precios y cupos **no se escriben en este repo**. Sin la clave

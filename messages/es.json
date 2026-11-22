@@ -612,7 +612,7 @@
       "navAria": "Secciones de la página",
       "meta": {
         "title": "Vive la Vendimia {year} en el Valle del Cachapoal",
-        "description": "Vive la vendimia {year} en San Vicente de Tagua Tagua: corte de uva, pisoneo y almuerzo campestre. En abril; revisa las fechas y reserva tu lugar."
+        "description": "Vive la vendimia {year} en San Vicente de Tagua Tagua: corte de uva, pisoneo y almuerzo campestre. En abril; conoce la jornada y guarda tu lugar."
       },
       "breadcrumb": "Vendimia",
       "cta": "Conocer la vendimia",
@@ -761,7 +761,7 @@
         },
         {
           "q": "¿Cómo puedo reservar y pagar?",
-          "a": "Reservas en esta página: eliges la fecha, indicas quiénes van y pagas con tarjeta o transferencia. La entrada te llega por correo con un QR que vale para todo el grupo.\n\nSi la reserva no aparece abierta o necesitas ayuda, escríbenos por WhatsApp."
+          "a": "Con la venta abierta, reservas en esta página: eliges la fecha, indicas quiénes van y pagas con tarjeta o transferencia. La entrada te llega por correo con un QR que vale para todo el grupo.\n\nSi todavía no aparece abierta, déjanos tus datos o escríbenos por WhatsApp."
         }
       ],
       "others": {

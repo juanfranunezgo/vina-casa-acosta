@@ -13,7 +13,7 @@
  */
 
 import { STORAGE_PUBLIC_PREFIX } from "@/lib/afeleia/contract";
-import { mismoOrigen, postIniciar } from "@/lib/checkout";
+import { checkoutIniciarUrl, mismoOrigen, postIniciar } from "@/lib/checkout";
 
 export const MAX_ASISTENTES = 20;
 export const MAX_MASCOTAS = 10;
@@ -74,6 +74,21 @@ export type EventoReserva = {
   lanzamiento: { precio: number; regalo: string } | null;
   fechas: FechaEvento[];
 };
+
+/**
+ * La URL del checkout para reservar, o `null` con la venta cerrada.
+ *
+ * **Apagada por defecto, a propósito.** Que exista el evento en Afeleia y que el
+ * sitio tenga checkout (lo usa la tienda de vinos) no significa que la venta esté
+ * abierta. Se abre solo con `NEXT_PUBLIC_VENDIMIA_RESERVAS=abierta` en Netlify y un
+ * deploy nuevo: cualquier otro valor, o ninguno, deja la consulta de temporada.
+ */
+export function checkoutDeReservas(
+  interruptor: string | undefined,
+  url: string | undefined,
+): string | null {
+  return interruptor === "abierta" ? checkoutIniciarUrl(url) : null;
+}
 
 // --- Lectura del catálogo -----------------------------------------------------
 
