@@ -5,6 +5,7 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { ArrowRight, Check } from "lucide-react";
 import FotoBorrosa from "@/components/FotoBorrosa";
 import ShowMore from "@/components/ShowMore";
+import Button from "@/components/ui/Button";
 import ActivityBreadcrumbs from "@/components/ActivityBreadcrumbs";
 import ActivityFaq, { type FaqEntry } from "@/components/ActivityFaq";
 import ActivityReservationForm from "@/components/ActivityReservationForm";
@@ -106,7 +107,7 @@ function tamanos(total: number, index: number): string {
 }
 
 const tituloSeccion =
-  "font-body text-[1.75rem] font-bold leading-[1.15] tracking-[-0.02em] text-primary md:text-[2.5rem]";
+  "text-center font-body text-[1.75rem] font-bold leading-[1.15] tracking-[-0.02em] text-primary md:text-[2.5rem]";
 const contenedor = "mx-auto max-w-(--container-max)";
 const margenes = "px-margin-mobile md:px-margin-desktop";
 
@@ -274,11 +275,17 @@ export default async function VendimiaPage({
         />
         <div
           aria-hidden="true"
-          className="absolute inset-x-0 top-0 h-40 bg-gradient-to-b from-black/50 to-transparent"
+          className="absolute inset-x-0 top-0 h-80 bg-gradient-to-b from-black/75 via-black/40 to-transparent md:h-40 md:from-black/50 md:via-transparent"
         />
 
-        <div className={`relative z-10 w-full pb-5 pt-32 md:pb-10 ${margenes}`}>
-          <div data-hero-text className="mx-auto max-w-4xl text-center">
+        {/* En celular el título va arriba y la entrada abajo: entre los dos queda
+            el grupo a la vista. En pantallas anchas van juntos, abajo. */}
+        <div className={`relative z-10 flex w-full flex-1 flex-col pb-5 pt-28 md:flex-none md:pb-10 md:pt-32 ${margenes}`}>
+          <div
+            data-hero-text
+            className="mx-auto flex w-full max-w-4xl flex-1 flex-col justify-between text-center md:block md:flex-none"
+          >
+            <div>
             <h1
               className="font-display text-on-primary drop-shadow-[0_4px_24px_rgba(0,0,0,0.55)]"
               style={{
@@ -289,6 +296,10 @@ export default async function VendimiaPage({
             >
               {t("hero.title")}
             </h1>
+            <p className="mx-auto mt-2 max-w-xl font-body text-base text-on-primary/95 drop-shadow-[0_2px_12px_rgba(0,0,0,0.6)] md:text-lg">
+              {t("landing.heroBajada")}
+            </p>
+            </div>
             <VendimiaHeroReserva />
           </div>
         </div>
@@ -310,7 +321,43 @@ export default async function VendimiaPage({
         </div>
       </section>
 
-      {/* Dv2 — Qué vas a hacer. Numerado porque el orden es la información. En
+      {/* Dv2 — Qué es la vendimia, y la invitación a participar. El video no
+          explica: muestra la jornada, por eso va como invitación y no entre los
+          datos prácticos. Su id está en `data/vendimiaVideo.ts`. */}
+      <section
+        id="que-es"
+        className={`mt-6 scroll-mt-24 bg-surface-container-low py-12 md:py-20 ${margenes} ${FUENTE_FICHA}`}
+      >
+        <div className="mx-auto max-w-3xl text-center">
+          <h2 className={tituloSeccion}>{t("about.title")}</h2>
+          <p className="mx-auto mt-4 max-w-[62ch] font-body text-base leading-relaxed text-on-surface-variant md:text-lg">
+            {t("landing.queEs.texto")}
+          </p>
+          <h3 className="mt-10 font-body text-xl font-bold text-primary md:text-2xl">
+            {t("landing.invitacion.titulo")}
+          </h3>
+          <p className="mt-1.5 font-body text-base text-on-surface-variant">
+            {t("landing.invitacion.texto")}
+          </p>
+          <div className="mx-auto mt-6 w-full max-w-[17rem] md:max-w-[20rem]">
+            <VendimiaShort
+              poster={FOTO.manoUva}
+              alt={t("photos.manoUva")}
+              titulo={t("landing.video.titulo")}
+              ver={t("landing.video.ver")}
+              verYoutube={t("landing.video.verYoutube")}
+              pronto={t("landing.video.pronto")}
+            />
+          </div>
+          <div className="mt-7">
+            <Button href="#consulta" variant="primary" size="lg" multiline>
+              {t("landing.invitacion.cta")}
+            </Button>
+          </div>
+        </div>
+      </section>
+
+      {/* Dv4 — Qué vas a hacer. Numerado porque el orden es la información. En
           celular se desliza de lado; en escritorio se ve el día completo. */}
       <section
         id="jornada"
@@ -318,8 +365,8 @@ export default async function VendimiaPage({
       >
         <div className={contenedor}>
           <h2 className={tituloSeccion}>{t("landing.dia.titulo")}</h2>
-          <p className="mt-3 max-w-[60ch] font-body text-base leading-relaxed text-on-surface-variant md:text-lg">
-            {t("landing.dia.lead")}
+          <p className="mx-auto mt-3 max-w-[60ch] text-center font-body text-base leading-relaxed text-on-surface-variant md:text-lg">
+            {t("program.lead")}
           </p>
           <ol className="-mx-margin-mobile mt-8 flex snap-x snap-mandatory scroll-px-margin-mobile gap-3 overflow-x-auto px-margin-mobile pb-2 [scrollbar-width:none] md:-mx-margin-desktop md:scroll-px-margin-desktop md:px-margin-desktop xl:mx-0 xl:grid xl:grid-cols-6 xl:gap-4 xl:overflow-visible xl:px-0 xl:pb-0">
             {pasos.map((paso, index) => {
@@ -350,48 +397,36 @@ export default async function VendimiaPage({
         </div>
       </section>
 
-      {/* Dv4 — El short de YouTube y lo que hay que saber antes de reservar. El
-          id del video va en `data/vendimiaVideo.ts`. */}
+      {/* Dv4b — Lo que necesitas saber. Los datos son cortos y van centrados; la
+          lista de lo que incluye, a la izquierda, que centrada se lee mal. */}
       <section
         id="info"
         className={`scroll-mt-24 bg-surface-container-low py-12 md:py-20 ${margenes} ${FUENTE_FICHA}`}
       >
         <div className={contenedor}>
           <h2 className={tituloSeccion}>{t("landing.info.titulo")}</h2>
-          <div className="mt-8 grid grid-cols-1 items-start gap-10 lg:grid-cols-[20rem_minmax(0,1fr)] lg:gap-16">
-            <div className="mx-auto w-full max-w-[17rem] lg:max-w-none">
-              <VendimiaShort
-                poster={FOTO.manoUva}
-                alt={t("photos.manoUva")}
-                titulo={t("landing.video.titulo")}
-                ver={t("landing.video.ver")}
-                verYoutube={t("landing.video.verYoutube")}
-                pronto={t("landing.video.pronto")}
-              />
-            </div>
-            <div className="min-w-0">
-              <dl className="grid grid-cols-1 gap-x-10 gap-y-6 sm:grid-cols-2">
-                {datos.map(({ label, value }) => (
-                  <div key={label}>
-                    <dt className="font-body text-sm text-on-surface-variant">{label}</dt>
-                    <dd className="mt-1 font-body text-lg font-semibold leading-snug text-primary">
-                      {value}
-                    </dd>
-                  </div>
-                ))}
-              </dl>
-              <h3 className="mt-10 font-body text-xl font-bold text-primary">
-                {t("program.includesTitle")}
-              </h3>
-              <ul className="mt-4 grid grid-cols-1 gap-x-10 gap-y-3 sm:grid-cols-2">
-                {includes.map((item) => (
-                  <li key={item} className="flex items-start gap-2.5 font-body text-base text-on-surface">
-                    <Check className="mt-1 h-4 w-4 shrink-0 text-wine-accent" strokeWidth={2.5} aria-hidden="true" />
-                    {item}
-                  </li>
-                ))}
-              </ul>
-            </div>
+          <dl className="mx-auto mt-8 grid max-w-5xl grid-cols-1 gap-x-10 gap-y-7 text-center sm:grid-cols-2 lg:grid-cols-3">
+            {datos.map(({ label, value }) => (
+              <div key={label}>
+                <dt className="font-body text-sm text-on-surface-variant">{label}</dt>
+                <dd className="mt-1 font-body text-lg font-semibold leading-snug text-primary">
+                  {value}
+                </dd>
+              </div>
+            ))}
+          </dl>
+          <div className="mx-auto mt-12 max-w-3xl">
+            <h3 className="text-center font-body text-xl font-bold text-primary md:text-2xl">
+              {t("program.includesTitle")}
+            </h3>
+            <ul className="mt-5 grid grid-cols-1 gap-x-10 gap-y-3 sm:grid-cols-2">
+              {includes.map((item) => (
+                <li key={item} className="flex items-start gap-2.5 font-body text-base text-on-surface">
+                  <Check className="mt-1 h-4 w-4 shrink-0 text-wine-accent" strokeWidth={2.5} aria-hidden="true" />
+                  {item}
+                </li>
+              ))}
+            </ul>
           </div>
         </div>
       </section>
@@ -430,7 +465,7 @@ export default async function VendimiaPage({
           <VendimiaReserva
             consulta={
               <div className="grid grid-cols-1 overflow-hidden rounded-2xl bg-surface lg:grid-cols-[1.1fr_0.9fr]">
-                <div className="p-6 sm:p-8 md:p-12">
+                <div className="p-6 sm:p-8 md:p-12 [&_form>div:first-of-type]:text-center">
                   <ActivityReservationForm activityName={t("hero.title")} mode="temporada" />
                 </div>
                 <div className="relative order-first min-h-[220px] lg:order-none lg:min-h-[300px]">
@@ -457,6 +492,7 @@ export default async function VendimiaPage({
             whatsappHref={whatsappHref}
             expandAll={tLabels("faqExpandAll")}
             collapseAll={tLabels("faqCollapseAll")}
+            centrado
           />
         </div>
       </section>
@@ -465,7 +501,7 @@ export default async function VendimiaPage({
       {related.length > 0 && (
         <section className={`border-t border-outline-variant/40 bg-surface py-12 md:py-16 ${margenes} ${FUENTE_FICHA}`}>
           <div className={contenedor}>
-            <h2 className="font-body text-2xl font-bold tracking-[-0.01em] text-primary md:text-[1.75rem]">
+            <h2 className="text-center font-body text-2xl font-bold tracking-[-0.01em] text-primary md:text-[1.75rem]">
               {t("others.title")}
             </h2>
             <ul className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2">

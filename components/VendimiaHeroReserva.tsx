@@ -32,7 +32,7 @@ export default function VendimiaHeroReserva() {
   const desde = precioAdultoDesde(evento);
 
   return (
-    <div className="ticket-vendimia mx-auto mt-6 grid max-w-3xl grid-cols-1 rounded-[22px] bg-white text-left text-on-surface md:grid-cols-[minmax(0,1fr)_16rem]">
+    <div className="ticket-vendimia mx-auto mt-4 grid w-full md:mt-6 max-w-3xl grid-cols-1 rounded-[22px] bg-white text-left text-on-surface md:grid-cols-[minmax(0,1fr)_16rem]">
       <div className="p-4 md:p-5">
         <p className="font-body text-sm font-semibold text-primary">{t("eligeFecha")}</p>
         <ul className="mt-2.5 grid grid-cols-2 gap-2">

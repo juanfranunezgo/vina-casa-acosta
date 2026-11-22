@@ -54,6 +54,7 @@
   "nav": {
     "home": "Home",
     "historia": "Our story",
+    "vendimia": "Harvest",
     "staff": "Staff",
     "actividades": "Experiences",
     "vinos": "Wines",
@@ -868,7 +869,6 @@
         "barraSinEvento": "Save your place",
         "dia": {
           "titulo": "What you will do that day",
-          "lead": "The vendimia is the grape harvest. At Casa Acosta you live it from the inside: a full day in the vineyard, for grown-ups and kids.",
           "pasos": [
             {
               "titulo": "Country breakfast",
@@ -908,10 +908,19 @@
           "llevarValor": "Comfortable clothes, closed shoes, a hat, sunscreen and a towel."
         },
         "video": {
-          "titulo": "Video of the Harvest at Casa Acosta",
+          "titulo": "Invitation to the Harvest at Casa Acosta",
           "ver": "Watch the video",
           "pronto": "Video of the day coming soon",
           "verYoutube": "Watch the video on YouTube"
+        },
+        "heroBajada": "The grape harvest: a day in the country to pick, stomp and celebrate.",
+        "queEs": {
+          "texto": "The vendimia is the grape harvest: the moment a year of work in the vineyard turns into wine. At Casa Acosta you live it from the inside, on a country day for grown-ups and kids: you pick the grapes, stomp them with your feet and end up celebrating with a barbecue."
+        },
+        "invitacion": {
+          "titulo": "Come and live it",
+          "texto": "This is what a harvest day feels like at Casa Acosta.",
+          "cta": "I want to join"
         }
       }
     },

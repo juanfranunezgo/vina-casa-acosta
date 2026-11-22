@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { Menu, X, ArrowRight, ChevronDown, ShoppingBag } from "lucide-react";
+import { VENDIMIA_HUB } from "@/data/activities";
 import { routing } from "@/i18n/routing";
 import { useCart } from "@/lib/cart";
 import ActivitiesMenu from "./ActivitiesMenu";
@@ -45,6 +46,7 @@ export default function Navbar() {
   const links = [
     { href: "", label: t("home") },
     { href: "/historia", label: t("historia") },
+    ...(VENDIMIA_HUB ? [{ href: VENDIMIA_HUB, label: t("vendimia") }] : []),
     { href: "/actividades", label: t("actividades") },
     { href: "/vinos", label: t("vinos") },
     { href: "/staff", label: t("staff") },
@@ -56,6 +58,10 @@ export default function Navbar() {
 
   const isActive = (suffix: string) => {
     if (suffix === "") return pathname === homePath;
+    // La vendimia tiene su propio lugar en el menú: dentro de ella no se marca también Actividades.
+    if (suffix === "/actividades" && VENDIMIA_HUB && pathname.startsWith(`${homePath}${VENDIMIA_HUB}`)) {
+      return false;
+    }
     return pathname.startsWith(`${homePath}${suffix}`);
   };
 
@@ -158,7 +164,7 @@ export default function Navbar() {
         <div className="relative max-w-(--container-max) mx-auto flex justify-between items-center px-margin-mobile md:px-margin-desktop py-4">
           <Link
             href={homePath}
-            className="flex items-center leading-none"
+            className="flex shrink-0 items-center leading-none"
             aria-label={t("logoAlt")}
           >
             <Image
@@ -172,7 +178,9 @@ export default function Navbar() {
             />
           </Link>
 
-          <ul className="hidden md:flex items-center gap-6 lg:gap-8 font-body text-body-md">
+          {/* Desde lg: con Vendimia son siete enlaces, y en una tablet no caben junto al
+              logo, la tienda y el idioma. Ahí va el menú del panel. */}
+          <ul className="hidden lg:flex items-center gap-3.5 xl:gap-6 2xl:gap-8 whitespace-nowrap font-body text-sm xl:text-body-md">
             {links.map((link) => {
               const active = isActive(link.href);
               const isActividades = link.href === "/actividades";
@@ -247,7 +255,7 @@ export default function Navbar() {
           </ul>
 
           <div
-            className={`hidden md:flex items-center gap-5 ${
+            className={`hidden shrink-0 lg:flex items-center gap-4 xl:gap-5 ${
               overHero ? "text-on-primary" : "text-on-surface-variant"
             }`}
           >
@@ -269,7 +277,7 @@ export default function Navbar() {
           </div>
 
           <button
-            className={`md:hidden h-11 w-11 -mr-2 flex items-center justify-center relative z-[70] transition-opacity duration-200 ${
+            className={`lg:hidden h-11 w-11 -mr-2 flex items-center justify-center relative z-[70] transition-opacity duration-200 ${
               overHero ? "text-on-primary" : "text-primary"
             } ${open ? "opacity-0 pointer-events-none" : "opacity-100"}`}
             aria-label={t("openMenu")}
@@ -284,7 +292,7 @@ export default function Navbar() {
 
       {/* Mobile fullscreen drawer */}
       <div
-        className={`md:hidden fixed inset-0 z-[60] transition-opacity duration-300 ${
+        className={`lg:hidden fixed inset-0 z-[60] transition-opacity duration-300 ${
           open ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
         }`}
         role="dialog"

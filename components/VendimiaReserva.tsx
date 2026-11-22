@@ -39,7 +39,7 @@ const hintClass = "mt-1.5 font-body text-xs leading-relaxed text-on-surface-vari
 const errorClass = "mt-1.5 font-body text-xs font-medium text-error";
 const legendClass = "font-body text-lg font-bold text-primary";
 const tituloClass =
-  "font-body text-[1.75rem] font-bold leading-tight tracking-[-0.02em] text-primary md:text-[2.25rem]";
+  "text-center font-body text-[1.75rem] font-bold leading-tight tracking-[-0.02em] text-primary md:text-[2.25rem]";
 
 const idDeCampo = (campo: string) => `vr-${campo.replaceAll(".", "-")}`;
 
@@ -128,7 +128,7 @@ function Opcion({
 /** En qué parte de la reserva va la persona. El pago ocurre en el checkout. */
 function Pasos({ actual, etiquetas }: { actual: 1 | 2; etiquetas: string[] }) {
   return (
-    <ol className="flex items-center gap-2">
+    <ol className="flex items-center justify-center gap-2">
       {etiquetas.map((etiqueta, i) => {
         const numero = i + 1;
         const hecho = numero < actual;
@@ -425,7 +425,9 @@ function FormularioReserva({
       <div className="rounded-2xl bg-surface p-5 sm:p-8 md:p-10">
         {pasosReserva}
         <h2 className={`mt-6 ${tituloClass}`}>{t("titulo")}</h2>
-        <p className="mt-1.5 font-body text-base text-on-surface-variant">{evento.lugar}</p>
+        <p className="mt-1.5 text-center font-body text-base text-on-surface-variant">
+          {evento.lugar}
+        </p>
 
         <div className="mt-7 grid grid-cols-1 gap-8 lg:grid-cols-2 lg:gap-12">
           <fieldset>

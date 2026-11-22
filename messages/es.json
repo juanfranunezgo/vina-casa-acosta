@@ -54,6 +54,7 @@
   "nav": {
     "home": "Inicio",
     "historia": "Historia",
+    "vendimia": "Vendimia",
     "staff": "Staff",
     "actividades": "Actividades",
     "vinos": "Nuestros Vinos",
@@ -868,7 +869,6 @@
         "barraSinEvento": "Guarda tu lugar",
         "dia": {
           "titulo": "Qué vas a hacer ese día",
-          "lead": "La vendimia es la cosecha de la uva. En Casa Acosta la vives desde adentro: un día completo en el viñedo, para grandes y chicos.",
           "pasos": [
             {
               "titulo": "Desayuno de campo",
@@ -908,10 +908,19 @@
           "llevarValor": "Ropa cómoda, zapatos cerrados, sombrero, protector solar y una toalla."
         },
         "video": {
-          "titulo": "Video de la Vendimia en Casa Acosta",
+          "titulo": "Invitación a la Vendimia en Casa Acosta",
           "ver": "Ver el video",
           "pronto": "Pronto, el video de la jornada",
           "verYoutube": "Ver el video en YouTube"
+        },
+        "heroBajada": "La cosecha de la uva: un día de campo para cortar, pisar y celebrar.",
+        "queEs": {
+          "texto": "La vendimia es la cosecha de la uva: el momento en que un año de trabajo en el viñedo se convierte en vino. En Casa Acosta la vives desde adentro, en un día de campo para grandes y chicos: cortas la uva, la pisas con los pies y terminas celebrando con un asado."
+        },
+        "invitacion": {
+          "titulo": "Te invitamos a vivirla",
+          "texto": "Así se vive una jornada de vendimia en Casa Acosta.",
+          "cta": "Quiero participar"
         }
       }
     },

@@ -159,7 +159,7 @@ test("el hero ocupa la pantalla y pide la foto por el alto, con encuadre vertica
   assert.match(pagina, /min-h-\[100svh\]/);
   assert.match(pagina, /max-aspect-ratio: 16\/9\) 177\.78vh/);
   assert.match(pagina, /max-aspect-ratio: 9\/16\) 56\.25vh/);
-  assert.match(pagina, /data-hero-text className="[^"]*text-center/);
+  assert.match(pagina, /data-hero-text\s+className="[^"]*text-center/);
   for (const ancho of [1280, 1920, 2560]) {
     await access(new URL(`../public/images/actividades/hero-vendimia-${ancho}.webp`, import.meta.url));
     assert.match(pagina, new RegExp(String(ancho)), `falta el candidato de ${ancho}px`);

@@ -54,6 +54,7 @@
   "nav": {
     "home": "Início",
     "historia": "História",
+    "vendimia": "Vindima",
     "staff": "Staff",
     "actividades": "Experiências",
     "vinos": "Vinhos",
@@ -868,7 +869,6 @@
         "barraSinEvento": "Garanta seu lugar",
         "dia": {
           "titulo": "O que você vai fazer nesse dia",
-          "lead": "A vindima é a colheita da uva. Na Casa Acosta você a vive por dentro: um dia inteiro na vinha, para adultos e crianças.",
           "pasos": [
             {
               "titulo": "Café da manhã no campo",
@@ -908,10 +908,19 @@
           "llevarValor": "Roupa confortável, sapatos fechados, chapéu, protetor solar e uma toalha."
         },
         "video": {
-          "titulo": "Vídeo da Vindima na Casa Acosta",
+          "titulo": "Convite para a Vindima na Casa Acosta",
           "ver": "Ver o vídeo",
           "pronto": "Em breve, o vídeo da jornada",
           "verYoutube": "Ver o vídeo no YouTube"
+        },
+        "heroBajada": "A colheita da uva: um dia no campo para colher, pisar e celebrar.",
+        "queEs": {
+          "texto": "A vindima é a colheita da uva: o momento em que um ano de trabalho na vinha se transforma em vinho. Na Casa Acosta você a vive por dentro, em um dia de campo para adultos e crianças: colhe a uva, pisa com os pés e termina celebrando com um churrasco."
+        },
+        "invitacion": {
+          "titulo": "Venha viver a vindima",
+          "texto": "É assim que se vive uma jornada de vindima na Casa Acosta.",
+          "cta": "Quero participar"
         }
       }
     },
