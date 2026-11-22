@@ -227,6 +227,15 @@ const FOTOS = [
     anchorY: 0.75,
     width: 1600,
   },
+  {
+    // Dv6 "ver más", apertura 16:9 — el grupo de cerca (foto 28 del correo de
+    // Damián). Sobra cielo: se corta todo por arriba para no perder los pies.
+    source: "vendimia-foto-grupal-cerca.jpg",
+    name: "vendimia-foto-grupal-cerca",
+    ratio: 16 / 9,
+    anchorY: 1,
+    width: 1600,
+  },
 ];
 
 const exists = async (p) => access(p).then(() => true, () => false);

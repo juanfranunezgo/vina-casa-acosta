@@ -685,13 +685,12 @@ export function activityPath(activity: Activity): string {
 export const VENDIMIA_HUB: string | null = "/actividades/vendimia";
 
 /**
- * Meses de vendimia. Es la única fecha que el hub publica, y a propósito: la
- * cosecha depende de la maduración de la uva, así que la viña confirma cada
- * jornada por temporada. Publicar un día concreto sería anunciar algo que
- * todavía no está decidido — y el material que teníamos era de la temporada
- * pasada.
+ * Meses en que el visitante puede venir a la vendimia. Es el único dato de
+ * calendario escrito en este repo: los días exactos, con sus cupos y precios, los
+ * publica Afeleia en `catalogo.eventos`. Desde la Vendimia 2027 las jornadas son
+ * solo en abril.
  */
-export const VENDIMIA_MONTHS: number[] = [4, 5];
+export const VENDIMIA_MONTHS: number[] = [4];
 
 /**
  * Actividades que el hub ofrece como "otras formas de vivir el ciclo": las dos

@@ -33,7 +33,10 @@
     },
     "wineTitle": {
       "blendRed": "ensamblaje tinto",
-      "byType": { "rosado": "vino rosé", "espumante": "espumante" },
+      "byType": {
+        "rosado": "vino rosé",
+        "espumante": "espumante"
+      },
       "overrides": {
         "guidai": "espumante rosado",
         "yaray-gua-tinto": "late harvest dulce",
@@ -51,6 +54,7 @@
   "nav": {
     "home": "Inicio",
     "historia": "Historia",
+    "vendimia": "Vendimia",
     "staff": "Staff",
     "actividades": "Actividades",
     "vinos": "Nuestros Vinos",
@@ -145,10 +149,22 @@
       "prevLabel": "Vino anterior",
       "nextLabel": "Vino siguiente",
       "strip": {
-        "vineyards": { "title": "Viñedos del Cachapoal", "desc": "Uvas del Valle del Cachapoal, nuestro origen." },
-        "oak": { "title": "Crianza en roble", "desc": "Guarda en barricas de roble francés y americano." },
-        "limited": { "title": "Ediciones limitadas", "desc": "Producciones acotadas en cada cosecha." },
-        "heritage": { "title": "Herencia familiar", "desc": "Tres generaciones, un mismo origen." }
+        "vineyards": {
+          "title": "Viñedos del Cachapoal",
+          "desc": "Uvas del Valle del Cachapoal, nuestro origen."
+        },
+        "oak": {
+          "title": "Crianza en roble",
+          "desc": "Guarda en barricas de roble francés y americano."
+        },
+        "limited": {
+          "title": "Ediciones limitadas",
+          "desc": "Producciones acotadas en cada cosecha."
+        },
+        "heritage": {
+          "title": "Herencia familiar",
+          "desc": "Tres generaciones, un mismo origen."
+        }
       }
     },
     "featuredLines": {
@@ -159,7 +175,11 @@
       "prevLabel": "Colección anterior",
       "nextLabel": "Colección siguiente",
       "wineCount": "{count, plural, one {# vino} other {# vinos}}",
-      "detailLabels": { "estilo": "Estilo", "crianza": "Crianza", "premio": "Premio" },
+      "detailLabels": {
+        "estilo": "Estilo",
+        "crianza": "Crianza",
+        "premio": "Premio"
+      },
       "lines": {
         "ombu": {
           "category": "Reserva",
@@ -190,8 +210,17 @@
       "subtitle": "Hay recuerdos que el tiempo no borra.",
       "allCta": "Ver todas las actividades",
       "exploreCta": "Explorar",
-      "tabs": { "all": "Todas", "tours": "Tours", "experiences": "Experiencias", "events": "Eventos" },
-      "cat": { "tour": "Tour", "experience": "Experiencia", "event": "Evento" },
+      "tabs": {
+        "all": "Todas",
+        "tours": "Tours",
+        "experiences": "Experiencias",
+        "events": "Eventos"
+      },
+      "cat": {
+        "tour": "Tour",
+        "experience": "Experiencia",
+        "event": "Evento"
+      },
       "eventsCta": "Cotizar evento",
       "book": "Reservar",
       "more": "Explorar",
@@ -300,7 +329,7 @@
       "eyebrow": "Las manos detrás de la viña",
       "title": "Staff",
       "subtitle": "El equipo humano detrás de cada botella.",
-        "imageAlt": "Un temporero deja en el suelo una caja llena de racimos recién cortados, entre las hileras del viñedo"
+      "imageAlt": "Un temporero deja en el suelo una caja llena de racimos recién cortados, entre las hileras del viñedo"
     },
     "members": {
       "damian": {
@@ -583,13 +612,13 @@
       "navAria": "Secciones de la página",
       "meta": {
         "title": "Vive la Vendimia {year} en el Valle del Cachapoal",
-        "description": "Vive la vendimia {year} en San Vicente de Tagua Tagua: corte de uva, pisoneo y almuerzo campestre. En abril y mayo; déjanos tus datos y te avisamos la fecha."
+        "description": "Vive la vendimia {year} en San Vicente de Tagua Tagua: corte de uva, pisoneo y almuerzo campestre. En abril; conoce la jornada y guarda tu lugar."
       },
       "breadcrumb": "Vendimia",
       "cta": "Conocer la vendimia",
       "facts": {
         "seasonLabel": "Temporada",
-        "seasonValue": "Abril · Mayo {year}",
+        "seasonValue": "Abril {year}",
         "durationLabel": "Duración",
         "durationValue": "Jornada completa",
         "audienceLabel": "Para quién",
@@ -613,6 +642,7 @@
         "pisoneoNinos": "Tres niños pisan uva dentro de barricas, frente al pendón de la vendimia de Casa Acosta",
         "almuerzo": "La mesa larga del almuerzo bajo el toldo, con los participantes sentados entre las parras",
         "fotoGrupal": "Foto grupal de los participantes de la vendimia, con delantales y la cordillera al fondo",
+        "fotoGrupalCerca": "Foto grupal de cerca: decenas de participantes sonríen y saludan a la cámara, con las parras de otoño y los toldos al fondo",
         "prev": "Foto anterior de la jornada",
         "next": "Foto siguiente de la jornada",
         "goTo": "Ver foto {index} de {total} de la jornada",
@@ -625,7 +655,7 @@
         "moreLabel": "Más fotos de la vendimia"
       },
       "hero": {
-        "eyebrow": "Abril · Mayo",
+        "eyebrow": "Abril",
         "title": "Vendimia en Casa Acosta",
         "subtitle": "La jornada en que el viñedo se llena de gente: se corta, se pisa y se celebra.",
         "imageAlt": "Vista aérea del grupo de participantes de la vendimia, con los brazos en alto entre las hileras del viñedo de Casa Acosta"
@@ -681,8 +711,8 @@
         ],
         "includesTitle": "La jornada incluye",
         "includes": [
-          "Pechera de regalo para llevarte a casa",
-          "Copa de regalo para llevarte a casa",
+          "Pechera prestada para la jornada",
+          "Copa de regalo para adultos con precio de lanzamiento",
           "Almuerzo campestre con vino incluido",
           "Acompañamiento del equipo agrícola y enológico",
           "Actividad pensada para niños y adultos"
@@ -690,12 +720,12 @@
         "cta": "Inscríbete, ven a vivir la vendimia en Casa Acosta"
       },
       "season": {
-        "note": "La fecha exacta la decide la uva: se vendimia cuando alcanza su madurez, así que cada jornada se confirma en la temporada. Déjanos tus datos y te avisamos apenas se definan."
+        "note": "La vendimia sigue a la uva: se cosecha cuando alcanza su madurez. Las fechas con cupo están en el bloque de reserva; si todavía no aparecen, déjanos tus datos y te avisamos apenas se publiquen."
       },
       "faq": [
         {
           "q": "¿En qué fecha se realiza la vendimia?",
-          "a": "La Vendimia en Casa Acosta se realiza durante abril y mayo. La fecha se define considerando el estado de madurez de la uva y, una vez publicada, queda confirmada. Déjanos tus datos y te avisaremos apenas anunciemos la próxima jornada."
+          "a": "La Vendimia en Casa Acosta se realiza en abril. Las fechas disponibles aparecen en el bloque de reserva de esta página y, una vez publicadas, quedan confirmadas. Si todavía no aparecen, déjanos tus datos y te avisamos."
         },
         {
           "q": "¿Necesito experiencia previa?",
@@ -707,7 +737,7 @@
         },
         {
           "q": "¿Qué incluye la experiencia?",
-          "a": "La jornada incluye desayuno campestre, charla introductoria, corte de uva, despalillado, pisoneo tradicional, almuerzo campestre con buffet de ensaladas, vino para adultos, concursos, sorteos, pechera y copa de recuerdo."
+          "a": "La jornada incluye desayuno campestre, charla introductoria, corte de uva, despalillado, pisoneo tradicional, almuerzo campestre con buffet de ensaladas, vino para adultos, concursos, sorteos y pechera prestada para la jornada. Los adultos con precio de lanzamiento reciben además una copa de regalo."
         },
         {
           "q": "¿Qué ropa debo llevar?",
@@ -730,13 +760,168 @@
           "a": "Una vez publicada, la fecha queda confirmada. Solo podría modificarse excepcionalmente si las condiciones climáticas impiden realizar las actividades de manera segura."
         },
         {
-          "q": "¿Cómo puedo reservar?",
-          "a": "Déjanos tus datos en el formulario de esta página y te avisaremos apenas se publique la fecha, con los pasos para asegurar tu cupo.\n\nSi necesitas ayuda, también puedes escribirnos directamente por WhatsApp."
+          "q": "¿Cómo puedo reservar y pagar?",
+          "a": "Con la venta abierta, reservas en esta página: eliges la fecha, indicas quiénes van y pagas con tarjeta o transferencia. La entrada te llega por correo con un QR que vale para todo el grupo.\n\nSi todavía no aparece abierta, déjanos tus datos o escríbenos por WhatsApp."
         }
       ],
       "others": {
         "title": "Otras formas de vivir el ciclo de la viña",
         "lead": "La vendimia es una etapa del año. Estas dos experiencias acompañan las demás."
+      },
+      "reserva": {
+        "titulo": "Reserva tu lugar",
+        "tituloDatos": "¿Quiénes van?",
+        "eligeFecha": "Elige la fecha",
+        "horario": "{inicio} a {termino} hrs",
+        "quedanCupos": "Quedan cupos",
+        "noDisponible": "No disponible",
+        "cuantosVan": "¿Cuántos van?",
+        "gratis": "Sin costo",
+        "quitar": "Quitar una persona de {rango}",
+        "agregar": "Agregar una persona de {rango}",
+        "maximo": "Cada reserva admite hasta {max} personas.",
+        "lanzamiento": "Precio de lanzamiento mientras queden cupos en esta fecha. Quien lo recibe se lleva {regalo} de regalo.",
+        "regaloCopa": "una copa",
+        "totalLabel": "Total aproximado",
+        "totalNota": "Es un valor orientativo. El total exacto lo ves en el paso siguiente, antes de pagar.",
+        "continuar": "Continuar",
+        "faltaFecha": "Elige una fecha para continuar.",
+        "faltanPersonas": "Indica cuántas personas van.",
+        "sinFechas": "Por ahora no hay fechas con cupo. Escríbenos por WhatsApp y vemos qué se puede hacer.",
+        "pedirWhatsapp": "Reservar por WhatsApp",
+        "whatsapp": "Hola 👋 Quiero reservar para {evento}, {fecha}: {personas, plural, one {# persona} other {# personas}}.",
+        "whatsappSinFecha": "Hola 👋 Quiero saber si quedan cupos para {evento}.",
+        "encargado": "Quien reserva",
+        "nombre": "Nombre y apellido",
+        "celular": "Celular",
+        "celularEjemplo": "+56 9 1234 5678",
+        "correo": "Correo",
+        "correoEntrada": "Te mandamos tu entrada a este correo. Si no la ves en unos minutos, revisa la carpeta de spam o correo no deseado.",
+        "comuna": "Comuna (opcional)",
+        "yoVoy": "Yo también voy",
+        "asistente": "Persona {numero}",
+        "opcional": "(opcional)",
+        "heredado": "Con tus datos de arriba.",
+        "edad": "Edad",
+        "edadAyuda": "La que tendrá el día del evento.",
+        "talla": "Talla de polera",
+        "sinTalla": "Sin talla",
+        "tallaAyuda": "Es para un sorteo.",
+        "restriccion": "¿Restricción alimentaria?",
+        "no": "No",
+        "si": "Sí",
+        "queEvitar": "¿Qué debe evitar?",
+        "permiso": "Autorizo a Viña Casa Acosta a usar esta información solo para preparar la comida de la jornada.",
+        "mascotas": "¿Vienen con mascotas?",
+        "cuantasMascotas": "¿Cuántas?",
+        "tuReserva": "Tu reserva",
+        "cambiar": "Cambiar fecha o personas",
+        "enviando": "Abriendo el pago…",
+        "reintentar": "Intentar de nuevo",
+        "irAPagar": "Continuar al pago",
+        "legalIntro": "Antes de pagar aceptas:",
+        "condiciones": "Condiciones (v{version})",
+        "terminos": "Términos (v{version})",
+        "errores": {
+          "requerido": "Completa este dato.",
+          "nombre": "Escribe nombre y apellido.",
+          "email": "Revisa el correo (ejemplo: nombre@correo.cl).",
+          "telefono": "Revisa el celular: solo números y un + al inicio.",
+          "texto": "Revisa este dato: es muy largo o trae caracteres que no se pueden guardar.",
+          "edad": "Escribe la edad en números.",
+          "edad_rango": "La edad no corresponde a este rango.",
+          "edadEntre": "Para esta ficha, la edad debe estar entre {min} y {max}.",
+          "edadDesde": "Para esta ficha, la edad debe ser {min} o más.",
+          "edad_tarifa": "Esta edad no tiene tarifa. Revisa la edad o cambia el rango de esta persona.",
+          "talla": "Esa talla ya no está disponible. Elige otra.",
+          "mascotas": "Indica un número entre 1 y {max}.",
+          "permiso": "Para guardar la restricción necesitamos tu autorización.",
+          "fecha": "Elige una fecha disponible.",
+          "personas": "Indica cuántas personas van.",
+          "total_cero": "La reserva necesita al menos una persona con entrada pagada.",
+          "muy_largo": "Los datos son demasiado largos para una sola reserva."
+        },
+        "avisos": {
+          "fecha": "Esa fecha ya no está disponible. Elige otra: tus datos quedan guardados.",
+          "cupo": "No quedan cupos suficientes para este grupo en esa fecha. Prueba con otra fecha o con menos personas.",
+          "edad": "Hay una edad que no corresponde a su rango. Revísala y vuelve a intentar.",
+          "revisar": "No pudimos abrir tu reserva con estos datos. Revísalos y vuelve a intentar.",
+          "total_cero": "La reserva necesita al menos una persona con entrada pagada.",
+          "campos": "Revisa los datos marcados.",
+          "muy_largo": "Los datos son demasiado largos para una sola reserva. Acorta algún texto o divide el grupo.",
+          "respaldo": "No pudimos abrir el pago ahora. Escríbenos por WhatsApp y terminamos tu reserva por ahí."
+        },
+        "pasoFecha": "Fecha y personas",
+        "pasoDatos": "Quiénes van",
+        "pasoPago": "Pago",
+        "siguientePersona": "Siguiente persona",
+        "fichaLista": "Lista",
+        "fichaPendiente": "Falta completar"
+      },
+      "landing": {
+        "eligeFecha": "Elige tu fecha",
+        "hayCupos": "Quedan cupos",
+        "sinCupos": "No disponible",
+        "adultosDesde": "Adultos desde",
+        "reservar": "Reservar",
+        "avisame": "Avísame de la próxima fecha",
+        "avisarme": "Avisarme",
+        "barraSinEvento": "Guarda tu lugar",
+        "dia": {
+          "titulo": "Qué vas a hacer ese día",
+          "pasos": [
+            {
+              "titulo": "Desayuno de campo",
+              "texto": "Partimos en la mesa, con una charla corta sobre la vendimia."
+            },
+            {
+              "titulo": "Corte de uva",
+              "texto": "Entras al viñedo con tijera, junto al equipo agrícola."
+            },
+            {
+              "titulo": "Despalillado",
+              "texto": "Separas el grano del racimo, a mano y a máquina."
+            },
+            {
+              "titulo": "Pisoneo",
+              "texto": "Pisas la uva con los pies, como se hizo siempre."
+            },
+            {
+              "titulo": "Asado y vino",
+              "texto": "Almuerzo de campo con ensaladas y vino para adultos."
+            },
+            {
+              "titulo": "Concursos y brindis",
+              "texto": "Sorteos para toda la familia y brindis entre las parras."
+            }
+          ]
+        },
+        "info": {
+          "titulo": "Lo que necesitas saber",
+          "cuando": "Cuándo",
+          "horario": "Horario",
+          "donde": "Dónde",
+          "dondeValor": "Viña Casa Acosta, San Vicente de Tagua Tagua",
+          "mascotas": "Mascotas",
+          "mascotasValor": "Pueden venir. Avísanos al reservar.",
+          "llevar": "Qué llevar",
+          "llevarValor": "Ropa cómoda, zapatos cerrados, sombrero, protector solar y una toalla."
+        },
+        "video": {
+          "titulo": "Invitación a la Vendimia en Casa Acosta",
+          "ver": "Ver el video",
+          "pronto": "Pronto, el video de la jornada",
+          "verYoutube": "Ver el video en YouTube"
+        },
+        "heroBajada": "La cosecha de la uva: un día de campo para cortar, pisar y celebrar.",
+        "queEs": {
+          "texto": "La vendimia es la cosecha de la uva: el momento en que un año de trabajo en el viñedo se convierte en vino. En Casa Acosta la vives desde adentro, en un día de campo para grandes y chicos: cortas la uva, la pisas con los pies y terminas celebrando con un asado."
+        },
+        "invitacion": {
+          "titulo": "Te invitamos a vivirla",
+          "texto": "Así se vive una jornada de vendimia en Casa Acosta.",
+          "cta": "Quiero participar"
+        }
       }
     },
     "items": {

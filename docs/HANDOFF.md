@@ -307,12 +307,19 @@ inclusiones de *Cosecha tu historia*— y recién después ofrece la jornada *co
 celebra*, que por eso **no tiene ficha propia**: dos páginas nuestras compitiendo por la
 misma búsqueda es peor que una.
 
-**No publica fechas, precio ni mínimo de personas, y es una decisión, no un pendiente.** La
-cosecha depende de la maduración de la uva y la viña confirma cada jornada por temporada; el
-material que había (una publicación de Instagram) era de la temporada pasada, con fechas y
-preventa ya vencidas. El único dato de calendario es la franja de meses, que sale de
-`VENDIMIA_MONTHS`. Lo afirman doce tests en `tests/vendimia-hub.test.mjs`, incluido uno que
-falla si aparece un `$` o un día concreto en el copy de cualquiera de los tres idiomas.
+**Rediseño para reservar (2026-11-22).** La página dejó el registro de almanaque: abre con una entrada (fechas, precio y reservar), sigue con qué es la vendimia y el short como invitación, los seis momentos del día, los datos prácticos, galería, reserva y preguntas. Vendimia va en el menú principal. La barra de reserva reemplaza a la píldora de secciones. **El short** está en `data/vendimiaVideo.ts`. Tiene restricción de edad y YouTube no lo reproduce en otros sitios, así que hoy el botón lo abre en YouTube. Al quitar la restricción en YouTube Studio, `VENDIMIA_SHORT_EMBEBIBLE` pasa a `true` y la CSP abre el reproductor sola. El ciclo de la vid (Dv3) salió de la página; sus textos siguen en `messages` y `VineyardYear` queda sin uso.
+
+**La venta está apagada por defecto.** Para abrirla: crear el evento en Afeleia, definir `NEXT_PUBLIC_VENDIMIA_RESERVAS=abierta` en Netlify y hacer un deploy nuevo. Sin esa variable, aunque el evento exista, la página solo ofrece la consulta.
+
+**Reservas pagadas desde la Vendimia 2027 (2026-11-22).** Dv7 lee `catalogo.eventos` en el
+navegador, pide los datos y hace `POST /iniciar` con `{ reserva }`; el checkout de Afeleia
+revisa y cobra. Fechas, rangos, precios y cupos **no se escriben en este repo**. Sin la clave
+`eventos` (o sin `NEXT_PUBLIC_AFELEIA_CHECKOUT_URL`) la página sigue con la consulta de
+temporada. Las reglas de `lib/vendimiaReserva.ts` son copia de
+`apps/checkout/src/lib/reservation-input.ts` de Afeleia: si cambian allá, cambian acá, porque
+esos errores salen sin CORS y la web no los puede leer. Una restricción alimentaria solo viaja
+en el cuerpo del `POST`. El único dato de calendario propio es `VENDIMIA_MONTHS`, y
+`tests/vendimia-hub.test.mjs` falla si aparece un `$` o un día concreto en los mensajes.
 
 Por lo mismo el structured data va como `WebPage` + `BreadcrumbList` y no como `Event` ni
 `Product`: el primero exige `startDate` y el segundo un precio.
@@ -363,7 +370,8 @@ de **"Ver más fotos"** (`components/ShowMore.tsx`: el bloque viene en el HTML c
 el botón sólo abre y pasa el foco al bloque). El recorte `vendimia-grupo` de la aérea dejó
 de usarse: sigue versionado y generándose, pero ninguna página lo pide. Dos de las fotos
 muestran niños con la cara visible (`vendimia-despalillado`, `vendimia-pisoneo-ninos`):
-**la viña confirmó el 2026-09-22 que tiene la autorización de los padres**. Si algún día
+**la viña confirmó el 2026-09-22 que tiene la autorización de los padres**. Lo mismo vale
+para la niña de `vendimia-foto-grupal-cerca`: Juan Francisco lo confirmó el 2026-11-22. Si algún día
 hay que sacarlas, se quitan de su fila y de `VENDIMIA_FOTOS` en `data/vendimiaGallery.ts`;
 el test avisa si una queda declarada sin usar.
 
@@ -728,10 +736,8 @@ Cuatro pedidos de la viña, llegados por Juan Francisco el mismo día:
 **Una respuesta no se publicó como llegó.** La de "¿Cómo puedo reservar y pagar?" decía que,
 publicada la fecha, se reserva "en esta página mediante el botón Reservar y pagar", con pago
 en línea y correo de confirmación. El hub hoy no tiene precio, botón ni pago: tiene un
-formulario para dejar los datos. La pregunta quedó como "¿Cómo puedo reservar?" y responde
-eso mismo. **Si la vendimia se va a vender en línea**, es un trabajo aparte (el checkout de
-Afeleia hoy cobra vinos, no actividades); cuando exista, se repone el texto de Damián y se
-cambia a propósito el test que lo impide en `tests/vendimia-hub.test.mjs`.
+formulario para dejar los datos. **Desde el 2026-11-22 la vendimia se vende en línea** y la
+pregunta volvió a ser "¿Cómo puedo reservar y pagar?", con la respuesta del flujo real.
 
 El español de los cuatro es el texto de la viña. **Inglés y portugués son traducción
 nuestra**, sin validar, como el resto.

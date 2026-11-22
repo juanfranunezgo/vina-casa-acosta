@@ -1,7 +1,7 @@
 import "./alias-hook.mjs";
 import test from "node:test";
 import assert from "node:assert/strict";
-import { readFile } from "node:fs/promises";
+import { access, readFile } from "node:fs/promises";
 
 const {
   VENDIMIA_HUB,
@@ -28,12 +28,10 @@ const messages = Object.fromEntries(
 );
 
 /**
- * El hub de Vendimia es la unica pagina del sitio que describe una actividad
- * SIN publicar su precio, sus fechas ni su minimo de personas, y no por
- * descuido: la cosecha depende de la maduracion de la uva y la vina confirma
- * cada jornada por temporada. El material que existia era de la temporada
- * pasada. Estos tests son lo que evita que alguien "complete" esos datos mas
- * adelante creyendo que faltan.
+ * El hub de Vendimia no escribe precio, fechas ni minimo de personas en el
+ * repo: desde la Vendimia 2027 los publica Afeleia en `catalogo.eventos` y los
+ * lee el navegador. Estos tests evitan que alguien los "complete" a mano en los
+ * mensajes, donde quedarian viejos sin que nadie lo note.
  */
 
 test("el hub existe y su ruta es la del segmento reservado", () => {
@@ -70,7 +68,7 @@ test("el sitemap deja de declararlo si el hub se apaga", async () => {
 });
 
 test("la vendimia se publica por meses, nunca por fecha exacta", () => {
-  assert.deepEqual(VENDIMIA_MONTHS, [4, 5]);
+  assert.deepEqual(VENDIMIA_MONTHS, [4]);
 
   for (const locale of LOCALES) {
     const bloque = JSON.stringify(messages[locale].activities.vendimia);
@@ -88,9 +86,7 @@ test("la vendimia se publica por meses, nunca por fecha exacta", () => {
 
 test("la pagina no le pide un minimo de personas al formulario", async () => {
   const pagina = await source("app/[locale]/actividades/vendimia/page.tsx");
-  // Se afirma sobre la etiqueta y no sobre el archivo entero: los comentarios
-  // nombran `minPeople` para explicar por que no esta, y un match sobre todo el
-  // texto convertiria esa explicacion en un rojo.
+  // Se afirma sobre la etiqueta y no sobre el archivo entero.
   const etiqueta = pagina.match(/<ActivityReservationForm[\s\S]*?\/>/)?.[0];
   assert.ok(etiqueta, "la pagina tiene que montar el formulario de consulta");
   assert.match(etiqueta, /mode="temporada"/);
@@ -155,17 +151,22 @@ test("la miga marcada dice lo mismo que la miga visible", async () => {
   assert.match(pagina, /<ActivityBreadcrumbs/);
 });
 
-test("el hero pide un candidato mas ancho que el viewport en movil", async () => {
+test("el hero ocupa la pantalla y pide la foto por el alto, con encuadre vertical", async () => {
   const pagina = await source("app/[locale]/actividades/vendimia/page.tsx");
   // `object-cover` escala la foto hasta cubrir el ALTO del hero, asi que el
-  // ancho que se pinta sale del alto y no del ancho de la pantalla: el `sizes`
-  // va en vh. Con `100vw` el navegador baja un archivo del ancho del viewport y
-  // lo estira al doble — los heros borrosos que ya se pagaron una vez.
-  assert.match(pagina, /max-width: 768px\) 78vh/);
-  assert.match(pagina, /125vh/);
-  assert.doesNotMatch(pagina, /HERO_SIZES = "[^"]*vw[^"]*vw/);
+  // ancho que se pinta sale del alto: con `100vw` el navegador baja un archivo
+  // del ancho del viewport y lo estira, y salen los heros borrosos.
+  assert.match(pagina, /min-h-\[100svh\]/);
+  assert.match(pagina, /max-aspect-ratio: 16\/9\) 177\.78vh/);
+  assert.match(pagina, /max-aspect-ratio: 9\/16\) 56\.25vh/);
+  assert.match(pagina, /data-hero-text\s+className="[^"]*text-center/);
   for (const ancho of [1280, 1920, 2560]) {
+    await access(new URL(`../public/images/actividades/hero-vendimia-${ancho}.webp`, import.meta.url));
     assert.match(pagina, new RegExp(String(ancho)), `falta el candidato de ${ancho}px`);
+  }
+  for (const ancho of [828, 1200, 1600]) {
+    await access(new URL(`../public/images/actividades/hero-vendimia-movil-${ancho}.webp`, import.meta.url));
+    assert.match(pagina, new RegExp(String(ancho)), `falta el candidato movil de ${ancho}px`);
   }
 });
 
@@ -189,35 +190,43 @@ test("la vendimia trae sus diez preguntas frecuentes en los tres idiomas", () =>
   );
 });
 
-test("las preguntas van entre la galería y la consulta, con el componente de las fichas", async () => {
-  // El mismo lugar que en la ficha (Dd6b antes de Dd7): son las dudas que
-  // frenan a quien está por dejar sus datos.
+test("el orden lleva a reservar: galería, reserva y después las preguntas", async () => {
   const pagina = (await source("app/[locale]/actividades/vendimia/page.tsx")).replace(/\r\n/g, "\n");
   assert.match(pagina, /import ActivityFaq, \{ type FaqEntry \} from "@\/components\/ActivityFaq"/);
   const galeria = pagina.indexOf("{/* Dv6 —");
-  const preguntas = pagina.indexOf("<ActivityFaq");
   const consulta = pagina.indexOf('id="consulta"');
-  assert.ok(galeria > 0 && preguntas > 0 && consulta > 0, "falta alguna de las tres secciones");
-  assert.ok(galeria < preguntas && preguntas < consulta, "las preguntas no están entre la galería y la consulta");
-  assert.match(pagina, /<section\s+id="preguntas"/);
+  const preguntas = pagina.indexOf("<ActivityFaq");
+  assert.ok(galeria > 0 && consulta > 0 && preguntas > 0, "falta alguna de las tres secciones");
+  assert.ok(galeria < consulta && consulta < preguntas, "el orden de las secciones cambió");
+  assert.match(pagina, /id="preguntas"/);
 });
 
-test("ninguna respuesta promete un pago en línea que la página no tiene", async () => {
-  // El texto de Damián para "¿Cómo puedo reservar y pagar?" describía un botón
-  // "Reservar y pagar" y un pago en línea en esta página. Hoy la página tiene
-  // un formulario para dejar los datos, sin precio ni pago: publicarlo tal cual
-  // era prometer algo que el visitante no iba a encontrar. Esa respuesta se
-  // adaptó a lo que la página hace. El día que la vendimia se venda en línea,
-  // este test se cambia a propósito junto con la respuesta.
+test("la pregunta de cómo reservar dice lo que la página hace", async () => {
+  // Desde la Vendimia 2027 se reserva acá y se paga en el checkout de Afeleia.
+  // La respuesta tiene que seguir siendo cierta sin evento publicado: por eso
+  // nombra la salida por WhatsApp.
   const pagina = await source("app/[locale]/actividades/vendimia/page.tsx");
-  assert.doesNotMatch(pagina, /checkoutIniciarUrl|ProductPurchase|AddToCartButton/, "la página ya cobra: revisar la respuesta");
+  assert.match(pagina, /<VendimiaReserva/);
+  const claves = {
+    es: [/tarjeta o transferencia/, /QR/, /WhatsApp/],
+    en: [/card or bank transfer/, /QR/, /WhatsApp/],
+    pt: [/cartão ou transferência/, /QR/, /WhatsApp/],
+  };
   for (const locale of LOCALES) {
-    const texto = JSON.stringify(messages[locale].activities.vendimia.faq ?? []);
-    assert.doesNotMatch(
-      texto,
-      /Reservar y pagar|pago en l[ií]nea|Book and pay|pay online|online payment|Reservar e pagar|pagamento online/i,
-      locale,
-    );
+    const { a } = messages[locale].activities.vendimia.faq[9];
+    for (const patron of claves[locale]) assert.match(a, patron, locale);
+  }
+  assert.equal(messages.es.activities.vendimia.faq[9].q, "¿Cómo puedo reservar y pagar?");
+});
+
+test("la pechera es prestada y la copa es solo con precio de lanzamiento", () => {
+  const es = messages.es.activities.vendimia;
+  assert.ok(es.program.includes.includes("Pechera prestada para la jornada"));
+  assert.ok(es.program.includes.includes("Copa de regalo para adultos con precio de lanzamiento"));
+  for (const locale of LOCALES) {
+    const bloque = JSON.stringify(messages[locale].activities.vendimia);
+    assert.doesNotMatch(bloque, /Pechera de regalo|apron to take home|Avental de presente/i, locale);
+    assert.doesNotMatch(bloque, /Abril · Ma|April · May/, locale);
   }
 });
 

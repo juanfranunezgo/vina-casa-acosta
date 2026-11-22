@@ -16,6 +16,8 @@ type Props = {
   whatsappHref: string;
   expandAll: string;
   collapseAll: string;
+  /** Título arriba y centrado, con las preguntas en una columna. Lo usa la vendimia. */
+  centrado?: boolean;
 };
 
 /**
@@ -47,6 +49,7 @@ export default function ActivityFaq({
   whatsappHref,
   expandAll,
   collapseAll,
+  centrado = false,
 }: Props) {
   const [open, setOpen] = useState<boolean[]>(() => entries.map(() => false));
   const allOpen = open.every(Boolean);
@@ -58,15 +61,21 @@ export default function ActivityFaq({
   // título. `grid-rows-[auto_1fr]` hace que la primera fila mida lo que el
   // título y no la mitad de la lista.
   return (
-    <div className="grid grid-cols-1 gap-x-16 gap-y-8 lg:grid-cols-12 lg:grid-rows-[auto_1fr]">
-      <div className="lg:col-span-4 lg:col-start-1 lg:row-start-1">
-        <span className="mb-5 block h-px w-12 bg-wine-accent/60" />
+    <div
+      className={
+        centrado
+          ? "mx-auto grid max-w-3xl grid-cols-1 gap-y-8"
+          : "grid grid-cols-1 gap-x-16 gap-y-8 lg:grid-cols-12 lg:grid-rows-[auto_1fr]"
+      }
+    >
+      <div className={centrado ? "text-center" : "lg:col-span-4 lg:col-start-1 lg:row-start-1"}>
+        {!centrado && <span className="mb-5 block h-px w-12 bg-wine-accent/60" />}
         <h2 className="font-display text-[2rem] leading-[1.12] text-primary md:text-[2.6rem]">
           {title}
         </h2>
       </div>
 
-      <div className="lg:col-span-8 lg:col-start-5 lg:row-span-2 lg:row-start-1">
+      <div className={centrado ? "" : "lg:col-span-8 lg:col-start-5 lg:row-span-2 lg:row-start-1"}>
         <div className="mb-4 flex justify-end">
           <button
             type="button"
@@ -123,7 +132,7 @@ export default function ActivityFaq({
         </div>
       </div>
 
-      <div className="lg:col-span-4 lg:col-start-1 lg:row-start-2">
+      <div className={centrado ? "text-center" : "lg:col-span-4 lg:col-start-1 lg:row-start-2"}>
         <p className="font-body text-[17px] leading-[1.7] text-on-surface-variant">{more}</p>
         <div className="mt-3">
           <Button

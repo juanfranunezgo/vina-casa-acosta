@@ -33,7 +33,10 @@
     },
     "wineTitle": {
       "blendRed": "blend tinto",
-      "byType": { "rosado": "vinho rosé", "espumante": "espumante" },
+      "byType": {
+        "rosado": "vinho rosé",
+        "espumante": "espumante"
+      },
       "overrides": {
         "guidai": "espumante rosé",
         "yaray-gua-tinto": "late harvest doce",
@@ -51,6 +54,7 @@
   "nav": {
     "home": "Início",
     "historia": "História",
+    "vendimia": "Vindima",
     "staff": "Staff",
     "actividades": "Experiências",
     "vinos": "Vinhos",
@@ -145,10 +149,22 @@
       "prevLabel": "Vinho anterior",
       "nextLabel": "Próximo vinho",
       "strip": {
-        "vineyards": { "title": "Vinhedos do Cachapoal", "desc": "Uvas do Vale do Cachapoal, nossa origem." },
-        "oak": { "title": "Estágio em carvalho", "desc": "Estágio em barricas de carvalho francês e americano." },
-        "limited": { "title": "Edições limitadas", "desc": "Produções reduzidas a cada safra." },
-        "heritage": { "title": "Herança familiar", "desc": "Três gerações, uma mesma origem." }
+        "vineyards": {
+          "title": "Vinhedos do Cachapoal",
+          "desc": "Uvas do Vale do Cachapoal, nossa origem."
+        },
+        "oak": {
+          "title": "Estágio em carvalho",
+          "desc": "Estágio em barricas de carvalho francês e americano."
+        },
+        "limited": {
+          "title": "Edições limitadas",
+          "desc": "Produções reduzidas a cada safra."
+        },
+        "heritage": {
+          "title": "Herança familiar",
+          "desc": "Três gerações, uma mesma origem."
+        }
       }
     },
     "featuredLines": {
@@ -159,7 +175,11 @@
       "prevLabel": "Coleção anterior",
       "nextLabel": "Próxima coleção",
       "wineCount": "{count, plural, one {# vinho} other {# vinhos}}",
-      "detailLabels": { "estilo": "Estilo", "crianza": "Estágio", "premio": "Prêmio" },
+      "detailLabels": {
+        "estilo": "Estilo",
+        "crianza": "Estágio",
+        "premio": "Prêmio"
+      },
       "lines": {
         "ombu": {
           "category": "Reserva",
@@ -190,8 +210,17 @@
       "subtitle": "Há lembranças que o tempo não apaga.",
       "allCta": "Ver todas as experiências",
       "exploreCta": "Explorar",
-      "tabs": { "all": "Todas", "tours": "Tours", "experiences": "Experiências", "events": "Eventos" },
-      "cat": { "tour": "Tour", "experience": "Experiência", "event": "Evento" },
+      "tabs": {
+        "all": "Todas",
+        "tours": "Tours",
+        "experiences": "Experiências",
+        "events": "Eventos"
+      },
+      "cat": {
+        "tour": "Tour",
+        "experience": "Experiência",
+        "event": "Evento"
+      },
       "eventsCta": "Solicitar orçamento",
       "book": "Reservar",
       "more": "Explorar",
@@ -300,7 +329,7 @@
       "eyebrow": "As mãos por trás da vinícola",
       "title": "Staff",
       "subtitle": "A equipe humana por trás de cada garrafa.",
-        "imageAlt": "Um trabalhador da colheita apoia no chão uma caixa cheia de cachos recém-colhidos, entre as fileiras do vinhedo"
+      "imageAlt": "Um trabalhador da colheita apoia no chão uma caixa cheia de cachos recém-colhidos, entre as fileiras do vinhedo"
     },
     "members": {
       "damian": {
@@ -583,13 +612,13 @@
       "navAria": "Seções da página",
       "meta": {
         "title": "Viva a Vindima {year} no Vale do Cachapoal",
-        "description": "Viva a vindima {year} em San Vicente de Tagua Tagua, Chile: colheita da uva, pisa e almoço campestre. Em abril e maio; deixe seus dados e avisamos a data."
+        "description": "Viva a vindima {year} em San Vicente de Tagua Tagua, Chile: colheita da uva, pisa e almoço campestre. Em abril; conheça a jornada e garanta seu lugar."
       },
       "breadcrumb": "Vindima",
       "cta": "Conhecer a vindima",
       "facts": {
         "seasonLabel": "Temporada",
-        "seasonValue": "Abril · Maio {year}",
+        "seasonValue": "Abril {year}",
         "durationLabel": "Duração",
         "durationValue": "Dia inteiro",
         "audienceLabel": "Para quem",
@@ -613,6 +642,7 @@
         "pisoneoNinos": "Três crianças pisam uva dentro de barricas, diante do banner da vindima da Casa Acosta",
         "almuerzo": "A mesa comprida do almoço sob o toldo, com os participantes sentados entre as videiras",
         "fotoGrupal": "Foto do grupo de participantes da vindima, de avental, com a cordilheira ao fundo",
+        "fotoGrupalCerca": "Foto de grupo de perto: dezenas de participantes sorriem e acenam para a câmera, com as videiras de outono e os toldos ao fundo",
         "prev": "Foto anterior da jornada",
         "next": "Próxima foto da jornada",
         "goTo": "Ver foto {index} de {total} da jornada",
@@ -625,7 +655,7 @@
         "moreLabel": "Mais fotos da vindima"
       },
       "hero": {
-        "eyebrow": "Abril · Maio",
+        "eyebrow": "Abril",
         "title": "Vindima na Casa Acosta",
         "subtitle": "O dia em que a vinha se enche de gente: colhe-se, pisa-se e celebra-se.",
         "imageAlt": "Vista aérea do grupo de participantes da vindima, de braços erguidos entre as fileiras da vinha da Casa Acosta"
@@ -681,8 +711,8 @@
         ],
         "includesTitle": "A jornada inclui",
         "includes": [
-          "Avental de presente para levar para casa",
-          "Taça de presente para levar para casa",
+          "Avental emprestado para a jornada",
+          "Taça de presente para adultos com preço de lançamento",
           "Almoço campestre com vinho incluído",
           "Acompanhamento da equipe agrícola e enológica",
           "Atividade pensada para crianças e adultos"
@@ -690,12 +720,12 @@
         "cta": "Inscreva-se, venha viver a vindima na Casa Acosta"
       },
       "season": {
-        "note": "A data exata quem decide é a uva: colhe-se quando atinge a maturação, então cada jornada é confirmada na temporada. Deixe os seus dados e avisamos assim que forem definidas."
+        "note": "A vindima segue a uva: colhe-se quando ela atinge o ponto de maturação. As datas com vagas estão no bloco de reserva; se ainda não aparecerem, deixe seus dados e avisaremos assim que forem publicadas."
       },
       "faq": [
         {
           "q": "Em que data acontece a vindima?",
-          "a": "A Vindima na Casa Acosta acontece durante abril e maio. A data é definida de acordo com o ponto de maturação da uva e, uma vez publicada, fica confirmada. Deixe seus dados e avisaremos assim que anunciarmos a próxima jornada."
+          "a": "A Vindima na Casa Acosta acontece em abril. As datas disponíveis aparecem no bloco de reserva desta página e, uma vez publicadas, ficam confirmadas. Se ainda não aparecerem, deixe seus dados e avisaremos."
         },
         {
           "q": "Preciso de experiência prévia?",
@@ -707,7 +737,7 @@
         },
         {
           "q": "O que a experiência inclui?",
-          "a": "A jornada inclui café da manhã campestre, conversa introdutória, colheita da uva, desengace, pisa tradicional, almoço campestre com buffet de saladas, vinho para adultos, concursos, sorteios, avental e taça de lembrança."
+          "a": "A jornada inclui café da manhã campestre, conversa introdutória, colheita da uva, desengace, pisa tradicional, almoço campestre com buffet de saladas, vinho para adultos, concursos, sorteios e avental emprestado para a jornada. Os adultos com preço de lançamento recebem também uma taça de presente."
         },
         {
           "q": "Que roupa devo levar?",
@@ -730,13 +760,168 @@
           "a": "Uma vez publicada, a data fica confirmada. Só poderia ser alterada excepcionalmente, se as condições climáticas impedirem a realização das atividades com segurança."
         },
         {
-          "q": "Como posso reservar?",
-          "a": "Deixe seus dados no formulário desta página e avisaremos assim que a data for publicada, com os passos para garantir sua vaga.\n\nSe precisar de ajuda, você também pode nos escrever diretamente pelo WhatsApp."
+          "q": "Como posso reservar e pagar?",
+          "a": "Com a venda aberta, você reserva nesta página: escolhe a data, informa quem vai e paga com cartão ou transferência. A entrada chega por e-mail com um QR code válido para todo o grupo.\n\nSe ainda não estiver aberta, deixe seus dados ou escreva pelo WhatsApp."
         }
       ],
       "others": {
         "title": "Outras formas de viver o ciclo da vinha",
         "lead": "A vindima é uma etapa do ano. Estas duas experiências acompanham as demais."
+      },
+      "reserva": {
+        "titulo": "Reserve seu lugar",
+        "tituloDatos": "Quem vai?",
+        "eligeFecha": "Escolha a data",
+        "horario": "{inicio} às {termino}",
+        "quedanCupos": "Há vagas",
+        "noDisponible": "Indisponível",
+        "cuantosVan": "Quantos vão?",
+        "gratis": "Sem custo",
+        "quitar": "Remover uma pessoa de {rango}",
+        "agregar": "Adicionar uma pessoa de {rango}",
+        "maximo": "Cada reserva aceita até {max} pessoas.",
+        "lanzamiento": "Preço de lançamento enquanto houver vagas nesta data. Quem o recebe leva {regalo} de presente.",
+        "regaloCopa": "uma taça",
+        "totalLabel": "Total aproximado",
+        "totalNota": "É um valor estimado. O total exato aparece no próximo passo, antes de pagar.",
+        "continuar": "Continuar",
+        "faltaFecha": "Escolha uma data para continuar.",
+        "faltanPersonas": "Informe quantas pessoas vão.",
+        "sinFechas": "No momento não há datas com vagas. Escreva pelo WhatsApp e vemos o que é possível.",
+        "pedirWhatsapp": "Reservar pelo WhatsApp",
+        "whatsapp": "Olá 👋 Quero reservar para {evento}, {fecha}: {personas, plural, one {# pessoa} other {# pessoas}}.",
+        "whatsappSinFecha": "Olá 👋 Quero saber se ainda há vagas para {evento}.",
+        "encargado": "Quem reserva",
+        "nombre": "Nome e sobrenome",
+        "celular": "Celular",
+        "celularEjemplo": "+56 9 1234 5678",
+        "correo": "E-mail",
+        "correoEntrada": "Enviaremos sua entrada para este e-mail. Se não a encontrar em alguns minutos, verifique a pasta de spam ou lixo eletrônico.",
+        "comuna": "Cidade (opcional)",
+        "yoVoy": "Eu também vou",
+        "asistente": "Pessoa {numero}",
+        "opcional": "(opcional)",
+        "heredado": "Com os seus dados acima.",
+        "edad": "Idade",
+        "edadAyuda": "A que terá no dia do evento.",
+        "talla": "Tamanho da camiseta",
+        "sinTalla": "Sem tamanho",
+        "tallaAyuda": "É para um sorteio.",
+        "restriccion": "Restrição alimentar?",
+        "no": "Não",
+        "si": "Sim",
+        "queEvitar": "O que deve evitar?",
+        "permiso": "Autorizo a Viña Casa Acosta a usar esta informação apenas para preparar a comida da jornada.",
+        "mascotas": "Vão com animais de estimação?",
+        "cuantasMascotas": "Quantos?",
+        "tuReserva": "Sua reserva",
+        "cambiar": "Alterar data ou pessoas",
+        "enviando": "Abrindo o pagamento…",
+        "reintentar": "Tentar de novo",
+        "irAPagar": "Continuar para o pagamento",
+        "legalIntro": "Antes de pagar você aceita:",
+        "condiciones": "Condições (v{version})",
+        "terminos": "Termos (v{version})",
+        "errores": {
+          "requerido": "Preencha este dado.",
+          "nombre": "Escreva nome e sobrenome.",
+          "email": "Confira o e-mail (exemplo: nome@email.com).",
+          "telefono": "Confira o celular: apenas números e um + no início.",
+          "texto": "Confira este dado: está muito longo ou tem caracteres que não podem ser salvos.",
+          "edad": "Escreva a idade em números.",
+          "edad_rango": "A idade não corresponde a esta faixa.",
+          "edadEntre": "Para esta ficha, a idade deve estar entre {min} e {max}.",
+          "edadDesde": "Para esta ficha, a idade deve ser {min} ou mais.",
+          "edad_tarifa": "Esta idade não tem tarifa. Confira a idade ou mude a faixa desta pessoa.",
+          "talla": "Esse tamanho não está mais disponível. Escolha outro.",
+          "mascotas": "Informe um número de 1 a {max}.",
+          "permiso": "Precisamos da sua autorização para salvar a restrição.",
+          "fecha": "Escolha uma data disponível.",
+          "personas": "Informe quantas pessoas vão.",
+          "total_cero": "A reserva precisa de pelo menos uma pessoa com entrada paga.",
+          "muy_largo": "Os dados são longos demais para uma única reserva."
+        },
+        "avisos": {
+          "fecha": "Essa data não está mais disponível. Escolha outra: seus dados ficam guardados.",
+          "cupo": "Não há vagas suficientes para este grupo nessa data. Tente outra data ou menos pessoas.",
+          "edad": "Há uma idade que não corresponde à sua faixa. Confira e tente de novo.",
+          "revisar": "Não conseguimos abrir sua reserva com estes dados. Confira e tente de novo.",
+          "total_cero": "A reserva precisa de pelo menos uma pessoa com entrada paga.",
+          "campos": "Confira os dados marcados.",
+          "muy_largo": "Os dados são longos demais para uma única reserva. Encurte algum texto ou divida o grupo.",
+          "respaldo": "Não conseguimos abrir o pagamento agora. Escreva pelo WhatsApp e concluímos sua reserva por lá."
+        },
+        "pasoFecha": "Data e pessoas",
+        "pasoDatos": "Quem vai",
+        "pasoPago": "Pagamento",
+        "siguientePersona": "Próxima pessoa",
+        "fichaLista": "Pronta",
+        "fichaPendiente": "Falta completar"
+      },
+      "landing": {
+        "eligeFecha": "Escolha sua data",
+        "hayCupos": "Há vagas",
+        "sinCupos": "Indisponível",
+        "adultosDesde": "Adultos a partir de",
+        "reservar": "Reservar",
+        "avisame": "Avise-me da próxima data",
+        "avisarme": "Avisar-me",
+        "barraSinEvento": "Garanta seu lugar",
+        "dia": {
+          "titulo": "O que você vai fazer nesse dia",
+          "pasos": [
+            {
+              "titulo": "Café da manhã no campo",
+              "texto": "Começamos à mesa, com uma conversa curta sobre a vindima."
+            },
+            {
+              "titulo": "Colheita da uva",
+              "texto": "Você entra na vinha com tesoura, junto à equipe agrícola."
+            },
+            {
+              "titulo": "Desengace",
+              "texto": "Separe os grãos do cacho, à mão e na máquina."
+            },
+            {
+              "titulo": "Pisa da uva",
+              "texto": "Pise a uva com os pés, como sempre se fez."
+            },
+            {
+              "titulo": "Churrasco e vinho",
+              "texto": "Almoço no campo com saladas e vinho para adultos."
+            },
+            {
+              "titulo": "Concursos e brinde",
+              "texto": "Sorteios para toda a família e um brinde entre as videiras."
+            }
+          ]
+        },
+        "info": {
+          "titulo": "O que você precisa saber",
+          "cuando": "Quando",
+          "horario": "Horário",
+          "donde": "Onde",
+          "dondeValor": "Viña Casa Acosta, San Vicente de Tagua Tagua",
+          "mascotas": "Animais de estimação",
+          "mascotasValor": "Podem ir. Avise ao reservar.",
+          "llevar": "O que levar",
+          "llevarValor": "Roupa confortável, sapatos fechados, chapéu, protetor solar e uma toalha."
+        },
+        "video": {
+          "titulo": "Convite para a Vindima na Casa Acosta",
+          "ver": "Ver o vídeo",
+          "pronto": "Em breve, o vídeo da jornada",
+          "verYoutube": "Ver o vídeo no YouTube"
+        },
+        "heroBajada": "A colheita da uva: um dia no campo para colher, pisar e celebrar.",
+        "queEs": {
+          "texto": "A vindima é a colheita da uva: o momento em que um ano de trabalho na vinha se transforma em vinho. Na Casa Acosta você a vive por dentro, em um dia de campo para adultos e crianças: colhe a uva, pisa com os pés e termina celebrando com um churrasco."
+        },
+        "invitacion": {
+          "titulo": "Venha viver a vindima",
+          "texto": "É assim que se vive uma jornada de vindima na Casa Acosta.",
+          "cta": "Quero participar"
+        }
       }
     },
     "items": {

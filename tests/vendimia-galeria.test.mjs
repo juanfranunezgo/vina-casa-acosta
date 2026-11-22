@@ -4,7 +4,7 @@ import { readFile, stat } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
 import sharp from "sharp";
 import {
-  VENDIMIA_CARRUSEL,
+  VENDIMIA_DIA,
   VENDIMIA_FOTOS,
   VENDIMIA_GALERIA,
 } from "../data/vendimiaGallery.ts";
@@ -37,7 +37,7 @@ const filas = [...VENDIMIA_GALERIA.visibles, ...VENDIMIA_GALERIA.mas];
 const enGaleria = filas.flatMap((fila) => fila.fotos);
 /** Las que la página nombra a mano, fuera del carrusel y la galería. */
 const sueltas = [...fuentePagina.matchAll(/\bFOTO\.(\w+)/g)].map((m) => m[1]);
-const usadas = [...VENDIMIA_CARRUSEL, ...enGaleria, ...sueltas];
+const usadas = [...VENDIMIA_DIA, ...enGaleria, ...sueltas];
 
 const archivo = (foto) => fileURLToPath(new URL(`public${VENDIMIA_FOTOS[foto]}`, raiz));
 
@@ -75,12 +75,10 @@ test("cada foto de la galería sale con la proporción de su fila", async () => 
   }
 });
 
-test("las fotos propias del carrusel salen 4:5, la proporción de su marco", async () => {
-  // El asado viene de la galería de contacto y tiene otro encuadre: el marco lo
-  // recorta con object-cover, que es el comportamiento de siempre del carrusel.
-  for (const foto of VENDIMIA_CARRUSEL.filter((f) => VENDIMIA_FOTOS[f].includes("/vendimia-"))) {
-    const { width, height } = await sharp(archivo(foto)).metadata();
-    assert.ok(Math.abs(width / height - 4 / 5) < 0.01, `${foto} mide ${width}x${height}`);
+test("hay una foto por cada momento del día, en los tres idiomas", () => {
+  for (const locale of LOCALES) {
+    const { pasos } = bundles[locale].activities.vendimia.landing.dia;
+    assert.equal(pasos.length, VENDIMIA_DIA.length, locale);
   }
 });
 
@@ -91,10 +89,10 @@ test("cada fila trae entre una y cuatro fotos: las columnas que la página sabe 
   assert.ok(VENDIMIA_GALERIA.mas.length > 0, "sin fotos extra, el botón Ver más no tiene nada que abrir");
 });
 
-test("cada foto del carrusel y de la galería trae su alt en los tres idiomas", () => {
+test("cada foto del día y de la galería trae su alt en los tres idiomas", () => {
   for (const locale of LOCALES) {
     const vendimia = bundles[locale].activities.vendimia;
-    for (const foto of [...VENDIMIA_CARRUSEL, ...enGaleria]) {
+    for (const foto of [...VENDIMIA_DIA, ...enGaleria]) {
       assert.ok(
         vendimia.photos[foto]?.trim(),
         `messages/${locale}.json no tiene activities.vendimia.photos.${foto}`,

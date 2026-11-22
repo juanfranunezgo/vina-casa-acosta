@@ -99,48 +99,19 @@ pie) pasaron a `bg-surface`. Las tarjetas grises dentro de las páginas se queda
 
 | ID | Sección |
 |---|---|
-| Dv1 | Hero + breadcrumbs Desde el 2026-10-12 las migas ya no van sobre la foto: bajan a la página, centradas, como en las fichas (Dd1), y debajo va la misma píldora de secciones de Dd2 (Detalle · Galería · Preguntas · Reserva), que acompaña de Dv2 a Dv7. |
-| Dv2 | Qué es la vendimia en Casa Acosta + los tres datos ciertos (temporada · duración · para quién) Desde el 2026-10-12 el dato de temporada lleva el año de la próxima vendimia ("Abril · Mayo 2027"), calculado con `anioDeTemporada`: es el mismo año del título de la página |
-| Dv3 | El año de la viña — banda de 12 meses con las 5 etapas del ciclo y la ventana de cosecha (`components/VineyardYear.tsx`) |
-| Dv4 | La jornada: corta, pisa y celebra — programa en `<ol>` con un ícono por paso + qué incluye, y al lado un carrusel 4:5 con tres fotos en el orden del día (desayuno · cosecha · asado) |
-| Dv5 | Otras formas de vivir el ciclo (Cosecha tu historia · Lágrimas de invierno) |
-| Dv6 | Galería en filas de una sola proporción: a la vista, apertura ancha 16:9 + fila de tres 3:2; detrás de **"Ver más fotos"** (`components/ShowMore.tsx`), fila de cuatro 4:5, par 3:2 y cierre 16:9 con la foto grupal. Las filas se declaran en `data/vendimiaGallery.ts`; lo cuida `tests/vendimia-galeria.test.mjs`. Desde el 2026-09-22 |
-| Dv6b | Preguntas frecuentes (2026-10-12, pedido de Damián: "para ir dando el mismo orden a las páginas"). Diez preguntas en `activities.vendimia.faq`, con el mismo componente de las fichas (`components/ActivityFaq.tsx`, Dd6b) y en el mismo lugar: justo antes de la consulta. La salida a WhatsApp abre con el mensaje del formulario en modo temporada |
-| Dv7 | Consulta (formulario en modo temporada, sin mínimo de personas) |
+| Dv1 | Hero a pantalla completa con **la entrada**: fechas, precio y reservar (`VendimiaHeroReserva`), más migas debajo. Tocar una fecha la deja elegida en el formulario. Rediseño del 2026-11-22 |
+| Dv2 | Qué es la vendimia, en un párrafo, y la invitación a participar con el **short de YouTube** (`data/vendimiaVideo.ts`). En escritorio, el texto a un lado y el video entre dos fotos al otro |
+| ~~Dv3~~ | Retirada el 2026-11-22: el ciclo de la vid contaba la viña en vez de ayudar a reservar. El ID no se reasigna |
+| Dv4 | Qué vas a hacer: los seis momentos del día, con foto y en orden. En celular se desliza de lado |
+| Dv4b | Lo que necesitas saber: los datos prácticos y qué incluye |
+| Dv5 | Otras experiencias (Cosecha tu historia · Lágrimas de invierno) |
+| Dv6 | Galería en filas de una sola proporción; el resto detrás de **"Ver más fotos"** (`components/ShowMore.tsx`). Las filas se declaran en `data/vendimiaGallery.ts` |
+| Dv6b | Preguntas frecuentes, después de la reserva (`components/ActivityFaq.tsx`) | **Reserva** (`components/VendimiaReserva.tsx`, desde el 2026-11-22): fecha, personas por rango y total orientativo; después encargado, una ficha por asistente y mascotas; termina en el checkout de Afeleia. Sin `catalogo.eventos` o sin URL del checkout, sigue la **consulta** (formulario en modo temporada, sin mínimo de personas) |
 
-**El orden en pantalla es Dv1 · Dv2 · Dv4 · Dv3 · Dv6 · Dv6b · Dv7 · Dv5**, no el de la
-numeración: mandar a otra página justo antes del formulario es perder la visita.
-Es el mismo orden que la ficha `Dd`, donde "otras actividades" también cierra.
+**El orden en pantalla es Dv1 · Dv2 · Dv4 · Dv4b · Dv6 · Dv7 · Dv6b · Dv5.** Títulos y textos van centrados; las listas, los datos del formulario y los pasos del día, alineados a la izquierda. Cada sección responde una duda de quien está por reservar, y la barra de reserva (`VendimiaBarraReserva`) acompaña desde que sale el hero hasta que aparece el formulario. Reemplaza a la píldora de secciones en esta página.
 
-**Dv4 va antes que Dv3** desde el 2026-08-19: la jornada es lo que el visitante viene a buscar, y el ciclo de la vid es el contexto que la explica. Contarle el año de la viña antes de decirle qué se hace ese día le pedía leer un calendario para llegar al programa.
-
-La página **no publica fechas exactas, precio ni mínimo de personas** — ver
-`docs/HANDOFF.md` y `tests/vendimia-hub.test.mjs`.
-
-**Dv3 absorbió la franja de meses**, que antes era una sección aparte entre Dv2 y
-Dv3. Separadas decían lo mismo dos veces: cinco etapas por un lado y doce
-casillas por el otro. `VineyardYear` las dibuja como una sola línea del año que
-arranca en junio —el copy dice que la historia empieza en invierno, y en el
-hemisferio sur eso es junio— con el tramo del visitante teñido al final. La franja
-de meses de las fichas (`SeasonStrip`, Dd3) ya no existe: se retiró el 2026-09-24.
-
-**Registro visual del hub: almanaque, no landing.** Toda la página va en papel
-—no hay bandas en penumbra— y el contenido no va en cajas: lo que separa un
-bloque de otro es un filete de un píxel. Por eso Dv4 no monta `ActivityProgram` y
-Dv5 no monta `ActivityRowCard`, aunque las fichas sí: los dos componentes dibujan
-el vocabulario que este hub abandona (número en círculo con anillo, tarjeta
-redondeada con sombra y salto al hover). Siguen intactos para `Dd`. Si una
-sección nueva de Dv necesita una caja para leerse, lo que le falta es jerarquía
-tipográfica.
-
-Tres excepciones deliberadas a esa regla. **Las preguntas frecuentes (Dv6b) van en
-tarjetas**, las de `ActivityFaq`, por la misma razón que el formulario: quien viene de la
-ficha del yoga ya sabe cómo se usan. Las otras dos: **las fotos van con esquina redondeada**
-(`rounded-xl`; `rounded-lg` las miniaturas de Dv5) porque una foto no encierra
-contenido sino que lo es, y **Dv7 sí es una tarjeta**, copiando exactamente la de
-`Dd6` — el formulario no es contenido editorial sino el mismo trámite que el
-visitante ya hizo en otra actividad, y que se vea igual es lo que lo hace
-reconocible. Si cambia el de la ficha, cambia este.
+**Ninguna fecha, precio ni cupo se escribe en el repo**: los publica Afeleia en
+`catalogo.eventos` — ver `docs/HANDOFF.md` y `tests/vendimia-hub.test.mjs`.
 
 ⚠️ Tokens de radio: `globals.css` redefine `--radius-xl` en 1,5rem, así que
 `rounded-xl` son **24px** y `rounded-2xl` son **16px** — al revés de lo que
@@ -187,7 +158,7 @@ sugieren los nombres de Tailwind.
 
 | ID | Componente | Notas |
 |---|---|---|
-| NV | Navbar | Header con logo + nav + LanguageSwitcher + CartButton. Bajo "Actividades" cuelga un **acordeón de una columna** (panel de 22rem): seis filas en orden fijo — Vendimia · Tours · Talleres · Experiencias · Eventos · Ver todo. Las tres categorías despliegan sus fichas con `<details>` de `name` compartido (una abierta a la vez, sin JavaScript); las otras tres navegan directo. Reemplazó al mega-menú de cuatro columnas, donde la lista larga de Experiencias se partía y su segunda mitad quedaba bajo una columna sin encabezado. Se deriva de `data/activities.ts` y su contenido vive en `components/ActivitiesMenu.tsx`, compartido por escritorio y drawer móvil. **Los 14 enlaces están siempre en el HTML servido**, ocultos por CSS: ver `tests/navegacion-enlaces-source.test.mjs`. |
+| NV | Navbar | Header con logo + nav + LanguageSwitcher + CartButton. **Vendimia va en el menú principal** desde el 2026-11-22, entre Historia y Actividades, y también sigue dentro del acordeón. Bajo "Actividades" cuelga un **acordeón de una columna** (panel de 22rem): seis filas en orden fijo — Vendimia · Tours · Talleres · Experiencias · Eventos · Ver todo. Las tres categorías despliegan sus fichas con `<details>` de `name` compartido (una abierta a la vez, sin JavaScript); las otras tres navegan directo. Reemplazó al mega-menú de cuatro columnas, donde la lista larga de Experiencias se partía y su segunda mitad quedaba bajo una columna sin encabezado. Se deriva de `data/activities.ts` y su contenido vive en `components/ActivitiesMenu.tsx`, compartido por escritorio y drawer móvil. **Los 14 enlaces están siempre en el HTML servido**, ocultos por CSS: ver `tests/navegacion-enlaces-source.test.mjs`. |
 | FT | Footer | Pie de página, **oscuro (`bg-primary`) y en tres bandas** desde el 2026-08-19: identidad y contacto directo · el índice del sitio en tres columnas · el cierre legal. La banda del medio baja a Vendimia, Tours, Experiencias y Eventos privados; **Talleres no está** porque el índice de actividades no tiene esa sección y un rótulo que no aterriza es lo mismo que se sacó con Mapa de Sitio. Privacidad, Términos y Cookies enlazan a sus PDF **sólo en español** — el mapa vive en `lib/legal.ts` y un idioma sin archivo propio deja la etiqueta como texto. Mapa de Sitio sigue sin enlace porque esa página no existe. `tests/legal-docs-source.test.mjs` falla si un enlace apunta a un PDF que no está en `public/`. |
 | CD | CartDrawer | Carrito lateral overlay (z-index alto). Bloquea el cierre del pedido por debajo de la compra mínima (`MIN_BOTTLES` en `lib/cart.ts`, hoy 6 botellas) y también si todo el carrito está agotado. |
 | AG | AgeGate | Verificación de +18 (Ley 19.925), sobre todo el sitio y recordada 30 días. **Es una capa sobre el HTML ya servido**: la página se renderiza entera y esto va encima, así que no hay contenido escondido de Google ni ruta `/edad` que indexar. Quién la ve lo decide un script inline del layout que marca `<html data-age-gate="pendiente">` antes del primer pintado; el CSS de `globals.css` hace el resto. Sin JavaScript no aparece, a propósito: sus botones lo necesitan y dejaría el sitio bloqueado sin salida. |

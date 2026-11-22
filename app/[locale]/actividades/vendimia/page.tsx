@@ -2,28 +2,21 @@ import Image from "next/image";
 import Link from "next/link";
 import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
-import {
-  ArrowRight,
-  Croissant,
-  Flame,
-  Footprints,
-  Grape,
-  Scissors,
-  Trophy,
-  Wine,
-} from "lucide-react";
+import { ArrowRight, Check } from "lucide-react";
 import FotoBorrosa from "@/components/FotoBorrosa";
-import Reveal from "@/components/Reveal";
-import Button from "@/components/ui/Button";
-import CollectionPhotos from "@/components/CollectionPhotos";
 import ShowMore from "@/components/ShowMore";
+import Button from "@/components/ui/Button";
 import ActivityBreadcrumbs from "@/components/ActivityBreadcrumbs";
 import ActivityFaq, { type FaqEntry } from "@/components/ActivityFaq";
 import ActivityReservationForm from "@/components/ActivityReservationForm";
-import ActivitySectionNav from "@/components/ActivitySectionNav";
-import VineyardYear from "@/components/VineyardYear";
+import FechasVendimia, { HorarioVendimia } from "@/components/FechasVendimia";
+import VendimiaBarraReserva from "@/components/VendimiaBarraReserva";
+import VendimiaHeroReserva from "@/components/VendimiaHeroReserva";
+import VendimiaReserva from "@/components/VendimiaReserva";
+import VendimiaShort from "@/components/VendimiaShort";
 import JsonLd from "@/components/JsonLd";
 import { fotoBorrosa } from "@/lib/fotoBorrosa";
+import { FUENTE_FICHA } from "@/lib/fuenteFicha";
 import { anioDeTemporada } from "@/lib/temporada";
 import { buildVendimiaJsonLd } from "@/lib/activityJsonLd";
 import { alternatesFor } from "@/lib/alternates";
@@ -35,7 +28,7 @@ import {
   vendimiaRelatedActivities,
 } from "@/data/activities";
 import {
-  VENDIMIA_CARRUSEL,
+  VENDIMIA_DIA,
   VENDIMIA_FOTOS,
   VENDIMIA_GALERIA,
   type FilaGaleria,
@@ -43,85 +36,43 @@ import {
 } from "@/data/vendimiaGallery";
 
 /**
- * Dv — Hub de Vendimia.
+ * Dv — Vendimia. Una página para reservar: lo primero es la entrada con las
+ * fechas y el precio, y cada sección responde una duda de quien está decidiendo
+ * (qué se hace, cómo es, qué incluye) hasta llegar al formulario. La barra de
+ * reserva acompaña todo el recorrido.
  *
- * Es una página informativa, no una ficha: cuenta qué es la vendimia y dónde cae
- * en el año de la viña, y recién después ofrece la jornada. Por eso la actividad
- * *corta, pisa y celebra* no tiene ficha propia — vive acá, y así no hay dos
- * páginas del sitio compitiendo por la misma búsqueda.
- *
- * **No publica fechas, precio ni mínimo de personas**, y no es un olvido: la
- * cosecha depende de la maduración de la uva y la viña confirma cada jornada por
- * temporada. El único dato de calendario es la franja de meses, que sale de
- * `VENDIMIA_MONTHS`. Lo cuida `tests/vendimia-hub.test.mjs`.
- *
- * **Registro visual — almanaque, no landing.** La página trata de tiempo: un
- * ciclo de un año, una jornada de un día, tres meses de temporada. El diseño lo
- * dice con los recursos de un impreso —filetes, medida de lectura corta y mucho
- * aire— y no con tarjetas: **el contenido no va en cajas**. Lo que separa un
- * bloque de otro es una línea de un píxel, y no hay íconos metidos en círculos
- * con tinte ni sombras ambientales alrededor del texto. Si un bloque vuelve a
- * necesitar un contorno para leerse, lo que le falta es jerarquía tipográfica.
- *
- * Dos excepciones, las dos deliberadas:
- *
- * 1. **Las fotos van redondeadas** (`rounded-xl`, y `rounded-lg` las
- *    miniaturas). Una foto con esquina blanda no es una tarjeta: no encierra
- *    contenido, es el contenido. Ojo con los tokens — `globals.css` redefine
- *    `--radius-xl` en 1,5rem, así que acá `rounded-xl` son 24px y `rounded-2xl`
- *    son 16px, al revés de lo que sugiere el nombre.
- * 2. **El formulario de Dv7 sí es una tarjeta**, y copia exactamente la de la
- *    ficha (Dd6). No es contenido editorial: es el mismo trámite que el
- *    visitante ya hizo en otra actividad del sitio, y que se vea igual es lo que
- *    lo hace reconocible.
- *
- * Toda la página va en papel. La versión anterior mandaba dos secciones a
- * penumbra —rojo oscuro sobre rojo oscuro, con el texto en rosa al 75%— y era
- * lo primero que la delataba como plantilla. El único momento oscuro es la foto
- * del hero, y se queda por una razón funcional: `Navbar.tsx` decide su
- * transparencia con `pathname.startsWith('/actividades')`, así que un hero claro
- * dejaría los enlaces blancos sobre fondo blanco.
+ * **Ninguna fecha, precio ni cupo está escrito en este repo.** Los publica
+ * Afeleia en `catalogo.eventos` y los lee el navegador. Sin esa clave la página
+ * sigue con su información y la consulta de temporada. El único dato de
+ * calendario propio es el mes (`VENDIMIA_MONTHS`). Lo cuida
+ * `tests/vendimia-hub.test.mjs`.
  */
 
 const HUB_PATH = VENDIMIA_HUB ?? "/actividades/vendimia";
 
-// La página es estática, pero dice el año de la próxima vendimia ("Vive la
-// Vendimia 2027…") y ese año cambia solo, terminado mayo. Regenerarla una vez
-// al día alcanza: sin esto seguiría diciendo el año viejo hasta el siguiente
-// deploy. Tiene que ser un literal: Next lee la config de segmento estáticamente.
+// La página es estática, pero dice el año de la próxima vendimia y ese año cambia
+// solo, terminado abril. Tiene que ser un literal: Next lee la config de segmento
+// estáticamente.
 export const revalidate = 86400;
 
-// El hero va en <img> con srcSet y no en next/image: los tres anchos ya están
-// generados y versionados (scripts/optimize-heros.mjs), así que no hace falta
-// pasar por el optimizador en cada visita.
+// El hero va en <picture> con dos encuadres, como los otros heros a pantalla
+// completa: la aérea 16:9 y un recorte 9:16 para pantallas verticales (ver
+// scripts/optimize-heros.mjs). Sin el recorte, `object-cover` estira la foto
+// hasta cubrir el alto y en un celular queda borrosa.
 //
-// El `sizes` va en `vh` y no en `vw`, igual que los otros heros full-bleed del
-// sitio, porque lo que decide cuánto se agranda la foto es el ALTO del hero:
-// `object-cover` la escala hasta cubrirlo y recorta los lados. Con una foto 16:9
-// el ancho pintado es `alto × 1,78`, así que sobre un hero de 45svh son 80vh y
-// sobre uno de 70vh, 125vh. Pedir `100vw` bajaría un archivo del ancho de la
-// pantalla para pintarlo al doble: es la causa exacta de los heros borrosos que
-// el proyecto ya pagó una vez (ver docs/FOTOS.md).
-//
-// En móvil se pide 78vh y no 80vh a propósito: 80vh cae dos puntos por encima
-// del candidato de 1280 y el navegador salta al de 1920, que pesa el doble por
-// una diferencia que nadie ve (0,94 píxeles de origen por píxel de pantalla
-// contra 1,07 — medido en 375×812 a DPR 2). El umbral 5/4 del segundo tramo es
-// la proporción en la que el hero de escritorio deja de estirarse por alto y
-// pasa a hacerlo por ancho.
-const HERO_WIDTHS = [1280, 1920, 2560];
-const HERO_SRCSET = HERO_WIDTHS.map(
-  (w) => `/images/actividades/hero-vendimia-${w}.webp ${w}w`,
-).join(", ");
+// Los `sizes` van en `vh` porque lo que decide cuánto se agranda la foto es el
+// ALTO del hero: bajo 16:9 el ancho pintado es `alto × 1,78` (177.78vh), y en el
+// encuadre vertical, bajo 9:16, es `alto × 0,5625` (56.25vh).
+const heroSrcSet = (sufijo: string, anchos: number[]) =>
+  anchos
+    .map((w) => `/images/actividades/hero-vendimia${sufijo}-${w}.webp ${w}w`)
+    .join(", ");
+const HERO_SRCSET = heroSrcSet("", [1280, 1920, 2560]);
+const HERO_SRCSET_MOVIL = heroSrcSet("-movil", [828, 1200, 1600]);
 const HERO_FALLBACK = "/images/actividades/hero-vendimia-1920.webp";
-const HERO_SIZES = "(max-width: 768px) 78vh, (max-aspect-ratio: 5/4) 125vh, 100vw";
+const HERO_SIZES = "(max-aspect-ratio: 16/9) 177.78vh, 100vw";
+const HERO_SIZES_MOVIL = "(max-aspect-ratio: 9/16) 56.25vh, 100vw";
 
-/**
- * Las fotos, el carrusel y las filas de la galería viven en
- * `data/vendimiaGallery.ts`, donde un test puede leerlos. Todas son de una
- * vendimia de verdad salvo el asado del carrusel, que es de la viña y cuyo `alt`
- * no afirma que sea de una vendimia.
- */
 const FOTO = VENDIMIA_FOTOS;
 
 /** Clase de proporción de cada fila. Escritas enteras para que Tailwind las vea. */
@@ -155,64 +106,10 @@ function tamanos(total: number, index: number): string {
   return "(max-width: 768px) 50vw, 25vw";
 }
 
-/** Una etapa del ciclo de la vid, tal como viene de `messages`. */
-type CycleStep = { season: string; name: string; description: string };
-
-/** La etapa que esta página vende, resaltada dentro del ciclo. */
-const HIGHLIGHTED_CYCLE_STEP = 4;
-
-/**
- * Un ícono por paso de la jornada, en el MISMO orden que `program.steps` de
- * `messages/*.json`. Si allá se agrega, quita o reordena un paso, hay que
- * actualizar esta tabla — es la misma convención que `includeIcons` en la ficha
- * de actividad.
- *
- * Cada uno nombra lo que pasa en ese momento y no una idea abstracta de "paso":
- * se corta con tijera, se despalilla el racimo, se pisa con los pies. Un set de
- * círculos numerados o de ticks habría dicho "acá hay una lista", que es lo
- * único que el lector ya sabía.
- */
-const PROGRAM_ICONS = [
-  Croissant, // desayuno campestre de bienvenida
-  Scissors, // corte de uva en el viñedo
-  Grape, // despalillado: separar el grano del escobajo
-  Footprints, // pisoneo tradicional, con los pies
-  Flame, // almuerzo: asado campestre
-  Trophy, // concursos y sorteos
-  Wine, // brindis de cierre
-];
-
-/**
- * Dónde cae cada etapa en la banda de doce meses de `VineyardYear`, que arranca
- * en junio. Alineado por índice con `cycle.steps`.
- *
- * Vive acá y no en `messages` a propósito: el calendario agrícola es el mismo en
- * los tres idiomas, y meterlo en los bundles sería pedirle a un traductor que no
- * mueva un dato que no es texto. `VineyardYear` reparte el año en partes iguales
- * si algún día los largos dejan de coincidir, así que sumar una etapa al mensaje
- * degrada el dibujo pero no rompe la página.
- *
- * **Ninguna etapa baja de dos columnas.** Con el reparto literal por estación,
- * "de la uva al vino" quedaba sola en mayo: 107px para un título de cuatro
- * palabras en Caslon, que se partía en tres líneas. Las estaciones siguen siendo
- * ciertas —el deshoje es de verano, la vendimia del fin del verano y la bodega
- * del otoño— y lo que se ajustó es dónde cae el corte entre meses vecinos, que
- * en el campo tampoco es una fecha.
- *
- * El tramo teñido de la línea NO sale de acá sino de `VENDIMIA_MONTHS`: son dos
- * cosas distintas —las etapas son el trabajo de la viña; el tramo en vino es
- * cuándo puede venir el visitante— aunque desde que la cosecha es de abril y
- * mayo las dos coincidan. Que coincidan es un hecho de este año, no una regla:
- * si la viña abre una jornada fuera de la cosecha, se mueve `VENDIMIA_MONTHS`
- * sin tocar el ciclo.
- */
-const CYCLE_SPANS = [
-  { start: 1, span: 3 }, // Poda y amarra — invierno: junio, julio, agosto
-  { start: 4, span: 3 }, // Desbrote — primavera: septiembre, octubre, noviembre
-  { start: 7, span: 2 }, // Deshoje — verano: diciembre, enero
-  { start: 9, span: 2 }, // Maduración — fin del verano: febrero, marzo
-  { start: 11, span: 2 }, // Vendimia — otoño: abril, mayo
-];
+const tituloSeccion =
+  "text-center font-body text-[1.75rem] font-bold leading-[1.15] tracking-[-0.02em] text-primary md:text-[2.5rem]";
+const contenedor = "mx-auto max-w-(--container-max)";
+const margenes = "px-margin-mobile md:px-margin-desktop";
 
 export async function generateMetadata({
   params,
@@ -264,36 +161,26 @@ export default async function VendimiaPage({
   const t = await getTranslations("activities.vendimia");
   const tLabels = await getTranslations("activities.labels");
   const tItems = await getTranslations("activities.items");
-  // El mismo año del título, para que la página diga lo que el resultado de
-  // Google promete: va en el dato de temporada de Dv2 y en el JSON-LD.
+  // El mismo año del título: va en el dato de cuándo y en el JSON-LD.
   const year = anioDeTemporada(VENDIMIA_MONTHS);
 
-  // Dv6b — las preguntas frecuentes, y el mensaje con que abre WhatsApp desde
-  // ahí: el mismo del botón del formulario en modo temporada ("quiero que me
-  // avisen cuándo es la próxima…"), porque todavía no hay fecha que reservar.
   const faq = t.raw("faq") as FaqEntry[];
   const whatsappHref = `${CONTACT_WHATSAPP_URL}?text=${encodeURIComponent(
     tLabels("form.waIntroSeason", { activity: t("hero.title") }),
   )}`;
 
-  const cycleSteps = t.raw("cycle.steps") as CycleStep[];
-  const programSteps = t.raw("program.steps") as string[];
+  const pasos = t.raw("landing.dia.pasos") as { titulo: string; texto: string }[];
   const includes = t.raw("program.includes") as string[];
   const related = vendimiaRelatedActivities();
 
-  /**
-   * Una fila de la galería (Dv6). La foto ancha va sin el zoom al pasar el
-   * mouse, como la apertura de siempre: a ese tamaño el movimiento se nota más
-   * de lo que aporta. `conMargen` separa la fila de la anterior.
-   */
   const filaDeGaleria = ({ proporcion, fotos }: FilaGaleria, conMargen: boolean) => (
     <div
-      className={`grid gap-gutter ${COLUMNAS[fotos.length]} ${conMargen ? "mt-gutter" : ""}`}
+      className={`grid gap-3 md:gap-4 ${COLUMNAS[fotos.length]} ${conMargen ? "mt-3 md:mt-4" : ""}`}
     >
       {fotos.map((foto, index) => (
         <div
           key={foto}
-          className={`group relative overflow-hidden rounded-xl ${ASPECTO[proporcion]} ${
+          className={`relative overflow-hidden rounded-2xl ${ASPECTO[proporcion]} ${
             fotos.length === 3 ? "last:col-span-2 md:last:col-span-1" : ""
           }`}
         >
@@ -301,11 +188,7 @@ export default async function VendimiaPage({
             src={FOTO[foto]}
             alt={t(`photos.${foto}`)}
             fill
-            className={`object-cover ${
-              fotos.length > 1
-                ? "transition-transform duration-700 group-hover:scale-[1.04]"
-                : ""
-            }`}
+            className="object-cover"
             sizes={tamanos(fotos.length, index)}
           />
         </div>
@@ -313,17 +196,32 @@ export default async function VendimiaPage({
     </div>
   );
 
-  // Los tres datos que la viña SÍ dio. No hay una cuarta casilla con el precio
-  // ni con el mínimo de personas porque esos números todavía no existen.
-  //
-  // Van sin ícono: un calendario, un reloj y una silueta metidos cada uno en un
-  // círculo con tinte al 10% eran la firma más visible de la versión anterior, y
-  // no agregaban nada — las etiquetas ya dicen "Temporada", "Duración" y "Para
-  // quién". Lo que ordena la fila es el filete de arriba.
-  const facts = [
-    { label: t("facts.seasonLabel"), value: t("facts.seasonValue", { year }) },
-    { label: t("facts.durationLabel"), value: t("facts.durationValue") },
+  // Decorativa: acompaña a la consulta y no aporta información que el formulario
+  // no diga. El anclaje en 16% deja entera la gamela roja en la ranura angosta.
+  const fotoFormulario = (
+    <Image
+      src={FOTO.formulario}
+      alt=""
+      aria-hidden="true"
+      fill
+      className="object-cover object-[16%_center]"
+      sizes="(max-width: 1024px) 100vw, 45vw"
+    />
+  );
+
+  const datos = [
+    {
+      label: t("landing.info.cuando"),
+      value: <FechasVendimia respaldo={t("facts.seasonValue", { year })} />,
+    },
+    {
+      label: t("landing.info.horario"),
+      value: <HorarioVendimia respaldo={t("facts.durationValue")} />,
+    },
+    { label: t("landing.info.donde"), value: t("landing.info.dondeValor") },
     { label: t("facts.audienceLabel"), value: t("facts.audienceValue") },
+    { label: t("landing.info.mascotas"), value: t("landing.info.mascotasValor") },
+    { label: t("landing.info.llevar"), value: t("landing.info.llevarValor") },
   ];
 
   // Los mismos textos que ve la miga en pantalla alimentan el BreadcrumbList:
@@ -348,81 +246,68 @@ export default async function VendimiaPage({
         )}
       />
 
-      {/* Dv1 — Hero. Tiene que ser el primer <section> de <main> y llevar
-          data-hero-text: es lo que el Navbar busca para quedarse transparente
-          sobre una foto oscura (ver components/Navbar.tsx).
+      {/* Dv1 — Hero con la entrada. Tiene que ser el primer <section> de <main>
+          y llevar data-hero-text: es lo que el Navbar busca para quedarse
+          transparente sobre la foto (ver components/Navbar.tsx). El texto va
+          abajo para no taparle las caras al grupo. */}
+      <section
+        className={`relative flex min-h-[100svh] w-full flex-col justify-end overflow-hidden ${FUENTE_FICHA}`}
+      >
+        <FotoBorrosa
+          movil={fotoBorrosa("/images/actividades/hero-vendimia-movil-828.webp")}
+          escritorio={fotoBorrosa("/images/actividades/hero-vendimia-1280.webp")}
+          className="h-full w-full object-cover object-center"
+        />
+        <picture className="absolute inset-0">
+          <source media="(min-aspect-ratio: 3/4)" srcSet={HERO_SRCSET} sizes={HERO_SIZES} />
+          <source srcSet={HERO_SRCSET_MOVIL} sizes={HERO_SIZES_MOVIL} />
+          <img
+            src={HERO_FALLBACK}
+            alt={t("hero.imageAlt")}
+            fetchPriority="high"
+            decoding="async"
+            className="h-full w-full object-cover object-center motion-safe:animate-[heroZoom_20s_ease-out_forwards]"
+          />
+        </picture>
+        <div
+          aria-hidden="true"
+          className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-transparent"
+        />
+        <div
+          aria-hidden="true"
+          className="absolute inset-x-0 top-0 h-80 bg-gradient-to-b from-black/75 via-black/40 to-transparent md:h-40 md:from-black/50 md:via-transparent"
+        />
 
-          Se fue la tarjeta blanca de datos que flotaba montada sobre el filo
-          (`-mt-10`): es el recurso más repetido de una landing genérica, y acá
-          además dejaba una caja clara atrapada entre una foto y una banda
-          oscura. Los tres datos ahora abren Dv2, en papel y sin caja. */}
-      <section className="relative">
-        {/* El alto de móvil no es estético: con 45svh el ancho que pinta
-            `object-cover` entra justo en el candidato de 1280 (ver HERO_SIZES).
-            Subirlo obliga a bajar el archivo de 1920, que pesa el doble. */}
-        <div className="relative h-[45svh] min-h-[340px] w-full overflow-hidden md:h-[70vh] md:min-h-[520px]">
-          {/* `<picture>` con un solo encuadre: no hay art direction que hacer
-              —ver el comentario de HERO_SIZES— pero es la forma que el resto de
-              los heros del sitio ya usa, y la que deja servir los tres anchos
-              del repo sin pasar por el optimizador en cada visita. */}
-          <FotoBorrosa
-            escritorio={fotoBorrosa("/images/actividades/hero-vendimia-1280.webp")}
-            className="h-full w-full object-cover object-center"
-          />
-          <picture className="absolute inset-0 block h-full w-full">
-            <img
-              src={HERO_FALLBACK}
-              srcSet={HERO_SRCSET}
-              sizes={HERO_SIZES}
-              alt={t("hero.imageAlt")}
-              fetchPriority="high"
-              decoding="async"
-              className="h-full w-full object-cover object-center motion-safe:animate-[heroZoom_1.4s_cubic-bezier(0.16,1,0.3,1)_both]"
-            />
-          </picture>
-          {/* Dos velos y no tres. El de abajo resuelve el contraste del título,
-              el de arriba el de la miga y el navbar. La versión anterior apilaba
-              un tercero y aun así le ponía `drop-shadow` al texto: una sombra
-              sobre cada letra es el síntoma de que el velo no alcanzó, no un
-              recurso. Con este el título se lee sin sombra. */}
+        {/* En celular el título va arriba y la entrada abajo: entre los dos queda
+            el grupo a la vista. En pantallas anchas van juntos, abajo. */}
+        <div className={`relative z-10 flex w-full flex-1 flex-col pb-5 pt-28 md:flex-none md:pb-10 md:pt-32 ${margenes}`}>
           <div
-            aria-hidden="true"
-            className="absolute inset-0 bg-gradient-to-t from-[#1a0203]/85 via-[#1a0203]/30 to-transparent"
-          />
-          <div
-            aria-hidden="true"
-            className="absolute inset-x-0 top-0 h-40 bg-gradient-to-b from-[#1a0203]/55 to-transparent"
-          />
-
-          <div className="absolute inset-x-0 bottom-0 px-margin-mobile pb-12 md:px-margin-desktop md:pb-16">
-            <div data-hero-text className="mx-auto max-w-(--container-max)">
-              {/* Sin antetítulo de meses. `hero.eyebrow` ("Marzo · Abril ·
-                  Mayo") decía el mismo dato que la fila de datos de Dv2 y que la
-                  banda del año, tres veces en la misma página, y obligaba a leer
-                  un calendario antes que el título.
-                  **La clave no se borra de `messages`**: la usa el índice de
-                  actividades (`app/[locale]/actividades/page.tsx`), donde sí
-                  hace falta porque ahí la vendimia es una tarjeta suelta que
-                  necesita decir cuándo es. */}
-              <h1
-                className="mb-5 max-w-4xl font-display leading-[1.02] text-white"
-                style={{ fontSize: "clamp(2.6rem, 6.6vw, 5rem)", letterSpacing: "-0.02em" }}
-              >
-                {t("hero.title")}
-              </h1>
-              <p className="max-w-xl font-body text-body-lg leading-relaxed text-white/80">
-                {t("hero.subtitle")}
-              </p>
+            data-hero-text
+            className="mx-auto flex w-full max-w-4xl flex-1 flex-col justify-between text-center md:block md:flex-none"
+          >
+            <div>
+            <h1
+              className="font-display text-on-primary drop-shadow-[0_4px_24px_rgba(0,0,0,0.55)]"
+              style={{
+                fontSize: "clamp(2.25rem, 6.4vw, 4.5rem)",
+                lineHeight: 1.14,
+                letterSpacing: "-0.015em",
+              }}
+            >
+              {t("hero.title")}
+            </h1>
+            <p className="mx-auto mt-2 max-w-xl font-body text-base text-on-primary/95 drop-shadow-[0_2px_12px_rgba(0,0,0,0.6)] md:text-lg">
+              {t("landing.heroBajada")}
+            </p>
             </div>
+            <VendimiaHeroReserva />
           </div>
         </div>
       </section>
 
-      {/* Dv1 — Migas, centradas bajo el hero, como en las fichas (Dd1). Pedido
-          de Juan Francisco del 2026-10-12: hasta ese día iban sobre la foto,
-          arriba a la izquierda. */}
-      <section className="bg-surface px-margin-mobile pt-7 md:px-margin-desktop md:pt-9">
-        <div className="mx-auto max-w-(--container-max)">
+      {/* Migas bajo el hero, centradas, como en las fichas. */}
+      <section className={`bg-surface pt-6 ${margenes} ${FUENTE_FICHA}`}>
+        <div className={contenedor}>
           <ActivityBreadcrumbs
             tone="papel"
             align="center"
@@ -436,338 +321,159 @@ export default async function VendimiaPage({
         </div>
       </section>
 
-      {/* Desde acá hasta la consulta acompaña la píldora de secciones, la
-          misma de las fichas (Dd2). El `div` existe por ella: en escritorio es
-          un `sticky`, que sólo se pega dentro de su contenedor, y en celular
-          usa este mismo contenedor para saber cuándo esconderse. Al llegar a
-          "otras formas de vivir el ciclo" se va con el resto. */}
-      <div className="relative bg-surface">
-        <ActivitySectionNav
-          items={[
-            { id: "jornada", label: tLabels("nav.detail") },
-            { id: "galeria", label: tLabels("nav.gallery") },
-            { id: "preguntas", label: tLabels("nav.faq") },
-          ]}
-          cta={{ id: "consulta", label: tLabels("nav.reserve") }}
-          aria={t("navAria")}
-        />
-
-      {/* Dv2 — Qué es la vendimia. En papel, no en penumbra. La respuesta corta
-          va primero y en una sola oración: es lo que lee quien llega de una
-          búsqueda, y lo que un buscador puede citar sin cortar a mitad de idea.
-
-          El collage de dos fotos superpuestas se fue. Estaba afinado a mano
-          (`-mt-16 ml-6 w-[72%] lg:-ml-12`), se descuadraba en todo ancho
-          intermedio, y su pieza grande era `hileras` — un recorte de hileras sin
-          sujeto. El elemento visual más prominente de la página era una textura
-          borrosa. Ahora la foto es la gamela con la uva molida, que es
-          literalmente lo que el texto describe. */}
-      <section className="bg-surface py-section-gap px-margin-mobile md:px-margin-desktop">
-        <div className="mx-auto max-w-(--container-max)">
-          <div className="grid grid-cols-1 gap-x-16 gap-y-12 lg:grid-cols-12">
-            <Reveal className="lg:col-span-6 xl:col-span-5">
-              <h2 className="font-display text-[2rem] leading-[1.12] text-primary md:text-[2.6rem]">
-                {t("about.title")}
-              </h2>
-              {/* La entrada en Caslon grande y el cuerpo en Work Sans chico: el
-                  contraste de escala es lo que da jerarquía sin necesitar una
-                  caja. Antes las dos iban casi al mismo tamaño. */}
-              <p className="mt-7 font-display text-[1.35rem] leading-[1.45] text-on-surface md:text-[1.6rem]">
-                {t("about.lead")}
-              </p>
-              <p className="mt-6 max-w-[58ch] font-body text-[17px] leading-[1.7] text-on-surface-variant">
-                {t("about.body")}
-              </p>
-            </Reveal>
-
-            {/* Tríptico vertical, desplazado hacia abajo: la asimetría sale del
-                desfase y del ancho desigual de las columnas, no de superponer
-                dos fotos.
-
-                Tres ranuras 2:3 iguales y sin escalonar. Escalonarlas era la
-                tentación —y es justo lo que traía el collage que se sacó de acá,
-                afinado a mano y descuadrado en todo ancho intermedio—. La
-                verticalidad ya la da la proporción.
-
-                En móvil van en fila de tres: a 2:3 y un tercio del ancho siguen
-                siendo legibles, y apilarlas mandaba el resto de la sección
-                debajo del pliegue. */}
-            <Reveal delay={140} className="lg:col-span-6 lg:mt-20 xl:col-span-7">
-              <div className="grid grid-cols-3 gap-3 md:gap-4">
-                {[
-                  { src: FOTO.mosto, alt: t("photos.mosto") },
-                  { src: FOTO.manoUva, alt: t("photos.manoUva") },
-                  { src: FOTO.pisoneo, alt: t("photos.pisoneo") },
-                ].map(({ src, alt }) => (
-                  <div
-                    key={src}
-                    className="relative aspect-[2/3] overflow-hidden rounded-xl"
-                  >
-                    <Image
-                      src={src}
-                      alt={alt}
-                      fill
-                      className="object-cover"
-                      sizes="(max-width: 1024px) 30vw, 20vw"
-                    />
-                  </div>
-                ))}
-              </div>
-
-              {/* El botón de temporada vivía al pie del ciclo (Dv3), a media
-                  página de acá. Cuelga del tríptico porque este es el punto en
-                  que el visitante ya sabe qué es la vendimia y todavía no bajó:
-                  es donde la pregunta "¿cuándo puedo ir?" aparece sola. */}
-              <div className="mt-8">
-                <Button
-                  href="#consulta"
-                  variant="primary"
-                  // El texto no cabe en un celular: sin esto la página queda con scroll
-                  // horizontal (ver `buttonClasses`).
-                  multiline
-                  iconRight={<ArrowRight className="h-4 w-4" />}
-                >
-                  {tLabels("form.titleSeason")}
-                </Button>
-              </div>
-            </Reveal>
+      {/* Dv2 — Qué es la vendimia, y la invitación a participar. El video no
+          explica: muestra la jornada, por eso va como invitación y no entre los
+          datos prácticos. Su id está en `data/vendimiaVideo.ts`. */}
+      <section
+        id="que-es"
+        className={`mt-6 scroll-mt-24 bg-surface-container-low py-12 md:py-20 ${margenes} ${FUENTE_FICHA}`}
+      >
+        <div className="mx-auto grid max-w-(--container-max) grid-cols-1 items-center gap-8 text-center lg:grid-cols-2 lg:gap-14">
+          <div className="mx-auto max-w-xl">
+            <h2 className={tituloSeccion}>{t("about.title")}</h2>
+            <p className="mt-4 font-body text-base leading-relaxed text-on-surface-variant md:text-lg">
+              {t("landing.queEs.texto")}
+            </p>
+            <h3 className="mt-8 font-body text-xl font-bold text-primary md:text-2xl">
+              {t("landing.invitacion.titulo")}
+            </h3>
+            <p className="mt-1.5 font-body text-base text-on-surface-variant">
+              {t("landing.invitacion.texto")}
+            </p>
+            <div className="mt-7 hidden lg:block">
+              <Button href="#consulta" variant="primary" size="lg" multiline>
+                {t("landing.invitacion.cta")}
+              </Button>
+            </div>
           </div>
 
-          {/* Los tres datos ciertos, como una fila de filetes. Sin caja, sin
-              sombra y sin íconos en círculo. */}
-          <Reveal delay={80}>
-            <dl className="mt-20 grid grid-cols-1 gap-x-12 gap-y-8 sm:grid-cols-3 md:mt-24">
-              {facts.map(({ label, value }) => (
-                <div key={label} className="border-t border-outline-variant pt-4">
-                  {/* 12px y no 11: es el piso del token `label-sm` y el mínimo
-                      legible en móvil. El rótulo va en vino y no en gris: es el
-                      color con que el resto de la página marca los rótulos
-                      (`Cómo transcurre el día`, `La jornada incluye`, la etapa
-                      destacada del ciclo), y acá quedaban como el único gris.
-                      Contraste 9,4:1 sobre papel — el gris /70 que había daba
-                      4,7:1, así que el cambio también sube. */}
-                  <dt className="font-body text-[12px] font-semibold uppercase tracking-[0.16em] text-wine-accent">
-                    {label}
-                  </dt>
-                  <dd className="mt-2 font-display text-xl leading-snug text-primary">
-                    {value}
-                  </dd>
-                </div>
-              ))}
-            </dl>
-          </Reveal>
+          {/* En escritorio el video va entre dos fotos de la jornada, para que la
+              sección use el ancho. En celular queda solo el video. */}
+          <div>
+            <div className="mx-auto grid max-w-[40rem] grid-cols-1 items-center gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(0,17rem)_minmax(0,1fr)]">
+              <div className="relative hidden aspect-[2/3] overflow-hidden rounded-2xl lg:block">
+                <Image
+                  src={FOTO.mosto}
+                  alt={t("photos.mosto")}
+                  fill
+                  className="object-cover"
+                  sizes="200px"
+                />
+              </div>
+              <div className="mx-auto w-full max-w-[17rem] lg:max-w-none">
+                <VendimiaShort
+                  poster={FOTO.manoUva}
+                  alt={t("photos.manoUva")}
+                  titulo={t("landing.video.titulo")}
+                  ver={t("landing.video.ver")}
+                  verYoutube={t("landing.video.verYoutube")}
+                  pronto={t("landing.video.pronto")}
+                />
+              </div>
+              <div className="relative hidden aspect-[2/3] overflow-hidden rounded-2xl lg:block">
+                <Image
+                  src={FOTO.pisoneo}
+                  alt={t("photos.pisoneo")}
+                  fill
+                  className="object-cover"
+                  sizes="200px"
+                />
+              </div>
+            </div>
+            <div className="mt-7 lg:hidden">
+              <Button href="#consulta" variant="primary" size="lg" multiline>
+                {t("landing.invitacion.cta")}
+              </Button>
+            </div>
+          </div>
         </div>
       </section>
 
-      {/* Dv4 — La jornada. Numerada, porque el orden ES la información: se
-          desayuna, se corta, se pisa y recién ahí se celebra.
-
-          No usa `ActivityProgram`: ese componente pinta cada paso con un número
-          dentro de un círculo con tinte y anillo, unidos por un hilo vertical, y
-          es justo el vocabulario que esta página abandona. Sigue intacto para
-          las fichas (Dd4), que son las que lo estrenaron.
-
-          Acá cada paso lleva un ícono que dice qué pasa en ese momento —tijera,
-          racimo, pies, fuego, copa— y lo que separa los pasos es un filete. El
-          orden **no** se perdió al sacar los numerales: sigue siendo un `<ol>`,
-          que es lo que un lector de pantalla anuncia como secuencia. Los íconos
-          van `aria-hidden` porque el texto de al lado ya nombra el paso. */}
+      {/* Dv4 — Qué vas a hacer. Numerado porque el orden es la información. En
+          celular se desliza de lado; en escritorio se ve el día completo. */}
       <section
         id="jornada"
-        className="scroll-mt-24 md:scroll-mt-44 bg-surface py-section-gap px-margin-mobile md:px-margin-desktop"
+        className={`scroll-mt-24 overflow-hidden bg-surface py-12 md:py-20 ${margenes} ${FUENTE_FICHA}`}
       >
-        <div className="mx-auto max-w-(--container-max)">
-          {/* El encabezado va a todo el ancho y no dentro de la columna de 7:
-              la foto arrancaba a la altura del título y se lo comía. Ahora el
-              título abre la sección solo y la grilla —con ella, la foto—
-              empieza en "Cómo transcurre el día". */}
-          <Reveal>
-            <h2 className="font-display text-[2rem] leading-[1.12] text-primary md:text-[2.6rem]">
-              {t("program.title")}
-            </h2>
-            <p className="mt-5 max-w-[58ch] font-body text-[17px] leading-[1.7] text-on-surface-variant">
-              {t("program.lead")}
-            </p>
-          </Reveal>
+        <div className={contenedor}>
+          <h2 className={tituloSeccion}>{t("landing.dia.titulo")}</h2>
+          <p className="mx-auto mt-3 max-w-[60ch] text-center font-body text-base leading-relaxed text-on-surface-variant md:text-lg">
+            {t("program.lead")}
+          </p>
+          <ol className="-mx-margin-mobile mt-8 flex snap-x snap-mandatory scroll-px-margin-mobile gap-3 overflow-x-auto px-margin-mobile pb-2 [scrollbar-width:none] md:-mx-margin-desktop md:scroll-px-margin-desktop md:px-margin-desktop xl:mx-0 xl:grid xl:grid-cols-6 xl:gap-4 xl:overflow-visible xl:px-0 xl:pb-0">
+            {pasos.map((paso, index) => {
+              const foto = VENDIMIA_DIA[index];
+              return (
+                <li key={paso.titulo} className="w-[68vw] max-w-[17rem] shrink-0 snap-start xl:w-auto xl:max-w-none">
+                  {foto && (
+                    <div className="relative aspect-[4/5] overflow-hidden rounded-2xl">
+                      <Image
+                        src={FOTO[foto]}
+                        alt={t(`photos.${foto}`)}
+                        fill
+                        className="object-cover"
+                        sizes="(max-width: 1280px) 272px, 200px"
+                      />
+                    </div>
+                  )}
+                  <h3 className="mt-3 font-body text-base font-bold leading-snug text-primary">
+                    {index + 1}. {paso.titulo}
+                  </h3>
+                  <p className="mt-1 font-body text-sm leading-relaxed text-on-surface-variant">
+                    {paso.texto}
+                  </p>
+                </li>
+              );
+            })}
+          </ol>
+        </div>
+      </section>
 
-          <div className="mt-14 grid grid-cols-1 gap-x-16 gap-y-12 lg:grid-cols-12">
-            <div className="lg:col-span-7">
-              <Reveal delay={80}>
-                <h3 className="font-accent text-lg font-light italic text-wine-accent">
-                  {t("program.stepsTitle")}
-                </h3>
-                <ol className="mt-5">
-                  {programSteps.map((step, index) => {
-                    // Si algún día `messages` suma un paso, el que sobre cae en la
-                    // uva: es el ícono más neutro del set sin ser un tick genérico.
-                    const Icon = PROGRAM_ICONS[index] ?? Grape;
-                    return (
-                      <li
-                        key={step}
-                        className="grid grid-cols-[1.75rem_1fr] items-start gap-x-5 border-t border-outline-variant py-5"
-                      >
-                        {/* Decorativo: el ícono ilustra el paso, no lo nombra —
-                            eso lo hace el texto de al lado. Y el orden lo sigue
-                            comunicando el <ol>, que es lo que importaba cuando los
-                            pasos iban numerados a la vista. */}
-                        <Icon
-                          aria-hidden="true"
-                          strokeWidth={1.5}
-                          className="mt-0.5 h-7 w-7 text-wine-accent"
-                        />
-                        <p className="font-body text-[17px] leading-[1.65] text-on-surface">
-                          {step}
-                        </p>
-                      </li>
-                    );
-                  })}
-                </ol>
-              </Reveal>
-
-              <Reveal delay={120}>
-                <h3 className="mt-14 font-accent text-lg font-light italic text-wine-accent">
-                  {t("program.includesTitle")}
-                </h3>
-                {/* Sin check dentro de un círculo: el filete de arriba ya separa un
-                    ítem del siguiente. */}
-                <ul className="mt-5 grid gap-x-12 sm:grid-cols-2">
-                  {includes.map((item) => (
-                    <li
-                      key={item}
-                      className="border-t border-outline-variant py-4 font-body text-[17px] leading-[1.6] text-on-surface"
-                    >
-                      {item}
-                    </li>
-                  ))}
-                </ul>
-                {/* Sin tarjeta de precio ni de mínimo de personas: la ficha de una
-                    actividad las trae porque el catálogo las declara, y para la
-                    vendimia todavía no existen. Un "desde $X" o un "grupos desde
-                    N" inventado acá sería el dato que el visitante recuerda. */}
-
-                {/* La invitación cierra la jornada, no la abre: recién acá el
-                    visitante sabe qué está reservando. Apunta al mismo #consulta
-                    que el botón de Dv2 — ese es el que ve quien no baja hasta acá. */}
-                <div className="mt-10">
-                  <Button
-                    href="#consulta"
-                    variant="primary"
-                    // El texto no cabe en un celular: sin esto la página queda con scroll
-                    // horizontal (ver `buttonClasses`).
-                    multiline
-                    iconRight={<ArrowRight className="h-4 w-4" />}
-                  >
-                    {t("program.cta")}
-                  </Button>
-                </div>
-              </Reveal>
-            </div>
-
-            <div className="lg:col-span-5">
-              <Reveal delay={80}>
-                {/* El mismo carrusel de las bandas de colección de /vinos: marco
-                    4:5, crossfade, flechas, puntos y swipe. Se reusa entero en vez
-                    de escribir otro — es la ranura de la misma proporción.
-
-                    Las dos fotos son escenas distintas (el desayuno y el asado),
-                    así que el `alt` va por foto: prestarle a una el texto de la
-                    otra le describe a quien no ve algo que no está en pantalla.
-                    Esa es la razón de que `CollectionPhotos` acepte un arreglo.
-
-                    Van en el orden del día (`VENDIMIA_CARRUSEL`): el desayuno,
-                    el corte —el cosechero con la caja de la viña, de la tanda
-                    del fotógrafo— y el asado, que viene de la galería de
-                    contacto. */}
-                <div className="lg:sticky lg:top-28">
-                  <CollectionPhotos
-                    photos={VENDIMIA_CARRUSEL.map((foto) => FOTO[foto])}
-                    alt={VENDIMIA_CARRUSEL.map((foto) => t(`photos.${foto}`))}
-                    prevLabel={t("photos.prev")}
-                    nextLabel={t("photos.next")}
-                    goToLabels={VENDIMIA_CARRUSEL.map((_, index) =>
-                      t("photos.goTo", { index: index + 1, total: VENDIMIA_CARRUSEL.length }),
-                    )}
-                  />
-                </div>
-              </Reveal>
-            </div>
+      {/* Dv4b — Lo que necesitas saber. Los datos son cortos y van centrados; la
+          lista de lo que incluye, a la izquierda, que centrada se lee mal. */}
+      <section
+        id="info"
+        className={`scroll-mt-24 bg-surface-container-low py-12 md:py-20 ${margenes} ${FUENTE_FICHA}`}
+      >
+        <div className={contenedor}>
+          <h2 className={tituloSeccion}>{t("landing.info.titulo")}</h2>
+          <dl className="mx-auto mt-8 grid max-w-5xl grid-cols-1 gap-x-10 gap-y-7 text-center sm:grid-cols-2 lg:grid-cols-3">
+            {datos.map(({ label, value }) => (
+              <div key={label}>
+                <dt className="font-body text-sm text-on-surface-variant">{label}</dt>
+                <dd className="mt-1 font-body text-lg font-semibold leading-snug text-primary">
+                  {value}
+                </dd>
+              </div>
+            ))}
+          </dl>
+          <div className="mx-auto mt-12 max-w-3xl">
+            <h3 className="text-center font-body text-xl font-bold text-primary md:text-2xl">
+              {t("program.includesTitle")}
+            </h3>
+            <ul className="mt-5 grid grid-cols-1 gap-x-10 gap-y-3 sm:grid-cols-2">
+              {includes.map((item) => (
+                <li key={item} className="flex items-start gap-2.5 font-body text-base text-on-surface">
+                  <Check className="mt-1 h-4 w-4 shrink-0 text-wine-accent" strokeWidth={2.5} aria-hidden="true" />
+                  {item}
+                </li>
+              ))}
+            </ul>
           </div>
         </div>
       </section>
 
-      {/* Dv3 — El año de la viña. Una sola pieza donde antes había dos secciones
-          (la grilla de cinco etapas y la franja de doce meses). El detalle del
-          dibujo está en components/VineyardYear.tsx. */}
-      <section className="bg-surface py-section-gap px-margin-mobile md:px-margin-desktop">
-        <div className="mx-auto max-w-(--container-max)">
-          <Reveal className="mb-14 max-w-2xl md:mb-16">
-            <p className="mb-3 font-accent text-xl font-light italic text-wine-accent">
-              {t("breadcrumb")}
-            </p>
-            <h2 className="font-display text-[2rem] leading-[1.12] text-primary md:text-[2.6rem]">
-              {t("cycle.title")}
-            </h2>
-            <p className="mt-5 font-body text-[17px] leading-[1.7] text-on-surface-variant">
-              {t("cycle.lead")}
-            </p>
-          </Reveal>
-
-          <Reveal delay={80}>
-            <VineyardYear
-              stages={cycleSteps}
-              spans={CYCLE_SPANS}
-              harvestMonths={VENDIMIA_MONTHS}
-              highlight={HIGHLIGHTED_CYCLE_STEP}
-              locale={locale}
-              labels={{
-                // `t.raw`: el mensaje trae {months} y la enumeración la arma
-                // VineyardYear con Intl.ListFormat. Con `t()` next-intl parsea
-                // el ICU, no encuentra el argumento y la página imprime la ruta
-                // de la clave.
-                availableIn: tLabels.raw("seasonAvailableIn"),
-                aria: tLabels("seasonAria"),
-              }}
-            />
-          </Reveal>
-
-          <Reveal delay={140}>
-            <p className="mt-12 max-w-2xl font-body text-[17px] leading-[1.7] text-on-surface-variant">
-              {t("season.note")}
-            </p>
-          </Reveal>
-        </div>
-      </section>
-
-      {/* Dv6 — Galería. Filas de una sola proporción cada una, declaradas en
-          `VENDIMIA_GALERIA`: al llegar se ven una apertura ancha y una fila de
-          tres; el resto queda detrás de "Ver más fotos" y cierra con la foto
-          grupal.
-
-          Desde el 2026-09-22 son las fotos del fotógrafo de la vendimia. La
-          versión anterior abría con un recorte de la aérea del hero —el mismo
-          cuadro dos veces en la página— y antes de eso eran seis piezas donde
-          cuatro salían de esa aérea, que es lo que la hacía ver armada con
-          relleno. */}
+      {/* Dv6 — Galería. Filas de una sola proporción, declaradas en
+          `VENDIMIA_GALERIA`; el resto queda detrás de "Ver más fotos". */}
       <section
         id="galeria"
-        className="scroll-mt-24 bg-surface py-section-gap px-margin-mobile md:scroll-mt-44 md:px-margin-desktop"
+        className={`scroll-mt-24 bg-surface py-12 md:py-20 ${margenes} ${FUENTE_FICHA}`}
       >
-        <div className="mx-auto max-w-(--container-max)">
-          <Reveal className="mb-12">
-            <h2 className="font-display text-[2rem] leading-[1.12] text-primary md:text-[2.6rem]">
-              {t("gallery.title")}
-            </h2>
-            <p className="mt-5 max-w-[58ch] font-body text-[17px] leading-[1.7] text-on-surface-variant">
-              {t("gallery.note")}
-            </p>
-          </Reveal>
-
+        <div className={contenedor}>
+          <h2 className={`mb-8 ${tituloSeccion}`}>{t("gallery.title")}</h2>
           {VENDIMIA_GALERIA.visibles.map((fila, index) => (
-            <Reveal key={fila.fotos[0]} delay={index * 100}>
-              {filaDeGaleria(fila, index > 0)}
-            </Reveal>
+            <div key={fila.fotos[0]}>{filaDeGaleria(fila, index > 0)}</div>
           ))}
-
           <ShowMore
             id="vendimia-mas-fotos"
             label={t("gallery.more")}
@@ -780,147 +486,82 @@ export default async function VendimiaPage({
         </div>
       </section>
 
-      {/* Dv6b — Preguntas frecuentes (2026-10-12, pedido de Damián: "para ir
-          dando el mismo orden a las páginas"). Van donde en la ficha (Dd6b),
-          justo antes de la consulta, y con su mismo componente. Es la tercera
-          excepción a la regla de "nada de tarjetas" de esta página, por la
-          misma razón que el formulario: quien viene de la ficha del yoga ya
-          sabe cómo se usan.
-
-          Diez preguntas con el texto de la viña. Una se adaptó: la de cómo
-          reservar describía un botón "Reservar y pagar" y un pago en línea que
-          esta página no tiene; dice lo que la página hace hoy. Lo cuida
-          `tests/vendimia-hub.test.mjs`. */}
-      <section
-        id="preguntas"
-        className="scroll-mt-24 md:scroll-mt-44 border-t border-outline-variant/30 bg-surface py-section-gap px-margin-mobile md:px-margin-desktop"
-      >
-        <div className="mx-auto max-w-(--container-max)">
-          <Reveal>
-            <ActivityFaq
-              title={tLabels("faqTitle")}
-              entries={faq}
-              more={tLabels("faqMore")}
-              whatsappLabel={tLabels("faqWhatsapp")}
-              whatsappHref={whatsappHref}
-              expandAll={tLabels("faqExpandAll")}
-              collapseAll={tLabels("faqCollapseAll")}
-            />
-          </Reveal>
-        </div>
-      </section>
-
-      {/* Dv7 — Consulta. En modo `temporada` y sin `minPeople`: nadie cotiza una
-          jornada que se repite todos los años; lo que se pide acá es que avisen
-          cuándo es la próxima. El orden galería → consulta → otras es el mismo
-          de la ficha; el spec numeraba "otras" antes, pero mandar a otra página
-          justo antes del formulario es perder la visita.
-
-          **El bloque copia el de la ficha (Dd6) a propósito**: mismo fondo de
-          sección, misma tarjeta redondeada con sombra y anillo, misma grilla
-          1.1/0.9. Es la única excepción a la regla de "nada de tarjetas" de esta
-          página, y la razón es que el formulario no es contenido editorial sino
-          el mismo trámite que el visitante ya hizo en cualquier otra actividad
-          del sitio: que se vea igual es lo que lo hace reconocible. Si el de la
-          ficha cambia, este cambia con él.
-
-          La foto es `parras`, que en la versión anterior estaba puesta de fondo
-          del ciclo tapada al 88% — se descargaba entera para no verse. */}
+      {/* Dv7 — Reserva, o consulta si no hay evento publicado: `VendimiaReserva`
+          decide en el navegador. Es el único bloque en vino de la página, para
+          que el momento de reservar no se confunda con el resto. */}
       <section
         id="consulta"
-        className="scroll-mt-24 md:scroll-mt-44 border-t border-outline-variant/30 bg-surface py-section-gap px-margin-mobile md:px-margin-desktop"
+        className={`scroll-mt-20 bg-primary-container py-12 md:py-20 ${margenes} ${FUENTE_FICHA}`}
       >
-        <div className="mx-auto max-w-(--container-max)">
-          <div className="grid grid-cols-1 overflow-hidden rounded-2xl bg-surface ambient-shadow-lg ring-1 ring-outline-variant/40 lg:grid-cols-[1.1fr_0.9fr]">
-            <div className="p-8 md:p-12">
-              <ActivityReservationForm activityName={t("hero.title")} mode="temporada" />
-            </div>
-            {/* Decorativa: acompaña al formulario y no aporta información que el
-                formulario no diga, así que va con `alt=""` y no con el texto de
-                otra foto prestado.
-
-                El tema —la gamela roja con la uva cortada— ocupa del 11% al 57%
-                del ancho del cuadro. Centrada, la ranura angosta del formulario
-                la parte al medio y deja el callejón vacío de la derecha.
-
-                El anclaje es 16% y no `object-left`: en escritorio la ranura sólo
-                muestra el 53% del ancho de la foto, así que pegada al borde
-                izquierdo la ventana termina en 53% y le corta el canto derecho a
-                la gamela. Con 16% la ventana va de 7% a 60% y la deja entera, sin
-                dejar de estar corrida hacia la izquierda. En móvil la ranura es
-                más ancha que alta, entra el 83% del cuadro y la gamela cae
-                cómoda igual. */}
-            <div className="relative order-first min-h-[300px] lg:order-none">
-              <Image
-                src={FOTO.formulario}
-                alt=""
-                aria-hidden="true"
-                fill
-                className="object-cover object-[16%_center]"
-                sizes="(max-width: 1024px) 100vw, 45vw"
-              />
-            </div>
-          </div>
+        <div className={contenedor}>
+          <VendimiaReserva
+            consulta={
+              <div className="grid grid-cols-1 overflow-hidden rounded-2xl bg-surface lg:grid-cols-[1.1fr_0.9fr]">
+                <div className="p-6 sm:p-8 md:p-12 [&_form>div:first-of-type]:text-center">
+                  <ActivityReservationForm activityName={t("hero.title")} mode="temporada" />
+                </div>
+                <div className="relative order-first min-h-[220px] lg:order-none lg:min-h-[300px]">
+                  {fotoFormulario}
+                </div>
+              </div>
+            }
+          />
         </div>
       </section>
-      {/* Fin del recorrido de la píldora */}
-      </div>
 
-      {/* Dv5 — Otras formas de vivir el ciclo. Las dos fichas salen de
-          `VENDIMIA_RELATED_SLUGS`: si el catálogo suma otra experiencia de
-          temporada, se agrega ahí y aparece acá sola.
+      {/* Dv6b — Preguntas frecuentes, después de la reserva: quien ya decidió no
+          tiene que pasar por ellas, y quien duda las encuentra justo debajo. */}
+      <section
+        id="preguntas"
+        className={`scroll-mt-24 bg-surface py-12 md:py-20 [--font-display:var(--font-jakarta)] [&_h2]:font-bold [&_h2]:tracking-[-0.02em] ${margenes} ${FUENTE_FICHA}`}
+      >
+        <div className={contenedor}>
+          <ActivityFaq
+            title={tLabels("faqTitle")}
+            entries={faq}
+            more={tLabels("faqMore")}
+            whatsappLabel={tLabels("faqWhatsapp")}
+            whatsappHref={whatsappHref}
+            expandAll={tLabels("faqExpandAll")}
+            collapseAll={tLabels("faqCollapseAll")}
+            centrado
+          />
+        </div>
+      </section>
 
-          Se dibujan acá y no con `ActivityRowCard` por lo mismo que el programa
-          no usa `ActivityProgram`: esa tarjeta va redondeada, con sombra
-          ambiental y con un salto al pasar el mouse, y sería lo único con forma
-          de tarjeta en una página que no tiene ninguna. El componente sigue
-          intacto para la ficha (Dd8). */}
+      {/* Dv5 — Otras experiencias. Salen de `VENDIMIA_RELATED_SLUGS`. */}
       {related.length > 0 && (
-        // `surface` y no `surface-container-low`: Dv7 pasó a llevar el fondo del
-        // formulario de la ficha, y con este bloque en el mismo tono quedaban
-        // tres secciones seguidas del mismo color. Entre Dv6 y Dv7 la repetición
-        // no molesta porque el formulario va en una tarjeta clara que marca el
-        // corte sola; acá no hay tarjeta que lo marque.
-        <section className="bg-surface py-section-gap px-margin-mobile md:px-margin-desktop">
-          <div className="mx-auto max-w-(--container-max)">
-            <Reveal className="mb-10">
-              <h2 className="font-display text-[1.75rem] leading-[1.15] text-primary md:text-[2.1rem]">
-                {t("others.title")}
-              </h2>
-              <p className="mt-4 max-w-[58ch] font-body text-[17px] leading-[1.7] text-on-surface-variant">
-                {t("others.lead")}
-              </p>
-            </Reveal>
-
-            <ul className="grid grid-cols-1 gap-x-16 sm:grid-cols-2">
+        <section className={`border-t border-outline-variant/40 bg-surface py-12 md:py-16 ${margenes} ${FUENTE_FICHA}`}>
+          <div className={contenedor}>
+            <h2 className="text-center font-body text-2xl font-bold tracking-[-0.01em] text-primary md:text-[1.75rem]">
+              {t("others.title")}
+            </h2>
+            <ul className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2">
               {related.map((activity) => (
-                <li key={activity.slug} className="border-t border-outline-variant">
+                <li key={activity.slug}>
                   <Link
                     href={`/${locale}${activityPath(activity)}`}
-                    className="group flex gap-6 py-6 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-wine-accent/60"
+                    className="group flex h-full gap-4 rounded-2xl bg-surface-container-low p-3 transition-colors hover:bg-surface-container focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-wine-accent/60"
                   >
-                    <div className="relative aspect-square w-24 shrink-0 overflow-hidden rounded-lg sm:w-28">
+                    <div className="relative aspect-square w-24 shrink-0 overflow-hidden rounded-xl sm:w-28">
                       <Image
                         src={activity.image}
                         alt=""
                         fill
-                        className="object-cover transition-transform duration-500 group-hover:scale-[1.04]"
+                        className="object-cover"
                         sizes="112px"
                       />
                     </div>
-                    <div className="min-w-0">
-                      <h3 className="font-display text-xl leading-snug text-primary">
+                    <div className="min-w-0 self-center">
+                      <h3 className="font-body text-lg font-bold leading-snug text-primary">
                         {tItems(`${activity.slug}.name`)}
                       </h3>
-                      <p className="mt-1.5 font-body text-base leading-[1.6] text-on-surface-variant sm:text-[15px]">
+                      <p className="mt-1 line-clamp-2 font-body text-sm leading-relaxed text-on-surface-variant">
                         {tItems(`${activity.slug}.description`)}
                       </p>
-                      <span className="mt-2.5 inline-flex items-center gap-1.5 font-body text-[12px] font-semibold uppercase tracking-[0.16em] text-wine-accent">
+                      <span className="mt-1.5 inline-flex items-center gap-1 font-body text-sm font-semibold text-wine-accent">
                         {tLabels("nav.detail")}
-                        <ArrowRight
-                          className="h-3.5 w-3.5 transition-transform duration-200 group-hover:translate-x-0.5"
-                          aria-hidden="true"
-                        />
+                        <ArrowRight className="h-3.5 w-3.5" aria-hidden="true" />
                       </span>
                     </div>
                   </Link>
@@ -930,6 +571,8 @@ export default async function VendimiaPage({
           </div>
         </section>
       )}
+
+      <VendimiaBarraReserva />
     </>
   );
 }

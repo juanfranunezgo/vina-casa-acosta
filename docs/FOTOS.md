@@ -67,7 +67,7 @@ contra 1,11 con el recorte).
 | `/vinos` (C1) | `images/vinos/hero-corchos.webp` 2560×1707 | `hero-vinos-movil.jpg` |
 | `/historia` (B1) | `images/historia/vinos-retro.webp` 2400×1600 | `hero-historia-movil.jpg` |
 | `/actividades` (D1) | `images/actividades/hero-grupal.webp` 2880×1920 | `hero-actividades-movil.jpg` |
-| `/actividades/vendimia` (Dv1) | `hero-vendimia.jpg` 8064×4536 (`_fuentes-fotos/`) | **no lleva** — ver abajo |
+| `/actividades/vendimia` (Dv1) | `hero-vendimia.jpg` 8064×4536 (`_fuentes-fotos/`) | recorte 9:16 del mismo master — ver abajo |
 | Capa de +18 (sobre todas las páginas) | `gate-uvas.jpg` 3000×2000 (`_fuentes-fotos/`) | `gate-uvas-movil.jpg` 1125×2000 |
 
 La vertical de la capa de +18 **no es una toma aparte**: es un recorte 9:16 del
@@ -96,17 +96,13 @@ más altas que 9:16 el navegador se lo come.
 El hero de `/actividades/[slug]` no lleva este tratamiento y no lo necesita: mide
 443px de alto y su foto es casi vertical, así que `object-cover` no estira nada.
 
-**Vendimia (`Dv1`) es la excepción y conviene saber por qué**, para que nadie
-"complete" el encuadre que falta: su foto es una aérea de 8064×4536 donde el
-grupo ocupa el 55% del ancho, y un recorte 9:16 se queda con el 32% — corta gente
-en los dos extremos. Sale sin master vertical: en pantalla vertical se ve la
-franja central (el grueso del grupo y el tractor) y la nitidez la sostiene el
-`sizes` de la página, que va en `vh` como el de los otros heros —con una foto
-16:9, `cover` pinta un ancho de `alto × 1,78`— y el alto del hero móvil está
-puesto para que ese ancho entre en el candidato de 1280. Medido: 0,94 píxeles de
-origen por píxel de pantalla en 375×812 a DPR 2, y 1,08 en escritorio. Si algún
-día llega una toma vertical de la vendimia, entra como `hero-vendimia-movil.jpg`
-y el script ya sabe qué hacer con ella.
+**Vendimia (`Dv1`) saca su vertical de un recorte**, centrado, de la aérea de
+8064×4536. El grupo ocupa el 55% del ancho y el 9:16 se queda con el 32%, así que
+quienes están en los extremos quedan afuera en celular. Se aceptó el 2026-11-22,
+cuando el hero pasó a pantalla completa: `cover` mostraría esa misma franja, pero
+borrosa. El texto va abajo, sobre la tierra, para no tapar las caras. Si algún día
+llega una toma vertical de la vendimia, reemplaza este recorte en
+`scripts/optimize-heros.mjs`.
 
 **De esa misma aérea salen las cuatro fotos del hub** (`npm run fotos:vendimia` →
 `vendimia-grupo`, `vendimia-gamelas`, `vendimia-hileras`, `vendimia-tractor`). Con 36
@@ -159,6 +155,7 @@ falla si un archivo no tiene la proporción de su fila.
 | `vendimia-pisoneo-ninos.jpg` | `vendimia-pisoneo-ninos.webp` 1400×933 | Dv6 "ver más", par | ninguno |
 | `vendimia-almuerzo.jpg` | `vendimia-almuerzo.webp` 1400×933 | Dv6 "ver más", par | ninguno |
 | `vendimia-foto-grupal.jpg` | `vendimia-foto-grupal.webp` 1600×900 | Dv6 "ver más", cierre | 16:9, `anchorY 0.75` (sale cielo) |
+| `vendimia-foto-grupal-cerca.jpg` | `vendimia-foto-grupal-cerca.webp` 1600×900 | Dv6 "ver más", apertura | 16:9, `anchorY 1` (sale cielo, conserva los pies) |
 
 `personas`, `bin` y `charla` pasaron a la fila de cuatro de "ver más". El recorte
 `vendimia-grupo` de la aérea dejó de usarse: era un pedazo del mismo cuadro del hero.

@@ -33,7 +33,10 @@
     },
     "wineTitle": {
       "blendRed": "red blend",
-      "byType": { "rosado": "rosé", "espumante": "sparkling" },
+      "byType": {
+        "rosado": "rosé",
+        "espumante": "sparkling"
+      },
       "overrides": {
         "guidai": "sparkling rosé",
         "yaray-gua-tinto": "sweet late harvest",
@@ -51,6 +54,7 @@
   "nav": {
     "home": "Home",
     "historia": "Our story",
+    "vendimia": "Harvest",
     "staff": "Staff",
     "actividades": "Experiences",
     "vinos": "Wines",
@@ -145,10 +149,22 @@
       "prevLabel": "Previous wine",
       "nextLabel": "Next wine",
       "strip": {
-        "vineyards": { "title": "Cachapoal vineyards", "desc": "Grapes from the Cachapoal Valley, our origin." },
-        "oak": { "title": "Oak ageing", "desc": "Aged in French and American oak barrels." },
-        "limited": { "title": "Limited editions", "desc": "Small productions each harvest." },
-        "heritage": { "title": "Family heritage", "desc": "Three generations, one origin." }
+        "vineyards": {
+          "title": "Cachapoal vineyards",
+          "desc": "Grapes from the Cachapoal Valley, our origin."
+        },
+        "oak": {
+          "title": "Oak ageing",
+          "desc": "Aged in French and American oak barrels."
+        },
+        "limited": {
+          "title": "Limited editions",
+          "desc": "Small productions each harvest."
+        },
+        "heritage": {
+          "title": "Family heritage",
+          "desc": "Three generations, one origin."
+        }
       }
     },
     "featuredLines": {
@@ -159,7 +175,11 @@
       "prevLabel": "Previous collection",
       "nextLabel": "Next collection",
       "wineCount": "{count, plural, one {# wine} other {# wines}}",
-      "detailLabels": { "estilo": "Style", "crianza": "Ageing", "premio": "Award" },
+      "detailLabels": {
+        "estilo": "Style",
+        "crianza": "Ageing",
+        "premio": "Award"
+      },
       "lines": {
         "ombu": {
           "category": "Reserva",
@@ -190,8 +210,17 @@
       "subtitle": "Some memories time can't erase.",
       "allCta": "See all experiences",
       "exploreCta": "Explore",
-      "tabs": { "all": "All", "tours": "Tours", "experiences": "Experiences", "events": "Events" },
-      "cat": { "tour": "Tour", "experience": "Experience", "event": "Event" },
+      "tabs": {
+        "all": "All",
+        "tours": "Tours",
+        "experiences": "Experiences",
+        "events": "Events"
+      },
+      "cat": {
+        "tour": "Tour",
+        "experience": "Experience",
+        "event": "Event"
+      },
       "eventsCta": "Get an event quote",
       "book": "Book",
       "more": "Explore",
@@ -300,7 +329,7 @@
       "eyebrow": "The hands behind the winery",
       "title": "Staff",
       "subtitle": "The people behind every bottle.",
-        "imageAlt": "A harvest worker sets down a crate full of freshly cut grape bunches between the vineyard rows"
+      "imageAlt": "A harvest worker sets down a crate full of freshly cut grape bunches between the vineyard rows"
     },
     "members": {
       "damian": {
@@ -583,13 +612,13 @@
       "navAria": "Page sections",
       "meta": {
         "title": "Join the {year} Harvest in the Cachapoal Valley",
-        "description": "The {year} grape harvest in San Vicente de Tagua Tagua, Chile: picking, stomping and a country lunch. April and May; leave your details and we'll tell you when."
+        "description": "The {year} grape harvest in San Vicente de Tagua Tagua, Chile: picking, stomping and a country lunch. In April; see the day and save your place."
       },
       "breadcrumb": "Harvest",
       "cta": "Discover the harvest",
       "facts": {
         "seasonLabel": "Season",
-        "seasonValue": "April · May {year}",
+        "seasonValue": "April {year}",
         "durationLabel": "Length",
         "durationValue": "A full day",
         "audienceLabel": "Who it's for",
@@ -613,6 +642,7 @@
         "pisoneoNinos": "Three children treading grapes in barrels, in front of the Casa Acosta harvest banner",
         "almuerzo": "The long lunch table under the awning, with the guests seated among the vines",
         "fotoGrupal": "Group photo of the harvest guests in aprons, with the mountains behind",
+        "fotoGrupalCerca": "Close-up group photo: dozens of guests smile and wave at the camera, with the autumn vines and canopies behind them",
         "prev": "Previous photo of the day",
         "next": "Next photo of the day",
         "goTo": "View photo {index} of {total} of the day",
@@ -625,7 +655,7 @@
         "moreLabel": "More photos from the harvest"
       },
       "hero": {
-        "eyebrow": "April · May",
+        "eyebrow": "April",
         "title": "Harvest at Casa Acosta",
         "subtitle": "The day the vineyard fills with people: we pick, we stomp, we celebrate.",
         "imageAlt": "Aerial view of the harvest group with their arms raised between the rows of the Casa Acosta vineyard"
@@ -681,8 +711,8 @@
         ],
         "includesTitle": "The day includes",
         "includes": [
-          "An apron to take home as a gift",
-          "A wine glass to take home as a gift",
+          "An apron on loan for the day",
+          "A gift wine glass for adults at the launch price",
           "Country lunch with wine included",
           "Our field and winemaking team with you throughout",
           "An activity designed for children and adults alike"
@@ -690,12 +720,12 @@
         "cta": "Sign up and come live the harvest at Casa Acosta"
       },
       "season": {
-        "note": "The exact date is set by the grapes: we harvest when they reach ripeness, so each day is confirmed within the season. Leave us your details and we'll let you know as soon as they're set."
+        "note": "The harvest follows the grapes: they are picked when they reach full ripeness. Dates with places left are in the booking section; if none show yet, leave us your details and we will let you know as soon as they are published."
       },
       "faq": [
         {
           "q": "When does the harvest take place?",
-          "a": "The Harvest at Casa Acosta takes place during April and May. The date is set according to how ripe the grapes are and, once published, it is confirmed. Leave us your details and we'll let you know as soon as we announce the next harvest day."
+          "a": "The Harvest at Casa Acosta takes place in April. Available dates appear in the booking section of this page and, once published, they are confirmed. If none show yet, leave us your details and we will let you know."
         },
         {
           "q": "Do I need previous experience?",
@@ -707,7 +737,7 @@
         },
         {
           "q": "What does the experience include?",
-          "a": "The day includes a country breakfast, an introductory talk, grape picking, destemming, traditional stomping, a country lunch with a salad buffet, wine for adults, games, raffles, an apron and a souvenir wine glass."
+          "a": "The day includes a country breakfast, an introductory talk, grape picking, destemming, traditional stomping, a country lunch with a salad buffet, wine for adults, games, raffles and an apron on loan for the day. Adults at the launch price also receive a gift wine glass."
         },
         {
           "q": "What should I wear?",
@@ -730,13 +760,168 @@
           "a": "Once published, the date is confirmed. It could only be changed exceptionally, if the weather prevents the activities from being held safely."
         },
         {
-          "q": "How can I book?",
-          "a": "Leave us your details in the form on this page and we'll let you know as soon as the date is published, with the steps to secure your place.\n\nIf you need help, you can also write to us directly on WhatsApp."
+          "q": "How can I book and pay?",
+          "a": "When booking is open, you book on this page: choose the date, tell us who is coming and pay by card or bank transfer. Your ticket arrives by email with a QR code that is valid for the whole group.\n\nIf it is not open yet, leave us your details or message us on WhatsApp."
         }
       ],
       "others": {
         "title": "Other ways to live the vineyard's year",
         "lead": "The harvest is one stage of the year. These two experiences follow the others."
+      },
+      "reserva": {
+        "titulo": "Book your place",
+        "tituloDatos": "Who is coming?",
+        "eligeFecha": "Choose the date",
+        "horario": "{inicio} to {termino}",
+        "quedanCupos": "Places left",
+        "noDisponible": "Not available",
+        "cuantosVan": "How many are coming?",
+        "gratis": "Free",
+        "quitar": "Remove one person from {rango}",
+        "agregar": "Add one person to {rango}",
+        "maximo": "Each booking takes up to {max} people.",
+        "lanzamiento": "Launch price while places last on this date. Those who get it also take home {regalo} as a gift.",
+        "regaloCopa": "a wine glass",
+        "totalLabel": "Approximate total",
+        "totalNota": "This is an estimate. You will see the exact total in the next step, before paying.",
+        "continuar": "Continue",
+        "faltaFecha": "Choose a date to continue.",
+        "faltanPersonas": "Tell us how many people are coming.",
+        "sinFechas": "There are no dates with places right now. Message us on WhatsApp and we will see what we can do.",
+        "pedirWhatsapp": "Book on WhatsApp",
+        "whatsapp": "Hi 👋 I would like to book {evento}, {fecha}: {personas, plural, one {# person} other {# people}}.",
+        "whatsappSinFecha": "Hi 👋 I would like to know if there are places left for {evento}.",
+        "encargado": "Person booking",
+        "nombre": "First and last name",
+        "celular": "Mobile",
+        "celularEjemplo": "+56 9 1234 5678",
+        "correo": "Email",
+        "correoEntrada": "We will send your ticket to this address. If you do not see it within a few minutes, check your spam or junk folder.",
+        "comuna": "City or district (optional)",
+        "yoVoy": "I am coming too",
+        "asistente": "Person {numero}",
+        "opcional": "(optional)",
+        "heredado": "Using your details above.",
+        "edad": "Age",
+        "edadAyuda": "Their age on the day of the event.",
+        "talla": "T-shirt size",
+        "sinTalla": "No size",
+        "tallaAyuda": "It is for a raffle.",
+        "restriccion": "Dietary restriction?",
+        "no": "No",
+        "si": "Yes",
+        "queEvitar": "What should they avoid?",
+        "permiso": "I authorize Viña Casa Acosta to use this information only to prepare the food for the day.",
+        "mascotas": "Are you bringing pets?",
+        "cuantasMascotas": "How many?",
+        "tuReserva": "Your booking",
+        "cambiar": "Change date or people",
+        "enviando": "Opening payment…",
+        "reintentar": "Try again",
+        "irAPagar": "Continue to payment",
+        "legalIntro": "Before paying you accept:",
+        "condiciones": "Conditions (v{version})",
+        "terminos": "Terms (v{version})",
+        "errores": {
+          "requerido": "Please fill this in.",
+          "nombre": "Enter first and last name.",
+          "email": "Check the email (example: name@email.com).",
+          "telefono": "Check the mobile number: digits only, with an optional + at the start.",
+          "texto": "Check this field: it is too long or has characters that cannot be saved.",
+          "edad": "Enter the age in numbers.",
+          "edad_rango": "This age does not match this range.",
+          "edadEntre": "For this person, the age must be between {min} and {max}.",
+          "edadDesde": "For this person, the age must be {min} or older.",
+          "edad_tarifa": "This age has no rate. Check the age or change this person's range.",
+          "talla": "That size is no longer available. Choose another.",
+          "mascotas": "Enter a number from 1 to {max}.",
+          "permiso": "We need your authorization to save the restriction.",
+          "fecha": "Choose an available date.",
+          "personas": "Tell us how many people are coming.",
+          "total_cero": "The booking needs at least one person with a paid ticket.",
+          "muy_largo": "The details are too long for a single booking."
+        },
+        "avisos": {
+          "fecha": "That date is no longer available. Choose another: your details are kept.",
+          "cupo": "There are not enough places for this group on that date. Try another date or fewer people.",
+          "edad": "One age does not match its range. Check it and try again.",
+          "revisar": "We could not open your booking with these details. Check them and try again.",
+          "total_cero": "The booking needs at least one person with a paid ticket.",
+          "campos": "Check the highlighted details.",
+          "muy_largo": "The details are too long for a single booking. Shorten some text or split the group.",
+          "respaldo": "We could not open the payment right now. Message us on WhatsApp and we will finish your booking there."
+        },
+        "pasoFecha": "Date and people",
+        "pasoDatos": "Who is coming",
+        "pasoPago": "Payment",
+        "siguientePersona": "Next person",
+        "fichaLista": "Done",
+        "fichaPendiente": "Needs details"
+      },
+      "landing": {
+        "eligeFecha": "Choose your date",
+        "hayCupos": "Places left",
+        "sinCupos": "Not available",
+        "adultosDesde": "Adults from",
+        "reservar": "Book now",
+        "avisame": "Tell me the next date",
+        "avisarme": "Notify me",
+        "barraSinEvento": "Save your place",
+        "dia": {
+          "titulo": "What you will do that day",
+          "pasos": [
+            {
+              "titulo": "Country breakfast",
+              "texto": "We start at the table, with a short talk about the harvest."
+            },
+            {
+              "titulo": "Grape picking",
+              "texto": "Head into the vineyard with shears, alongside the farm team."
+            },
+            {
+              "titulo": "Destemming",
+              "texto": "Separate the grapes from the bunch, by hand and by machine."
+            },
+            {
+              "titulo": "Grape stomping",
+              "texto": "Stomp the grapes with your feet, the traditional way."
+            },
+            {
+              "titulo": "Barbecue and wine",
+              "texto": "Country lunch with salads, and wine for adults."
+            },
+            {
+              "titulo": "Games and a toast",
+              "texto": "Raffles for the whole family and a toast among the vines."
+            }
+          ]
+        },
+        "info": {
+          "titulo": "What you need to know",
+          "cuando": "When",
+          "horario": "Time",
+          "donde": "Where",
+          "dondeValor": "Viña Casa Acosta, San Vicente de Tagua Tagua",
+          "mascotas": "Pets",
+          "mascotasValor": "They can come. Let us know when you book.",
+          "llevar": "What to bring",
+          "llevarValor": "Comfortable clothes, closed shoes, a hat, sunscreen and a towel."
+        },
+        "video": {
+          "titulo": "Invitation to the Harvest at Casa Acosta",
+          "ver": "Watch the video",
+          "pronto": "Video of the day coming soon",
+          "verYoutube": "Watch the video on YouTube"
+        },
+        "heroBajada": "The grape harvest: a day in the country to pick, stomp and celebrate.",
+        "queEs": {
+          "texto": "The vendimia is the grape harvest: the moment a year of work in the vineyard turns into wine. At Casa Acosta you live it from the inside, on a country day for grown-ups and kids: you pick the grapes, stomp them with your feet and end up celebrating with a barbecue."
+        },
+        "invitacion": {
+          "titulo": "Come and live it",
+          "texto": "This is what a harvest day feels like at Casa Acosta.",
+          "cta": "I want to join"
+        }
       }
     },
     "items": {
