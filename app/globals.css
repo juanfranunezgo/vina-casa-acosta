@@ -442,4 +442,11 @@ html[data-age-gate="pendiente"] body {
   body:has([data-subnav-abajo="visible"]) [data-cart-fab] {
     translate: 0 -4.25rem;
   }
+
+  /* Mientras se llenan las fichas de la vendimia, la píldora y el carrito tapaban
+     los campos y el teclado los dejaba encima de lo que se está escribiendo. */
+  body:has([data-reserva-datos]) [data-subnav-abajo],
+  body:has([data-reserva-datos]) [data-cart-fab] {
+    display: none;
+  }
 }

@@ -56,14 +56,7 @@ export async function iniciarCheckout(
   deps: { fetch: typeof fetch; timeoutMs?: number },
 ): Promise<ResultadoInicio> {
   try {
-    const res = await deps.fetch(url, {
-      method: "POST",
-      mode: "cors",
-      credentials: "omit",
-      headers: { "Content-Type": "application/json", Accept: "application/json" },
-      body: JSON.stringify(carrito),
-      signal: AbortSignal.timeout(deps.timeoutMs ?? TIMEOUT_MS),
-    });
+    const res = await postIniciar(url, carrito, deps);
     if (res.ok) {
       const cuerpo: unknown = await res.json();
       const destino =
@@ -80,7 +73,23 @@ export async function iniciarCheckout(
   }
 }
 
-function mismoOrigen(a: string, b: string): boolean {
+/** El `POST /iniciar` en JSON, con su timeout. Lo comparten el carrito y la reserva de la vendimia. */
+export function postIniciar(
+  url: string,
+  cuerpo: unknown,
+  deps: { fetch: typeof fetch; timeoutMs?: number },
+): Promise<Response> {
+  return deps.fetch(url, {
+    method: "POST",
+    mode: "cors",
+    credentials: "omit",
+    headers: { "Content-Type": "application/json", Accept: "application/json" },
+    body: JSON.stringify(cuerpo),
+    signal: AbortSignal.timeout(deps.timeoutMs ?? TIMEOUT_MS),
+  });
+}
+
+export function mismoOrigen(a: string, b: string): boolean {
   try {
     return new URL(a).origin === new URL(b).origin;
   } catch {

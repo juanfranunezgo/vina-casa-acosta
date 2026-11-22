@@ -100,13 +100,13 @@ pie) pasaron a `bg-surface`. Las tarjetas grises dentro de las páginas se queda
 | ID | Sección |
 |---|---|
 | Dv1 | Hero + breadcrumbs Desde el 2026-10-12 las migas ya no van sobre la foto: bajan a la página, centradas, como en las fichas (Dd1), y debajo va la misma píldora de secciones de Dd2 (Detalle · Galería · Preguntas · Reserva), que acompaña de Dv2 a Dv7. |
-| Dv2 | Qué es la vendimia en Casa Acosta + los tres datos ciertos (temporada · duración · para quién) Desde el 2026-10-12 el dato de temporada lleva el año de la próxima vendimia ("Abril · Mayo 2027"), calculado con `anioDeTemporada`: es el mismo año del título de la página |
+| Dv2 | Qué es la vendimia en Casa Acosta + los tres datos ciertos (temporada · duración · para quién) Desde el 2026-10-12 el dato de temporada lleva el año de la próxima vendimia, calculado con `anioDeTemporada`. Desde el 2026-11-22 muestra las fechas publicadas en `catalogo.eventos` y, sin evento, "Abril 2027" |
 | Dv3 | El año de la viña — banda de 12 meses con las 5 etapas del ciclo y la ventana de cosecha (`components/VineyardYear.tsx`) |
 | Dv4 | La jornada: corta, pisa y celebra — programa en `<ol>` con un ícono por paso + qué incluye, y al lado un carrusel 4:5 con tres fotos en el orden del día (desayuno · cosecha · asado) |
 | Dv5 | Otras formas de vivir el ciclo (Cosecha tu historia · Lágrimas de invierno) |
 | Dv6 | Galería en filas de una sola proporción: a la vista, apertura ancha 16:9 + fila de tres 3:2; detrás de **"Ver más fotos"** (`components/ShowMore.tsx`), fila de cuatro 4:5, par 3:2 y cierre 16:9 con la foto grupal. Las filas se declaran en `data/vendimiaGallery.ts`; lo cuida `tests/vendimia-galeria.test.mjs`. Desde el 2026-09-22 |
 | Dv6b | Preguntas frecuentes (2026-10-12, pedido de Damián: "para ir dando el mismo orden a las páginas"). Diez preguntas en `activities.vendimia.faq`, con el mismo componente de las fichas (`components/ActivityFaq.tsx`, Dd6b) y en el mismo lugar: justo antes de la consulta. La salida a WhatsApp abre con el mensaje del formulario en modo temporada |
-| Dv7 | Consulta (formulario en modo temporada, sin mínimo de personas) |
+| Dv7 | **Reserva** (`components/VendimiaReserva.tsx`, desde el 2026-11-22): fecha, personas por rango y total orientativo; después encargado, una ficha por asistente y mascotas; termina en el checkout de Afeleia. Sin `catalogo.eventos` o sin URL del checkout, sigue la **consulta** (formulario en modo temporada, sin mínimo de personas) |
 
 **El orden en pantalla es Dv1 · Dv2 · Dv4 · Dv3 · Dv6 · Dv6b · Dv7 · Dv5**, no el de la
 numeración: mandar a otra página justo antes del formulario es perder la visita.
@@ -114,8 +114,8 @@ Es el mismo orden que la ficha `Dd`, donde "otras actividades" también cierra.
 
 **Dv4 va antes que Dv3** desde el 2026-08-19: la jornada es lo que el visitante viene a buscar, y el ciclo de la vid es el contexto que la explica. Contarle el año de la viña antes de decirle qué se hace ese día le pedía leer un calendario para llegar al programa.
 
-La página **no publica fechas exactas, precio ni mínimo de personas** — ver
-`docs/HANDOFF.md` y `tests/vendimia-hub.test.mjs`.
+**Ninguna fecha, precio ni cupo se escribe en el repo**: los publica Afeleia en
+`catalogo.eventos` — ver `docs/HANDOFF.md` y `tests/vendimia-hub.test.mjs`.
 
 **Dv3 absorbió la franja de meses**, que antes era una sección aparte entre Dv2 y
 Dv3. Separadas decían lo mismo dos veces: cinco etapas por un lado y doce

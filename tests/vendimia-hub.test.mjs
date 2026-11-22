@@ -28,12 +28,10 @@ const messages = Object.fromEntries(
 );
 
 /**
- * El hub de Vendimia es la unica pagina del sitio que describe una actividad
- * SIN publicar su precio, sus fechas ni su minimo de personas, y no por
- * descuido: la cosecha depende de la maduracion de la uva y la vina confirma
- * cada jornada por temporada. El material que existia era de la temporada
- * pasada. Estos tests son lo que evita que alguien "complete" esos datos mas
- * adelante creyendo que faltan.
+ * El hub de Vendimia no escribe precio, fechas ni minimo de personas en el
+ * repo: desde la Vendimia 2027 los publica Afeleia en `catalogo.eventos` y los
+ * lee el navegador. Estos tests evitan que alguien los "complete" a mano en los
+ * mensajes, donde quedarian viejos sin que nadie lo note.
  */
 
 test("el hub existe y su ruta es la del segmento reservado", () => {
@@ -70,7 +68,7 @@ test("el sitemap deja de declararlo si el hub se apaga", async () => {
 });
 
 test("la vendimia se publica por meses, nunca por fecha exacta", () => {
-  assert.deepEqual(VENDIMIA_MONTHS, [4, 5]);
+  assert.deepEqual(VENDIMIA_MONTHS, [4]);
 
   for (const locale of LOCALES) {
     const bloque = JSON.stringify(messages[locale].activities.vendimia);
@@ -202,22 +200,32 @@ test("las preguntas van entre la galería y la consulta, con el componente de la
   assert.match(pagina, /<section\s+id="preguntas"/);
 });
 
-test("ninguna respuesta promete un pago en línea que la página no tiene", async () => {
-  // El texto de Damián para "¿Cómo puedo reservar y pagar?" describía un botón
-  // "Reservar y pagar" y un pago en línea en esta página. Hoy la página tiene
-  // un formulario para dejar los datos, sin precio ni pago: publicarlo tal cual
-  // era prometer algo que el visitante no iba a encontrar. Esa respuesta se
-  // adaptó a lo que la página hace. El día que la vendimia se venda en línea,
-  // este test se cambia a propósito junto con la respuesta.
+test("la pregunta de cómo reservar dice lo que la página hace", async () => {
+  // Desde la Vendimia 2027 se reserva acá y se paga en el checkout de Afeleia.
+  // La respuesta tiene que seguir siendo cierta sin evento publicado: por eso
+  // nombra la salida por WhatsApp.
   const pagina = await source("app/[locale]/actividades/vendimia/page.tsx");
-  assert.doesNotMatch(pagina, /checkoutIniciarUrl|ProductPurchase|AddToCartButton/, "la página ya cobra: revisar la respuesta");
+  assert.match(pagina, /<VendimiaReserva/);
+  const claves = {
+    es: [/tarjeta o transferencia/, /QR/, /WhatsApp/],
+    en: [/card or bank transfer/, /QR/, /WhatsApp/],
+    pt: [/cartão ou transferência/, /QR/, /WhatsApp/],
+  };
   for (const locale of LOCALES) {
-    const texto = JSON.stringify(messages[locale].activities.vendimia.faq ?? []);
-    assert.doesNotMatch(
-      texto,
-      /Reservar y pagar|pago en l[ií]nea|Book and pay|pay online|online payment|Reservar e pagar|pagamento online/i,
-      locale,
-    );
+    const { a } = messages[locale].activities.vendimia.faq[9];
+    for (const patron of claves[locale]) assert.match(a, patron, locale);
+  }
+  assert.equal(messages.es.activities.vendimia.faq[9].q, "¿Cómo puedo reservar y pagar?");
+});
+
+test("la pechera es prestada y la copa es solo con precio de lanzamiento", () => {
+  const es = messages.es.activities.vendimia;
+  assert.ok(es.program.includes.includes("Pechera prestada para la jornada"));
+  assert.ok(es.program.includes.includes("Copa de regalo para adultos con precio de lanzamiento"));
+  for (const locale of LOCALES) {
+    const bloque = JSON.stringify(messages[locale].activities.vendimia);
+    assert.doesNotMatch(bloque, /Pechera de regalo|apron to take home|Avental de presente/i, locale);
+    assert.doesNotMatch(bloque, /Abril · Ma|April · May/, locale);
   }
 });
 

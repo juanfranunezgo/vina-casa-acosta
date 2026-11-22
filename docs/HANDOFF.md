@@ -307,12 +307,15 @@ inclusiones de *Cosecha tu historia*— y recién después ofrece la jornada *co
 celebra*, que por eso **no tiene ficha propia**: dos páginas nuestras compitiendo por la
 misma búsqueda es peor que una.
 
-**No publica fechas, precio ni mínimo de personas, y es una decisión, no un pendiente.** La
-cosecha depende de la maduración de la uva y la viña confirma cada jornada por temporada; el
-material que había (una publicación de Instagram) era de la temporada pasada, con fechas y
-preventa ya vencidas. El único dato de calendario es la franja de meses, que sale de
-`VENDIMIA_MONTHS`. Lo afirman doce tests en `tests/vendimia-hub.test.mjs`, incluido uno que
-falla si aparece un `$` o un día concreto en el copy de cualquiera de los tres idiomas.
+**Reservas pagadas desde la Vendimia 2027 (2026-11-22).** Dv7 lee `catalogo.eventos` en el
+navegador, pide los datos y hace `POST /iniciar` con `{ reserva }`; el checkout de Afeleia
+revisa y cobra. Fechas, rangos, precios y cupos **no se escriben en este repo**. Sin la clave
+`eventos` (o sin `NEXT_PUBLIC_AFELEIA_CHECKOUT_URL`) la página sigue con la consulta de
+temporada. Las reglas de `lib/vendimiaReserva.ts` son copia de
+`apps/checkout/src/lib/reservation-input.ts` de Afeleia: si cambian allá, cambian acá, porque
+esos errores salen sin CORS y la web no los puede leer. Una restricción alimentaria solo viaja
+en el cuerpo del `POST`. El único dato de calendario propio es `VENDIMIA_MONTHS`, y
+`tests/vendimia-hub.test.mjs` falla si aparece un `$` o un día concreto en los mensajes.
 
 Por lo mismo el structured data va como `WebPage` + `BreadcrumbList` y no como `Event` ni
 `Product`: el primero exige `startDate` y el segundo un precio.
@@ -728,10 +731,8 @@ Cuatro pedidos de la viña, llegados por Juan Francisco el mismo día:
 **Una respuesta no se publicó como llegó.** La de "¿Cómo puedo reservar y pagar?" decía que,
 publicada la fecha, se reserva "en esta página mediante el botón Reservar y pagar", con pago
 en línea y correo de confirmación. El hub hoy no tiene precio, botón ni pago: tiene un
-formulario para dejar los datos. La pregunta quedó como "¿Cómo puedo reservar?" y responde
-eso mismo. **Si la vendimia se va a vender en línea**, es un trabajo aparte (el checkout de
-Afeleia hoy cobra vinos, no actividades); cuando exista, se repone el texto de Damián y se
-cambia a propósito el test que lo impide en `tests/vendimia-hub.test.mjs`.
+formulario para dejar los datos. **Desde el 2026-11-22 la vendimia se vende en línea** y la
+pregunta volvió a ser "¿Cómo puedo reservar y pagar?", con la respuesta del flujo real.
 
 El español de los cuatro es el texto de la viña. **Inglés y portugués son traducción
 nuestra**, sin validar, como el resto.

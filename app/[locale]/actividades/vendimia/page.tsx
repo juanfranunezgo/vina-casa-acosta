@@ -21,6 +21,8 @@ import ActivityBreadcrumbs from "@/components/ActivityBreadcrumbs";
 import ActivityFaq, { type FaqEntry } from "@/components/ActivityFaq";
 import ActivityReservationForm from "@/components/ActivityReservationForm";
 import ActivitySectionNav from "@/components/ActivitySectionNav";
+import FechasVendimia from "@/components/FechasVendimia";
+import VendimiaReserva from "@/components/VendimiaReserva";
 import VineyardYear from "@/components/VineyardYear";
 import JsonLd from "@/components/JsonLd";
 import { fotoBorrosa } from "@/lib/fotoBorrosa";
@@ -50,10 +52,11 @@ import {
  * *corta, pisa y celebra* no tiene ficha propia — vive acá, y así no hay dos
  * páginas del sitio compitiendo por la misma búsqueda.
  *
- * **No publica fechas, precio ni mínimo de personas**, y no es un olvido: la
- * cosecha depende de la maduración de la uva y la viña confirma cada jornada por
- * temporada. El único dato de calendario es la franja de meses, que sale de
- * `VENDIMIA_MONTHS`. Lo cuida `tests/vendimia-hub.test.mjs`.
+ * **Ninguna fecha, precio ni cupo está escrito en este repo.** Los publica
+ * Afeleia en `catalogo.eventos` y los lee el navegador (`VendimiaReserva`,
+ * `FechasVendimia`). Sin esa clave la página sigue con su información y la
+ * consulta de temporada. El único dato de calendario propio es el mes, que sale
+ * de `VENDIMIA_MONTHS`. Lo cuida `tests/vendimia-hub.test.mjs`.
  *
  * **Registro visual — almanaque, no landing.** La página trata de tiempo: un
  * ciclo de un año, una jornada de un día, tres meses de temporada. El diseño lo
@@ -313,18 +316,36 @@ export default async function VendimiaPage({
     </div>
   );
 
-  // Los tres datos que la viña SÍ dio. No hay una cuarta casilla con el precio
-  // ni con el mínimo de personas porque esos números todavía no existen.
+  // Los tres datos ciertos. El de temporada muestra las fechas publicadas en
+  // el catálogo y, sin evento, el mes. El precio vive en el bloque de reserva.
   //
   // Van sin ícono: un calendario, un reloj y una silueta metidos cada uno en un
   // círculo con tinte al 10% eran la firma más visible de la versión anterior, y
   // no agregaban nada — las etiquetas ya dicen "Temporada", "Duración" y "Para
   // quién". Lo que ordena la fila es el filete de arriba.
   const facts = [
-    { label: t("facts.seasonLabel"), value: t("facts.seasonValue", { year }) },
+    {
+      label: t("facts.seasonLabel"),
+      value: <FechasVendimia respaldo={t("facts.seasonValue", { year })} />,
+    },
     { label: t("facts.durationLabel"), value: t("facts.durationValue") },
     { label: t("facts.audienceLabel"), value: t("facts.audienceValue") },
   ];
+
+  // Decorativa: acompaña al formulario y no aporta información que el formulario
+  // no diga, así que va con `alt=""`. El tema —la gamela roja con la uva cortada—
+  // ocupa del 11% al 57% del ancho del cuadro: con el anclaje en 16% la ranura
+  // angosta del formulario la deja entera, sin dejar de estar corrida a la izquierda.
+  const fotoFormulario = (
+    <Image
+      src={FOTO.formulario}
+      alt=""
+      aria-hidden="true"
+      fill
+      className="object-cover object-[16%_center]"
+      sizes="(max-width: 1024px) 100vw, 45vw"
+    />
+  );
 
   // Los mismos textos que ve la miga en pantalla alimentan el BreadcrumbList:
   // un rastro marcado que no coincide con el visible es marcado inventado.
@@ -640,10 +661,8 @@ export default async function VendimiaPage({
                     </li>
                   ))}
                 </ul>
-                {/* Sin tarjeta de precio ni de mínimo de personas: la ficha de una
-                    actividad las trae porque el catálogo las declara, y para la
-                    vendimia todavía no existen. Un "desde $X" o un "grupos desde
-                    N" inventado acá sería el dato que el visitante recuerda. */}
+                {/* Sin tarjeta de precio: los precios salen del catálogo y se
+                    muestran en el bloque de reserva (Dv7), junto a cada rango. */}
 
                 {/* La invitación cierra la jornada, no la abre: recién acá el
                     visitante sabe qué está reservando. Apunta al mismo #consulta
@@ -810,9 +829,10 @@ export default async function VendimiaPage({
         </div>
       </section>
 
-      {/* Dv7 — Consulta. En modo `temporada` y sin `minPeople`: nadie cotiza una
-          jornada que se repite todos los años; lo que se pide acá es que avisen
-          cuándo es la próxima. El orden galería → consulta → otras es el mismo
+      {/* Dv7 — Reserva, o consulta si no hay evento publicado. `VendimiaReserva`
+          decide en el navegador. La consulta va en modo `temporada` y sin
+          `minPeople`: lo que se pide ahí es que avisen cuándo es la próxima
+          fecha. El orden galería → consulta → otras es el mismo
           de la ficha; el spec numeraba "otras" antes, pero mandar a otra página
           justo antes del formulario es perder la visita.
 
@@ -831,36 +851,19 @@ export default async function VendimiaPage({
         className="scroll-mt-24 md:scroll-mt-44 border-t border-outline-variant/30 bg-surface py-section-gap px-margin-mobile md:px-margin-desktop"
       >
         <div className="mx-auto max-w-(--container-max)">
-          <div className="grid grid-cols-1 overflow-hidden rounded-2xl bg-surface ambient-shadow-lg ring-1 ring-outline-variant/40 lg:grid-cols-[1.1fr_0.9fr]">
-            <div className="p-8 md:p-12">
-              <ActivityReservationForm activityName={t("hero.title")} mode="temporada" />
-            </div>
-            {/* Decorativa: acompaña al formulario y no aporta información que el
-                formulario no diga, así que va con `alt=""` y no con el texto de
-                otra foto prestado.
-
-                El tema —la gamela roja con la uva cortada— ocupa del 11% al 57%
-                del ancho del cuadro. Centrada, la ranura angosta del formulario
-                la parte al medio y deja el callejón vacío de la derecha.
-
-                El anclaje es 16% y no `object-left`: en escritorio la ranura sólo
-                muestra el 53% del ancho de la foto, así que pegada al borde
-                izquierdo la ventana termina en 53% y le corta el canto derecho a
-                la gamela. Con 16% la ventana va de 7% a 60% y la deja entera, sin
-                dejar de estar corrida hacia la izquierda. En móvil la ranura es
-                más ancha que alta, entra el 83% del cuadro y la gamela cae
-                cómoda igual. */}
-            <div className="relative order-first min-h-[300px] lg:order-none">
-              <Image
-                src={FOTO.formulario}
-                alt=""
-                aria-hidden="true"
-                fill
-                className="object-cover object-[16%_center]"
-                sizes="(max-width: 1024px) 100vw, 45vw"
-              />
-            </div>
-          </div>
+          <VendimiaReserva
+            foto={fotoFormulario}
+            consulta={
+              <div className="grid grid-cols-1 overflow-hidden rounded-2xl bg-surface ambient-shadow-lg ring-1 ring-outline-variant/40 lg:grid-cols-[1.1fr_0.9fr]">
+                <div className="p-8 md:p-12">
+                  <ActivityReservationForm activityName={t("hero.title")} mode="temporada" />
+                </div>
+                <div className="relative order-first min-h-[300px] lg:order-none">
+                  {fotoFormulario}
+                </div>
+              </div>
+            }
+          />
         </div>
       </section>
       {/* Fin del recorrido de la píldora */}
