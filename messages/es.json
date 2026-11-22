@@ -641,6 +641,7 @@
         "pisoneoNinos": "Tres niños pisan uva dentro de barricas, frente al pendón de la vendimia de Casa Acosta",
         "almuerzo": "La mesa larga del almuerzo bajo el toldo, con los participantes sentados entre las parras",
         "fotoGrupal": "Foto grupal de los participantes de la vendimia, con delantales y la cordillera al fondo",
+        "fotoGrupalCerca": "Foto grupal de cerca: decenas de participantes sonríen y saludan a la cámara, con las parras de otoño y los toldos al fondo",
         "prev": "Foto anterior de la jornada",
         "next": "Foto siguiente de la jornada",
         "goTo": "Ver foto {index} de {total} de la jornada",
@@ -848,6 +849,68 @@
           "campos": "Revisa los datos marcados.",
           "muy_largo": "Los datos son demasiado largos para una sola reserva. Acorta algún texto o divide el grupo.",
           "respaldo": "No pudimos abrir el pago ahora. Escríbenos por WhatsApp y terminamos tu reserva por ahí."
+        },
+        "pasoFecha": "Fecha y personas",
+        "pasoDatos": "Quiénes van",
+        "pasoPago": "Pago",
+        "siguientePersona": "Siguiente persona",
+        "fichaLista": "Lista",
+        "fichaPendiente": "Falta completar"
+      },
+      "landing": {
+        "eligeFecha": "Elige tu fecha",
+        "hayCupos": "Quedan cupos",
+        "sinCupos": "No disponible",
+        "adultosDesde": "Adultos desde",
+        "reservar": "Reservar",
+        "avisame": "Avísame de la próxima fecha",
+        "avisarme": "Avisarme",
+        "barraSinEvento": "Guarda tu lugar",
+        "dia": {
+          "titulo": "Qué vas a hacer ese día",
+          "lead": "La vendimia es la cosecha de la uva. En Casa Acosta la vives desde adentro: un día completo en el viñedo, para grandes y chicos.",
+          "pasos": [
+            {
+              "titulo": "Desayuno de campo",
+              "texto": "Partimos en la mesa, con una charla corta sobre la vendimia."
+            },
+            {
+              "titulo": "Corte de uva",
+              "texto": "Entras al viñedo con tijera, junto al equipo agrícola."
+            },
+            {
+              "titulo": "Despalillado",
+              "texto": "Separas el grano del racimo, a mano y a máquina."
+            },
+            {
+              "titulo": "Pisoneo",
+              "texto": "Pisas la uva con los pies, como se hizo siempre."
+            },
+            {
+              "titulo": "Asado y vino",
+              "texto": "Almuerzo de campo con ensaladas y vino para adultos."
+            },
+            {
+              "titulo": "Concursos y brindis",
+              "texto": "Sorteos para toda la familia y brindis entre las parras."
+            }
+          ]
+        },
+        "info": {
+          "titulo": "Lo que necesitas saber",
+          "cuando": "Cuándo",
+          "horario": "Horario",
+          "donde": "Dónde",
+          "dondeValor": "Viña Casa Acosta, San Vicente de Tagua Tagua",
+          "mascotas": "Mascotas",
+          "mascotasValor": "Pueden venir. Avísanos al reservar.",
+          "llevar": "Qué llevar",
+          "llevarValor": "Ropa cómoda, zapatos cerrados, sombrero, protector solar y una toalla."
+        },
+        "video": {
+          "titulo": "Video de la Vendimia en Casa Acosta",
+          "ver": "Ver el video",
+          "pronto": "Pronto, el video de la jornada"
         }
       }
     },

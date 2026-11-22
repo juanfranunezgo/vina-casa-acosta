@@ -307,6 +307,8 @@ inclusiones de *Cosecha tu historia*— y recién después ofrece la jornada *co
 celebra*, que por eso **no tiene ficha propia**: dos páginas nuestras compitiendo por la
 misma búsqueda es peor que una.
 
+**Rediseño para reservar (2026-11-22).** La página dejó el registro de almanaque: abre con una entrada (fechas, precio y reservar), sigue con los seis momentos del día, el short de YouTube y los datos prácticos, galería, reserva y preguntas. La barra de reserva reemplaza a la píldora de secciones. **Para publicar el video**, pega su id en `data/vendimiaVideo.ts`: la CSP abre YouTube sola cuando hay id. El ciclo de la vid (Dv3) salió de la página; sus textos siguen en `messages` y `VineyardYear` queda sin uso.
+
 **Reservas pagadas desde la Vendimia 2027 (2026-11-22).** Dv7 lee `catalogo.eventos` en el
 navegador, pide los datos y hace `POST /iniciar` con `{ reserva }`; el checkout de Afeleia
 revisa y cobra. Fechas, rangos, precios y cupos **no se escriben en este repo**. Sin la clave
@@ -366,7 +368,8 @@ de **"Ver más fotos"** (`components/ShowMore.tsx`: el bloque viene en el HTML c
 el botón sólo abre y pasa el foco al bloque). El recorte `vendimia-grupo` de la aérea dejó
 de usarse: sigue versionado y generándose, pero ninguna página lo pide. Dos de las fotos
 muestran niños con la cara visible (`vendimia-despalillado`, `vendimia-pisoneo-ninos`):
-**la viña confirmó el 2026-09-22 que tiene la autorización de los padres**. Si algún día
+**la viña confirmó el 2026-09-22 que tiene la autorización de los padres**. Lo mismo vale
+para la niña de `vendimia-foto-grupal-cerca`: Juan Francisco lo confirmó el 2026-11-22. Si algún día
 hay que sacarlas, se quitan de su fila y de `VENDIMIA_FOTOS` en `data/vendimiaGallery.ts`;
 el test avisa si una queda declarada sin usar.
 

@@ -2,11 +2,16 @@
 
 import { type FormEvent, type ReactNode, useEffect, useId, useRef, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
-import { ArrowRight, MessageCircle, Minus, Plus } from "lucide-react";
+import { ArrowRight, Check, ChevronDown, MessageCircle, Minus, Plus } from "lucide-react";
 import Button from "@/components/ui/Button";
 import { CONTACT_WHATSAPP_URL } from "@/lib/contact";
-import { checkoutIniciarUrl } from "@/lib/checkout";
-import { recargarEventoVendimia, useEventoVendimia } from "@/lib/eventoVendimia";
+import {
+  elegirFechaVendimia,
+  recargarEventoVendimia,
+  urlCheckoutVendimia,
+  useEventoVendimia,
+  useFechaVendimia,
+} from "@/lib/eventoVendimia";
 import {
   MAX_ASISTENTES,
   MAX_MASCOTAS,
@@ -27,16 +32,14 @@ import {
   type RangoEvento,
 } from "@/lib/vendimiaReserva";
 
-// Se lee una vez: `NEXT_PUBLIC_*` se incrusta en build, igual que la CSP que lo autoriza.
-const checkoutUrl = checkoutIniciarUrl(process.env.NEXT_PUBLIC_AFELEIA_CHECKOUT_URL);
-
 const inputClass =
-  "w-full scroll-mt-44 bg-transparent border-0 border-b border-outline focus:border-primary focus:outline-none px-0 py-2 font-body text-body-md transition-colors read-only:text-on-surface-variant aria-[invalid=true]:border-error";
-const labelClass =
-  "font-body text-label-sm text-on-surface-variant uppercase tracking-wider block mb-2";
-const hintClass = "mt-2 font-body text-xs text-on-surface-variant/80";
-const errorClass = "mt-2 font-body text-xs text-error";
-const legendClass = "font-accent text-lg font-light italic text-wine-accent";
+  "h-12 w-full scroll-mt-28 rounded-lg border border-outline-variant bg-white px-3 font-body text-base text-on-surface transition-colors focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 read-only:bg-neutro-claro read-only:text-on-surface-variant aria-[invalid=true]:border-error";
+const labelClass = "mb-1.5 block font-body text-sm font-medium text-on-surface-variant";
+const hintClass = "mt-1.5 font-body text-xs leading-relaxed text-on-surface-variant/90";
+const errorClass = "mt-1.5 font-body text-xs font-medium text-error";
+const legendClass = "font-body text-lg font-bold text-primary";
+const tituloClass =
+  "font-body text-[1.75rem] font-bold leading-tight tracking-[-0.02em] text-primary md:text-[2.25rem]";
 
 const idDeCampo = (campo: string) => `vr-${campo.replaceAll(".", "-")}`;
 
@@ -122,22 +125,54 @@ function Opcion({
   );
 }
 
+/** En qué parte de la reserva va la persona. El pago ocurre en el checkout. */
+function Pasos({ actual, etiquetas }: { actual: 1 | 2; etiquetas: string[] }) {
+  return (
+    <ol className="flex items-center gap-2">
+      {etiquetas.map((etiqueta, i) => {
+        const numero = i + 1;
+        const hecho = numero < actual;
+        const activo = numero === actual;
+        return (
+          <li
+            key={etiqueta}
+            aria-current={activo ? "step" : undefined}
+            className="flex min-w-0 items-center gap-2"
+          >
+            {i > 0 && <span aria-hidden="true" className="h-px w-4 bg-outline-variant sm:w-8" />}
+            <span
+              className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full font-body text-sm font-bold tabular-nums ${
+                activo || hecho
+                  ? "bg-primary text-on-primary"
+                  : "bg-surface-container text-on-surface-variant"
+              }`}
+            >
+              {hecho ? <Check className="h-4 w-4" aria-hidden="true" /> : numero}
+            </span>
+            <span
+              className={`font-body text-sm ${
+                activo ? "font-semibold text-primary" : "text-on-surface-variant max-sm:sr-only"
+              }`}
+            >
+              {etiqueta}
+            </span>
+          </li>
+        );
+      })}
+    </ol>
+  );
+}
+
 /**
  * Dv7 — La reserva. Con un evento publicado y el checkout configurado reemplaza a la consulta; sin
  * ellos (el estado de hoy) la consulta sigue tal cual. Si la persona ya empezó a escribir en la
  * consulta cuando llega el evento, no se la cambia bajo los dedos.
  */
-export default function VendimiaReserva({
-  consulta,
-  foto,
-}: {
-  consulta: ReactNode;
-  foto: ReactNode;
-}) {
+export default function VendimiaReserva({ consulta }: { consulta: ReactNode }) {
   const { evento } = useEventoVendimia();
   const [consultaEnUso, setConsultaEnUso] = useState(false);
 
-  if (!evento || !checkoutUrl || consultaEnUso) {
+  if (!evento || !urlCheckoutVendimia || consultaEnUso) {
     return (
       <div
         onFocusCapture={() => {
@@ -148,7 +183,7 @@ export default function VendimiaReserva({
       </div>
     );
   }
-  return <FormularioReserva evento={evento} urlCheckout={checkoutUrl} foto={foto} />;
+  return <FormularioReserva evento={evento} urlCheckout={urlCheckoutVendimia} />;
 }
 
 type Aviso = "fecha" | "cupo" | "edad" | "revisar" | "total_cero" | "campos" | "muy_largo";
@@ -156,11 +191,9 @@ type Aviso = "fecha" | "cupo" | "edad" | "revisar" | "total_cero" | "campos" | "
 function FormularioReserva({
   evento,
   urlCheckout,
-  foto,
 }: {
   evento: EventoReserva;
   urlCheckout: string;
-  foto: ReactNode;
 }) {
   const t = useTranslations("activities.vendimia.reserva");
   const locale = useLocale();
@@ -169,7 +202,8 @@ function FormularioReserva({
   const enviando = useRef(false);
 
   const [paso, setPaso] = useState<1 | 2>(1);
-  const [fechaClave, setFechaClave] = useState("");
+  const fechaClave = useFechaVendimia();
+  const [fichaAbierta, setFichaAbierta] = useState(0);
   const [cerradas, setCerradas] = useState<string[]>([]);
   const [conteos, setConteos] = useState<Record<string, number>>({});
   const [encargado, setEncargado] = useState({ nombre: "", email: "", telefono: "", comuna: "" });
@@ -245,6 +279,7 @@ function FormularioReserva({
     setErrores({});
     if (!hayRestriccion(siguientes)) setPermiso(false);
     setAviso(null);
+    setFichaAbierta(0);
     setPaso(2);
     requestAnimationFrame(() => tituloDatos.current?.focus());
   };
@@ -256,8 +291,28 @@ function FormularioReserva({
     if (!hayRestriccion(siguientes)) setPermiso(false);
   };
 
-  const enfocar = (campo: string) =>
+  const enfocar = (campo: string) => {
+    const ficha = campo.match(/^asistentes\.(\d+)\./);
+    if (ficha) setFichaAbierta(Number(ficha[1]));
+    else if (campo === "permiso_restricciones") setFichaAbierta(primeraConRestriccion);
     requestAnimationFrame(() => document.getElementById(idDeCampo(campo))?.focus());
+  };
+
+  const revision = validarReserva(evento, {
+    fecha: fechaClave,
+    encargado,
+    yoVoy,
+    fichas,
+    conMascotas,
+    mascotas,
+    permiso,
+  });
+  const fichaLista = (indice: number) =>
+    revision.ok ||
+    !Object.keys(revision.errores).some((campo) => campo.startsWith(`asistentes.${indice}.`));
+  const pasosReserva = (
+    <Pasos actual={pasoVisible} etiquetas={[t("pasoFecha"), t("pasoDatos"), t("pasoPago")]} />
+  );
 
   const textoError = (campo: string, indice?: number): string | undefined => {
     const codigo = errores[campo];
@@ -367,27 +422,27 @@ function FormularioReserva({
 
   if (pasoVisible === 1) {
     return (
-      <div className="grid grid-cols-1 overflow-hidden rounded-2xl bg-surface ambient-shadow-lg ring-1 ring-outline-variant/40 lg:grid-cols-[1.1fr_0.9fr]">
-        <div className="min-w-0 p-6 sm:p-8 md:p-12">
-          <p className={legendClass}>{evento.nombre}</p>
-          <h2 className="mt-1 font-display text-3xl text-primary">{t("titulo")}</h2>
-          <p className="mt-2 font-body text-body-md text-on-surface-variant">{evento.lugar}</p>
+      <div className="rounded-2xl bg-surface p-5 sm:p-8 md:p-10">
+        {pasosReserva}
+        <h2 className={`mt-6 ${tituloClass}`}>{t("titulo")}</h2>
+        <p className="mt-1.5 font-body text-base text-on-surface-variant">{evento.lugar}</p>
 
-          <fieldset className="mt-8">
-            <legend className={labelClass}>{t("eligeFecha")}</legend>
-            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+        <div className="mt-7 grid grid-cols-1 gap-8 lg:grid-cols-2 lg:gap-12">
+          <fieldset>
+            <legend className={`mb-3 ${legendClass}`}>{t("eligeFecha")}</legend>
+            <div className="grid grid-cols-1 gap-3">
               {evento.fechas.map((f) => {
                 const abierta = f.disponible && elegible(f.clave);
                 const { dia, inicio, termino } = formatoFecha(f, locale);
                 return (
                   <label
                     key={f.clave}
-                    className={`relative block rounded-lg border px-4 py-3 transition-colors focus-within:ring-2 focus-within:ring-primary/40 ${
+                    className={`relative block rounded-xl border-2 px-4 py-3.5 transition-colors focus-within:ring-2 focus-within:ring-primary/40 focus-within:ring-offset-2 ${
                       !abierta
-                        ? "cursor-not-allowed border-outline-variant/50 opacity-60"
+                        ? "cursor-not-allowed border-transparent bg-neutro-claro text-on-surface-variant/70"
                         : f.clave === fechaClave
-                          ? "cursor-pointer border-primary bg-primary/5 ring-1 ring-primary"
-                          : "cursor-pointer border-outline-variant hover:border-primary"
+                          ? "cursor-pointer border-primary bg-primary text-on-primary"
+                          : "cursor-pointer border-outline-variant text-primary hover:border-primary"
                     }`}
                   >
                     <input
@@ -397,18 +452,18 @@ function FormularioReserva({
                       checked={abierta && f.clave === fechaClave}
                       disabled={!abierta}
                       onChange={() => {
-                        setFechaClave(f.clave);
+                        elegirFechaVendimia(f.clave);
                         setAviso(null);
                       }}
                       className="sr-only"
                     />
-                    <span className="block font-display text-lg leading-snug text-primary first-letter:uppercase">
+                    <span className="block font-body text-lg font-bold leading-snug first-letter:uppercase">
                       {dia}
                     </span>
-                    <span className="mt-1 block font-body text-xs text-on-surface-variant tabular-nums">
+                    <span className="mt-0.5 block font-body text-sm tabular-nums opacity-85">
                       {t("horario", { inicio, termino })}
                     </span>
-                    <span className="mt-1 block font-body text-xs font-semibold text-on-surface-variant">
+                    <span className="mt-0.5 block font-body text-sm font-semibold opacity-85">
                       {abierta ? t("quedanCupos") : t("noDisponible")}
                     </span>
                   </label>
@@ -418,9 +473,9 @@ function FormularioReserva({
           </fieldset>
 
           {hayFechas ? (
-            <>
-              <fieldset className="mt-8">
-                <legend className={labelClass}>{t("cuantosVan")}</legend>
+            <div>
+              <fieldset>
+                <legend className={`mb-2 ${legendClass}`}>{t("cuantosVan")}</legend>
                 <ul>
                   {evento.rangos.map((rango) => {
                     const cantidad = conteos[rango.nombre] ?? 0;
@@ -428,13 +483,13 @@ function FormularioReserva({
                     return (
                       <li
                         key={rango.nombre}
-                        className="flex items-center justify-between gap-4 border-t border-outline-variant py-2"
+                        className="flex items-center justify-between gap-4 border-b border-outline-variant/60 py-1.5"
                       >
                         <span className="min-w-0">
-                          <span className="block font-body text-body-md text-on-surface">
+                          <span className="block font-body text-base font-semibold text-on-surface">
                             {rango.nombre}
                           </span>
-                          <span className="block font-body text-xs text-on-surface-variant tabular-nums">
+                          <span className="block font-body text-sm text-on-surface-variant tabular-nums">
                             {precio === 0 ? t("gratis") : dinero(precio)}
                           </span>
                         </span>
@@ -444,13 +499,13 @@ function FormularioReserva({
                             onClick={() => cambiarConteo(rango, -1)}
                             disabled={cantidad === 0}
                             aria-label={t("quitar", { rango: rango.nombre })}
-                            className="flex h-11 w-11 items-center justify-center rounded-full text-primary transition-colors hover:bg-primary/10 disabled:cursor-not-allowed disabled:opacity-30"
+                            className="flex h-11 w-11 items-center justify-center rounded-full bg-primary/[0.07] text-primary transition-colors hover:bg-primary hover:text-on-primary disabled:cursor-not-allowed disabled:bg-neutro-claro disabled:text-on-surface-variant disabled:opacity-50"
                           >
                             <Minus className="h-4 w-4" aria-hidden="true" />
                           </button>
                           <span
                             aria-live="polite"
-                            className="w-7 text-center font-body text-body-md tabular-nums"
+                            className="w-9 text-center font-body text-lg font-bold tabular-nums"
                           >
                             {cantidad}
                           </span>
@@ -459,7 +514,7 @@ function FormularioReserva({
                             onClick={() => cambiarConteo(rango, 1)}
                             disabled={personas >= MAX_ASISTENTES}
                             aria-label={t("agregar", { rango: rango.nombre })}
-                            className="flex h-11 w-11 items-center justify-center rounded-full text-primary transition-colors hover:bg-primary/10 disabled:cursor-not-allowed disabled:opacity-30"
+                            className="flex h-11 w-11 items-center justify-center rounded-full bg-primary/[0.07] text-primary transition-colors hover:bg-primary hover:text-on-primary disabled:cursor-not-allowed disabled:bg-neutro-claro disabled:text-on-surface-variant disabled:opacity-50"
                           >
                             <Plus className="h-4 w-4" aria-hidden="true" />
                           </button>
@@ -483,10 +538,10 @@ function FormularioReserva({
                 )}
               </fieldset>
 
-              <div className="mt-6 border-t border-outline-variant pt-5">
+              <div className="mt-5">
                 <div className="flex items-baseline justify-between gap-4">
                   <span className="font-body text-body-md text-on-surface">{t("totalLabel")}</span>
-                  <span className="font-display text-2xl text-primary tabular-nums">
+                  <span className="font-body font-bold text-2xl text-primary tabular-nums">
                     {fecha && personas > 0 ? dinero(total) : "—"}
                   </span>
                 </div>
@@ -497,8 +552,8 @@ function FormularioReserva({
                   <Button
                     type="button"
                     variant="primary"
+                    size="lg"
                     fullWidth
-                    className="sm:w-auto"
                     onClick={continuar}
                     disabled={!puedeContinuar}
                     iconRight={<ArrowRight className="h-4 w-4" />}
@@ -510,9 +565,9 @@ function FormularioReserva({
                   )}
                 </div>
               </div>
-            </>
+            </div>
           ) : (
-            <div className="mt-6 space-y-4">
+            <div className="space-y-4">
               {/* «Elige otra» no tiene sentido cuando ya no queda ninguna. */}
               {aviso !== "fecha" && avisoVisible}
               <p role="status" className="font-body text-body-md text-on-surface-variant">
@@ -533,9 +588,6 @@ function FormularioReserva({
             </div>
           )}
         </div>
-        <div className="relative order-first min-h-[220px] lg:order-none lg:min-h-[300px]">
-          {foto}
-        </div>
       </div>
     );
   }
@@ -546,22 +598,22 @@ function FormularioReserva({
       noValidate
       data-reserva-datos
       onSubmit={enviar}
-      className="rounded-2xl bg-surface p-6 ambient-shadow-lg ring-1 ring-outline-variant/40 sm:p-8 md:p-12"
+      className="rounded-2xl bg-surface p-5 sm:p-8 md:p-10"
     >
-      <p className={legendClass}>{evento.nombre}</p>
+      {pasosReserva}
       <h2
         ref={tituloDatos}
         tabIndex={-1}
-        className="mt-1 scroll-mt-32 font-display text-3xl text-primary focus:outline-none"
+        className={`mt-6 scroll-mt-32 focus:outline-none ${tituloClass}`}
       >
         {t("tituloDatos")}
       </h2>
 
       <div className="mt-8 grid grid-cols-1 gap-x-14 gap-y-10 lg:grid-cols-[minmax(0,1fr)_20rem]">
-        <div className="min-w-0 space-y-10">
-          <fieldset>
+        <div className="min-w-0 space-y-4">
+          <fieldset className="pb-4">
             <legend className={legendClass}>{t("encargado")}</legend>
-            <div className="mt-4 grid grid-cols-1 gap-6 sm:grid-cols-2">
+            <div className="mt-3 grid grid-cols-1 gap-4 sm:grid-cols-2">
               <Campo
                 campo="encargado.nombre"
                 label={t("nombre")}
@@ -636,13 +688,51 @@ function FormularioReserva({
               ? Number(edadEscrita)
               : (rango?.edad_min ?? 0);
             const opcional = edadVista >= 18 ? "" : ` ${t("opcional")}`;
+            const abierta = i === fichaAbierta;
+            const lista = fichaLista(i);
+            const nombreVisible = (esHeredada ? encargado.nombre : ficha.nombre).trim();
             return (
-              <fieldset key={`${ficha.rango}-${i}`} className="border-t border-outline-variant pt-6">
-                <legend className="float-left mb-4 w-full font-display text-xl text-primary">
-                  {t("asistente", { numero: i + 1 })}{" "}
-                  <span className="font-body text-sm text-on-surface-variant">· {ficha.rango}</span>
+              <fieldset
+                key={`${ficha.rango}-${i}`}
+                className="overflow-hidden rounded-xl border border-outline-variant/80"
+              >
+                <legend className="sr-only">
+                  {t("asistente", { numero: i + 1 })}, {ficha.rango}
                 </legend>
-                <div className="clear-both grid grid-cols-2 gap-x-4 gap-y-6 sm:gap-x-6">
+                <button
+                  type="button"
+                  aria-expanded={abierta}
+                  aria-controls={`vr-ficha-${i}`}
+                  onClick={() => setFichaAbierta(abierta ? -1 : i)}
+                  className="flex min-h-16 w-full items-center justify-between gap-3 px-4 py-2.5 text-left transition-colors hover:bg-neutro-claro focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary"
+                >
+                  <span className="min-w-0">
+                    <span className="block truncate font-body text-base font-bold text-primary">
+                      {nombreVisible || t("asistente", { numero: i + 1 })}
+                    </span>
+                    <span className="block font-body text-sm text-on-surface-variant">
+                      {ficha.rango}
+                    </span>
+                  </span>
+                  <span className="flex shrink-0 items-center gap-2">
+                    <span
+                      className={`inline-flex items-center gap-1 font-body text-xs font-semibold ${
+                        lista ? "text-primary" : "text-on-surface-variant"
+                      }`}
+                    >
+                      {lista && <Check className="h-3.5 w-3.5" aria-hidden="true" />}
+                      {lista ? t("fichaLista") : t("fichaPendiente")}
+                    </span>
+                    <ChevronDown
+                      className={`h-4 w-4 text-on-surface-variant transition-transform motion-reduce:transition-none ${
+                        abierta ? "rotate-180" : ""
+                      }`}
+                      aria-hidden="true"
+                    />
+                  </span>
+                </button>
+                <div id={`vr-ficha-${i}`} hidden={!abierta} className="border-t border-outline-variant/60 p-4">
+                <div className="grid grid-cols-2 gap-x-4 gap-y-5">
                   <Campo
                     campo={`${ruta}.nombre`}
                     className="col-span-2 sm:col-span-1"
@@ -791,12 +881,26 @@ function FormularioReserva({
                     )}
                   </div>
                 </div>
+                {i < fichas.length - 1 && (
+                  <div className="mt-5">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      fullWidth
+                      className="sm:w-auto"
+                      onClick={() => enfocar(`asistentes.${i + 1}.nombre`)}
+                    >
+                      {t("siguientePersona")}
+                    </Button>
+                  </div>
+                )}
+                </div>
               </fieldset>
             );
           })}
 
-          <fieldset className="border-t border-outline-variant pt-6">
-            <legend className="float-left mb-2 w-full font-display text-xl text-primary">
+          <fieldset className="rounded-xl border border-outline-variant/80 p-4">
+            <legend className="float-left mb-1 w-full font-body text-base font-bold text-primary">
               {t("mascotas")}
             </legend>
             <div className="clear-both flex gap-6">
@@ -834,10 +938,10 @@ function FormularioReserva({
           </fieldset>
         </div>
 
-        <aside className="min-w-0 border-t border-outline-variant pt-6 lg:sticky lg:top-44 lg:self-start lg:border-l lg:border-t-0 lg:pl-8 lg:pt-0">
+        <aside className="min-w-0 border-t border-outline-variant pt-6 lg:sticky lg:top-28 lg:self-start lg:border-l lg:border-t-0 lg:pl-8 lg:pt-0">
           <p className={labelClass}>{t("tuReserva")}</p>
           {fecha && (
-            <p className="font-display text-lg leading-snug text-primary first-letter:uppercase">
+            <p className="font-body font-bold text-lg leading-snug text-primary first-letter:uppercase">
               {formatoFecha(fecha, locale).dia}
             </p>
           )}
@@ -875,7 +979,7 @@ function FormularioReserva({
 
           <div className="mt-5 flex items-baseline justify-between gap-3 border-t border-outline-variant pt-4">
             <span className="font-body text-body-md text-on-surface">{t("totalLabel")}</span>
-            <span className="font-display text-2xl text-primary tabular-nums">{dinero(total)}</span>
+            <span className="font-body font-bold text-2xl text-primary tabular-nums">{dinero(total)}</span>
           </div>
           <p className={hintClass}>{t("totalNota")}</p>
 

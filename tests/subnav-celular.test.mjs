@@ -88,7 +88,7 @@ test("el carrito flotante sube cuando la píldora está abajo", async () => {
   assert.match(regla[1], /translate:\s*0 -/);
 });
 
-test("la vendimia lleva las migas bajo el hero, centradas, y la píldora de secciones", async () => {
+test("la vendimia lleva las migas bajo el hero y su propia barra de reserva", async () => {
   const pagina = await leer("app/[locale]/actividades/vendimia/page.tsx");
   const hero = pagina.indexOf("{/* Dv1 — Hero");
   const finHero = pagina.indexOf("</section>", hero);
@@ -99,20 +99,9 @@ test("la vendimia lleva las migas bajo el hero, centradas, y la píldora de secc
   assert.match(bloqueMigas, /tone="papel"/);
   assert.match(bloqueMigas, /align="center"/);
 
-  const inicio = pagina.indexOf("<ActivitySectionNav");
-  assert.ok(inicio > migas, "la píldora va después de las migas");
-  const pildora = pagina.slice(inicio, pagina.indexOf("/>", inicio));
-  // Cada rótulo lleva a una sección que existe en la página.
-  for (const id of ["jornada", "galeria", "preguntas"]) {
-    assert.match(pildora, new RegExp(`id: "${id}"`), id);
-    assert.match(pagina, new RegExp(`id="${id}"`), `no existe la sección #${id}`);
-  }
-  assert.match(pildora, /cta=\{\{ id: "consulta"/);
-
-  // La píldora acompaña mientras su contenedor está en pantalla: tiene que
-  // cerrar después de la consulta y antes de "otras formas de vivir el ciclo".
-  const consulta = pagina.indexOf('id="consulta"');
-  const otras = pagina.indexOf("{/* Dv5 —");
-  const cierre = pagina.indexOf("{/* Fin del recorrido de la píldora */}");
-  assert.ok(cierre > consulta && cierre < otras, "el contenedor de la píldora no cierra donde debe");
+  // La barra reemplaza a la píldora y sigue subiendo el carrito flotante.
+  assert.match(pagina, /<VendimiaBarraReserva \/>/);
+  assert.doesNotMatch(pagina, /<ActivitySectionNav/);
+  const barra = await leer("components/VendimiaBarraReserva.tsx");
+  assert.match(barra, /data-subnav-abajo=/);
 });

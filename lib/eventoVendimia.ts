@@ -2,6 +2,7 @@
 
 import { useSyncExternalStore } from "react";
 import { catalogEndpoint, isOwnCatalog, isValidCatalog } from "@/lib/afeleia/contract";
+import { checkoutIniciarUrl } from "@/lib/checkout";
 import { leerEventoVendimia, type EventoReserva } from "@/lib/vendimiaReserva";
 
 /**
@@ -59,4 +60,29 @@ export async function recargarEventoVendimia(): Promise<void> {
 
 export function useEventoVendimia(): EstadoEvento {
   return useSyncExternalStore(suscribir, () => estado, () => INICIAL);
+}
+
+/** La URL del checkout, incrustada en build igual que la CSP que la autoriza. */
+export const urlCheckoutVendimia = checkoutIniciarUrl(process.env.NEXT_PUBLIC_AFELEIA_CHECKOUT_URL);
+
+// La fecha que se elige en la entrada del hero llega ya marcada al formulario.
+let fechaElegida = "";
+const oyentesFecha = new Set<() => void>();
+
+export function elegirFechaVendimia(clave: string): void {
+  fechaElegida = clave;
+  oyentesFecha.forEach((oyente) => oyente());
+}
+
+export function useFechaVendimia(): string {
+  return useSyncExternalStore(
+    (oyente) => {
+      oyentesFecha.add(oyente);
+      return () => {
+        oyentesFecha.delete(oyente);
+      };
+    },
+    () => fechaElegida,
+    () => "",
+  );
 }

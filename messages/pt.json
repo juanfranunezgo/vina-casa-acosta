@@ -641,6 +641,7 @@
         "pisoneoNinos": "Três crianças pisam uva dentro de barricas, diante do banner da vindima da Casa Acosta",
         "almuerzo": "A mesa comprida do almoço sob o toldo, com os participantes sentados entre as videiras",
         "fotoGrupal": "Foto do grupo de participantes da vindima, de avental, com a cordilheira ao fundo",
+        "fotoGrupalCerca": "Foto de grupo de perto: dezenas de participantes sorriem e acenam para a câmera, com as videiras de outono e os toldos ao fundo",
         "prev": "Foto anterior da jornada",
         "next": "Próxima foto da jornada",
         "goTo": "Ver foto {index} de {total} da jornada",
@@ -848,6 +849,68 @@
           "campos": "Confira os dados marcados.",
           "muy_largo": "Os dados são longos demais para uma única reserva. Encurte algum texto ou divida o grupo.",
           "respaldo": "Não conseguimos abrir o pagamento agora. Escreva pelo WhatsApp e concluímos sua reserva por lá."
+        },
+        "pasoFecha": "Data e pessoas",
+        "pasoDatos": "Quem vai",
+        "pasoPago": "Pagamento",
+        "siguientePersona": "Próxima pessoa",
+        "fichaLista": "Pronta",
+        "fichaPendiente": "Falta completar"
+      },
+      "landing": {
+        "eligeFecha": "Escolha sua data",
+        "hayCupos": "Há vagas",
+        "sinCupos": "Indisponível",
+        "adultosDesde": "Adultos a partir de",
+        "reservar": "Reservar",
+        "avisame": "Avise-me da próxima data",
+        "avisarme": "Avisar-me",
+        "barraSinEvento": "Garanta seu lugar",
+        "dia": {
+          "titulo": "O que você vai fazer nesse dia",
+          "lead": "A vindima é a colheita da uva. Na Casa Acosta você a vive por dentro: um dia inteiro na vinha, para adultos e crianças.",
+          "pasos": [
+            {
+              "titulo": "Café da manhã no campo",
+              "texto": "Começamos à mesa, com uma conversa curta sobre a vindima."
+            },
+            {
+              "titulo": "Colheita da uva",
+              "texto": "Você entra na vinha com tesoura, junto à equipe agrícola."
+            },
+            {
+              "titulo": "Desengace",
+              "texto": "Separe os grãos do cacho, à mão e na máquina."
+            },
+            {
+              "titulo": "Pisa da uva",
+              "texto": "Pise a uva com os pés, como sempre se fez."
+            },
+            {
+              "titulo": "Churrasco e vinho",
+              "texto": "Almoço no campo com saladas e vinho para adultos."
+            },
+            {
+              "titulo": "Concursos e brinde",
+              "texto": "Sorteios para toda a família e um brinde entre as videiras."
+            }
+          ]
+        },
+        "info": {
+          "titulo": "O que você precisa saber",
+          "cuando": "Quando",
+          "horario": "Horário",
+          "donde": "Onde",
+          "dondeValor": "Viña Casa Acosta, San Vicente de Tagua Tagua",
+          "mascotas": "Animais de estimação",
+          "mascotasValor": "Podem ir. Avise ao reservar.",
+          "llevar": "O que levar",
+          "llevarValor": "Roupa confortável, sapatos fechados, chapéu, protetor solar e uma toalha."
+        },
+        "video": {
+          "titulo": "Vídeo da Vindima na Casa Acosta",
+          "ver": "Ver o vídeo",
+          "pronto": "Em breve, o vídeo da jornada"
         }
       }
     },

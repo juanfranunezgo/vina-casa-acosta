@@ -58,12 +58,16 @@ test("la variante `link` no lleva tamaño, con o sin `multiline`", () => {
   }
 });
 
-test("los dos botones largos de la vendimia van con `multiline`", async () => {
-  const pagina = (
-    await readFile(new URL("../app/[locale]/actividades/vendimia/page.tsx", import.meta.url), "utf8")
-  ).replace(/\r\n/g, "\n");
-  const botones = [...pagina.matchAll(/<Button\s[^>]*?href="#consulta"[\s\S]*?<\/Button>/g)].map((m) => m[0]);
-  assert.equal(botones.length, 2, "el de Dv2 y el de Dv4");
+test("los botones a la reserva de la vendimia van con `multiline`", async () => {
+  const fuentes = await Promise.all(
+    ["components/VendimiaHeroReserva.tsx", "components/VendimiaBarraReserva.tsx"].map((archivo) =>
+      readFile(new URL(`../${archivo}`, import.meta.url), "utf8"),
+    ),
+  );
+  const botones = fuentes.flatMap((fuente) =>
+    [...fuente.replace(/\r\n/g, "\n").matchAll(/<Button\s[^>]*?href="#consulta"[\s\S]*?<\/Button>/g)].map((m) => m[0]),
+  );
+  assert.equal(botones.length, 3, "los dos del hero y el de la barra");
   for (const boton of botones) assert.match(boton, /\bmultiline\b/, boton.slice(0, 80));
 });
 

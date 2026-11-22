@@ -16,10 +16,7 @@
  * misma clave que acá. Salen de `npm run fotos:vendimia` — ver docs/FOTOS.md.
  */
 export const VENDIMIA_FOTOS = {
-  // De la viña, no de una vendimia: su `alt` no afirma que lo sea.
-  asado: "/images/contacto/asado.webp",
   // Fotos propias de la jornada (2026-08-18), de teléfono.
-  mosto: "/images/actividades/vendimia-mosto.webp",
   manoUva: "/images/actividades/vendimia-mano-uva.webp",
   pisoneo: "/images/actividades/vendimia-pisoneo.webp",
   desayuno: "/images/actividades/vendimia-desayuno.webp",
@@ -37,15 +34,23 @@ export const VENDIMIA_FOTOS = {
   pisoneoNinos: "/images/actividades/vendimia-pisoneo-ninos.webp",
   almuerzo: "/images/actividades/vendimia-almuerzo.webp",
   fotoGrupal: "/images/actividades/vendimia-foto-grupal.webp",
+  fotoGrupalCerca: "/images/actividades/vendimia-foto-grupal-cerca.webp",
 } as const;
 
 export type VendimiaFoto = keyof typeof VENDIMIA_FOTOS;
 
 /**
- * Dv4 — el carrusel junto a "La jornada incluye", en el orden del día:
- * desayuno, corte, almuerzo. Marco 4:5 (`CollectionPhotos`).
+ * Dv2 — una foto por momento del día, en el MISMO orden que
+ * `landing.dia.pasos` de `messages/*.json`.
  */
-export const VENDIMIA_CARRUSEL: readonly VendimiaFoto[] = ["desayuno", "cosecha", "asado"];
+export const VENDIMIA_DIA: readonly VendimiaFoto[] = [
+  "desayuno",
+  "cosecha",
+  "despalillado",
+  "pisoneo",
+  "asadoJornada",
+  "almuerzo",
+];
 
 /** Proporción de una fila de la galería, como la escribe Tailwind. */
 export type ProporcionFila = "16/9" | "3/2" | "4/5";
@@ -61,14 +66,10 @@ export type FilaGaleria = {
  * se recorta a esa proporción en el script, no con `object-cover`: lo que no se
  * ve, no se descarga.
  *
- * `visibles` es lo que se ve al llegar: una apertura ancha y una fila de tres
- * con las fotos del fotógrafo, que cuentan el día en orden (el pisoneo abre
- * porque es la imagen de la vendimia; después desayuno, corte y despalillado).
- * `mas` queda detrás de "Ver más fotos" y cierra con la foto grupal. Las fotos
- * de teléfono del 2026-08-18 van ahí, en una fila 4:5 propia, porque son
- * verticales.
+ * `visibles` es lo que se ve al llegar; `mas` queda detrás de "Ver más fotos".
+ * Las fotos de Dv2 no se repiten acá.
  *
- * Una fila de tres en móvil se dibuja en dos columnas con la última a lo ancho;
+ se dibuja en dos columnas con la última a lo ancho;
  * una de dos, apilada; una de cuatro, en dos por dos.
  */
 export const VENDIMIA_GALERIA: {
@@ -77,11 +78,11 @@ export const VENDIMIA_GALERIA: {
 } = {
   visibles: [
     { proporcion: "16/9", fotos: ["pisoneoBarricas"] },
-    { proporcion: "3/2", fotos: ["desayunoDetalle", "corte", "despalillado"] },
+    { proporcion: "3/2", fotos: ["desayunoDetalle", "corte", "pisoneoNinos"] },
   ],
   mas: [
-    { proporcion: "4/5", fotos: ["personas", "bin", "charla", "asadoJornada"] },
-    { proporcion: "3/2", fotos: ["pisoneoNinos", "almuerzo"] },
+    { proporcion: "16/9", fotos: ["fotoGrupalCerca"] },
+    { proporcion: "4/5", fotos: ["personas", "bin", "charla"] },
     { proporcion: "16/9", fotos: ["fotoGrupal"] },
   ],
 };

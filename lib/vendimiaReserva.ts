@@ -259,6 +259,58 @@ export function formatoFecha(
   };
 }
 
+/** Las piezas de una fecha para dibujarla en la entrada: «sábado», «3», «abril». */
+export function partesFecha(
+  fecha: Pick<FechaEvento, "inicio">,
+  locale: string,
+): { semana: string; dia: string; mes: string } {
+  const partes = new Intl.DateTimeFormat(LOCALE_INTL[locale] ?? locale, {
+    timeZone: ZONA_CHILE,
+    weekday: "long",
+    day: "numeric",
+    month: "long",
+  }).formatToParts(new Date(fecha.inicio));
+  const parte = (tipo: Intl.DateTimeFormatPartTypes) =>
+    partes.find((p) => p.type === tipo)?.value ?? "";
+  return { semana: parte("weekday"), dia: parte("day"), mes: parte("month") };
+}
+
+/**
+ * El precio de entrada que se anuncia: el menor de un adulto entre las fechas
+ * abiertas, con el de lanzamiento si le toca. `null` si no hay fecha abierta o
+ * ningún rango de adulto con precio.
+ */
+export function precioAdultoDesde(
+  evento: EventoReserva,
+): { precio: number; lanzamiento: boolean } | null {
+  const abiertas = evento.fechas.filter((f) => f.disponible);
+  const adultos = evento.rangos.filter((r) => r.edad_min >= EDAD_ADULTA && r.precio > 0);
+  let mejor: { precio: number; lanzamiento: boolean } | null = null;
+  for (const fecha of abiertas) {
+    for (const rango of adultos) {
+      const precio = precioDeRango(evento, rango, fecha);
+      if (precio > 0 && (mejor === null || precio < mejor.precio)) {
+        mejor = { precio, lanzamiento: precio !== rango.precio };
+      }
+    }
+  }
+  return mejor;
+}
+
+/** El horario, si todas las fechas comparten el mismo en hora de Chile. */
+export function horarioComun(
+  evento: Pick<EventoReserva, "fechas">,
+  locale: string,
+): { inicio: string; termino: string } | null {
+  const horarios = evento.fechas.map((f) => formatoFecha(f, locale));
+  const [primero] = horarios;
+  if (!primero) return null;
+  const iguales = horarios.every(
+    (h) => h.inicio === primero.inicio && h.termino === primero.termino,
+  );
+  return iguales ? { inicio: primero.inicio, termino: primero.termino } : null;
+}
+
 /** Las fechas del evento en una línea, con el año al final: «3 de abril y 17 de abril de 2027». */
 export function formatoFechasEvento(evento: Pick<EventoReserva, "fechas">, locale: string): string {
   const intl = LOCALE_INTL[locale] ?? locale;

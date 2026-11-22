@@ -19,6 +19,8 @@ export const fotosBorrosas: Record<string, string> = {
     "data:image/webp;base64,UklGRtIAAABXRUJQVlA4IMYAAAAQBwCdASoYACsAPu1oq1AppaOiqrgMATAdiWIApd/BegD+8Yb897el7XHnAvmbJt0a1i3mSiBcLKsS+x+VRCZoYAD+8gHrq//7RIa454TF7nZ+/cqYAaPMU4Lfml7SsdrwHer8gOmAuCUMKnGG8It1UZuijb16kj20PBxozoOdKBqIXw/AGvxC32hrsyZaMZ4dmx8lOrVLmnxZhAyRYSWV/m+Sn0Q9DTh3VwL+js2zDTl3r3hlEsBpf4AOZ3GpJm+wgEtxQAA=",
   "/images/actividades/hero-vendimia-1280.webp":
     "data:image/webp;base64,UklGRmQAAABXRUJQVlA4IFgAAACwAwCdASoYAA4APu1kqU2ppaQiMAgBMB2JZACdAByHK4+pPpTE8ADJ1uEmm/OdnSwzsE4HhxrkOkS5P3LCJLO3W/pYb4Yw0WgpizAJxG5ZWHbR0eMMQAAA",
+  "/images/actividades/hero-vendimia-movil-828.webp":
+    "data:image/webp;base64,UklGRtAAAABXRUJQVlA4IMQAAAAwBgCdASoYACsAPu1mqU6ppaOiKqwBMB2JQBZ3MZATLJ/QYqm3RWY715NAiRQqVRj16hMMAk9IprkgAPGe1KWfHGwjKcSNIkqqiRWN2gWWXKBQ5Rb+M++MoRHOCSiSDgpeX2KcvsxANlzfh7n+IMN4EZplDoVPGKR8dWCJotvejoeewbz0araPCwUmtbAJd7zufOoAQJS3ROARTfRlp6JWwhbywetyIZFQ31LyQPPK9UtuWiODvSl2iIgkX74nMDsr6uAA",
   "/images/actividades/mimbre-hero.webp":
     "data:image/webp;base64,UklGRnAAAABXRUJQVlA4IGQAAAAQBACdASoYABAAPu1kqk4ppaQiMAgBMB2JYwCdACIi5KN/p7MOmKyyAAD+5Fi8AhQYS22KsN+0zOZH33I5/jYIxXHw9cc966gthjZmrkenBLn6mcGz41s3ZMU9Yx++5kKAAAAA",
   "/images/actividades/noquis-masa.webp":

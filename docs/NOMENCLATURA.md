@@ -99,48 +99,18 @@ pie) pasaron a `bg-surface`. Las tarjetas grises dentro de las páginas se queda
 
 | ID | Sección |
 |---|---|
-| Dv1 | Hero + breadcrumbs Desde el 2026-10-12 las migas ya no van sobre la foto: bajan a la página, centradas, como en las fichas (Dd1), y debajo va la misma píldora de secciones de Dd2 (Detalle · Galería · Preguntas · Reserva), que acompaña de Dv2 a Dv7. |
-| Dv2 | Qué es la vendimia en Casa Acosta + los tres datos ciertos (temporada · duración · para quién) Desde el 2026-10-12 el dato de temporada lleva el año de la próxima vendimia, calculado con `anioDeTemporada`. Desde el 2026-11-22 muestra las fechas publicadas en `catalogo.eventos` y, sin evento, "Abril 2027" |
-| Dv3 | El año de la viña — banda de 12 meses con las 5 etapas del ciclo y la ventana de cosecha (`components/VineyardYear.tsx`) |
-| Dv4 | La jornada: corta, pisa y celebra — programa en `<ol>` con un ícono por paso + qué incluye, y al lado un carrusel 4:5 con tres fotos en el orden del día (desayuno · cosecha · asado) |
-| Dv5 | Otras formas de vivir el ciclo (Cosecha tu historia · Lágrimas de invierno) |
-| Dv6 | Galería en filas de una sola proporción: a la vista, apertura ancha 16:9 + fila de tres 3:2; detrás de **"Ver más fotos"** (`components/ShowMore.tsx`), fila de cuatro 4:5, par 3:2 y cierre 16:9 con la foto grupal. Las filas se declaran en `data/vendimiaGallery.ts`; lo cuida `tests/vendimia-galeria.test.mjs`. Desde el 2026-09-22 |
-| Dv6b | Preguntas frecuentes (2026-10-12, pedido de Damián: "para ir dando el mismo orden a las páginas"). Diez preguntas en `activities.vendimia.faq`, con el mismo componente de las fichas (`components/ActivityFaq.tsx`, Dd6b) y en el mismo lugar: justo antes de la consulta. La salida a WhatsApp abre con el mensaje del formulario en modo temporada |
-| Dv7 | **Reserva** (`components/VendimiaReserva.tsx`, desde el 2026-11-22): fecha, personas por rango y total orientativo; después encargado, una ficha por asistente y mascotas; termina en el checkout de Afeleia. Sin `catalogo.eventos` o sin URL del checkout, sigue la **consulta** (formulario en modo temporada, sin mínimo de personas) |
+| Dv1 | Hero a pantalla completa con **la entrada**: fechas, precio y reservar (`VendimiaHeroReserva`), más migas debajo. Tocar una fecha la deja elegida en el formulario. Rediseño del 2026-11-22 |
+| Dv2 | Qué vas a hacer: los seis momentos del día, con foto y en orden. En celular se desliza de lado |
+| ~~Dv3~~ | Retirada el 2026-11-22: el ciclo de la vid contaba la viña en vez de ayudar a reservar. El ID no se reasigna |
+| Dv4 | Lo que necesitas saber: el **short de YouTube** (`data/vendimiaVideo.ts`), los datos prácticos y qué incluye |
+| Dv5 | Otras experiencias (Cosecha tu historia · Lágrimas de invierno) |
+| Dv6 | Galería en filas de una sola proporción; el resto detrás de **"Ver más fotos"** (`components/ShowMore.tsx`). Las filas se declaran en `data/vendimiaGallery.ts` |
+| Dv6b | Preguntas frecuentes, después de la reserva (`components/ActivityFaq.tsx`) | **Reserva** (`components/VendimiaReserva.tsx`, desde el 2026-11-22): fecha, personas por rango y total orientativo; después encargado, una ficha por asistente y mascotas; termina en el checkout de Afeleia. Sin `catalogo.eventos` o sin URL del checkout, sigue la **consulta** (formulario en modo temporada, sin mínimo de personas) |
 
-**El orden en pantalla es Dv1 · Dv2 · Dv4 · Dv3 · Dv6 · Dv6b · Dv7 · Dv5**, no el de la
-numeración: mandar a otra página justo antes del formulario es perder la visita.
-Es el mismo orden que la ficha `Dd`, donde "otras actividades" también cierra.
-
-**Dv4 va antes que Dv3** desde el 2026-08-19: la jornada es lo que el visitante viene a buscar, y el ciclo de la vid es el contexto que la explica. Contarle el año de la viña antes de decirle qué se hace ese día le pedía leer un calendario para llegar al programa.
+**El orden en pantalla es Dv1 · Dv2 · Dv4 · Dv6 · Dv7 · Dv6b · Dv5.** Cada sección responde una duda de quien está por reservar, y la barra de reserva (`VendimiaBarraReserva`) acompaña desde que sale el hero hasta que aparece el formulario. Reemplaza a la píldora de secciones en esta página.
 
 **Ninguna fecha, precio ni cupo se escribe en el repo**: los publica Afeleia en
 `catalogo.eventos` — ver `docs/HANDOFF.md` y `tests/vendimia-hub.test.mjs`.
-
-**Dv3 absorbió la franja de meses**, que antes era una sección aparte entre Dv2 y
-Dv3. Separadas decían lo mismo dos veces: cinco etapas por un lado y doce
-casillas por el otro. `VineyardYear` las dibuja como una sola línea del año que
-arranca en junio —el copy dice que la historia empieza en invierno, y en el
-hemisferio sur eso es junio— con el tramo del visitante teñido al final. La franja
-de meses de las fichas (`SeasonStrip`, Dd3) ya no existe: se retiró el 2026-09-24.
-
-**Registro visual del hub: almanaque, no landing.** Toda la página va en papel
-—no hay bandas en penumbra— y el contenido no va en cajas: lo que separa un
-bloque de otro es un filete de un píxel. Por eso Dv4 no monta `ActivityProgram` y
-Dv5 no monta `ActivityRowCard`, aunque las fichas sí: los dos componentes dibujan
-el vocabulario que este hub abandona (número en círculo con anillo, tarjeta
-redondeada con sombra y salto al hover). Siguen intactos para `Dd`. Si una
-sección nueva de Dv necesita una caja para leerse, lo que le falta es jerarquía
-tipográfica.
-
-Tres excepciones deliberadas a esa regla. **Las preguntas frecuentes (Dv6b) van en
-tarjetas**, las de `ActivityFaq`, por la misma razón que el formulario: quien viene de la
-ficha del yoga ya sabe cómo se usan. Las otras dos: **las fotos van con esquina redondeada**
-(`rounded-xl`; `rounded-lg` las miniaturas de Dv5) porque una foto no encierra
-contenido sino que lo es, y **Dv7 sí es una tarjeta**, copiando exactamente la de
-`Dd6` — el formulario no es contenido editorial sino el mismo trámite que el
-visitante ya hizo en otra actividad, y que se vea igual es lo que lo hace
-reconocible. Si cambia el de la ficha, cambia este.
 
 ⚠️ Tokens de radio: `globals.css` redefine `--radius-xl` en 1,5rem, así que
 `rounded-xl` son **24px** y `rounded-2xl` son **16px** — al revés de lo que

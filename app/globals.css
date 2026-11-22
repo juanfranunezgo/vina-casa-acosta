@@ -434,6 +434,32 @@ html[data-age-gate="pendiente"] body {
   }
 }
 
+/* La entrada del hero de la vendimia: dos muescas reales, cortadas con máscara
+   para que se vea la foto a través, justo donde va la línea punteada. */
+.ticket-vendimia {
+  --corte-y: calc(100% - 4.9rem);
+  -webkit-mask-image:
+    radial-gradient(circle 9px at 0 var(--corte-y), transparent 8.5px, #000 9px),
+    radial-gradient(circle 9px at 100% var(--corte-y), transparent 8.5px, #000 9px);
+  mask-image:
+    radial-gradient(circle 9px at 0 var(--corte-y), transparent 8.5px, #000 9px),
+    radial-gradient(circle 9px at 100% var(--corte-y), transparent 8.5px, #000 9px);
+  -webkit-mask-composite: source-in;
+  mask-composite: intersect;
+}
+
+@media (min-width: 768px) {
+  .ticket-vendimia {
+    --corte-x: calc(100% - 16rem);
+    -webkit-mask-image:
+      radial-gradient(circle 9px at var(--corte-x) 0, transparent 8.5px, #000 9px),
+      radial-gradient(circle 9px at var(--corte-x) 100%, transparent 8.5px, #000 9px);
+    mask-image:
+      radial-gradient(circle 9px at var(--corte-x) 0, transparent 8.5px, #000 9px),
+      radial-gradient(circle 9px at var(--corte-x) 100%, transparent 8.5px, #000 9px);
+  }
+}
+
 /* La píldora de secciones de las fichas y de la vendimia va fija abajo en
    celular (2026-10-12). El carrito flotante también vive ahí: sube mientras la
    píldora está a la vista, para no quedar debajo de ella. Va con `translate` y
@@ -443,10 +469,9 @@ html[data-age-gate="pendiente"] body {
     translate: 0 -4.25rem;
   }
 
-  /* Mientras se llenan las fichas de la vendimia, la píldora y el carrito tapaban
-     los campos y el teclado los dejaba encima de lo que se está escribiendo. */
-  body:has([data-reserva-datos]) [data-subnav-abajo],
-  body:has([data-reserva-datos]) [data-cart-fab] {
+  /* En la vendimia el carrito flotante tapaba el botón de la entrada y los campos
+     del formulario: aparece solo mientras está la barra de reserva, encima de ella. */
+  body:has([data-vendimia-barra="oculta"]) [data-cart-fab] {
     display: none;
   }
 }

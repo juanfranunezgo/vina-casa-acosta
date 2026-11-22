@@ -81,18 +81,16 @@ const HEROS = [
     movil: { source: fuentes("gate-uvas-movil.jpg"), out: "public/images/edad/uvas-movil", widths: [828, 1125] },
   },
   {
-    // Hub de Vendimia. Único hero SIN encuadre móvil, y no por falta de fuente:
-    // la foto es una aérea donde el grupo ocupa el 55% del ancho, así que
-    // cualquier recorte vertical (9:16 se lleva el 32% del ancho) corta gente en
-    // los dos extremos. En pantalla vertical se ve la franja central —el grueso
-    // del grupo y el tractor— y la nitidez la cuida el `sizes` de la página, que
-    // pide un candidato más grande que el ancho del viewport porque `cover`
-    // pinta la foto más ancha que su contenedor. Ver Dv1.
+    // Hub de Vendimia. La foto es una aérea donde el grupo ocupa el 55% del
+    // ancho, así que el recorte 9:16 deja afuera a quienes están en los extremos.
+    // Desde que el hero ocupa la pantalla completa (2026-11-22) es la misma franja
+    // que `cover` mostraría igual, pero con nitidez. Ver Dv1.
     id: "vendimia",
     // q72 medido contra la curva: de 78 a 72 son 90 KB menos a 1920px y el
     // recorte 1:1 sobre las caras no cambia; de 72 para abajo se ahorran 20 KB
     // por escalón, ya no vale la pena.
     desktop: { source: fuentes("hero-vendimia.jpg"), out: "public/images/actividades/hero-vendimia", widths: [1280, 1920, 2560], quality: 72 },
+    movil: { source: fuentes("hero-vendimia.jpg"), out: "public/images/actividades/hero-vendimia-movil", widths: [828, 1200, 1600], quality: 72, recorte: { proporcion: 9 / 16, centro: 0.5 } },
   },
   {
     // Contacto. Su foto —la mesa larga de noche— ya vivía en el repo como card

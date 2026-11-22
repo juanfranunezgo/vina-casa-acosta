@@ -641,6 +641,7 @@
         "pisoneoNinos": "Three children treading grapes in barrels, in front of the Casa Acosta harvest banner",
         "almuerzo": "The long lunch table under the awning, with the guests seated among the vines",
         "fotoGrupal": "Group photo of the harvest guests in aprons, with the mountains behind",
+        "fotoGrupalCerca": "Close-up group photo: dozens of guests smile and wave at the camera, with the autumn vines and canopies behind them",
         "prev": "Previous photo of the day",
         "next": "Next photo of the day",
         "goTo": "View photo {index} of {total} of the day",
@@ -848,6 +849,68 @@
           "campos": "Check the highlighted details.",
           "muy_largo": "The details are too long for a single booking. Shorten some text or split the group.",
           "respaldo": "We could not open the payment right now. Message us on WhatsApp and we will finish your booking there."
+        },
+        "pasoFecha": "Date and people",
+        "pasoDatos": "Who is coming",
+        "pasoPago": "Payment",
+        "siguientePersona": "Next person",
+        "fichaLista": "Done",
+        "fichaPendiente": "Needs details"
+      },
+      "landing": {
+        "eligeFecha": "Choose your date",
+        "hayCupos": "Places left",
+        "sinCupos": "Not available",
+        "adultosDesde": "Adults from",
+        "reservar": "Book now",
+        "avisame": "Tell me the next date",
+        "avisarme": "Notify me",
+        "barraSinEvento": "Save your place",
+        "dia": {
+          "titulo": "What you will do that day",
+          "lead": "The vendimia is the grape harvest. At Casa Acosta you live it from the inside: a full day in the vineyard, for grown-ups and kids.",
+          "pasos": [
+            {
+              "titulo": "Country breakfast",
+              "texto": "We start at the table, with a short talk about the harvest."
+            },
+            {
+              "titulo": "Grape picking",
+              "texto": "Head into the vineyard with shears, alongside the farm team."
+            },
+            {
+              "titulo": "Destemming",
+              "texto": "Separate the grapes from the bunch, by hand and by machine."
+            },
+            {
+              "titulo": "Grape stomping",
+              "texto": "Stomp the grapes with your feet, the traditional way."
+            },
+            {
+              "titulo": "Barbecue and wine",
+              "texto": "Country lunch with salads, and wine for adults."
+            },
+            {
+              "titulo": "Games and a toast",
+              "texto": "Raffles for the whole family and a toast among the vines."
+            }
+          ]
+        },
+        "info": {
+          "titulo": "What you need to know",
+          "cuando": "When",
+          "horario": "Time",
+          "donde": "Where",
+          "dondeValor": "Viña Casa Acosta, San Vicente de Tagua Tagua",
+          "mascotas": "Pets",
+          "mascotasValor": "They can come. Let us know when you book.",
+          "llevar": "What to bring",
+          "llevarValor": "Comfortable clothes, closed shoes, a hat, sunscreen and a towel."
+        },
+        "video": {
+          "titulo": "Video of the Harvest at Casa Acosta",
+          "ver": "Watch the video",
+          "pronto": "Video of the day coming soon"
         }
       }
     },
