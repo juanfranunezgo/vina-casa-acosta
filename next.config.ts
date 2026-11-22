@@ -5,7 +5,7 @@ import createNextIntlPlugin from "next-intl/plugin";
 // especificadores sin extensión.
 import { STORAGE_PUBLIC_PREFIX } from "./lib/afeleia/contract.ts";
 import { checkoutIniciarUrl } from "./lib/checkout.ts";
-import { VENDIMIA_SHORT_ID, YOUTUBE_EMBED_ORIGIN } from "./data/vendimiaVideo.ts";
+import { urlShortVendimia, YOUTUBE_EMBED_ORIGIN } from "./data/vendimiaVideo.ts";
 
 const withNextIntl = createNextIntlPlugin("./i18n/request.ts");
 
@@ -134,8 +134,8 @@ function contentSecurityPolicy(): string {
     directives["connect-src"].push(afeleia);
   }
 
-  // El short de la vendimia: YouTube se abre recién cuando hay un video publicado.
-  if (VENDIMIA_SHORT_ID) directives["frame-src"].push(YOUTUBE_EMBED_ORIGIN);
+  // El short de la vendimia: YouTube se abre solo si se puede reproducir acá.
+  if (urlShortVendimia()) directives["frame-src"].push(YOUTUBE_EMBED_ORIGIN);
 
   const checkout = checkoutOrigin();
   if (checkout) {

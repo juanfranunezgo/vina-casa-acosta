@@ -910,7 +910,8 @@
         "video": {
           "titulo": "Video of the Harvest at Casa Acosta",
           "ver": "Watch the video",
-          "pronto": "Video of the day coming soon"
+          "pronto": "Video of the day coming soon",
+          "verYoutube": "Watch the video on YouTube"
         }
       }
     },

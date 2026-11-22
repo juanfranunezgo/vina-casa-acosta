@@ -910,7 +910,8 @@
         "video": {
           "titulo": "Vídeo da Vindima na Casa Acosta",
           "ver": "Ver o vídeo",
-          "pronto": "Em breve, o vídeo da jornada"
+          "pronto": "Em breve, o vídeo da jornada",
+          "verYoutube": "Ver o vídeo no YouTube"
         }
       }
     },

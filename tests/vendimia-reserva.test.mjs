@@ -403,6 +403,25 @@ test("el formulario no guarda ni registra datos personales", async () => {
   assert.doesNotMatch(respaldo, /encargado|fichas|restriccion|nombre:/);
 });
 
+test("el short se abre sin cookies, y si YouTube no deja, lleva a YouTube", async () => {
+  const { VENDIMIA_SHORT_ID, urlShortVendimia, urlVerEnYoutube } = await import("@/data/vendimiaVideo");
+  const url = new URL(urlShortVendimia(VENDIMIA_SHORT_ID, true));
+  assert.equal(url.origin, "https://www.youtube-nocookie.com");
+  assert.equal(url.pathname, `/embed/${VENDIMIA_SHORT_ID}`);
+  // Con restricción de edad no se monta un reproductor que YouTube va a bloquear.
+  assert.equal(urlShortVendimia(VENDIMIA_SHORT_ID, false), null);
+  assert.equal(urlVerEnYoutube(VENDIMIA_SHORT_ID), `https://www.youtube.com/shorts/${VENDIMIA_SHORT_ID}`);
+  assert.equal(urlShortVendimia(null, true), null);
+  assert.equal(urlVerEnYoutube(null), null);
+  for (const malo of ["corto", "abc/../../x", "PpOdJgVFZpc?x=1", "<script>abc"]) {
+    assert.equal(urlShortVendimia(malo, true), null, malo);
+    assert.equal(urlVerEnYoutube(malo), null, malo);
+  }
+  // El reproductor no se monta hasta que la persona aprieta play.
+  const componente = await source("components/VendimiaShort.tsx");
+  assert.match(componente, /url && reproduciendo \? \(\s*<iframe/);
+});
+
 test("el código no trae precios, fechas ni cupos escritos", async () => {
   for (const archivo of ["components/VendimiaReserva.tsx", "components/FechasVendimia.tsx", "lib/eventoVendimia.ts"]) {
     const texto = await source(archivo);

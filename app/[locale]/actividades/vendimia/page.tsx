@@ -365,6 +365,7 @@ export default async function VendimiaPage({
                 alt={t("photos.manoUva")}
                 titulo={t("landing.video.titulo")}
                 ver={t("landing.video.ver")}
+                verYoutube={t("landing.video.verYoutube")}
                 pronto={t("landing.video.pronto")}
               />
             </div>

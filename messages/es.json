@@ -910,7 +910,8 @@
         "video": {
           "titulo": "Video de la Vendimia en Casa Acosta",
           "ver": "Ver el video",
-          "pronto": "Pronto, el video de la jornada"
+          "pronto": "Pronto, el video de la jornada",
+          "verYoutube": "Ver el video en YouTube"
         }
       }
     },
