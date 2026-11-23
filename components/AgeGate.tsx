@@ -106,6 +106,9 @@ const sinConfirmacionVigente = () => {
   }
 };
 
+/** Para lo que debe esperar a que la pregunta de edad esté respondida. */
+export const edadConfirmada = () => !sinConfirmacionVigente();
+
 const suscribir = () => () => {};
 const hayQuePreguntar = sinConfirmacionVigente;
 const enElServidor = () => true;

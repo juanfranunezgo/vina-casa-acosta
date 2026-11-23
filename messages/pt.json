@@ -866,6 +866,15 @@
         "fichaLista": "Pronta",
         "fichaPendiente": "Falta completar"
       },
+      "popup": {
+        "etiquetaProxima": "Pré-venda",
+        "etiquetaAbierta": "Reservas abertas",
+        "abre": "Abre em {dia} às {hora}.",
+        "desde": "Adultos a partir de {precio}. Vagas limitadas.",
+        "ctaVer": "Ver a Vindima",
+        "ctaReservar": "Reservar meu lugar",
+        "cerrar": "Fechar"
+      },
       "landing": {
         "eligeFecha": "Escolha sua data",
         "hayCupos": "Há vagas",

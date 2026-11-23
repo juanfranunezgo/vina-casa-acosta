@@ -116,6 +116,15 @@ export function aperturaPendiente(
   return !evento.fechas.some((f) => f.disponible);
 }
 
+/** Qué dice el popup: anuncia la apertura, invita a reservar, o no aparece sin nada que ofrecer. */
+export function estadoPopupVendimia(
+  evento: Pick<EventoReserva, "fechas">,
+  pendiente: boolean,
+): "abre" | "abierta" | null {
+  if (evento.fechas.some((f) => f.disponible)) return "abierta";
+  return pendiente ? "abre" : null;
+}
+
 /** La apertura en hora de Chile: «lun 23» y «lunes 23 de noviembre», con su hora. */
 export function formatoApertura(
   apertura: number,

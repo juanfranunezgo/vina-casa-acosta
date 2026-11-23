@@ -866,6 +866,15 @@
         "fichaLista": "Done",
         "fichaPendiente": "Needs details"
       },
+      "popup": {
+        "etiquetaProxima": "Pre-sale",
+        "etiquetaAbierta": "Booking open",
+        "abre": "Opens on {dia} at {hora}.",
+        "desde": "Adults from {precio}. Limited places.",
+        "ctaVer": "See the harvest day",
+        "ctaReservar": "Book my place",
+        "cerrar": "Close"
+      },
       "landing": {
         "eligeFecha": "Choose your date",
         "hayCupos": "Places left",

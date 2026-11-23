@@ -866,6 +866,15 @@
         "fichaLista": "Lista",
         "fichaPendiente": "Falta completar"
       },
+      "popup": {
+        "etiquetaProxima": "Preventa",
+        "etiquetaAbierta": "Reservas abiertas",
+        "abre": "Abre el {dia} a las {hora}.",
+        "desde": "Adultos desde {precio}. Cupos limitados.",
+        "ctaVer": "Ver la Vendimia",
+        "ctaReservar": "Reservar mi lugar",
+        "cerrar": "Cerrar"
+      },
       "landing": {
         "eligeFecha": "Elige tu fecha",
         "hayCupos": "Quedan cupos",

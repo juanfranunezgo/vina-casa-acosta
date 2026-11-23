@@ -8,6 +8,7 @@ const {
   ajustarFichas,
   aperturaPendiente,
   enlaceLegal,
+  estadoPopupVendimia,
   fichaVacia,
   formatoApertura,
   formatoFecha,
@@ -297,6 +298,14 @@ test("apertura: se muestra en hora de Chile", () => {
     larga: "lunes 23 de noviembre",
     hora: "18:00",
   });
+});
+
+test("popup: anuncia la apertura, invita a reservar y se apaga sin fechas", () => {
+  const cerrado = { fechas: evento.fechas.map((f) => ({ ...f, disponible: false })) };
+  assert.equal(estadoPopupVendimia(cerrado, true), "abre");
+  assert.equal(estadoPopupVendimia(evento, true), "abierta");
+  assert.equal(estadoPopupVendimia(evento, false), "abierta");
+  assert.equal(estadoPopupVendimia(cerrado, false), null);
 });
 
 test("precio desde: con la venta cerrada se anuncia solo si se pide", () => {
