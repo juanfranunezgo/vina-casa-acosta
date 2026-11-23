@@ -6,12 +6,16 @@ import { readFile } from "node:fs/promises";
 const {
   MAX_CUERPO_BYTES,
   ajustarFichas,
+  aperturaPendiente,
   enlaceLegal,
   fichaVacia,
+  formatoApertura,
   formatoFecha,
   formatoFechasEvento,
   iniciarReserva,
+  leerApertura,
   leerEventoVendimia,
+  precioAdultoDesde,
   totalAproximado,
   urlRespaldoWhatsApp,
   validarReserva,
@@ -267,6 +271,38 @@ test("una restricción exige el permiso, y sin texto no viaja", () => {
 
   const larga = adulto({ conRestriccion: true, restriccion: "x".repeat(201) });
   assert.equal(errores(datos({ fichas: [larga], permiso: true }))["asistentes.0.restriccion"], "texto");
+});
+
+test("apertura: solo se acepta una hora con zona explícita", () => {
+  assert.equal(leerApertura("2026-11-23T18:00:00-03:00"), Date.parse("2026-11-23T21:00:00Z"));
+  for (const mala of [undefined, "", "mañana", "2026-11-23T18:00:00", "2026-13-40T18:00:00-03:00"]) {
+    assert.equal(leerApertura(mala), null, String(mala));
+  }
+});
+
+test("apertura: el aviso dura hasta una hora después y se va si una fecha abre", () => {
+  const apertura = leerApertura("2026-11-23T18:00:00-03:00");
+  const cerrado = { fechas: evento.fechas.map((f) => ({ ...f, disponible: false })) };
+  assert.equal(aperturaPendiente(cerrado, apertura, apertura - 1), true);
+  assert.equal(aperturaPendiente(cerrado, apertura, apertura + 59 * 60_000), true);
+  assert.equal(aperturaPendiente(cerrado, apertura, apertura + 60 * 60_000), false);
+  assert.equal(aperturaPendiente(evento, apertura, apertura - 1), false);
+  assert.equal(aperturaPendiente(cerrado, null, apertura - 1), false);
+});
+
+test("apertura: se muestra en hora de Chile", () => {
+  const apertura = leerApertura("2026-11-23T18:00:00-03:00");
+  assert.deepEqual(formatoApertura(apertura, "es"), {
+    corta: "lun 23",
+    larga: "lunes 23 de noviembre",
+    hora: "18:00",
+  });
+});
+
+test("precio desde: con la venta cerrada se anuncia solo si se pide", () => {
+  const cerrado = { ...evento, fechas: evento.fechas.map((f) => ({ ...f, disponible: false })) };
+  assert.equal(precioAdultoDesde(cerrado), null);
+  assert.equal(precioAdultoDesde(cerrado, true).precio, 69900);
 });
 
 test("edad por rango: viaja la mínima del rango y sigue pidiendo el contacto del adulto", () => {

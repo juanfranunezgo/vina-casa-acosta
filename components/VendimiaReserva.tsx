@@ -7,9 +7,11 @@ import Button from "@/components/ui/Button";
 import { CONTACT_WHATSAPP_URL } from "@/lib/contact";
 import { PRIVACIDAD_VENDIMIA_PDF } from "@/lib/legal";
 import {
+  aperturaVendimia,
   elegirFechaVendimia,
   recargarEventoVendimia,
   urlCheckoutVendimia,
+  useAperturaPendiente,
   useEventoVendimia,
   useFechaVendimia,
 } from "@/lib/eventoVendimia";
@@ -18,6 +20,7 @@ import {
   MAX_MASCOTAS,
   ajustarFichas,
   enlaceLegal,
+  formatoApertura,
   formatoFecha,
   formatoPrecio,
   hayRestriccion,
@@ -205,6 +208,7 @@ function FormularioReserva({
   const enviando = useRef(false);
 
   const [paso, setPaso] = useState<1 | 2>(1);
+  const pendiente = useAperturaPendiente(evento);
   const fechaClave = useFechaVendimia();
   const [fichaAbierta, setFichaAbierta] = useState(0);
   const [cerradas, setCerradas] = useState<string[]>([]);
@@ -248,6 +252,8 @@ function FormularioReserva({
     evento.rangos.some((r) => r.lanzamiento);
 
   const dinero = (monto: number) => formatoPrecio(monto, evento.moneda, locale);
+  const apertura =
+    pendiente && aperturaVendimia !== null ? formatoApertura(aperturaVendimia, locale) : null;
   const heredada = yoVoy ? indicePrimerAdulto(evento, fichas) : -1;
   const hayAdulto = indicePrimerAdulto(evento, fichas) !== -1;
   const primeraConRestriccion = fichas.findIndex(
@@ -469,7 +475,11 @@ function FormularioReserva({
                       {t("horario", { inicio, termino })}
                     </span>
                     <span className="mt-0.5 block font-body text-sm font-semibold opacity-85">
-                      {abierta ? t("quedanCupos") : t("noDisponible")}
+                      {abierta
+                        ? t("quedanCupos")
+                        : apertura
+                          ? t("abreCorto", { dia: apertura.corta, hora: apertura.hora })
+                          : t("noDisponible")}
                     </span>
                   </label>
                 );
@@ -570,6 +580,13 @@ function FormularioReserva({
                   )}
                 </div>
               </div>
+            </div>
+          ) : apertura ? (
+            <div role="status" className="space-y-2">
+              <p className="font-body text-lg font-bold leading-snug text-primary">
+                {t("abreAviso", { dia: apertura.larga, hora: apertura.hora })}
+              </p>
+              <p className="font-body text-body-md text-on-surface-variant">{t("abreDetalle")}</p>
             </div>
           ) : (
             <div className="space-y-4">

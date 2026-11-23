@@ -3,11 +3,18 @@
 import { useLocale, useTranslations } from "next-intl";
 import Button from "@/components/ui/Button";
 import {
+  aperturaVendimia,
   elegirFechaVendimia,
   urlCheckoutVendimia,
+  useAperturaPendiente,
   useEventoVendimia,
 } from "@/lib/eventoVendimia";
-import { formatoPrecio, partesFecha, precioAdultoDesde } from "@/lib/vendimiaReserva";
+import {
+  formatoApertura,
+  formatoPrecio,
+  partesFecha,
+  precioAdultoDesde,
+} from "@/lib/vendimiaReserva";
 
 /**
  * Dv1 — La entrada del hero. Es lo primero que se ve y ya sirve para reservar:
@@ -18,6 +25,7 @@ export default function VendimiaHeroReserva() {
   const t = useTranslations("activities.vendimia.landing");
   const locale = useLocale();
   const { evento } = useEventoVendimia();
+  const pendiente = useAperturaPendiente(evento);
 
   if (!evento || !urlCheckoutVendimia) {
     return (
@@ -29,7 +37,9 @@ export default function VendimiaHeroReserva() {
     );
   }
 
-  const desde = precioAdultoDesde(evento);
+  const apertura =
+    pendiente && aperturaVendimia !== null ? formatoApertura(aperturaVendimia, locale) : null;
+  const desde = precioAdultoDesde(evento, apertura !== null);
 
   return (
     <div className="ticket-vendimia mx-auto mt-4 grid w-full md:mt-6 max-w-3xl grid-cols-1 rounded-[22px] bg-white text-left text-on-surface md:grid-cols-[minmax(0,1fr)_16rem]">
@@ -48,7 +58,11 @@ export default function VendimiaHeroReserva() {
                   <span className="block first-letter:uppercase">{semana}</span>
                 </span>
                 <span className="col-span-2 font-body text-xs font-medium">
-                  {fecha.disponible ? t("hayCupos") : t("sinCupos")}
+                  {fecha.disponible
+                    ? t("hayCupos")
+                    : apertura
+                      ? t("abreCorto", { dia: apertura.corta, hora: apertura.hora })
+                      : t("sinCupos")}
                 </span>
               </>
             );
@@ -83,7 +97,7 @@ export default function VendimiaHeroReserva() {
           </p>
         )}
         <Button href="#consulta" variant="primary" multiline className="shrink-0 justify-center">
-          {t("reservar")}
+          {apertura ? t("verFechas") : t("reservar")}
         </Button>
       </div>
     </div>

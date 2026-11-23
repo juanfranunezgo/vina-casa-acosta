@@ -2,7 +2,13 @@
 
 import { useSyncExternalStore } from "react";
 import { catalogEndpoint, isOwnCatalog, isValidCatalog } from "@/lib/afeleia/contract";
-import { checkoutDeReservas, leerEventoVendimia, type EventoReserva } from "@/lib/vendimiaReserva";
+import {
+  aperturaPendiente,
+  checkoutDeReservas,
+  leerApertura,
+  leerEventoVendimia,
+  type EventoReserva,
+} from "@/lib/vendimiaReserva";
 
 /**
  * El evento de la vendimia, leído en el navegador y compartido por la página.
@@ -66,6 +72,23 @@ export const urlCheckoutVendimia = checkoutDeReservas(
   process.env.NEXT_PUBLIC_VENDIMIA_RESERVAS,
   process.env.NEXT_PUBLIC_AFELEIA_CHECKOUT_URL,
 );
+
+/** La hora anunciada de apertura (`NEXT_PUBLIC_VENDIMIA_APERTURA`, con zona), o `null`. */
+export const aperturaVendimia = leerApertura(process.env.NEXT_PUBLIC_VENDIMIA_APERTURA);
+
+function suscribirReloj(oyente: () => void) {
+  const id = setInterval(oyente, 30_000);
+  return () => clearInterval(id);
+}
+
+/** Si la página debe decir «abre tal día». Lee la hora en el navegador, nunca en el servidor. */
+export function useAperturaPendiente(evento: EventoReserva | null): boolean {
+  return useSyncExternalStore(
+    suscribirReloj,
+    () => evento !== null && aperturaPendiente(evento, aperturaVendimia, Date.now()),
+    () => false,
+  );
+}
 
 // La fecha que se elige en la entrada del hero llega ya marcada al formulario.
 let fechaElegida = "";

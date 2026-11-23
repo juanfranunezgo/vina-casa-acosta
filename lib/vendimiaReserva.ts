@@ -44,6 +44,11 @@ const HOSTS_LEGALES: ReadonlySet<string> = new Set([
 const LOCALE_INTL: Record<string, string> = { es: "es-CL", en: "en-US", pt: "pt-BR" };
 const ZONA_CHILE = "America/Santiago";
 
+/** Con zona explícita: una hora sin zona se leería distinto según el navegador. */
+const APERTURA_RE = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(:\d{2})?(Z|[+-]\d{2}:\d{2})$/;
+/** El aviso sigue un rato tras la hora anunciada: abrir en el panel y la caché toman unos minutos. */
+const GRACIA_APERTURA_MS = 60 * 60 * 1000;
+
 export type RangoEvento = {
   nombre: string;
   edad_min: number;
@@ -88,6 +93,54 @@ export function checkoutDeReservas(
   url: string | undefined,
 ): string | null {
   return interruptor === "abierta" ? checkoutIniciarUrl(url) : null;
+}
+
+/** La hora anunciada de apertura en milisegundos, o `null` si falta o no trae zona. */
+export function leerApertura(valor: string | undefined): number | null {
+  const limpio = valor?.trim();
+  if (!limpio || !APERTURA_RE.test(limpio)) return null;
+  const ms = Date.parse(limpio);
+  return Number.isNaN(ms) ? null : ms;
+}
+
+/**
+ * Si corresponde mostrar «abre tal día». Es solo un aviso: lo que permite reservar es la venta
+ * abierta en el panel, que Afeleia vuelve a comprobar. Apenas una fecha abre, el aviso se va.
+ */
+export function aperturaPendiente(
+  evento: Pick<EventoReserva, "fechas">,
+  apertura: number | null,
+  ahora: number,
+): boolean {
+  if (apertura === null || ahora >= apertura + GRACIA_APERTURA_MS) return false;
+  return !evento.fechas.some((f) => f.disponible);
+}
+
+/** La apertura en hora de Chile: «lun 23» y «lunes 23 de noviembre», con su hora. */
+export function formatoApertura(
+  apertura: number,
+  locale: string,
+): { corta: string; larga: string; hora: string } {
+  const intl = LOCALE_INTL[locale] ?? locale;
+  const fecha = new Date(apertura);
+  const corta = new Intl.DateTimeFormat(intl, {
+    timeZone: ZONA_CHILE,
+    weekday: "short",
+    day: "numeric",
+  }).format(fecha);
+  const larga = new Intl.DateTimeFormat(intl, {
+    timeZone: ZONA_CHILE,
+    weekday: "long",
+    day: "numeric",
+    month: "long",
+  }).format(fecha);
+  const hora = new Intl.DateTimeFormat(intl, {
+    timeZone: ZONA_CHILE,
+    hour: "2-digit",
+    minute: "2-digit",
+    hourCycle: "h23",
+  }).format(fecha);
+  return { corta: corta.replace(/[,.]/g, ""), larga: larga.replace(",", ""), hora };
 }
 
 // --- Lectura del catálogo -----------------------------------------------------
@@ -293,12 +346,14 @@ export function partesFecha(
 /**
  * El precio de entrada que se anuncia: el menor de un adulto entre las fechas
  * abiertas, con el de lanzamiento si le toca. `null` si no hay fecha abierta o
- * ningún rango de adulto con precio.
+ * ningún rango de adulto con precio. Antes de la apertura, `conCerradas` lo
+ * anuncia igual.
  */
 export function precioAdultoDesde(
   evento: EventoReserva,
+  conCerradas = false,
 ): { precio: number; lanzamiento: boolean } | null {
-  const abiertas = evento.fechas.filter((f) => f.disponible);
+  const abiertas = conCerradas ? evento.fechas : evento.fechas.filter((f) => f.disponible);
   const adultos = evento.rangos.filter((r) => r.edad_min >= EDAD_ADULTA && r.precio > 0);
   let mejor: { precio: number; lanzamiento: boolean } | null = null;
   for (const fecha of abiertas) {

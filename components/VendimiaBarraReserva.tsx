@@ -3,7 +3,11 @@
 import { useEffect, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import Button from "@/components/ui/Button";
-import { urlCheckoutVendimia, useEventoVendimia } from "@/lib/eventoVendimia";
+import {
+  urlCheckoutVendimia,
+  useAperturaPendiente,
+  useEventoVendimia,
+} from "@/lib/eventoVendimia";
 import { formatoPrecio, precioAdultoDesde } from "@/lib/vendimiaReserva";
 
 /**
@@ -15,6 +19,7 @@ export default function VendimiaBarraReserva() {
   const t = useTranslations("activities.vendimia.landing");
   const locale = useLocale();
   const { evento } = useEventoVendimia();
+  const pendiente = useAperturaPendiente(evento);
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
@@ -43,7 +48,7 @@ export default function VendimiaBarraReserva() {
   }, []);
 
   const abierta = evento !== null && urlCheckoutVendimia !== null;
-  const desde = abierta ? precioAdultoDesde(evento) : null;
+  const desde = abierta ? precioAdultoDesde(evento, pendiente) : null;
 
   return (
     <div
@@ -67,7 +72,7 @@ export default function VendimiaBarraReserva() {
           )}
         </p>
         <Button href="#consulta" variant="primary" multiline className="shrink-0">
-          {abierta ? t("reservar") : t("avisarme")}
+          {abierta ? (pendiente ? t("verFechas") : t("reservar")) : t("avisarme")}
         </Button>
       </div>
     </div>
