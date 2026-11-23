@@ -7,6 +7,7 @@ const {
   MAX_CUERPO_BYTES,
   ajustarFichas,
   aperturaPendiente,
+  debeRevisarApertura,
   enlaceLegal,
   estadoPopupVendimia,
   fichaVacia,
@@ -298,6 +299,27 @@ test("apertura: se muestra en hora de Chile", () => {
     larga: "lunes 23 de noviembre",
     hora: "18:00",
   });
+});
+
+test("apertura: quien espera revisa el catálogo solo desde la hora y mientras siga cerrado", () => {
+  const apertura = leerApertura("2026-11-23T18:00:00-03:00");
+  const cerrado = { fechas: evento.fechas.map((f) => ({ ...f, disponible: false })) };
+  assert.equal(debeRevisarApertura(cerrado, apertura, apertura - 1), false);
+  assert.equal(debeRevisarApertura(cerrado, apertura, apertura), true);
+  assert.equal(debeRevisarApertura(cerrado, apertura, apertura + 60 * 60_000), false);
+  assert.equal(debeRevisarApertura(evento, apertura, apertura), false);
+  assert.equal(debeRevisarApertura(cerrado, null, apertura), false);
+});
+
+test("fichas: quitar a alguien y agregar a otra persona parte con la ficha vacía", () => {
+  const dos = ajustarFichas(evento, { "18 o más": 2 }, [
+    adulto(),
+    adulto({ nombre: "Persona Retirada", email: "retirada@ejemplo.cl" }),
+  ]);
+  const una = ajustarFichas(evento, { "18 o más": 1 }, dos);
+  const otraVez = ajustarFichas(evento, { "18 o más": 2 }, una);
+  assert.equal(otraVez[0].nombre, "Ana Pérez");
+  assert.deepEqual(otraVez[1], fichaVacia("18 o más"));
 });
 
 test("popup: anuncia la apertura, invita a reservar y se apaga sin fechas", () => {

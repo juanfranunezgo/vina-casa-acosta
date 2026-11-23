@@ -790,7 +790,7 @@
         "sinFechas": "No momento não há datas com vagas. Escreva pelo WhatsApp e vemos o que é possível.",
         "abreCorto": "Abre {dia}, {hora}",
         "abreAviso": "A pré-venda abre em {dia} às {hora}.",
-        "abreDetalle": "Volte nesse horário e recarregue a página para reservar sua vaga.",
+        "abreDetalle": "Nesse horário você poderá reservar aqui mesmo.",
         "pedirWhatsapp": "Reservar pelo WhatsApp",
         "whatsapp": "Olá 👋 Quero reservar para {evento}, {fecha}: {personas, plural, one {# pessoa} other {# pessoas}}.",
         "whatsappSinFecha": "Olá 👋 Quero saber se ainda há vagas para {evento}.",

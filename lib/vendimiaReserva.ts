@@ -116,6 +116,15 @@ export function aperturaPendiente(
   return !evento.fechas.some((f) => f.disponible);
 }
 
+/** Pasada la hora anunciada, quien espera con la página abierta vuelve a pedir el catálogo. */
+export function debeRevisarApertura(
+  evento: Pick<EventoReserva, "fechas">,
+  apertura: number | null,
+  ahora: number,
+): boolean {
+  return apertura !== null && ahora >= apertura && aperturaPendiente(evento, apertura, ahora);
+}
+
 /** Qué dice el popup: anuncia la apertura, invita a reservar, o no aparece sin nada que ofrecer. */
 export function estadoPopupVendimia(
   evento: Pick<EventoReserva, "fechas">,

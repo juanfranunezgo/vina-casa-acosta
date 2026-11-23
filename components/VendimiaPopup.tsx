@@ -47,6 +47,7 @@ export default function VendimiaPopup() {
     };
   }, []);
 
-  if (!listo || RUTA_VENDIMIA.test(pathname)) return null;
+  // El layout sobrevive a la navegación: al volver atrás no reabre lo que ya se cerró.
+  if (!listo || RUTA_VENDIMIA.test(pathname) || popupCerradoEnEstaVisita()) return null;
   return <VendimiaPopupTarjeta />;
 }

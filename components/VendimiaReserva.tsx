@@ -273,10 +273,13 @@ function FormularioReserva({
 
   const cambiarConteo = (rango: RangoEvento, delta: number) => {
     setAviso(null);
-    setConteos((actuales) => ({
-      ...actuales,
-      [rango.nombre]: Math.max(0, (actuales[rango.nombre] ?? 0) + delta),
-    }));
+    const siguientes = {
+      ...conteos,
+      [rango.nombre]: Math.max(0, (conteos[rango.nombre] ?? 0) + delta),
+    };
+    setConteos(siguientes);
+    // Quien se quita deja de existir: si se agrega otra persona, parte con una ficha vacía.
+    setFichas((actuales) => ajustarFichas(evento, siguientes, actuales));
   };
 
   const continuar = () => {

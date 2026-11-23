@@ -790,7 +790,7 @@
         "sinFechas": "There are no dates with places right now. Message us on WhatsApp and we will see what we can do.",
         "abreCorto": "Opens {dia}, {hora}",
         "abreAviso": "Pre-sale opens on {dia} at {hora}.",
-        "abreDetalle": "Come back then and reload the page to book your place.",
+        "abreDetalle": "You will be able to book right here at that time.",
         "pedirWhatsapp": "Book on WhatsApp",
         "whatsapp": "Hi 👋 I would like to book {evento}, {fecha}: {personas, plural, one {# person} other {# people}}.",
         "whatsappSinFecha": "Hi 👋 I would like to know if there are places left for {evento}.",

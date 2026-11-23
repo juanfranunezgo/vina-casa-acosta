@@ -5,6 +5,7 @@ import { catalogEndpoint, isOwnCatalog, isValidCatalog } from "@/lib/afeleia/con
 import {
   aperturaPendiente,
   checkoutDeReservas,
+  debeRevisarApertura,
   leerApertura,
   leerEventoVendimia,
   type EventoReserva,
@@ -76,9 +77,35 @@ export const urlCheckoutVendimia = checkoutDeReservas(
 /** La hora anunciada de apertura (`NEXT_PUBLIC_VENDIMIA_APERTURA`, con zona), o `null`. */
 export const aperturaVendimia = leerApertura(process.env.NEXT_PUBLIC_VENDIMIA_APERTURA);
 
+const RELOJ_MS = 30_000;
+const oyentesReloj = new Set<() => void>();
+let reloj: ReturnType<typeof setInterval> | null = null;
+let revisando = false;
+
+/** Quien espera con la página abierta entra solo: pasada la hora se vuelve a pedir el catálogo. */
+function revisarApertura() {
+  if (revisando || document.visibilityState !== "visible") return;
+  if (!estado.evento || !debeRevisarApertura(estado.evento, aperturaVendimia, Date.now())) return;
+  revisando = true;
+  void recargarEventoVendimia().finally(() => {
+    revisando = false;
+  });
+}
+
+/** Un solo reloj para toda la página: varios componentes no multiplican los pedidos. */
 function suscribirReloj(oyente: () => void) {
-  const id = setInterval(oyente, 30_000);
-  return () => clearInterval(id);
+  oyentesReloj.add(oyente);
+  reloj ??= setInterval(() => {
+    revisarApertura();
+    oyentesReloj.forEach((avisar) => avisar());
+  }, RELOJ_MS);
+  return () => {
+    oyentesReloj.delete(oyente);
+    if (oyentesReloj.size === 0 && reloj !== null) {
+      clearInterval(reloj);
+      reloj = null;
+    }
+  };
 }
 
 /** Si la página debe decir «abre tal día». Lee la hora en el navegador, nunca en el servidor. */
