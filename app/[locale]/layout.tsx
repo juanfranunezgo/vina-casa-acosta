@@ -9,6 +9,7 @@ import AgeGate, { AGE_GATE_SCRIPT } from "@/components/AgeGate";
 import CartDrawer from "@/components/CartDrawer";
 import CartButton from "@/components/CartButton";
 import ScrollReset from "@/components/ScrollReset";
+import VendimiaPopup from "@/components/VendimiaPopup";
 import { fotoBorrosa } from "@/lib/fotoBorrosa";
 import { routing } from "@/i18n/routing";
 import { SITE_URL } from "@/lib/siteUrl";
@@ -133,6 +134,7 @@ export default async function LocaleLayout({
               escritorio: fotoBorrosa("/images/edad/uvas-1280.webp"),
             }}
           />
+          <VendimiaPopup />
         </NextIntlClientProvider>
       </body>
     </html>

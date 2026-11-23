@@ -5,10 +5,13 @@ import { useLocale, useTranslations } from "next-intl";
 import { ArrowRight, Check, ChevronDown, MessageCircle, Minus, Plus } from "lucide-react";
 import Button from "@/components/ui/Button";
 import { CONTACT_WHATSAPP_URL } from "@/lib/contact";
+import { PRIVACIDAD_VENDIMIA_PDF } from "@/lib/legal";
 import {
+  aperturaVendimia,
   elegirFechaVendimia,
   recargarEventoVendimia,
   urlCheckoutVendimia,
+  useAperturaPendiente,
   useEventoVendimia,
   useFechaVendimia,
 } from "@/lib/eventoVendimia";
@@ -17,6 +20,7 @@ import {
   MAX_MASCOTAS,
   ajustarFichas,
   enlaceLegal,
+  formatoApertura,
   formatoFecha,
   formatoPrecio,
   hayRestriccion,
@@ -56,6 +60,7 @@ type CampoProps = {
   autoComplete?: string;
   placeholder?: string;
   className?: string;
+  labelOculto?: boolean;
 };
 
 function Campo({
@@ -67,13 +72,14 @@ function Campo({
   hint,
   readOnly,
   className = "",
+  labelOculto = false,
   ...input
 }: CampoProps) {
   const id = idDeCampo(campo);
   const describe = [error ? `${id}-error` : "", hint ? `${id}-hint` : ""].filter(Boolean).join(" ");
   return (
     <div className={`min-w-0 ${className}`}>
-      <label htmlFor={id} className={labelClass}>
+      <label htmlFor={id} className={labelOculto ? "sr-only" : labelClass}>
         {label}
       </label>
       <input
@@ -202,6 +208,7 @@ function FormularioReserva({
   const enviando = useRef(false);
 
   const [paso, setPaso] = useState<1 | 2>(1);
+  const pendiente = useAperturaPendiente(evento);
   const fechaClave = useFechaVendimia();
   const [fichaAbierta, setFichaAbierta] = useState(0);
   const [cerradas, setCerradas] = useState<string[]>([]);
@@ -245,6 +252,8 @@ function FormularioReserva({
     evento.rangos.some((r) => r.lanzamiento);
 
   const dinero = (monto: number) => formatoPrecio(monto, evento.moneda, locale);
+  const apertura =
+    pendiente && aperturaVendimia !== null ? formatoApertura(aperturaVendimia, locale) : null;
   const heredada = yoVoy ? indicePrimerAdulto(evento, fichas) : -1;
   const hayAdulto = indicePrimerAdulto(evento, fichas) !== -1;
   const primeraConRestriccion = fichas.findIndex(
@@ -264,10 +273,13 @@ function FormularioReserva({
 
   const cambiarConteo = (rango: RangoEvento, delta: number) => {
     setAviso(null);
-    setConteos((actuales) => ({
-      ...actuales,
-      [rango.nombre]: Math.max(0, (actuales[rango.nombre] ?? 0) + delta),
-    }));
+    const siguientes = {
+      ...conteos,
+      [rango.nombre]: Math.max(0, (conteos[rango.nombre] ?? 0) + delta),
+    };
+    setConteos(siguientes);
+    // Quien se quita deja de existir: si se agrega otra persona, parte con una ficha vacía.
+    setFichas((actuales) => ajustarFichas(evento, siguientes, actuales));
   };
 
   const continuar = () => {
@@ -466,7 +478,11 @@ function FormularioReserva({
                       {t("horario", { inicio, termino })}
                     </span>
                     <span className="mt-0.5 block font-body text-sm font-semibold opacity-85">
-                      {abierta ? t("quedanCupos") : t("noDisponible")}
+                      {abierta
+                        ? t("quedanCupos")
+                        : apertura
+                          ? t("abreCorto", { dia: apertura.corta, hora: apertura.hora })
+                          : t("noDisponible")}
                     </span>
                   </label>
                 );
@@ -567,6 +583,13 @@ function FormularioReserva({
                   )}
                 </div>
               </div>
+            </div>
+          ) : apertura ? (
+            <div role="status" className="space-y-2">
+              <p className="font-body text-lg font-bold leading-snug text-primary">
+                {t("abreAviso", { dia: apertura.larga, hora: apertura.hora })}
+              </p>
+              <p className="font-body text-body-md text-on-surface-variant">{t("abreDetalle")}</p>
             </div>
           ) : (
             <div className="space-y-4">
@@ -735,35 +758,75 @@ function FormularioReserva({
                 </button>
                 <div id={`vr-ficha-${i}`} hidden={!abierta} className="border-t border-outline-variant/60 p-4">
                 <div className="grid grid-cols-2 gap-x-4 gap-y-5">
-                  <Campo
-                    campo={`${ruta}.nombre`}
-                    className="col-span-2 sm:col-span-1"
-                    label={t("nombre")}
-                    value={esHeredada ? encargado.nombre : ficha.nombre}
-                    readOnly={esHeredada}
-                    autoComplete="off"
-                    hint={esHeredada ? t("heredado") : undefined}
-                    error={textoError(`${ruta}.nombre`)}
-                    onChange={(nombre) => {
-                      cambiarFicha(i, { nombre });
-                      limpiarError(`${ruta}.nombre`);
-                    }}
-                  />
-                  <Campo
-                    campo={`${ruta}.edad`}
-                    label={t("edad")}
-                    value={ficha.edad}
-                    inputMode="numeric"
-                    autoComplete="off"
-                    hint={t("edadAyuda")}
-                    error={textoError(`${ruta}.edad`, i)}
-                    onChange={(edad) => {
-                      cambiarFicha(i, { edad });
-                      limpiarError(`${ruta}.edad`);
-                    }}
-                  />
+                  {esHeredada ? (
+                    <p className="col-span-2 font-body text-sm text-on-surface-variant">
+                      {t("heredado")}
+                    </p>
+                  ) : (
+                    <Campo
+                      campo={`${ruta}.nombre`}
+                      className="col-span-2 sm:col-span-1"
+                      label={t("nombre")}
+                      value={ficha.nombre}
+                      autoComplete="off"
+                      error={textoError(`${ruta}.nombre`)}
+                      onChange={(nombre) => {
+                        cambiarFicha(i, { nombre });
+                        limpiarError(`${ruta}.nombre`);
+                      }}
+                    />
+                  )}
+                  <div className="col-span-2 min-w-0 sm:col-span-1">
+                    <p className={labelClass}>{t("edad")}</p>
+                    <div role="radiogroup" aria-label={t("edad")} className="flex flex-wrap gap-x-5">
+                      <Opcion
+                        name={`${ruta}-edad-modo`}
+                        checked={!ficha.edadPorRango}
+                        onChange={() => cambiarFicha(i, { edadPorRango: false })}
+                      >
+                        {t("edadAnios")}
+                      </Opcion>
+                      {rango && (
+                        <Opcion
+                          name={`${ruta}-edad-modo`}
+                          checked={ficha.edadPorRango}
+                          onChange={() => {
+                            cambiarFicha(i, { edadPorRango: true, edad: "" });
+                            limpiarError(`${ruta}.edad`);
+                          }}
+                        >
+                          {rango.edad_max === null
+                            ? t("rangoDesde", { min: rango.edad_min })
+                            : t("rangoEntre", { min: rango.edad_min, max: rango.edad_max })}
+                        </Opcion>
+                      )}
+                    </div>
+                    {ficha.edadPorRango ? (
+                      <>
+                        <p className={hintClass}>{t("edadAyuda")}</p>
+                        {textoError(`${ruta}.edad`, i) && (
+                          <p className={errorClass}>{textoError(`${ruta}.edad`, i)}</p>
+                        )}
+                      </>
+                    ) : (
+                      <Campo
+                        campo={`${ruta}.edad`}
+                        label={t("edadAnios")}
+                        labelOculto
+                        value={ficha.edad}
+                        inputMode="numeric"
+                        autoComplete="off"
+                        hint={t("edadAyuda")}
+                        error={textoError(`${ruta}.edad`, i)}
+                        onChange={(edad) => {
+                          cambiarFicha(i, { edad });
+                          limpiarError(`${ruta}.edad`);
+                        }}
+                      />
+                    )}
+                  </div>
                   {evento.tallas.length > 0 && (
-                    <div className="min-w-0 sm:order-last">
+                    <div className="col-span-2 min-w-0 sm:col-span-1 sm:order-last">
                       <label htmlFor={idDeCampo(`${ruta}.talla`)} className={labelClass}>
                         {t("talla")}
                       </label>
@@ -793,36 +856,38 @@ function FormularioReserva({
                       )}
                     </div>
                   )}
-                  <Campo
-                    campo={`${ruta}.telefono`}
-                    className="col-span-2 sm:col-span-1"
-                    label={`${t("celular")}${opcional}`}
-                    value={esHeredada ? encargado.telefono : ficha.telefono}
-                    readOnly={esHeredada}
-                    type="tel"
-                    inputMode="tel"
-                    autoComplete="off"
-                    error={textoError(`${ruta}.telefono`)}
-                    onChange={(telefono) => {
-                      cambiarFicha(i, { telefono });
-                      limpiarError(`${ruta}.telefono`);
-                    }}
-                  />
-                  <Campo
-                    campo={`${ruta}.email`}
-                    className="col-span-2 sm:col-span-1"
-                    label={`${t("correo")}${opcional}`}
-                    value={esHeredada ? encargado.email : ficha.email}
-                    readOnly={esHeredada}
-                    type="email"
-                    inputMode="email"
-                    autoComplete="off"
-                    error={textoError(`${ruta}.email`)}
-                    onChange={(email) => {
-                      cambiarFicha(i, { email });
-                      limpiarError(`${ruta}.email`);
-                    }}
-                  />
+                  {!esHeredada && (
+                    <>
+                      <Campo
+                        campo={`${ruta}.telefono`}
+                        className="col-span-2 sm:col-span-1"
+                        label={`${t("celular")}${opcional}`}
+                        value={ficha.telefono}
+                        type="tel"
+                        inputMode="tel"
+                        autoComplete="off"
+                        error={textoError(`${ruta}.telefono`)}
+                        onChange={(telefono) => {
+                          cambiarFicha(i, { telefono });
+                          limpiarError(`${ruta}.telefono`);
+                        }}
+                      />
+                      <Campo
+                        campo={`${ruta}.email`}
+                        className="col-span-2 sm:col-span-1"
+                        label={`${t("correo")}${opcional}`}
+                        value={ficha.email}
+                        type="email"
+                        inputMode="email"
+                        autoComplete="off"
+                        error={textoError(`${ruta}.email`)}
+                        onChange={(email) => {
+                          cambiarFicha(i, { email });
+                          limpiarError(`${ruta}.email`);
+                        }}
+                      />
+                    </>
+                  )}
                   <div className="col-span-2 min-w-0 sm:order-last">
                     <p className={labelClass}>{t("restriccion")}</p>
                     <div className="flex gap-6">
@@ -1050,6 +1115,17 @@ function FormularioReserva({
               )}
             </p>
           )}
+          <p className={hintClass}>
+            {t("privacidadIntro")}{" "}
+            <a
+              href={PRIVACIDAD_VENDIMIA_PDF}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="underline underline-offset-2"
+            >
+              {t("privacidadEnlace")}
+            </a>
+          </p>
         </aside>
       </div>
     </form>

@@ -2,7 +2,14 @@
 
 import { useSyncExternalStore } from "react";
 import { catalogEndpoint, isOwnCatalog, isValidCatalog } from "@/lib/afeleia/contract";
-import { checkoutDeReservas, leerEventoVendimia, type EventoReserva } from "@/lib/vendimiaReserva";
+import {
+  aperturaPendiente,
+  checkoutDeReservas,
+  debeRevisarApertura,
+  leerApertura,
+  leerEventoVendimia,
+  type EventoReserva,
+} from "@/lib/vendimiaReserva";
 
 /**
  * El evento de la vendimia, leído en el navegador y compartido por la página.
@@ -66,6 +73,49 @@ export const urlCheckoutVendimia = checkoutDeReservas(
   process.env.NEXT_PUBLIC_VENDIMIA_RESERVAS,
   process.env.NEXT_PUBLIC_AFELEIA_CHECKOUT_URL,
 );
+
+/** La hora anunciada de apertura (`NEXT_PUBLIC_VENDIMIA_APERTURA`, con zona), o `null`. */
+export const aperturaVendimia = leerApertura(process.env.NEXT_PUBLIC_VENDIMIA_APERTURA);
+
+const RELOJ_MS = 30_000;
+const oyentesReloj = new Set<() => void>();
+let reloj: ReturnType<typeof setInterval> | null = null;
+let revisando = false;
+
+/** Quien espera con la página abierta entra solo: pasada la hora se vuelve a pedir el catálogo. */
+function revisarApertura() {
+  if (revisando || document.visibilityState !== "visible") return;
+  if (!estado.evento || !debeRevisarApertura(estado.evento, aperturaVendimia, Date.now())) return;
+  revisando = true;
+  void recargarEventoVendimia().finally(() => {
+    revisando = false;
+  });
+}
+
+/** Un solo reloj para toda la página: varios componentes no multiplican los pedidos. */
+function suscribirReloj(oyente: () => void) {
+  oyentesReloj.add(oyente);
+  reloj ??= setInterval(() => {
+    revisarApertura();
+    oyentesReloj.forEach((avisar) => avisar());
+  }, RELOJ_MS);
+  return () => {
+    oyentesReloj.delete(oyente);
+    if (oyentesReloj.size === 0 && reloj !== null) {
+      clearInterval(reloj);
+      reloj = null;
+    }
+  };
+}
+
+/** Si la página debe decir «abre tal día». Lee la hora en el navegador, nunca en el servidor. */
+export function useAperturaPendiente(evento: EventoReserva | null): boolean {
+  return useSyncExternalStore(
+    suscribirReloj,
+    () => evento !== null && aperturaPendiente(evento, aperturaVendimia, Date.now()),
+    () => false,
+  );
+}
 
 // La fecha que se elige en la entrada del hero llega ya marcada al formulario.
 let fechaElegida = "";

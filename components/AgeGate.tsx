@@ -106,6 +106,13 @@ const sinConfirmacionVigente = () => {
   }
 };
 
+/**
+ * Para lo que debe esperar a que la pregunta de edad esté respondida. Mira también la capa: la
+ * confirmación se comparte entre pestañas, y otra pestaña puede seguir mostrando su pregunta.
+ */
+export const edadConfirmada = () =>
+  !sinConfirmacionVigente() && document.getElementById("age-gate") === null;
+
 const suscribir = () => () => {};
 const hayQuePreguntar = sinConfirmacionVigente;
 const enElServidor = () => true;

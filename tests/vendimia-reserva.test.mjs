@@ -6,12 +6,18 @@ import { readFile } from "node:fs/promises";
 const {
   MAX_CUERPO_BYTES,
   ajustarFichas,
+  aperturaPendiente,
+  debeRevisarApertura,
   enlaceLegal,
+  estadoPopupVendimia,
   fichaVacia,
+  formatoApertura,
   formatoFecha,
   formatoFechasEvento,
   iniciarReserva,
+  leerApertura,
   leerEventoVendimia,
+  precioAdultoDesde,
   totalAproximado,
   urlRespaldoWhatsApp,
   validarReserva,
@@ -267,6 +273,87 @@ test("una restricción exige el permiso, y sin texto no viaja", () => {
 
   const larga = adulto({ conRestriccion: true, restriccion: "x".repeat(201) });
   assert.equal(errores(datos({ fichas: [larga], permiso: true }))["asistentes.0.restriccion"], "texto");
+});
+
+test("apertura: solo se acepta una hora con zona explícita", () => {
+  assert.equal(leerApertura("2026-11-23T18:00:00-03:00"), Date.parse("2026-11-23T21:00:00Z"));
+  for (const mala of [undefined, "", "mañana", "2026-11-23T18:00:00", "2026-13-40T18:00:00-03:00"]) {
+    assert.equal(leerApertura(mala), null, String(mala));
+  }
+});
+
+test("apertura: el aviso dura hasta una hora después y se va si una fecha abre", () => {
+  const apertura = leerApertura("2026-11-23T18:00:00-03:00");
+  const cerrado = { fechas: evento.fechas.map((f) => ({ ...f, disponible: false })) };
+  assert.equal(aperturaPendiente(cerrado, apertura, apertura - 1), true);
+  assert.equal(aperturaPendiente(cerrado, apertura, apertura + 59 * 60_000), true);
+  assert.equal(aperturaPendiente(cerrado, apertura, apertura + 60 * 60_000), false);
+  assert.equal(aperturaPendiente(evento, apertura, apertura - 1), false);
+  assert.equal(aperturaPendiente(cerrado, null, apertura - 1), false);
+});
+
+test("apertura: se muestra en hora de Chile", () => {
+  const apertura = leerApertura("2026-11-23T18:00:00-03:00");
+  assert.deepEqual(formatoApertura(apertura, "es"), {
+    corta: "lun 23",
+    larga: "lunes 23 de noviembre",
+    hora: "18:00",
+  });
+});
+
+test("apertura: quien espera revisa el catálogo solo desde la hora y mientras siga cerrado", () => {
+  const apertura = leerApertura("2026-11-23T18:00:00-03:00");
+  const cerrado = { fechas: evento.fechas.map((f) => ({ ...f, disponible: false })) };
+  assert.equal(debeRevisarApertura(cerrado, apertura, apertura - 1), false);
+  assert.equal(debeRevisarApertura(cerrado, apertura, apertura), true);
+  assert.equal(debeRevisarApertura(cerrado, apertura, apertura + 60 * 60_000), false);
+  assert.equal(debeRevisarApertura(evento, apertura, apertura), false);
+  assert.equal(debeRevisarApertura(cerrado, null, apertura), false);
+});
+
+test("fichas: quitar a alguien y agregar a otra persona parte con la ficha vacía", () => {
+  const dos = ajustarFichas(evento, { "18 o más": 2 }, [
+    adulto(),
+    adulto({ nombre: "Persona Retirada", email: "retirada@ejemplo.cl" }),
+  ]);
+  const una = ajustarFichas(evento, { "18 o más": 1 }, dos);
+  const otraVez = ajustarFichas(evento, { "18 o más": 2 }, una);
+  assert.equal(otraVez[0].nombre, "Ana Pérez");
+  assert.deepEqual(otraVez[1], fichaVacia("18 o más"));
+});
+
+test("popup: anuncia la apertura, invita a reservar y se apaga sin fechas", () => {
+  const cerrado = { fechas: evento.fechas.map((f) => ({ ...f, disponible: false })) };
+  assert.equal(estadoPopupVendimia(cerrado, true), "abre");
+  assert.equal(estadoPopupVendimia(evento, true), "abierta");
+  assert.equal(estadoPopupVendimia(evento, false), "abierta");
+  assert.equal(estadoPopupVendimia(cerrado, false), null);
+});
+
+test("precio desde: con la venta cerrada se anuncia solo si se pide", () => {
+  const cerrado = { ...evento, fechas: evento.fechas.map((f) => ({ ...f, disponible: false })) };
+  assert.equal(precioAdultoDesde(cerrado), null);
+  assert.equal(precioAdultoDesde(cerrado, true).precio, 69900);
+});
+
+test("edad por rango: viaja la mínima del rango y sigue pidiendo el contacto del adulto", () => {
+  const conRango = adulto({ edad: "", edadPorRango: true });
+  const ok = validarReserva(evento, datos({ fichas: [conRango] }));
+  assert.equal(ok.ok, true);
+  assert.equal(ok.cuerpo.reserva.asistentes[0].edad, 18);
+
+  const sinCorreo = { ...conRango, email: "" };
+  assert.equal(errores(datos({ fichas: [sinCorreo] }))["asistentes.0.email"], "requerido");
+
+  const menor = { ...fichaVacia("11 a 17"), nombre: "Sofía Pérez", edadPorRango: true };
+  const conMenor = validarReserva(evento, datos({ fichas: [adulto(), menor] }));
+  assert.equal(conMenor.ok, true);
+  assert.deepEqual(conMenor.cuerpo.reserva.asistentes[1], { nombre: "Sofía Pérez", edad: 11 });
+});
+
+test("edad por rango: sin un rango conocido la edad se sigue pidiendo", () => {
+  const huerfana = { ...adulto({ edad: "", edadPorRango: true }), rango: "No existe" };
+  assert.equal(errores(datos({ fichas: [huerfana] }))["asistentes.0.edad"], "requerido");
 });
 
 test("mascotas: en la API el campo sigue siendo perros", () => {
