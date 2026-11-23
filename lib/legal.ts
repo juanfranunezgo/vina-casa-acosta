@@ -55,3 +55,9 @@ export const PRIVACIDAD_VERSION = "v1.1 (16-08-2026)";
  * del propio documento — ver la sección legal de `docs/HANDOFF.md`.
  */
 export const TERMINOS_VERSION = "v1.0 (16-08-2026)";
+
+/**
+ * Política de privacidad de las reservas de la Vendimia 2027. Va aparte de la general y con la
+ * versión en el nombre: cada reserva se hace bajo una edición concreta. Existe solo en español.
+ */
+export const PRIVACIDAD_VENDIMIA_PDF = "/documentos/vendimia-2027-privacidad-v1.0.pdf";

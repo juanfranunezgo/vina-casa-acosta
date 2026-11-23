@@ -269,6 +269,26 @@ test("una restricción exige el permiso, y sin texto no viaja", () => {
   assert.equal(errores(datos({ fichas: [larga], permiso: true }))["asistentes.0.restriccion"], "texto");
 });
 
+test("edad por rango: viaja la mínima del rango y sigue pidiendo el contacto del adulto", () => {
+  const conRango = adulto({ edad: "", edadPorRango: true });
+  const ok = validarReserva(evento, datos({ fichas: [conRango] }));
+  assert.equal(ok.ok, true);
+  assert.equal(ok.cuerpo.reserva.asistentes[0].edad, 18);
+
+  const sinCorreo = { ...conRango, email: "" };
+  assert.equal(errores(datos({ fichas: [sinCorreo] }))["asistentes.0.email"], "requerido");
+
+  const menor = { ...fichaVacia("11 a 17"), nombre: "Sofía Pérez", edadPorRango: true };
+  const conMenor = validarReserva(evento, datos({ fichas: [adulto(), menor] }));
+  assert.equal(conMenor.ok, true);
+  assert.deepEqual(conMenor.cuerpo.reserva.asistentes[1], { nombre: "Sofía Pérez", edad: 11 });
+});
+
+test("edad por rango: sin un rango conocido la edad se sigue pidiendo", () => {
+  const huerfana = { ...adulto({ edad: "", edadPorRango: true }), rango: "No existe" };
+  assert.equal(errores(datos({ fichas: [huerfana] }))["asistentes.0.edad"], "requerido");
+});
+
 test("mascotas: en la API el campo sigue siendo perros", () => {
   const r = validarReserva(evento, datos({ conMascotas: true, mascotas: "2" }));
   assert.equal(r.cuerpo.reserva.perros, 2);

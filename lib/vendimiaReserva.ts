@@ -353,6 +353,8 @@ export type Ficha = {
   rango: string;
   nombre: string;
   edad: string;
+  /** Prefirió no decir su edad: viaja la mínima de su rango. */
+  edadPorRango: boolean;
   email: string;
   telefono: string;
   talla: string;
@@ -365,6 +367,7 @@ export function fichaVacia(rango: string): Ficha {
     rango,
     nombre: "",
     edad: "",
+    edadPorRango: false,
     email: "",
     telefono: "",
     talla: "",
@@ -487,6 +490,28 @@ function leerEdad(valor: string): number | null {
   return edad <= EDAD_MAXIMA ? edad : null;
 }
 
+/**
+ * La edad que viaja. El checkout exige un número y con él busca la tarifa: quien prefiere no decirla
+ * manda la mínima de su rango, que cae en la misma tarifa.
+ */
+function edadDeFicha(ficha: Ficha, rango: RangoEvento | undefined): number | null {
+  return ficha.edadPorRango && rango ? rango.edad_min : leerEdad(ficha.edad);
+}
+
+function errorEdad(
+  ficha: Ficha,
+  rango: RangoEvento | undefined,
+  edad: number | null,
+): CodigoError | null {
+  if (ficha.edadPorRango && rango) return null;
+  if (ficha.edad.trim() === "") return "requerido";
+  if (edad === null) return "edad";
+  if (!rango || edad < rango.edad_min || edad > (rango.edad_max ?? EDAD_MAXIMA)) {
+    return "edad_rango";
+  }
+  return null;
+}
+
 /** Valida igual que el checkout y arma el cuerpo. Las claves de `errores` son las rutas de la API. */
 export function validarReserva(evento: EventoReserva, datos: DatosReserva): ResultadoValidacion {
   const errores: Record<string, CodigoError> = {};
@@ -529,16 +554,8 @@ export function validarReserva(evento: EventoReserva, datos: DatosReserva): Resu
     // Lo heredado ya se marcó en el encargado, cuya regla es igual o más estricta.
     if (!esHeredada) marcar(`${ruta}.nombre`, errorNombre(nombreFicha));
 
-    const edad = leerEdad(ficha.edad);
-    if (ficha.edad.trim() === "") errores[`${ruta}.edad`] = "requerido";
-    else if (edad === null) errores[`${ruta}.edad`] = "edad";
-    else if (
-      !rango ||
-      edad < rango.edad_min ||
-      edad > (rango.edad_max ?? EDAD_MAXIMA)
-    ) {
-      errores[`${ruta}.edad`] = "edad_rango";
-    }
+    const edad = edadDeFicha(ficha, rango);
+    marcar(`${ruta}.edad`, errorEdad(ficha, rango, edad));
 
     // Sin edad válida, lo que dice si el contacto es obligatorio es el rango de la ficha.
     const adulto = (edad ?? rango?.edad_min ?? 0) >= EDAD_ADULTA;
