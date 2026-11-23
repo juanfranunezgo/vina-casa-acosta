@@ -614,8 +614,9 @@ export function validarReserva(evento: EventoReserva, datos: DatosReserva): Resu
   const telefono = normalizarTelefono(datos.encargado.telefono);
   const comuna = datos.encargado.comuna.trim();
   marcar("encargado.nombre", errorNombre(nombre));
-  marcar("encargado.email", errorEmail(email, EMAIL_ENCARGADO_RE));
+  // En el orden de la pantalla: el foco va al primer error.
   marcar("encargado.telefono", errorTelefono(telefono));
+  marcar("encargado.email", errorEmail(email, EMAIL_ENCARGADO_RE));
   if (comuna !== "" && (!textoSano(comuna) || largo(comuna) > 120)) {
     errores["encargado.comuna"] = "texto";
   }
@@ -646,11 +647,11 @@ export function validarReserva(evento: EventoReserva, datos: DatosReserva): Resu
 
     // Sin edad válida, lo que dice si el contacto es obligatorio es el rango de la ficha.
     const adulto = (edad ?? rango?.edad_min ?? 0) >= EDAD_ADULTA;
-    if (!esHeredada && (adulto || emailFicha !== "")) {
-      marcar(`${ruta}.email`, errorEmail(emailFicha, EMAIL_RE));
-    }
     if (!esHeredada && (adulto || telefonoFicha !== "")) {
       marcar(`${ruta}.telefono`, errorTelefono(telefonoFicha));
+    }
+    if (!esHeredada && (adulto || emailFicha !== "")) {
+      marcar(`${ruta}.email`, errorEmail(emailFicha, EMAIL_RE));
     }
 
     if (ficha.talla !== "" && !evento.tallas.includes(ficha.talla)) {

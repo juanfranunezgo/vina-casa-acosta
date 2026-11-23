@@ -62,12 +62,22 @@ type CampoProps = {
   error?: string;
   hint?: string;
   readOnly?: boolean;
+  /** Marca el rótulo con * y lo anuncia al lector de pantalla. La regla vive en `validarReserva`. */
+  requerido?: boolean;
   type?: string;
   inputMode?: "text" | "email" | "tel" | "numeric";
   autoComplete?: string;
   placeholder?: string;
   className?: string;
 };
+
+function Asterisco() {
+  return (
+    <span aria-hidden="true" className="text-error">
+      {" *"}
+    </span>
+  );
+}
 
 function Campo({
   campo,
@@ -77,6 +87,7 @@ function Campo({
   error,
   hint,
   readOnly,
+  requerido = false,
   className = "",
   ...input
 }: CampoProps) {
@@ -86,11 +97,13 @@ function Campo({
     <div className={`min-w-0 ${className}`}>
       <label htmlFor={id} className={labelClass}>
         {label}
+        {requerido && <Asterisco />}
       </label>
       <input
         id={id}
         value={value}
         readOnly={readOnly}
+        required={requerido}
         onChange={(e) => onChange?.(e.target.value)}
         aria-invalid={error ? true : undefined}
         aria-describedby={describe || undefined}
@@ -643,9 +656,11 @@ function FormularioReserva({
         <div className="min-w-0 space-y-4">
           <fieldset className="pb-4">
             <legend className={legendClass}>{t("encargado")}</legend>
+            <p className={hintClass}>{t("camposObligatorios")}</p>
             <div className="mt-3 grid grid-cols-1 gap-4 sm:grid-cols-2">
               <Campo
                 campo="encargado.nombre"
+                requerido
                 label={t("nombre")}
                 value={encargado.nombre}
                 autoComplete="name"
@@ -657,6 +672,7 @@ function FormularioReserva({
               />
               <Campo
                 campo="encargado.telefono"
+                requerido
                 label={t("celular")}
                 value={encargado.telefono}
                 type="tel"
@@ -671,6 +687,7 @@ function FormularioReserva({
               />
               <Campo
                 campo="encargado.email"
+                requerido
                 label={t("correo")}
                 value={encargado.email}
                 type="email"
@@ -770,6 +787,7 @@ function FormularioReserva({
                   ) : (
                     <Campo
                       campo={`${ruta}.nombre`}
+                      requerido
                       className="col-span-2 sm:col-span-1"
                       label={t("nombre")}
                       value={ficha.nombre}
@@ -784,11 +802,13 @@ function FormularioReserva({
                   <div className="col-span-2 min-w-0 sm:col-span-1">
                     <label htmlFor={idDeCampo(`${ruta}.edad`)} className={labelClass}>
                       {t("edad")}
+                      <Asterisco />
                     </label>
                     {/* Una lista y no un campo libre: solo ofrece las edades de esta
                         ficha, así que no se puede poner 11 en la de «18 o más». */}
                     <select
                       id={idDeCampo(`${ruta}.edad`)}
+                      required
                       value={ficha.edadPorRango ? EDAD_NO_DECIR : ficha.edad}
                       aria-invalid={errores[`${ruta}.edad`] ? true : undefined}
                       aria-describedby={`${idDeCampo(`${ruta}.edad`)}-hint`}
@@ -859,6 +879,7 @@ function FormularioReserva({
                     <>
                       <Campo
                         campo={`${ruta}.telefono`}
+                        requerido={edadVista >= 18}
                         className="col-span-2 sm:col-span-1"
                         label={`${t("celular")}${opcional}`}
                         value={ficha.telefono}
@@ -873,6 +894,7 @@ function FormularioReserva({
                       />
                       <Campo
                         campo={`${ruta}.email`}
+                        requerido={edadVista >= 18}
                         className="col-span-2 sm:col-span-1"
                         label={`${t("correo")}${opcional}`}
                         value={ficha.email}

@@ -352,6 +352,30 @@ test("edad por rango: viaja la mínima del rango y sigue pidiendo el contacto de
   assert.deepEqual(conMenor.cuerpo.reserva.asistentes[1], { nombre: "Sofía Pérez", edad: 11 });
 });
 
+test("el correo y el celular del encargado son obligatorios", async () => {
+  for (const vacio of ["", "   "]) {
+    const sinCorreo = validarReserva(evento, datos({ encargado: { ...datos().encargado, email: vacio } }));
+    assert.equal(sinCorreo.ok, false);
+    assert.equal(sinCorreo.errores["encargado.email"], "requerido");
+
+    const sinCelular = validarReserva(evento, datos({ encargado: { ...datos().encargado, telefono: vacio } }));
+    assert.equal(sinCelular.ok, false);
+    assert.equal(sinCelular.errores["encargado.telefono"], "requerido");
+  }
+
+  // Sin ninguno de los dos, el foco cae primero en el celular, que va arriba en pantalla.
+  const sinNinguno = errores(datos({ encargado: { ...datos().encargado, email: "", telefono: "" } }));
+  assert.deepEqual(Object.keys(sinNinguno), ["encargado.telefono", "encargado.email"]);
+
+  // Y se ve en pantalla: los dos campos llevan su marca.
+  const formulario = (await source("components/VendimiaReserva.tsx")).replace(/\r\n/g, "\n");
+  for (const campo of ["encargado.email", "encargado.telefono"]) {
+    const inicio = formulario.indexOf(`campo="${campo}"`);
+    assert.ok(inicio > 0, campo);
+    assert.ok(formulario.slice(inicio, formulario.indexOf("/>", inicio)).includes("requerido\n"), campo);
+  }
+});
+
 test("edad en lista: cada ficha ofrece solo las edades de su rango", () => {
   const [mayores, adolescentes, ninos, guaguas] = evento.rangos;
   const adultos = edadesDeRango(mayores);
