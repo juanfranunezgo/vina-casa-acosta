@@ -8,6 +8,7 @@ const {
   ajustarFichas,
   aperturaPendiente,
   debeRevisarApertura,
+  edadesDeRango,
   enlaceLegal,
   estadoPopupVendimia,
   fichaVacia,
@@ -319,7 +320,7 @@ test("fichas: quitar a alguien y agregar a otra persona parte con la ficha vací
   const una = ajustarFichas(evento, { "18 o más": 1 }, dos);
   const otraVez = ajustarFichas(evento, { "18 o más": 2 }, una);
   assert.equal(otraVez[0].nombre, "Ana Pérez");
-  assert.deepEqual(otraVez[1], fichaVacia("18 o más"));
+  assert.deepEqual(otraVez[1], { ...fichaVacia("18 o más"), edadPorRango: true });
 });
 
 test("popup: anuncia la apertura, invita a reservar y se apaga sin fechas", () => {
@@ -349,6 +350,63 @@ test("edad por rango: viaja la mínima del rango y sigue pidiendo el contacto de
   const conMenor = validarReserva(evento, datos({ fichas: [adulto(), menor] }));
   assert.equal(conMenor.ok, true);
   assert.deepEqual(conMenor.cuerpo.reserva.asistentes[1], { nombre: "Sofía Pérez", edad: 11 });
+});
+
+test("el correo y el celular del encargado son obligatorios", async () => {
+  for (const vacio of ["", "   "]) {
+    const sinCorreo = validarReserva(evento, datos({ encargado: { ...datos().encargado, email: vacio } }));
+    assert.equal(sinCorreo.ok, false);
+    assert.equal(sinCorreo.errores["encargado.email"], "requerido");
+
+    const sinCelular = validarReserva(evento, datos({ encargado: { ...datos().encargado, telefono: vacio } }));
+    assert.equal(sinCelular.ok, false);
+    assert.equal(sinCelular.errores["encargado.telefono"], "requerido");
+  }
+
+  // Sin ninguno de los dos, el foco cae primero en el celular, que va arriba en pantalla.
+  const sinNinguno = errores(datos({ encargado: { ...datos().encargado, email: "", telefono: "" } }));
+  assert.deepEqual(Object.keys(sinNinguno), ["encargado.telefono", "encargado.email"]);
+
+  // Y se ve en pantalla: los dos campos llevan su marca.
+  const formulario = (await source("components/VendimiaReserva.tsx")).replace(/\r\n/g, "\n");
+  for (const campo of ["encargado.email", "encargado.telefono"]) {
+    const inicio = formulario.indexOf(`campo="${campo}"`);
+    assert.ok(inicio > 0, campo);
+    assert.ok(formulario.slice(inicio, formulario.indexOf("/>", inicio)).includes("requerido\n"), campo);
+  }
+});
+
+test("edad en lista: cada ficha ofrece solo las edades de su rango", () => {
+  const [mayores, adolescentes, ninos, guaguas] = evento.rangos;
+  const adultos = edadesDeRango(mayores);
+  assert.equal(adultos[0], 18);
+  assert.equal(adultos.at(-1), 99);
+  assert.equal(adultos.length, 82);
+  assert.ok(!adultos.includes(11));
+  assert.deepEqual(edadesDeRango(adolescentes), [11, 12, 13, 14, 15, 16, 17]);
+  assert.deepEqual(edadesDeRango(ninos), [6, 7, 8, 9, 10]);
+  assert.deepEqual(edadesDeRango(guaguas), [0, 1, 2, 3, 4, 5]);
+});
+
+test("edad en lista: el adulto parte en «Prefiero no decirlo» y el menor elige", () => {
+  const [adultoNuevo, menorNuevo] = ajustarFichas(evento, { "18 o más": 1, "6 a 10": 1 }, []);
+  assert.equal(adultoNuevo.edadPorRango, true);
+  assert.equal(menorNuevo.edadPorRango, false);
+
+  const listo = { ...adultoNuevo, nombre: "Ana Pérez", email: "ana@ejemplo.cl", telefono: "912345678" };
+  const r = validarReserva(evento, datos({ fichas: [listo] }));
+  assert.equal(r.ok, true);
+  assert.equal(r.cuerpo.reserva.asistentes[0].edad, 18);
+
+  const sinElegir = { ...menorNuevo, nombre: "Leo Pérez" };
+  assert.equal(errores(datos({ fichas: [listo, sinElegir] }))["asistentes.1.edad"], "requerido");
+});
+
+test("edad en lista: el formulario ya no tiene un campo libre de edad", async () => {
+  const formulario = await source("components/VendimiaReserva.tsx");
+  assert.ok(!formulario.includes("campo={`${ruta}.edad`}"), "volvió el campo libre");
+  assert.ok(formulario.includes("edadesDeRango(rango)"));
+  assert.ok(formulario.includes('t("edadNoDecir")'));
 });
 
 test("edad por rango: sin un rango conocido la edad se sigue pidiendo", () => {

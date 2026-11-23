@@ -449,7 +449,20 @@ export function fichaVacia(rango: string): Ficha {
   };
 }
 
-/** Una ficha por persona, en el orden de los rangos, conservando lo ya escrito. */
+/** La edad más alta que ofrece la lista de un rango abierto, como «18 o más». */
+const EDAD_TOPE_LISTA = 99;
+
+/** Las edades que se pueden elegir en la ficha de un rango. */
+export function edadesDeRango(rango: Pick<RangoEvento, "edad_min" | "edad_max">): number[] {
+  const tope = Math.min(rango.edad_max ?? EDAD_TOPE_LISTA, EDAD_TOPE_LISTA);
+  return Array.from({ length: Math.max(tope - rango.edad_min + 1, 0) }, (_, i) => rango.edad_min + i);
+}
+
+/**
+ * Una ficha por persona, en el orden de los rangos, conservando lo ya escrito. La de un adulto
+ * parte en «Prefiero no decirlo»: su tarifa no depende de la edad exacta y así nadie tiene que
+ * recorrer una lista de ochenta números. En un menor la lista es corta y se elige.
+ */
 export function ajustarFichas(
   evento: EventoReserva,
   conteos: Readonly<Record<string, number>>,
@@ -458,9 +471,10 @@ export function ajustarFichas(
   return evento.rangos.flatMap((rango) => {
     const cantidad = conteos[rango.nombre] ?? 0;
     const delRango = previas.filter((f) => f.rango === rango.nombre).slice(0, cantidad);
-    const faltan = Array.from({ length: cantidad - delRango.length }, () =>
-      fichaVacia(rango.nombre),
-    );
+    const faltan = Array.from({ length: cantidad - delRango.length }, () => ({
+      ...fichaVacia(rango.nombre),
+      edadPorRango: rango.edad_min >= EDAD_ADULTA,
+    }));
     return [...delRango, ...faltan];
   });
 }
@@ -600,8 +614,9 @@ export function validarReserva(evento: EventoReserva, datos: DatosReserva): Resu
   const telefono = normalizarTelefono(datos.encargado.telefono);
   const comuna = datos.encargado.comuna.trim();
   marcar("encargado.nombre", errorNombre(nombre));
-  marcar("encargado.email", errorEmail(email, EMAIL_ENCARGADO_RE));
+  // En el orden de la pantalla: el foco va al primer error.
   marcar("encargado.telefono", errorTelefono(telefono));
+  marcar("encargado.email", errorEmail(email, EMAIL_ENCARGADO_RE));
   if (comuna !== "" && (!textoSano(comuna) || largo(comuna) > 120)) {
     errores["encargado.comuna"] = "texto";
   }
@@ -632,11 +647,11 @@ export function validarReserva(evento: EventoReserva, datos: DatosReserva): Resu
 
     // Sin edad válida, lo que dice si el contacto es obligatorio es el rango de la ficha.
     const adulto = (edad ?? rango?.edad_min ?? 0) >= EDAD_ADULTA;
-    if (!esHeredada && (adulto || emailFicha !== "")) {
-      marcar(`${ruta}.email`, errorEmail(emailFicha, EMAIL_RE));
-    }
     if (!esHeredada && (adulto || telefonoFicha !== "")) {
       marcar(`${ruta}.telefono`, errorTelefono(telefonoFicha));
+    }
+    if (!esHeredada && (adulto || emailFicha !== "")) {
+      marcar(`${ruta}.email`, errorEmail(emailFicha, EMAIL_RE));
     }
 
     if (ficha.talla !== "" && !evento.tallas.includes(ficha.talla)) {
