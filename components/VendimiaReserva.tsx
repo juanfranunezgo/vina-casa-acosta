@@ -19,6 +19,7 @@ import {
   MAX_ASISTENTES,
   MAX_MASCOTAS,
   ajustarFichas,
+  edadesDeRango,
   enlaceLegal,
   formatoApertura,
   formatoFecha,
@@ -36,14 +37,20 @@ import {
   type RangoEvento,
 } from "@/lib/vendimiaReserva";
 
-const inputClass =
-  "h-12 w-full scroll-mt-28 rounded-lg border border-outline-variant bg-white px-3 font-body text-base text-on-surface transition-colors focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 read-only:bg-neutro-claro read-only:text-on-surface-variant aria-[invalid=true]:border-error";
+const campoClass =
+  "h-12 w-full scroll-mt-28 rounded-lg border border-outline-variant bg-white px-3 font-body text-base text-on-surface transition-colors focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 aria-[invalid=true]:border-error";
+// Va aparte: un <select> siempre cuenta como `:read-only` y con ese estilo se ve desactivado.
+const selectClass = campoClass;
+const inputClass = `${campoClass} read-only:bg-neutro-claro read-only:text-on-surface-variant`;
 const labelClass = "mb-1.5 block font-body text-sm font-medium text-on-surface-variant";
 const hintClass = "mt-1.5 font-body text-xs leading-relaxed text-on-surface-variant/90";
 const errorClass = "mt-1.5 font-body text-xs font-medium text-error";
 const legendClass = "font-body text-lg font-bold text-primary";
 const tituloClass =
   "text-center font-body text-[1.75rem] font-bold leading-tight tracking-[-0.02em] text-primary md:text-[2.25rem]";
+
+/** El valor de «Prefiero no decirlo» en la lista de edades. */
+const EDAD_NO_DECIR = "no-decir";
 
 const idDeCampo = (campo: string) => `vr-${campo.replaceAll(".", "-")}`;
 
@@ -60,7 +67,6 @@ type CampoProps = {
   autoComplete?: string;
   placeholder?: string;
   className?: string;
-  labelOculto?: boolean;
 };
 
 function Campo({
@@ -72,14 +78,13 @@ function Campo({
   hint,
   readOnly,
   className = "",
-  labelOculto = false,
   ...input
 }: CampoProps) {
   const id = idDeCampo(campo);
   const describe = [error ? `${id}-error` : "", hint ? `${id}-hint` : ""].filter(Boolean).join(" ");
   return (
     <div className={`min-w-0 ${className}`}>
-      <label htmlFor={id} className={labelOculto ? "sr-only" : labelClass}>
+      <label htmlFor={id} className={labelClass}>
         {label}
       </label>
       <input
@@ -777,52 +782,46 @@ function FormularioReserva({
                     />
                   )}
                   <div className="col-span-2 min-w-0 sm:col-span-1">
-                    <p className={labelClass}>{t("edad")}</p>
-                    <div role="radiogroup" aria-label={t("edad")} className="flex flex-wrap gap-x-5">
-                      <Opcion
-                        name={`${ruta}-edad-modo`}
-                        checked={!ficha.edadPorRango}
-                        onChange={() => cambiarFicha(i, { edadPorRango: false })}
-                      >
-                        {t("edadAnios")}
-                      </Opcion>
-                      {rango && (
-                        <Opcion
-                          name={`${ruta}-edad-modo`}
-                          checked={ficha.edadPorRango}
-                          onChange={() => {
-                            cambiarFicha(i, { edadPorRango: true, edad: "" });
-                            limpiarError(`${ruta}.edad`);
-                          }}
-                        >
-                          {rango.edad_max === null
-                            ? t("rangoDesde", { min: rango.edad_min })
-                            : t("rangoEntre", { min: rango.edad_min, max: rango.edad_max })}
-                        </Opcion>
+                    <label htmlFor={idDeCampo(`${ruta}.edad`)} className={labelClass}>
+                      {t("edad")}
+                    </label>
+                    {/* Una lista y no un campo libre: solo ofrece las edades de esta
+                        ficha, así que no se puede poner 11 en la de «18 o más». */}
+                    <select
+                      id={idDeCampo(`${ruta}.edad`)}
+                      value={ficha.edadPorRango ? EDAD_NO_DECIR : ficha.edad}
+                      aria-invalid={errores[`${ruta}.edad`] ? true : undefined}
+                      aria-describedby={`${idDeCampo(`${ruta}.edad`)}-hint`}
+                      onChange={(e) => {
+                        const valor = e.target.value;
+                        cambiarFicha(
+                          i,
+                          valor === EDAD_NO_DECIR
+                            ? { edadPorRango: true, edad: "" }
+                            : { edadPorRango: false, edad: valor },
+                        );
+                        limpiarError(`${ruta}.edad`);
+                      }}
+                      className={selectClass}
+                    >
+                      {!ficha.edadPorRango && ficha.edad === "" && (
+                        <option value="" disabled>
+                          {t("edadElegir")}
+                        </option>
                       )}
-                    </div>
-                    {ficha.edadPorRango ? (
-                      <>
-                        <p className={hintClass}>{t("edadAyuda")}</p>
-                        {textoError(`${ruta}.edad`, i) && (
-                          <p className={errorClass}>{textoError(`${ruta}.edad`, i)}</p>
-                        )}
-                      </>
-                    ) : (
-                      <Campo
-                        campo={`${ruta}.edad`}
-                        label={t("edadAnios")}
-                        labelOculto
-                        value={ficha.edad}
-                        inputMode="numeric"
-                        autoComplete="off"
-                        hint={t("edadAyuda")}
-                        error={textoError(`${ruta}.edad`, i)}
-                        onChange={(edad) => {
-                          cambiarFicha(i, { edad });
-                          limpiarError(`${ruta}.edad`);
-                        }}
-                      />
+                      {rango &&
+                        edadesDeRango(rango).map((edad) => (
+                          <option key={edad} value={String(edad)}>
+                            {edad}
+                          </option>
+                        ))}
+                      {rango && <option value={EDAD_NO_DECIR}>{t("edadNoDecir")}</option>}
+                    </select>
+                    <p id={`${idDeCampo(`${ruta}.edad`)}-hint`} className={hintClass}>
+                      {t("edadAyuda")}
+                    </p>
+                    {textoError(`${ruta}.edad`, i) && (
+                      <p className={errorClass}>{textoError(`${ruta}.edad`, i)}</p>
                     )}
                   </div>
                   {evento.tallas.length > 0 && (
@@ -839,7 +838,7 @@ function FormularioReserva({
                           cambiarFicha(i, { talla: e.target.value });
                           limpiarError(`${ruta}.talla`);
                         }}
-                        className={inputClass}
+                        className={selectClass}
                       >
                         <option value="">{t("sinTalla")}</option>
                         {evento.tallas.map((talla) => (
