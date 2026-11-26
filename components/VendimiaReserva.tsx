@@ -29,7 +29,6 @@ import {
   indicePrimerAdulto,
   iniciarReserva,
   precioDeRango,
-  puedeSumar,
   revisarAcompanantes,
   totalAproximado,
   urlRespaldoWhatsApp,
@@ -572,9 +571,7 @@ function FormularioReserva({
                           <button
                             type="button"
                             onClick={() => cambiarConteo(rango, 1)}
-                            disabled={
-                              personas >= MAX_ASISTENTES || !puedeSumar(evento, conteos, rango)
-                            }
+                            disabled={personas >= MAX_ASISTENTES}
                             aria-label={t("agregar", { rango: rango.nombre })}
                             className="flex h-11 w-11 items-center justify-center rounded-full bg-primary/[0.07] text-primary transition-colors hover:bg-primary hover:text-on-primary disabled:cursor-not-allowed disabled:bg-neutro-claro disabled:text-on-surface-variant disabled:opacity-50"
                           >
@@ -585,13 +582,9 @@ function FormularioReserva({
                     );
                   })}
                 </ul>
-                {acompanantes.edades && (
+                {acompanantes.conMenores && (
                   <p className={hintClass}>
-                    {t("reglaAcompanantes", {
-                      max: MENORES_POR_ADULTO,
-                      desde: acompanantes.edades.desde,
-                      hasta: acompanantes.edades.hasta,
-                    })}
+                    {t("reglaAcompanantes", { max: MENORES_POR_ADULTO })}
                   </p>
                 )}
                 {personas >= MAX_ASISTENTES && (
@@ -635,18 +628,27 @@ function FormularioReserva({
                     <p className={hintClass}>{t("faltaFecha")}</p>
                   ) : personas === 0 ? (
                     <p className={hintClass}>{t("faltanPersonas")}</p>
-                  ) : acompanantes.problema === "sin_adulto" ? (
-                    <p className={errorClass}>{t("faltaAdulto")}</p>
-                  ) : acompanantes.problema === "exceso" && acompanantes.edades ? (
-                    <p className={errorClass}>
-                      {t("excesoMenores", {
-                        adultos: acompanantes.adultos,
-                        max: acompanantes.maximo,
-                        desde: acompanantes.edades.desde,
-                        hasta: acompanantes.edades.hasta,
+                  ) : acompanantes.problema !== null ? (
+                    <p className={errorClass} aria-live="polite">
+                      {t("faltanAdultos", {
+                        faltan: acompanantes.faltanAdultos,
+                        max: MENORES_POR_ADULTO,
                       })}
                     </p>
                   ) : null}
+                  <p className="mt-4 text-center font-body text-sm text-on-surface-variant">
+                    {t("ayudaPregunta")}{" "}
+                    <a
+                      href={`${CONTACT_WHATSAPP_URL}?text=${encodeURIComponent(
+                        t("ayudaWhatsapp", { evento: evento.nombre }),
+                      )}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="font-semibold text-primary underline underline-offset-2 hover:text-wine-accent"
+                    >
+                      {t("ayudaContacto")}
+                    </a>
+                  </p>
                 </div>
               </div>
             </div>

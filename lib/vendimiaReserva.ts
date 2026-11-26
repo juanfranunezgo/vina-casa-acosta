@@ -492,18 +492,19 @@ export function indicePrimerAdulto(evento: EventoReserva, fichas: readonly Ficha
 export type Acompanantes = {
   adultos: number;
   menores: number;
-  /** Cuántos menores puede haber con los adultos que van. */
-  maximo: number;
-  /** Las edades de los rangos de menores, para explicar la regla. `null` si no hay. */
-  edades: { desde: number; hasta: number } | null;
+  /** Cuántos adultos más tienen que ir para que la reserva siga. */
+  faltanAdultos: number;
+  /** Si el evento tiene rangos de menores: sin ellos la regla no se explica. */
+  conMenores: boolean;
   problema: "sin_adulto" | "exceso" | null;
 };
 
 const esAdulto = (rango: Pick<RangoEvento, "edad_min">) => rango.edad_min >= EDAD_ADULTA;
 
 /**
- * Que no reserve un grupo de puros menores: tiene que ir al menos un adulto, y cada adulto puede
- * traer hasta `MENORES_POR_ADULTO` menores, de cualquier edad. Afeleia no lo revisa: lo hace la web.
+ * Que no reserve un grupo de puros menores: va un adulto por cada `MENORES_POR_ADULTO` menores, de
+ * cualquier edad. Se pueden sumar menores primero; lo que frena es Continuar. Afeleia no lo revisa:
+ * lo hace la web.
  */
 export function revisarAcompanantes(
   evento: Pick<EventoReserva, "rangos">,
@@ -516,28 +517,10 @@ export function revisarAcompanantes(
     if (esAdulto(rango)) adultos += cantidad;
     else menores += cantidad;
   }
-  const deMenores = evento.rangos.filter((r) => !esAdulto(r));
-  const edades =
-    deMenores.length > 0
-      ? {
-          desde: Math.min(...deMenores.map((r) => r.edad_min)),
-          hasta: Math.min(Math.max(...deMenores.map((r) => r.edad_max ?? EDAD_ADULTA - 1)), EDAD_ADULTA - 1),
-        }
-      : null;
-  const maximo = adultos * MENORES_POR_ADULTO;
-  const problema = menores > 0 && adultos === 0 ? "sin_adulto" : menores > maximo ? "exceso" : null;
-  return { adultos, menores, maximo, edades, problema };
-}
-
-/** Si se puede sumar una persona más a este rango sin romper la regla de los adultos. */
-export function puedeSumar(
-  evento: Pick<EventoReserva, "rangos">,
-  conteos: Readonly<Record<string, number>>,
-  rango: RangoEvento,
-): boolean {
-  if (esAdulto(rango)) return true;
-  const { menores, maximo } = revisarAcompanantes(evento, conteos);
-  return menores < maximo;
+  const faltanAdultos = Math.max(Math.ceil(menores / MENORES_POR_ADULTO) - adultos, 0);
+  const problema = faltanAdultos === 0 ? null : adultos === 0 ? "sin_adulto" : "exceso";
+  const conMenores = evento.rangos.some((r) => !esAdulto(r));
+  return { adultos, menores, faltanAdultos, conMenores, problema };
 }
 
 export function hayRestriccion(fichas: readonly Ficha[]): boolean {

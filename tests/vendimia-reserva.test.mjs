@@ -19,7 +19,6 @@ const {
   leerApertura,
   leerEventoVendimia,
   precioAdultoDesde,
-  puedeSumar,
   revisarAcompanantes,
   totalAproximado,
   urlRespaldoWhatsApp,
@@ -387,23 +386,22 @@ test("acompañantes: sin un adulto no se reserva, ni siquiera con un solo menor"
   assert.equal(errores(datos({ fichas: [menor] })).acompanantes, "acompanantes");
 });
 
-test("acompañantes: cada adulto trae hasta dos menores, también los de 0 a 5", () => {
+test("acompañantes: va un adulto por cada dos menores, también los de 0 a 5", async () => {
   const regla = revisarAcompanantes(evento, { "18 o más": 1, "11 a 17": 1, "0 a 5": 1 });
   assert.equal(regla.problema, null);
-  assert.deepEqual(regla.edades, { desde: 0, hasta: 17 });
+  assert.equal(regla.faltanAdultos, 0);
+  assert.equal(regla.conMenores, true);
 
-  assert.equal(revisarAcompanantes(evento, { "18 o más": 1, "6 a 10": 2, "0 a 5": 1 }).problema, "exceso");
-  assert.equal(revisarAcompanantes(evento, { "18 o más": 1, "0 a 5": 3 }).problema, "exceso");
+  const sobra = revisarAcompanantes(evento, { "18 o más": 1, "6 a 10": 2, "0 a 5": 1 });
+  assert.equal(sobra.problema, "exceso");
+  assert.equal(sobra.faltanAdultos, 1);
+  assert.equal(revisarAcompanantes(evento, { "6 a 10": 5 }).faltanAdultos, 3);
   assert.equal(revisarAcompanantes(evento, { "18 o más": 2, "6 a 10": 2, "0 a 5": 2 }).problema, null);
 
-  // Al llegar al tope se apaga el + de todos los menores; el del adulto sigue.
-  const [mayores, adolescentes, ninos, guaguas] = evento.rangos;
-  const lleno = { "18 o más": 1, "6 a 10": 1, "0 a 5": 1 };
-  for (const menor of [adolescentes, ninos, guaguas]) {
-    assert.equal(puedeSumar(evento, lleno, menor), false, menor.nombre);
-    assert.equal(puedeSumar(evento, {}, menor), false, menor.nombre);
-  }
-  assert.equal(puedeSumar(evento, lleno, mayores), true);
+  // Se pueden sumar menores antes que adultos: el + no se apaga por la regla, frena Continuar.
+  const formulario = await source("components/VendimiaReserva.tsx");
+  assert.ok(!formulario.includes("puedeSumar"), "volvió a apagarse el + de los menores");
+  assert.ok(formulario.includes("acompanantes.problema === null"));
 
   const nino = (nombre) => ({ ...fichaVacia("6 a 10"), nombre, edad: "8" });
   const tres = datos({ fichas: [adulto(), nino("Leo Pérez"), nino("Sol Pérez"), nino("Mar Pérez")] });
