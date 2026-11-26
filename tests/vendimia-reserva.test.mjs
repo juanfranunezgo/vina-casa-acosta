@@ -19,6 +19,8 @@ const {
   leerApertura,
   leerEventoVendimia,
   precioAdultoDesde,
+  puedeSumar,
+  revisarAcompanantes,
   totalAproximado,
   urlRespaldoWhatsApp,
   validarReserva,
@@ -374,6 +376,40 @@ test("el correo y el celular del encargado son obligatorios", async () => {
     assert.ok(inicio > 0, campo);
     assert.ok(formulario.slice(inicio, formulario.indexOf("/>", inicio)).includes("requerido\n"), campo);
   }
+});
+
+test("acompañantes: sin un adulto no se reserva, ni siquiera con un solo menor", () => {
+  assert.equal(revisarAcompanantes(evento, { "11 a 17": 1 }).problema, "sin_adulto");
+  assert.equal(revisarAcompanantes(evento, { "0 a 5": 1 }).problema, "sin_adulto");
+  assert.equal(revisarAcompanantes(evento, { "18 o más": 1 }).problema, null);
+
+  const menor = { ...fichaVacia("11 a 17"), nombre: "Leo Pérez", edad: "14" };
+  assert.equal(errores(datos({ fichas: [menor] })).acompanantes, "acompanantes");
+});
+
+test("acompañantes: cada adulto trae hasta dos menores, también los de 0 a 5", () => {
+  const regla = revisarAcompanantes(evento, { "18 o más": 1, "11 a 17": 1, "0 a 5": 1 });
+  assert.equal(regla.problema, null);
+  assert.deepEqual(regla.edades, { desde: 0, hasta: 17 });
+
+  assert.equal(revisarAcompanantes(evento, { "18 o más": 1, "6 a 10": 2, "0 a 5": 1 }).problema, "exceso");
+  assert.equal(revisarAcompanantes(evento, { "18 o más": 1, "0 a 5": 3 }).problema, "exceso");
+  assert.equal(revisarAcompanantes(evento, { "18 o más": 2, "6 a 10": 2, "0 a 5": 2 }).problema, null);
+
+  // Al llegar al tope se apaga el + de todos los menores; el del adulto sigue.
+  const [mayores, adolescentes, ninos, guaguas] = evento.rangos;
+  const lleno = { "18 o más": 1, "6 a 10": 1, "0 a 5": 1 };
+  for (const menor of [adolescentes, ninos, guaguas]) {
+    assert.equal(puedeSumar(evento, lleno, menor), false, menor.nombre);
+    assert.equal(puedeSumar(evento, {}, menor), false, menor.nombre);
+  }
+  assert.equal(puedeSumar(evento, lleno, mayores), true);
+
+  const nino = (nombre) => ({ ...fichaVacia("6 a 10"), nombre, edad: "8" });
+  const tres = datos({ fichas: [adulto(), nino("Leo Pérez"), nino("Sol Pérez"), nino("Mar Pérez")] });
+  assert.equal(errores(tres).acompanantes, "acompanantes");
+  const dos = datos({ fichas: [adulto(), nino("Leo Pérez"), nino("Sol Pérez")] });
+  assert.equal(validarReserva(evento, dos).ok, true);
 });
 
 test("edad en lista: cada ficha ofrece solo las edades de su rango", () => {

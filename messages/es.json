@@ -775,10 +775,13 @@
         "horario": "{inicio} a {termino} hrs",
         "quedanCupos": "Quedan cupos",
         "noDisponible": "No disponible",
-        "cuantosVan": "¿Cuántos van?",
+        "quienesVisitan": "¿Quiénes nos visitan?",
+        "segunEdad": "Selecciona la cantidad de personas según su edad.",
+        "rangoEntre": "{min} a {max} años",
+        "rangoDesde": "{min} años o más",
         "gratis": "Sin costo",
-        "quitar": "Quitar una persona de {rango}",
-        "agregar": "Agregar una persona de {rango}",
+        "quitar": "Quitar una persona: {rango}",
+        "agregar": "Agregar una persona: {rango}",
         "maximo": "Cada reserva admite hasta {max} personas.",
         "lanzamiento": "Precio de lanzamiento mientras queden cupos en esta fecha. Quien lo recibe se lleva {regalo} de regalo.",
         "regaloCopa": "una copa",
@@ -787,6 +790,9 @@
         "continuar": "Continuar",
         "faltaFecha": "Elige una fecha para continuar.",
         "faltanPersonas": "Indica cuántas personas van.",
+        "reglaAcompanantes": "Debe ir al menos un adulto, y cada adulto puede venir con hasta {max} personas de {desde} a {hasta} años.",
+        "faltaAdulto": "Agrega al menos un adulto para continuar.",
+        "excesoMenores": "{adultos, plural, one {Con un adulto pueden ir} other {Con # adultos pueden ir}} hasta {max} personas de {desde} a {hasta} años.",
         "sinFechas": "Por ahora no hay fechas con cupo. Escríbenos por WhatsApp y vemos qué se puede hacer.",
         "abreCorto": "Abre {dia}, {hora}",
         "abreAviso": "La preventa abre el {dia} a las {hora}.",
@@ -847,7 +853,8 @@
           "fecha": "Elige una fecha disponible.",
           "personas": "Indica cuántas personas van.",
           "total_cero": "La reserva necesita al menos una persona con entrada pagada.",
-          "muy_largo": "Los datos son demasiado largos para una sola reserva."
+          "muy_largo": "Los datos son demasiado largos para una sola reserva.",
+          "acompanantes": "Revisa cuántos adultos y menores van."
         },
         "avisos": {
           "fecha": "Esa fecha ya no está disponible. Elige otra: tus datos quedan guardados.",
@@ -857,7 +864,8 @@
           "total_cero": "La reserva necesita al menos una persona con entrada pagada.",
           "campos": "Revisa los datos marcados.",
           "muy_largo": "Los datos son demasiado largos para una sola reserva. Acorta algún texto o divide el grupo.",
-          "respaldo": "No pudimos abrir el pago ahora. Escríbenos por WhatsApp y terminamos tu reserva por ahí."
+          "respaldo": "No pudimos abrir el pago ahora. Escríbenos por WhatsApp y terminamos tu reserva por ahí.",
+          "acompanantes": "Revisa cuántos adultos y menores van."
         },
         "pasoFecha": "Fecha y personas",
         "pasoDatos": "Quiénes van",

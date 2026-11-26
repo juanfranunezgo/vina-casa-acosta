@@ -775,10 +775,13 @@
         "horario": "{inicio} to {termino}",
         "quedanCupos": "Places left",
         "noDisponible": "Not available",
-        "cuantosVan": "How many are coming?",
+        "quienesVisitan": "Who's visiting?",
+        "segunEdad": "Choose how many people are coming in each age group.",
+        "rangoEntre": "{min} to {max} years",
+        "rangoDesde": "{min} years and over",
         "gratis": "Free",
-        "quitar": "Remove one person from {rango}",
-        "agregar": "Add one person to {rango}",
+        "quitar": "Remove one person: {rango}",
+        "agregar": "Add one person: {rango}",
         "maximo": "Each booking takes up to {max} people.",
         "lanzamiento": "Launch price while places last on this date. Those who get it also take home {regalo} as a gift.",
         "regaloCopa": "a wine glass",
@@ -787,6 +790,9 @@
         "continuar": "Continue",
         "faltaFecha": "Choose a date to continue.",
         "faltanPersonas": "Tell us how many people are coming.",
+        "reglaAcompanantes": "At least one adult must come, and each adult can bring up to {max} people aged {desde} to {hasta}.",
+        "faltaAdulto": "Add at least one adult to continue.",
+        "excesoMenores": "{adultos, plural, one {With one adult, up to} other {With # adults, up to}} {max} people aged {desde} to {hasta} can come.",
         "sinFechas": "There are no dates with places right now. Message us on WhatsApp and we will see what we can do.",
         "abreCorto": "Opens {dia}, {hora}",
         "abreAviso": "Pre-sale opens on {dia} at {hora}.",
@@ -847,7 +853,8 @@
           "fecha": "Choose an available date.",
           "personas": "Tell us how many people are coming.",
           "total_cero": "The booking needs at least one person with a paid ticket.",
-          "muy_largo": "The details are too long for a single booking."
+          "muy_largo": "The details are too long for a single booking.",
+          "acompanantes": "Check how many adults and minors are coming."
         },
         "avisos": {
           "fecha": "That date is no longer available. Choose another: your details are kept.",
@@ -857,7 +864,8 @@
           "total_cero": "The booking needs at least one person with a paid ticket.",
           "campos": "Check the highlighted details.",
           "muy_largo": "The details are too long for a single booking. Shorten some text or split the group.",
-          "respaldo": "We could not open the payment right now. Message us on WhatsApp and we will finish your booking there."
+          "respaldo": "We could not open the payment right now. Message us on WhatsApp and we will finish your booking there.",
+          "acompanantes": "Check how many adults and minors are coming."
         },
         "pasoFecha": "Date and people",
         "pasoDatos": "Who is coming",
