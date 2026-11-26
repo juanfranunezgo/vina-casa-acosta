@@ -311,6 +311,8 @@ misma búsqueda es peor que una.
 
 **La venta está apagada por defecto.** Para abrirla: crear el evento en Afeleia, definir `NEXT_PUBLIC_VENDIMIA_RESERVAS=abierta` en Netlify y hacer un deploy nuevo. Sin esa variable, aunque el evento exista, la página solo ofrece la consulta.
 
+**Adultos y menores (2026-11-26).** Pedido de la viña: no se puede reservar sin un adulto, y cada adulto trae hasta `MENORES_POR_ADULTO` (2) menores de 6 a 17 años. Los de 0 a 5 no ocupan esos lugares, pero tampoco van sin adulto. La regla vive en `revisarAcompanantes` (`lib/vendimiaReserva.ts`): apaga el + del menor, frena el paso 1 y vuelve a revisarse antes del `POST`. **Afeleia no la revisa**: quien arme la llamada a mano se la salta. Los nombres de las entradas («Adultos», «Niños») los pone el panel; la web agrega la edad debajo a partir de `edad_min` y `edad_max`.
+
 **Reservas pagadas desde la Vendimia 2027 (2026-11-22).** Dv7 lee `catalogo.eventos` en el
 navegador, pide los datos y hace `POST /iniciar` con `{ reserva }`; el checkout de Afeleia
 revisa y cobra. Fechas, rangos, precios y cupos **no se escriben en este repo**. Sin la clave

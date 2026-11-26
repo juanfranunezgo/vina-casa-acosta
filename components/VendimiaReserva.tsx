@@ -18,6 +18,7 @@ import {
 import {
   MAX_ASISTENTES,
   MAX_MASCOTAS,
+  MENORES_POR_ADULTO,
   ajustarFichas,
   edadesDeRango,
   enlaceLegal,
@@ -28,6 +29,8 @@ import {
   indicePrimerAdulto,
   iniciarReserva,
   precioDeRango,
+  puedeSumar,
+  revisarAcompanantes,
   totalAproximado,
   urlRespaldoWhatsApp,
   validarReserva,
@@ -210,7 +213,15 @@ export default function VendimiaReserva({ consulta }: { consulta: ReactNode }) {
   return <FormularioReserva evento={evento} urlCheckout={urlCheckoutVendimia} />;
 }
 
-type Aviso = "fecha" | "cupo" | "edad" | "revisar" | "total_cero" | "campos" | "muy_largo";
+type Aviso =
+  | "fecha"
+  | "cupo"
+  | "edad"
+  | "revisar"
+  | "total_cero"
+  | "campos"
+  | "muy_largo"
+  | "acompanantes";
 
 function FormularioReserva({
   evento,
@@ -262,8 +273,15 @@ function FormularioReserva({
 
   const personas = evento.rangos.reduce((n, r) => n + (conteos[r.nombre] ?? 0), 0);
   const total = totalAproximado(evento, fecha, conteos);
-  const soloGratis = fecha !== undefined && personas > 0 && total === 0;
-  const puedeContinuar = fecha !== undefined && personas > 0 && !soloGratis;
+  const acompanantes = revisarAcompanantes(evento, conteos);
+  const soloGratis =
+    fecha !== undefined && personas > 0 && total === 0 && acompanantes.problema === null;
+  const puedeContinuar =
+    fecha !== undefined && personas > 0 && total > 0 && acompanantes.problema === null;
+  const edadesDe = (rango: RangoEvento) =>
+    rango.edad_max === null
+      ? t("rangoDesde", { min: rango.edad_min })
+      : t("rangoEntre", { min: rango.edad_min, max: rango.edad_max });
   const conLanzamiento =
     fecha?.queda_lanzamiento === true &&
     evento.lanzamiento !== null &&
@@ -376,7 +394,9 @@ function FormularioReserva({
       setAviso(
         validacion.errores.cuerpo
           ? "muy_largo"
-          : validacion.errores.total
+          : validacion.errores.acompanantes
+            ? "acompanantes"
+            : validacion.errores.total
             ? "total_cero"
             : "campos",
       );
@@ -511,7 +531,8 @@ function FormularioReserva({
           {hayFechas ? (
             <div>
               <fieldset>
-                <legend className={`mb-2 ${legendClass}`}>{t("cuantosVan")}</legend>
+                <legend className={legendClass}>{t("quienesVisitan")}</legend>
+                <p className={`mb-2 ${hintClass}`}>{t("segunEdad")}</p>
                 <ul>
                   {evento.rangos.map((rango) => {
                     const cantidad = conteos[rango.nombre] ?? 0;
@@ -524,6 +545,9 @@ function FormularioReserva({
                         <span className="min-w-0">
                           <span className="block font-body text-base font-semibold text-on-surface">
                             {rango.nombre}
+                          </span>
+                          <span className="block font-body text-sm text-on-surface-variant">
+                            {edadesDe(rango)}
                           </span>
                           <span className="block font-body text-sm text-on-surface-variant tabular-nums">
                             {precio === 0 ? t("gratis") : dinero(precio)}
@@ -548,7 +572,9 @@ function FormularioReserva({
                           <button
                             type="button"
                             onClick={() => cambiarConteo(rango, 1)}
-                            disabled={personas >= MAX_ASISTENTES}
+                            disabled={
+                              personas >= MAX_ASISTENTES || !puedeSumar(evento, conteos, rango)
+                            }
                             aria-label={t("agregar", { rango: rango.nombre })}
                             className="flex h-11 w-11 items-center justify-center rounded-full bg-primary/[0.07] text-primary transition-colors hover:bg-primary hover:text-on-primary disabled:cursor-not-allowed disabled:bg-neutro-claro disabled:text-on-surface-variant disabled:opacity-50"
                           >
@@ -559,6 +585,15 @@ function FormularioReserva({
                     );
                   })}
                 </ul>
+                {acompanantes.edades && (
+                  <p className={hintClass}>
+                    {t("reglaAcompanantes", {
+                      max: MENORES_POR_ADULTO,
+                      desde: acompanantes.edades.desde,
+                      hasta: acompanantes.edades.hasta,
+                    })}
+                  </p>
+                )}
                 {personas >= MAX_ASISTENTES && (
                   <p className={hintClass}>{t("maximo", { max: MAX_ASISTENTES })}</p>
                 )}
@@ -596,9 +631,22 @@ function FormularioReserva({
                   >
                     {t("continuar")}
                   </Button>
-                  {!puedeContinuar && !soloGratis && (
-                    <p className={hintClass}>{fecha ? t("faltanPersonas") : t("faltaFecha")}</p>
-                  )}
+                  {!fecha ? (
+                    <p className={hintClass}>{t("faltaFecha")}</p>
+                  ) : personas === 0 ? (
+                    <p className={hintClass}>{t("faltanPersonas")}</p>
+                  ) : acompanantes.problema === "sin_adulto" ? (
+                    <p className={errorClass}>{t("faltaAdulto")}</p>
+                  ) : acompanantes.problema === "exceso" && acompanantes.edades ? (
+                    <p className={errorClass}>
+                      {t("excesoMenores", {
+                        adultos: acompanantes.adultos,
+                        max: acompanantes.maximo,
+                        desde: acompanantes.edades.desde,
+                        hasta: acompanantes.edades.hasta,
+                      })}
+                    </p>
+                  ) : null}
                 </div>
               </div>
             </div>

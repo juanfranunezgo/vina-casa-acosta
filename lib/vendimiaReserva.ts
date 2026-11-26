@@ -21,6 +21,10 @@ export const MAX_MASCOTAS = 10;
 export const MAX_CUERPO_BYTES = 16 * 1024;
 
 const EDAD_ADULTA = 18;
+/** Cuántas personas menores de edad puede traer cada adulto (pedido de la viña, 2026-11). */
+export const MENORES_POR_ADULTO = 2;
+/** Desde esta edad un menor ocupa uno de esos lugares; los más chicos no cuentan. */
+const EDAD_CUENTA_ACOMPANANTE = 6;
 const EDAD_MAXIMA = 120;
 
 // Copias exactas del checkout. El carácter de control incluye los invisibles que entran al pegar
@@ -487,6 +491,64 @@ export function indicePrimerAdulto(evento: EventoReserva, fichas: readonly Ficha
   });
 }
 
+export type Acompanantes = {
+  adultos: number;
+  /** Menores que ocupan uno de los lugares de un adulto. */
+  cuentan: number;
+  /** Cuántos de esos puede haber con los adultos que van. */
+  maximo: number;
+  /** Las edades de los menores que cuentan, para explicar la regla. `null` sin rangos así. */
+  edades: { desde: number; hasta: number } | null;
+  problema: "sin_adulto" | "exceso" | null;
+};
+
+const esAdulto = (rango: Pick<RangoEvento, "edad_min">) => rango.edad_min >= EDAD_ADULTA;
+const cuentaComoAcompanante = (rango: Pick<RangoEvento, "edad_min" | "edad_max">) =>
+  !esAdulto(rango) && (rango.edad_max ?? EDAD_ADULTA) >= EDAD_CUENTA_ACOMPANANTE;
+
+/**
+ * Que no reserve un grupo de puros menores: tiene que ir al menos un adulto, y cada adulto puede
+ * traer hasta `MENORES_POR_ADULTO` menores de 6 años o más. Afeleia no lo revisa: lo hace la web.
+ */
+export function revisarAcompanantes(
+  evento: Pick<EventoReserva, "rangos">,
+  conteos: Readonly<Record<string, number>>,
+): Acompanantes {
+  let adultos = 0;
+  let menores = 0;
+  let cuentan = 0;
+  for (const rango of evento.rangos) {
+    const cantidad = conteos[rango.nombre] ?? 0;
+    if (esAdulto(rango)) adultos += cantidad;
+    else {
+      menores += cantidad;
+      if (cuentaComoAcompanante(rango)) cuentan += cantidad;
+    }
+  }
+  const conLugar = evento.rangos.filter(cuentaComoAcompanante);
+  const edades =
+    conLugar.length > 0
+      ? {
+          desde: Math.max(Math.min(...conLugar.map((r) => r.edad_min)), EDAD_CUENTA_ACOMPANANTE),
+          hasta: Math.min(Math.max(...conLugar.map((r) => r.edad_max ?? EDAD_ADULTA - 1)), EDAD_ADULTA - 1),
+        }
+      : null;
+  const maximo = adultos * MENORES_POR_ADULTO;
+  const problema = menores > 0 && adultos === 0 ? "sin_adulto" : cuentan > maximo ? "exceso" : null;
+  return { adultos, cuentan, maximo, edades, problema };
+}
+
+/** Si se puede sumar una persona más a este rango sin romper la regla de los adultos. */
+export function puedeSumar(
+  evento: Pick<EventoReserva, "rangos">,
+  conteos: Readonly<Record<string, number>>,
+  rango: RangoEvento,
+): boolean {
+  if (!cuentaComoAcompanante(rango)) return true;
+  const { cuentan, maximo } = revisarAcompanantes(evento, conteos);
+  return cuentan < maximo;
+}
+
 export function hayRestriccion(fichas: readonly Ficha[]): boolean {
   return fichas.some((f) => f.conRestriccion && f.restriccion.trim() !== "");
 }
@@ -517,6 +579,7 @@ export type CodigoError =
   | "permiso"
   | "fecha"
   | "personas"
+  | "acompanantes"
   | "total_cero"
   | "muy_largo";
 
@@ -686,6 +749,10 @@ export function validarReserva(evento: EventoReserva, datos: DatosReserva): Resu
     if (limpio === "") errores.perros = "requerido";
     else if (cantidad < 1 || cantidad > MAX_MASCOTAS) errores.perros = "mascotas";
     else perros = cantidad;
+  }
+
+  if (revisarAcompanantes(evento, conteos).problema !== null) {
+    errores.acompanantes = "acompanantes";
   }
 
   // Un total 0 no se puede cobrar: el checkout responde `total_cero`.
