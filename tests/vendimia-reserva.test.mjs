@@ -387,21 +387,23 @@ test("acompañantes: sin un adulto no se reserva, ni siquiera con un solo menor"
   assert.equal(errores(datos({ fichas: [menor] })).acompanantes, "acompanantes");
 });
 
-test("acompañantes: cada adulto trae hasta dos menores de 6 a 17; los de 0 a 5 no cuentan", () => {
-  const regla = revisarAcompanantes(evento, { "18 o más": 1, "11 a 17": 1, "6 a 10": 1, "0 a 5": 3 });
+test("acompañantes: cada adulto trae hasta dos menores, también los de 0 a 5", () => {
+  const regla = revisarAcompanantes(evento, { "18 o más": 1, "11 a 17": 1, "0 a 5": 1 });
   assert.equal(regla.problema, null);
-  assert.deepEqual(regla.edades, { desde: 6, hasta: 17 });
+  assert.deepEqual(regla.edades, { desde: 0, hasta: 17 });
 
-  assert.equal(revisarAcompanantes(evento, { "18 o más": 1, "6 a 10": 3 }).problema, "exceso");
-  assert.equal(revisarAcompanantes(evento, { "18 o más": 2, "6 a 10": 4 }).problema, null);
+  assert.equal(revisarAcompanantes(evento, { "18 o más": 1, "6 a 10": 2, "0 a 5": 1 }).problema, "exceso");
+  assert.equal(revisarAcompanantes(evento, { "18 o más": 1, "0 a 5": 3 }).problema, "exceso");
+  assert.equal(revisarAcompanantes(evento, { "18 o más": 2, "6 a 10": 2, "0 a 5": 2 }).problema, null);
 
-  // El + del menor se apaga al llegar al tope; el del adulto y el de los más chicos, no.
-  const [mayores, , ninos, guaguas] = evento.rangos;
-  const lleno = { "18 o más": 1, "6 a 10": 2 };
-  assert.equal(puedeSumar(evento, lleno, ninos), false);
+  // Al llegar al tope se apaga el + de todos los menores; el del adulto sigue.
+  const [mayores, adolescentes, ninos, guaguas] = evento.rangos;
+  const lleno = { "18 o más": 1, "6 a 10": 1, "0 a 5": 1 };
+  for (const menor of [adolescentes, ninos, guaguas]) {
+    assert.equal(puedeSumar(evento, lleno, menor), false, menor.nombre);
+    assert.equal(puedeSumar(evento, {}, menor), false, menor.nombre);
+  }
   assert.equal(puedeSumar(evento, lleno, mayores), true);
-  assert.equal(puedeSumar(evento, lleno, guaguas), true);
-  assert.equal(puedeSumar(evento, {}, ninos), false);
 
   const nino = (nombre) => ({ ...fichaVacia("6 a 10"), nombre, edad: "8" });
   const tres = datos({ fichas: [adulto(), nino("Leo Pérez"), nino("Sol Pérez"), nino("Mar Pérez")] });
